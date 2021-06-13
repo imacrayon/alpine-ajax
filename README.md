@@ -21,6 +21,7 @@ Available configuration options:
 Key | Description
 ---|---
 action | The URL for the request. This is inherited from the `action` attribute for forms.
+confirm | Shows a `confirm()` dialog before the AJAX request is made. If the dialog is canceled the request will not be issued.
 event | The event that will trigger a HTTP request. This defaults to `submit` for forms and `click` for any other element.
 insert | Defines the way content from a response is inserted into the target DOM element. Available values are:  `after`, `append`, `before`, `prepend`, `replace`, `update`. This defaults to `update` meaning the target's content will be updated to match the new content.
 method | The HTTP verb used to make the request. This is inherited from the `method` attribute for forms and defaults to `GET` for any other element.
