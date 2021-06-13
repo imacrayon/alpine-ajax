@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<head>
+  <title>Alpine AJAX</title>
+  <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine-next/packages/alpinejs/dist/cdn.js" defer></script>
+</head>
+<body>
+
+  <form x-ajax="{ target: '#replace-me', confirm: 'This cool?', 'insert': 'replace' }" action="partial.html">
+    <button>Submit</button>
+  </form>
+
+  <div id="replace-me">Replace Me</div>
+
+  <script src="../dist/alpine-ajax.js"></script>
+</body>
