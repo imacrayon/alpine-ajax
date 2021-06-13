@@ -13,7 +13,10 @@ This plugin is still a work in progress, but basic functionality exists.
 You can customize the request and response behavior using a configuration object.
 
 ```html
-<form method="post" action="/search" x-ajax="{ target: '#searchResults', insert: 'replace' }">
+<form method="post" action="/search" x-ajax="{
+  target: '#searchResults',
+  insert: 'replace'
+}">
 ```
 
 Available configuration options:
