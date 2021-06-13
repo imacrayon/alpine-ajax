@@ -1,4 +1,3 @@
-import { test } from '../tests/cypress/utils';
 import { request } from './utils/request'
 
 let trigger = null
