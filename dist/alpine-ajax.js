@@ -65,127 +65,97 @@
     });
   }
 
-  let trigger = null;
   function ajax (Alpine) {
     Alpine.addRootSelector(() => '[x-ajax]');
     Alpine.directive('ajax', (el, {
       expression
     }, {
-      cleanup,
-      evaluateLater,
-      effect
+      cleanup
     }) => {
-      expression = expression === '' ? '{}' : expression;
-      let evaluate = evaluateLater(expression);
+      let target = expression ? document.getElementById(expression) : el;
 
-      let removeTriggerListener = () => {};
-
-      if (el.tagName === 'FORM') {
-        removeTriggerListener = on(el, 'click', event => {
-          trigger = event.target;
-        });
+      if (!(target !== null && target !== void 0 && target.id)) {
+        throw Error('You must specify an AJAX target with an ID.');
       }
 
-      let options = {};
-
-      let removeDynamicListener = () => {};
-
-      effect(() => {
-        evaluate(values => {
-          removeDynamicListener();
-          options = ajaxOptions(el, values);
-          removeDynamicListener = on(el, options.event, async event => {
-            event.preventDefault();
-            let fragment = await sendRequest(options);
-
-            if (fragment) {
-              let action = insertActions(fragment, options.target)[options.insert];
-
-              if (!action) {
-                throw Error(`Invalid insert action. Available actions are: ${Object.keys(insertActions()).join(', ')}`);
-              }
-
-              return Alpine.mutateDom(action);
-            }
-          });
-        });
-      });
+      let listeners = ['click', 'submit'].map(event => listenForAjaxEvent(el, event, target));
       cleanup(() => {
-        removeTriggerListener();
-        removeDynamicListener();
-        trigger = null;
+        listeners.forEach(remove => remove());
       });
     });
   }
 
-  function on(el, event, handler) {
-    el.addEventListener(event, handler);
+  function listenForAjaxEvent(el, name, target) {
+    let handler = event => {
+      let source = getSourceElement(event.target, name);
+      if (!isValidSourceElement(source)) return;
+      event.preventDefault();
+      makeAjaxRequest(source, target);
+    };
+
+    el.addEventListener(name, handler);
     return () => {
-      el.removeEventListener(event, handler);
+      el.removeEventListener(name, handler);
     };
   }
 
-  function ajaxOptions(el, values = {}) {
-    let defaults = {
-      event: el.tagName === 'FORM' ? 'submit' : 'click',
-      action: window.location.href,
-      method: 'GET',
-      target: el,
-      insert: 'update'
+  function getSourceElement(trigger, event) {
+    let validTag = {
+      submit: 'FORM',
+      click: 'A'
     };
-    let options = Object.assign(defaults, values);
-    options.method = el.getAttribute('method') || options.method;
-    options.method = options.method.toUpperCase();
-    options.action = el.getAttribute('action') || options.action;
+    return trigger.closest(validTag[event]);
+  }
 
-    if (isLocalLink(el)) {
-      options.action = el.getAttribute('href') || options.action;
+  function isValidSourceElement(el) {
+    if (!el) return false;
+    let root = el.closest('[x-ajax],[ajax-ignore]');
+    if (root.hasAttribute('ajax-ignore')) return false;
+    return el.tagName === 'FORM' ? true : isLocalLink(el);
+  }
+
+  async function makeAjaxRequest(el, target) {
+    if (el.hasAttribute('ajax-confirm') && !confirm(el.getAttribute('ajax-confirm'))) return;
+    dispatch(el, 'ajax:before');
+
+    try {
+      let fragment = await requestFragment(requestOptionsFromElement(el));
+      target.replaceWith((fragment === null || fragment === void 0 ? void 0 : fragment.getElementById(target.id)) ?? '');
+      dispatch(el, 'ajax:success');
+    } catch (error) {
+      dispatch(el, 'ajax:error', error);
     }
 
-    if (typeof options.target === 'string') {
-      options.target = document.querySelector(options.target);
-    }
+    dispatch(el, 'ajax:after');
+  }
 
-    options.data = getFormData(options.data ?? el);
-    return options;
+  function dispatch(el, name, detail = {}) {
+    el.dispatchEvent(new CustomEvent(name, {
+      detail,
+      bubbles: true,
+      composed: true,
+      cancelable: true
+    }));
+  }
+
+  function requestOptionsFromElement(el) {
+    let defaults = {
+      action: window.location.href,
+      method: 'GET'
+    };
+    return {
+      action: el.getAttribute(isLocalLink(el) ? 'href' : 'action') || defaults.action,
+      data: el.tagName === 'FORM' ? new FormData(el) : new FormData(),
+      method: (el.getAttribute('method') || defaults.method).toUpperCase()
+    };
   }
 
   function isLocalLink(el) {
     return el.tagName === 'A' && location.hostname === el.hostname && el.getAttribute('href') && el.getAttribute('href').indexOf("#") !== 0;
   }
 
-  function getFormData(data) {
-    return data.tagName === 'FORM' ? new FormData(data) : valuesToFormData(data);
-  }
-
-  function valuesToFormData(values) {
-    let formData = new FormData();
-
-    for (let name in values) {
-      if (values.hasOwnProperty(name)) {
-        let value = values[name];
-
-        if (Array.isArray(value)) {
-          forEach(value, function (v) {
-            formData.append(name, v);
-          });
-        } else {
-          formData.append(name, value);
-        }
-      }
-    }
-
-    return formData;
-  }
-
-  async function sendRequest(options) {
-    if (options.confirm && !confirm(options.confirm)) return;
-
-    if (trigger && trigger.name) {
-      options.data.append(trigger.name, trigger.value);
-    }
-
-    let response = null;
+  async function requestFragment(options) {
+    let response = '';
 
     try {
       response = await request(options.method, options.action, options.data, options);
@@ -193,57 +163,11 @@
       throw Error(response.xhr.statusText);
     }
 
-    let fragment = textToFragment(response);
-
-    if (options.select) {
-      return fragment.querySelector(options.select);
-    }
-
-    return fragment;
+    return htmlToFragment(response);
   }
 
-  function textToFragment(text) {
-    return document.createRange().createContextualFragment(text);
-  }
-
-  function insertActions(fragment, target) {
-    return {
-      after() {
-        var _target$parentElement;
-
-        target === null || target === void 0 ? void 0 : (_target$parentElement = target.parentElement) === null || _target$parentElement === void 0 ? void 0 : _target$parentElement.insertBefore(fragment, target.nextSibling);
-      },
-
-      append() {
-        target === null || target === void 0 ? void 0 : target.append(fragment);
-      },
-
-      before() {
-        var _target$parentElement2;
-
-        target === null || target === void 0 ? void 0 : (_target$parentElement2 = target.parentElement) === null || _target$parentElement2 === void 0 ? void 0 : _target$parentElement2.insertBefore(fragment, target);
-      },
-
-      prepend() {
-        target === null || target === void 0 ? void 0 : target.prepend(fragment);
-      },
-
-      replace() {
-        if ((target === null || target === void 0 ? void 0 : target.tagName) === 'BODY') {
-          return insertActions(fragment, target).update();
-        }
-
-        target === null || target === void 0 ? void 0 : target.replaceWith(fragment);
-      },
-
-      update() {
-        if (target) {
-          target.innerHTML = '';
-          target.append(fragment);
-        }
-      }
-
-    };
+  function htmlToFragment(html) {
+    return document.createRange().createContextualFragment(html);
   }
 
   document.addEventListener('alpine:initializing', () => {

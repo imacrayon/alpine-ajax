@@ -41,4 +41,4 @@ function injectHtmlAndBootAlpine(cy, templateAndPotentiallyScripts, callback, pa
   })
 }
 
-export let isSuccess = (name = '@response') => cy.wait(name).its('response.statusCode').should('eq', 200)
+export let expectSuccessResponse = (name = '@response') => cy.wait(name).its('response.statusCode').should('eq', 200)
