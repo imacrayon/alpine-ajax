@@ -11,7 +11,7 @@ Here's a simple example:
 ```
 When this form is submitted a page refresh will not occur. Instead, the response will be fetched in the background and the form will be swapped out with the element that has `id="star-repo-form"` in the response.
 
-It's important to note that the `id` attribute is required on the element that will be replaced.
+It's important to note that an `id` attribute is required on the element that will be replaced.
 
 ## Installation
 
@@ -50,7 +50,7 @@ On submit the server should respond with markup similar to this:
   <li>Comment #2</li>
 </ul>
 
-The markup will replace the old `#comments` list.
+This markup will replace the old `#comments` list.
 -->
 
 ```
@@ -69,7 +69,7 @@ You may show a `confirm()` dialog before an AJAX request is made. If the dialog 
 
 When the `x-ajax` directive is added to an element that is not an internal link or form, all child links and forms will issue AJAX requests.
 
-You can disable AJAX behavior for element using the `ajax-ignore` attribute.
+You can stop AJAX behavior on an element using the `ajax-ignore` attribute.
 
 ```html
 <!-- The "tabs" container will be replaced when the "Link 1" link is clicked. The "Link 2" and "Link 3" links will trigger a full page reload. -->
@@ -85,7 +85,7 @@ You can disable AJAX behavior for element using the `ajax-ignore` attribute.
 
 ## Events
 
-When an AJAX request is triggered it emits a few events which you can hook into.
+When an AJAX request is triggered it emits a few event hooks:
 
 Event Name | Description
 ---|---
@@ -119,7 +119,7 @@ When clicking the `User #1` link the server should respond with markup similar t
   ...
 </div>
 
-The markup will be inserted into the now visible modal.
+This markup will be inserted into the now visible modal.
 -->
 
 ```
