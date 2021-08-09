@@ -4,12 +4,7 @@ export default function (Alpine) {
   Alpine.addRootSelector(() => '[x-ajax]')
 
   Alpine.directive('ajax', (el, { expression }, { cleanup }) => {
-    let target = expression ? document.getElementById(expression) : el
-    if (! target?.id) {
-      throw Error('You must specify an AJAX target with an ID.')
-    }
-
-    let listeners = (['click', 'submit']).map(event => listenForAjaxEvent(el, event, target))
+    let listeners = (['click', 'submit']).map(event => listenForAjaxEvent(el, event, expression))
 
     cleanup(() => {
       listeners.forEach(remove => remove())
@@ -17,11 +12,15 @@ export default function (Alpine) {
   })
 }
 
-function listenForAjaxEvent(el, name, target) {
+function listenForAjaxEvent(el, name, targetId) {
   let handler = event => {
     let source = getSourceElement(event.target, name)
     if (! isValidSourceElement(source)) return
     event.preventDefault()
+    let target = targetId ? document.getElementById(targetId) : el
+    if (! target?.id) {
+      throw Error('You must specify an AJAX target with an ID.')
+    }
     makeAjaxRequest(source, target)
   }
 
