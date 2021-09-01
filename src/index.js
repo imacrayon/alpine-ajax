@@ -16,6 +16,7 @@ function listenForAjaxEvent(el, name) {
   let handler = event => {
     let source = getSourceElement(event.target, name)
     if (! isValidSourceElement(source)) return
+    event.stopPropagation()
     event.preventDefault()
     let targetId = el.getAttribute('x-ajax')
     let target = targetId ? document.getElementById(targetId) : el
