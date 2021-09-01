@@ -26,7 +26,6 @@ export function request(method, url, data, options) {
     xhr.overrideMimeType('text/html')
 
     let headers = Object.assign({
-      'X-Requested-With': 'XMLHttpRequest',
       'X-Alpine-Request': 'true',
     }, options.headers)
 
