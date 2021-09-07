@@ -1,4 +1,5 @@
 import { request } from './utils/request'
+import './utils/submitter-polyfill'
 
 export default function (Alpine) {
   Alpine.addRootSelector(() => '[x-ajax]')
@@ -23,7 +24,7 @@ function listenForAjaxEvent(el, name) {
     if (! target?.id) {
       throw Error('You must specify an AJAX target with an ID.')
     }
-    makeAjaxRequest(source, target)
+    makeAjaxRequest(source, target, event)
   }
 
   el.addEventListener(name, handler)
@@ -49,13 +50,13 @@ function isValidSourceElement(el) {
   return el.tagName === 'FORM' ? true : isLocalLink(el);
 }
 
-async function makeAjaxRequest(el, target) {
+async function makeAjaxRequest(el, target, event) {
   if (el.hasAttribute('ajax-confirm') && !confirm(el.getAttribute('ajax-confirm'))) return;
 
   dispatch(el, 'ajax:before')
 
   try {
-    let fragment = await requestFragment(requestOptionsFromElement(el))
+    let fragment = await requestFragment(requestOptions(el, event))
 
     target.replaceWith(fragment?.getElementById(target.id) ?? '')
     dispatch(el, 'ajax:success')
@@ -77,15 +78,20 @@ function dispatch(el, name, detail = {}) {
   )
 }
 
-function requestOptionsFromElement(el) {
+function requestOptions(el, event) {
   let defaults = {
     action: window.location.href,
     method: 'GET',
   }
 
+  let data = el.tagName === 'FORM' ? new FormData(el) : new FormData()
+  if (event.submitter?.name) {
+    data.append(event.submitter.name, event.submitter.value)
+  }
+
   return {
+    data,
     action: el.getAttribute(isLocalLink(el) ? 'href' : 'action') || defaults.action,
-    data: el.tagName === 'FORM' ? new FormData(el) : new FormData(),
     method: (el.getAttribute('method') || defaults.method).toUpperCase(),
   }
 }
