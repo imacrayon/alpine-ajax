@@ -19,12 +19,18 @@ function listenForAjaxEvent(el, name) {
     if (! isValidSourceElement(source)) return
     event.stopPropagation()
     event.preventDefault()
-    let targetId = el.getAttribute('x-ajax')
-    let target = targetId ? document.getElementById(targetId) : el
-    if (! target?.id) {
-      throw Error('You must specify an AJAX target with an ID.')
-    }
-    makeAjaxRequest(source, target, event)
+    let ids = el.getAttribute('x-ajax')
+    ids = ids ? ids.split(',') : [el.id]
+    let targets = ids.map(id => {
+      let element = document.getElementById(id)
+      if (! element) {
+        throw Error('Target with ID `' + id + '` not found.')
+      }
+
+      return element
+    })
+
+    makeAjaxRequest(source, targets, event)
   }
 
   el.addEventListener(name, handler)
@@ -50,15 +56,14 @@ function isValidSourceElement(el) {
   return el.tagName === 'FORM' ? true : isLocalLink(el);
 }
 
-async function makeAjaxRequest(el, target, event) {
+async function makeAjaxRequest(el, targets, event) {
   if (el.hasAttribute('ajax-confirm') && !confirm(el.getAttribute('ajax-confirm'))) return;
 
   dispatch(el, 'ajax:before')
 
   try {
     let fragment = await requestFragment(requestOptions(el, event))
-
-    target.replaceWith(fragment?.getElementById(target.id) ?? '')
+    targets.forEach(target => target.replaceWith(fragment?.getElementById(target.id) ?? ''))
     dispatch(el, 'ajax:success')
   } catch (error) {
     dispatch(el, 'ajax:error', error)
