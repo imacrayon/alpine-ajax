@@ -33,7 +33,6 @@
       xhr.open(method, url);
       xhr.overrideMimeType('text/html');
       let headers = Object.assign({
-        'X-Requested-With': 'XMLHttpRequest',
         'X-Alpine-Request': 'true'
       }, options.headers);
 
@@ -65,32 +64,64 @@
     });
   }
 
-  function ajax (Alpine) {
-    Alpine.addRootSelector(() => '[x-ajax]');
-    Alpine.directive('ajax', (el, {
-      expression
-    }, {
-      cleanup
-    }) => {
-      let target = expression ? document.getElementById(expression) : el;
+  /*
+   * SubmitEvent API Submitter Polyfill
+   * https://stackoverflow.com/a/61110260
+   */
+  !function () {
+    var lastBtn = null;
+    document.addEventListener('click', function (e) {
+      if (!e.target.closest) return;
+      lastBtn = e.target.closest('button, input[type=submit]');
+    }, true);
+    document.addEventListener('submit', function (e) {
+      if ('submitter' in e) return;
+      var canditates = [document.activeElement, lastBtn];
+      lastBtn = null;
 
-      if (!(target !== null && target !== void 0 && target.id)) {
-        throw Error('You must specify an AJAX target with an ID.');
+      for (var i = 0; i < canditates.length; i++) {
+        var candidate = canditates[i];
+        if (!candidate) continue;
+        if (!candidate.form) continue;
+        if (!candidate.matches('button, input[type=button], input[type=image]')) continue;
+        e.submitter = candidate;
+        return;
       }
 
-      let listeners = ['click', 'submit'].map(event => listenForAjaxEvent(el, event, target));
+      e.submitter = e.target.querySelector('button, input[type=button], input[type=image]');
+    }, true);
+  }();
+
+  function ajax (Alpine) {
+    Alpine.addRootSelector(() => '[x-ajax]');
+    Alpine.directive('ajax', (el, values, {
+      cleanup
+    }) => {
+      let listeners = ['click', 'submit'].map(event => listenForAjaxEvent(el, event));
       cleanup(() => {
         listeners.forEach(remove => remove());
       });
     });
   }
 
-  function listenForAjaxEvent(el, name, target) {
+  function listenForAjaxEvent(el, name) {
     let handler = event => {
       let source = getSourceElement(event.target, name);
       if (!isValidSourceElement(source)) return;
+      event.stopPropagation();
       event.preventDefault();
-      makeAjaxRequest(source, target);
+      let ids = el.getAttribute('x-ajax');
+      ids = ids ? ids.split(',') : [el.id];
+      let targets = ids.map(id => {
+        let element = document.getElementById(id);
+
+        if (!element) {
+          throw Error('Target with ID `' + id + '` not found.');
+        }
+
+        return element;
+      });
+      makeAjaxRequest(source, targets, event);
     };
 
     el.addEventListener(name, handler);
@@ -114,13 +145,13 @@
     return el.tagName === 'FORM' ? true : isLocalLink(el);
   }
 
-  async function makeAjaxRequest(el, target) {
+  async function makeAjaxRequest(el, targets, event) {
     if (el.hasAttribute('ajax-confirm') && !confirm(el.getAttribute('ajax-confirm'))) return;
     dispatch(el, 'ajax:before');
 
     try {
-      let fragment = await requestFragment(requestOptionsFromElement(el));
-      target.replaceWith((fragment === null || fragment === void 0 ? void 0 : fragment.getElementById(target.id)) ?? '');
+      let fragment = await requestFragment(requestOptions(el, event));
+      targets.forEach(target => target.replaceWith((fragment === null || fragment === void 0 ? void 0 : fragment.getElementById(target.id)) ?? ''));
       dispatch(el, 'ajax:success');
     } catch (error) {
       dispatch(el, 'ajax:error', error);
@@ -138,14 +169,22 @@
     }));
   }
 
-  function requestOptionsFromElement(el) {
+  function requestOptions(el, event) {
+    var _event$submitter;
+
     let defaults = {
       action: window.location.href,
       method: 'GET'
     };
+    let data = el.tagName === 'FORM' ? new FormData(el) : new FormData();
+
+    if ((_event$submitter = event.submitter) !== null && _event$submitter !== void 0 && _event$submitter.name) {
+      data.append(event.submitter.name, event.submitter.value);
+    }
+
     return {
+      data,
       action: el.getAttribute(isLocalLink(el) ? 'href' : 'action') || defaults.action,
-      data: el.tagName === 'FORM' ? new FormData(el) : new FormData(),
       method: (el.getAttribute('method') || defaults.method).toUpperCase()
     };
   }

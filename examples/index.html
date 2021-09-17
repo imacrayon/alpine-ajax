@@ -5,11 +5,11 @@
 </head>
 <body>
 
-  <form x-ajax="{ target: '#replace-me', confirm: 'This cool?', 'insert': 'replace' }" action="partial.html">
+  <form x-ajax="replace-me" action="/examples/partial.html">
     <button>Submit</button>
   </form>
 
-  <div id="replace-me">Replace Me</div>
+  <h1 id="replace-me">Replace Me</h1>
 
   <script src="../dist/alpine-ajax.js"></script>
 </body>
