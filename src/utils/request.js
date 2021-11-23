@@ -7,7 +7,7 @@ export function request(method, url, data, options) {
       let splitUrl = url.split('#')
       let anchor = splitUrl[1]
       url = splitUrl[0]
-      if (url.includes('?')) {
+      if (! url.includes('?')) {
           url += '?'
       } else {
           url += '&'
