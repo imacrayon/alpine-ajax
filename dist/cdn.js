@@ -1,1 +1,216 @@
-!function(t){"function"==typeof define&&define.amd?define(t):t()}((function(){"use strict";var t;function e(t){t.addRootSelector((()=>"[x-ajax]")),t.directive("ajax",((t,e,{cleanup:a})=>{let i=["click","submit"].map((e=>function(t,e){let a=a=>{let i=function(t,e){let n={submit:"FORM",click:"A"};return t.closest(n[e])}(a.target,e);if(!function(t){if(!t)return!1;return!t.closest("[x-ajax],[ajax-ignore]").hasAttribute("ajax-ignore")&&("FORM"===t.tagName||r(t))}(i))return;a.stopPropagation(),a.preventDefault();let o=t.getAttribute("x-ajax");o=o?o.split(","):[t.id],async function(t,e,a){if(t.hasAttribute("ajax-confirm")&&!confirm(t.getAttribute("ajax-confirm")))return;n(t,"ajax:before");try{let i=await async function(t){let e="";try{e=await function(t,e,n,r){if("GET"===t){let t=Array.from(n.entries()).filter((([t,e])=>""!==e||null!==e));if(t.length){let n=e.split("#"),r=n[1];(e=n[0]).includes("?")?e+="?":e+="&",e+=new URLSearchParams(t),r&&(e+="#"+r)}n=null}return new Promise(((a,i)=>{let o=new XMLHttpRequest;o.open(t,e),o.overrideMimeType("text/html");let u=Object.assign({"X-Alpine-Request":"true"},r.headers);for(const[t,e]of Object.entries(u))o.setRequestHeader(t,e);r.progress&&o.upload&&o.upload.addEventListener("progress",r.progress);let s={xhr:o,url:e,data:n,options:r};o.onload=function(){if(this.status>=200&&this.status<400)return a(o.response);i(s)},o.onerror=function(){i(s)},o.send(n)}))}(t.method,t.action,t.data,t)}catch(e){throw Error(e.xhr.statusText)}return n=e,document.createRange().createContextualFragment(n);var n}(function(t,e){var n;let a={action:window.location.href,method:"GET"},i="FORM"===t.tagName?new FormData(t):new FormData;null!==(n=e.submitter)&&void 0!==n&&n.name&&i.append(e.submitter.name,e.submitter.value);return{data:i,action:t.getAttribute(r(t)?"href":"action")||a.action,method:(t.getAttribute("method")||a.method).toUpperCase()}}(t,a));e.forEach((t=>t.replaceWith((null==i?void 0:i.getElementById(t.id))??""))),n(t,"ajax:success")}catch(e){n(t,"ajax:error",e)}n(t,"ajax:after")}(i,o.map((t=>{let e=document.getElementById(t);if(!e)throw Error("Target with ID `"+t+"` not found.");return e})),a)};return t.addEventListener(e,a),()=>{t.removeEventListener(e,a)}}(t,e)));a((()=>{i.forEach((t=>t()))}))}))}function n(t,e,n={}){t.dispatchEvent(new CustomEvent(e,{detail:n,bubbles:!0,composed:!0,cancelable:!0}))}function r(t){return"A"===t.tagName&&location.hostname===t.hostname&&t.getAttribute("href")&&0!==t.getAttribute("href").indexOf("#")}t=null,document.addEventListener("click",(function(e){e.target.closest&&(t=e.target.closest("button, input[type=submit]"))}),!0),document.addEventListener("submit",(function(e){if(!("submitter"in e)){var n=[document.activeElement,t];t=null;for(var r=0;r<n.length;r++){var a=n[r];if(a&&a.form&&a.matches("button, input[type=button], input[type=image]"))return void(e.submitter=a)}e.submitter=e.target.querySelector("button, input[type=button], input[type=image]")}}),!0),document.addEventListener("alpine:initializing",(()=>{e(window.Alpine)}))}));
+(function (factory) {
+  typeof define === 'function' && define.amd ? define(factory) :
+  factory();
+}((function () { 'use strict';
+
+  function request(method, url, data, options) {
+    if (method === 'GET') {
+      let params = Array.from(data.entries()).filter(([key, value]) => value !== '' || value !== null);
+
+      if (params.length) {
+        let splitUrl = url.split('#');
+        let anchor = splitUrl[1];
+        url = splitUrl[0];
+
+        if (url.includes('?')) {
+          url += '?';
+        } else {
+          url += '&';
+        }
+
+        url += new URLSearchParams(params);
+
+        if (anchor) {
+          url += '#' + anchor;
+        }
+      }
+
+      data = null;
+    }
+
+    return new Promise((resolve, reject) => {
+      let xhr = new XMLHttpRequest();
+      xhr.open(method, url);
+      xhr.overrideMimeType('text/html');
+      let headers = Object.assign({
+        'X-Alpine-Request': 'true'
+      }, options.headers);
+
+      for (const [key, value] of Object.entries(headers)) {
+        xhr.setRequestHeader(key, value);
+      }
+
+      if (options.progress && xhr.upload) {
+        xhr.upload.addEventListener('progress', options.progress);
+      }
+
+      let info = {
+        xhr,
+        url,
+        data,
+        options
+      };
+
+      xhr.onload = function () {
+        if (this.status >= 200 && this.status < 400) return resolve(xhr.response);
+        reject(info);
+      };
+
+      xhr.onerror = function () {
+        reject(info);
+      };
+
+      xhr.send(data);
+    });
+  }
+
+  /*
+   * SubmitEvent API Submitter Polyfill
+   * https://stackoverflow.com/a/61110260
+   */
+  !function () {
+    var lastBtn = null;
+    document.addEventListener('click', function (e) {
+      if (!e.target.closest) return;
+      lastBtn = e.target.closest('button, input[type=submit]');
+    }, true);
+    document.addEventListener('submit', function (e) {
+      if ('submitter' in e) return;
+      var canditates = [document.activeElement, lastBtn];
+      lastBtn = null;
+
+      for (var i = 0; i < canditates.length; i++) {
+        var candidate = canditates[i];
+        if (!candidate) continue;
+        if (!candidate.form) continue;
+        if (!candidate.matches('button, input[type=button], input[type=image]')) continue;
+        e.submitter = candidate;
+        return;
+      }
+
+      e.submitter = e.target.querySelector('button, input[type=button], input[type=image]');
+    }, true);
+  }();
+
+  function ajax (Alpine) {
+    Alpine.addRootSelector(() => '[x-ajax]');
+    Alpine.directive('ajax', (el, values, {
+      cleanup
+    }) => {
+      let listeners = ['click', 'submit'].map(event => listenForAjaxEvent(el, event));
+      cleanup(() => {
+        listeners.forEach(remove => remove());
+      });
+    });
+  }
+
+  function listenForAjaxEvent(el, name) {
+    let handler = event => {
+      let source = getSourceElement(event.target, name);
+      if (!isValidSourceElement(source)) return;
+      event.stopPropagation();
+      event.preventDefault();
+      let ids = el.getAttribute('x-ajax');
+      ids = ids ? ids.split(',') : [el.id];
+      let targets = ids.map(id => {
+        let element = document.getElementById(id);
+
+        if (!element) {
+          throw Error('Target with ID `' + id + '` not found.');
+        }
+
+        return element;
+      });
+      makeAjaxRequest(source, targets, event);
+    };
+
+    el.addEventListener(name, handler);
+    return () => {
+      el.removeEventListener(name, handler);
+    };
+  }
+
+  function getSourceElement(trigger, event) {
+    let validTag = {
+      submit: 'FORM',
+      click: 'A'
+    };
+    return trigger.closest(validTag[event]);
+  }
+
+  function isValidSourceElement(el) {
+    if (!el) return false;
+    let root = el.closest('[x-ajax],[ajax-ignore]');
+    if (root.hasAttribute('ajax-ignore')) return false;
+    return el.tagName === 'FORM' ? true : isLocalLink(el);
+  }
+
+  async function makeAjaxRequest(el, targets, event) {
+    if (el.hasAttribute('ajax-confirm') && !confirm(el.getAttribute('ajax-confirm'))) return;
+    dispatch(el, 'ajax:before');
+
+    try {
+      let fragment = await requestFragment(requestOptions(el, event));
+      targets.forEach(target => target.replaceWith((fragment === null || fragment === void 0 ? void 0 : fragment.getElementById(target.id)) ?? ''));
+      dispatch(el, 'ajax:success');
+    } catch (error) {
+      dispatch(el, 'ajax:error', error);
+    }
+
+    dispatch(el, 'ajax:after');
+  }
+
+  function dispatch(el, name, detail = {}) {
+    el.dispatchEvent(new CustomEvent(name, {
+      detail,
+      bubbles: true,
+      composed: true,
+      cancelable: true
+    }));
+  }
+
+  function requestOptions(el, event) {
+    var _event$submitter;
+
+    let defaults = {
+      action: window.location.href,
+      method: 'GET'
+    };
+    let data = el.tagName === 'FORM' ? new FormData(el) : new FormData();
+
+    if ((_event$submitter = event.submitter) !== null && _event$submitter !== void 0 && _event$submitter.name) {
+      data.append(event.submitter.name, event.submitter.value);
+    }
+
+    return {
+      data,
+      action: el.getAttribute(isLocalLink(el) ? 'href' : 'action') || defaults.action,
+      method: (el.getAttribute('method') || defaults.method).toUpperCase()
+    };
+  }
+
+  function isLocalLink(el) {
+    return el.tagName === 'A' && location.hostname === el.hostname && el.getAttribute('href') && el.getAttribute('href').indexOf("#") !== 0;
+  }
+
+  async function requestFragment(options) {
+    let response = '';
+
+    try {
+      response = await request(options.method, options.action, options.data, options);
+    } catch (response) {
+      throw Error(response.xhr.statusText);
+    }
+
+    return htmlToFragment(response);
+  }
+
+  function htmlToFragment(html) {
+    return document.createRange().createContextualFragment(html);
+  }
+
+  document.addEventListener('alpine:initializing', () => {
+    ajax(window.Alpine);
+  });
+
+})));
