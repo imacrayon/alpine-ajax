@@ -12,7 +12,7 @@
         let anchor = splitUrl[1];
         url = splitUrl[0];
 
-        if (url.includes('?')) {
+        if (!url.includes('?')) {
           url += '?';
         } else {
           url += '&';
