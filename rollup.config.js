@@ -3,14 +3,13 @@ import filesize from 'rollup-plugin-filesize'
 import resolve from 'rollup-plugin-node-resolve'
 import { terser } from 'rollup-plugin-terser';
 
-export default {
+const config = {
   input: 'builds/cdn.js',
   output: [
     {
       name: 'AlpineAJAX',
       file: 'dist/cdn.js',
       format: 'umd',
-      sourcemap: true
     }
   ],
   plugins: [
@@ -30,6 +29,11 @@ export default {
         ]
       ]
     }),
-    terser()
   ]
 }
+
+if (process.env.NODE_ENV === 'production') {
+  config.plugins.push(terser());
+}
+
+export default config
