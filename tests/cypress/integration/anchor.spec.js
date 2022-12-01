@@ -1,7 +1,7 @@
 import { test, html } from '../utils'
 
 test('makes GET requests for anchor',
-    html`<a href="/" x-ajax id="replace">Click Me</a>`,
+    html`<a href="/" x-data x-ajax id="replace">Click Me</a>`,
     ({ get }) => {
       cy.intercept('GET', '/', {
         statusCode: 200,
@@ -16,7 +16,7 @@ test('makes GET requests for anchor',
 )
 
 test('request URL is determined by anchor href',
-    html`<a href="other.html" x-ajax id="replace">Click Me</a>`,
+    html`<a href="other.html" x-data x-ajax id="replace">Click Me</a>`,
     ({ get }) => {
       cy.intercept('GET', 'other.html', {
         statusCode: 200,
@@ -30,8 +30,8 @@ test('request URL is determined by anchor href',
     }
 )
 
-test('replaced target can be changed',
-    html`<div id="replace"></div><a href="/" x-ajax="replace">Click Me</a>`,
+test('target can be set in attribute',
+    html`<div id="replace"></div><a href="/" x-data x-ajax="replace">Click Me</a>`,
     ({ get }) => {
       cy.intercept('GET', '/', {
         statusCode: 200,
@@ -47,7 +47,7 @@ test('replaced target can be changed',
 )
 
 test('AJAX behavior is inherited by parent element',
-    html`<div x-ajax id="replace"><a href="/">Click Me</a></div>`,
+    html`<div x-data x-ajax id="replace"><a href="/">Click Me</a></div>`,
     ({ get }) => {
       cy.intercept('GET', '/', {
         statusCode: 200,
@@ -61,8 +61,8 @@ test('AJAX behavior is inherited by parent element',
     }
 )
 
-test('AJAX behavior is ignored with ajax-ignore',
-    html`<div x-ajax id="replace"><a ajax-ignore id="link" href="/">Click Me</a></div>`,
+test('AJAX behavior is ignored with noajax',
+    html`<div x-data x-ajax id="replace"><a noajax id="link" href="/">Click Me</a></div>`,
     ({ get }) => {
       cy.intercept('GET', '/', {
         statusCode: 200,

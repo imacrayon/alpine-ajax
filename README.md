@@ -1,17 +1,20 @@
-# Alpine AJAX
+# Alpine AJAX Plugin
 
-The `x-ajax` directive allows forms and internal links to make asynchronous HTTP requests and render the response to the page.
+The Alpine AJAX plugin allows forms and internal links to make asynchronous HTTP requests and render the response to the page.
 
-Here's a simple example:
+This is useful for creating dynamic interfaces that can submit forms or display remote content without a full page reload.
+
+Here's a simple example with an explaination below:
 
 ```html
-<form x-ajax id="star-repo-form" method="post" action="/repos/1/star">
+<form x-data x-ajax id="star-repo" method="post" action="/repos/1/star">
   <button>Star Repo</button>
 </form>
 ```
-When this form is submitted a page refresh will not occur. Instead, the response will be fetched in the background and the form will be swapped out with the element that has `id="star-repo-form"` in the response.
 
-It's important to note that an `id` attribute is required on the element that will be replaced.
+When the `star-repo` form is submitted, the page will not reload. Instead, the form's response will be fetched in the background and the form will be swapped out with an element that has `id="star-repo"` in the response. Alpine component state and keyboard focus are preserved when content changes.
+
+**It's important to note that an `id` is required on the form so that it can be located in the HTML response.**
 
 ## Installation
 
@@ -23,21 +26,20 @@ npm i @imacrayon/alpine-ajax
 import Alpine from 'alpinejs'
 import ajax from '@imacrayon/alpine-ajax'
 
+window.Alpine = Alpine
 Alpine.plugin(ajax)
 ```
 
-## Configuration
+## Change the Replaced Target
 
-### Change the Replaced Target
-
-By default, the element with `x-ajax` will be replaced with the response. You can use another element instead by specifying its `id`.
+By default, the element with `x-ajax` will be replaced with the new HTML. However, you may replace a different element by specifying its `id`.
 
 ```html
 <!-- The "comments" container will be replaced when this form is submitted. -->
 <ul id="comments">
   <li>Comment #1</li>
 </ul>
-<form x-ajax="comments" method="post" action="/post-comment">
+<form x-data x-ajax="comments" method="post" action="/post-comment">
   <input type="text" name="comment" required />
   <button>Post Comment</button>
 </form>
@@ -52,32 +54,46 @@ On submit the server should respond with markup similar to this:
 
 This markup will replace the old `#comments` list.
 -->
-
 ```
 
-### Require Confirmation
-
-You may show a `confirm()` dialog before an AJAX request is made. If the dialog is canceled the request will not be issued.
+You can even replace multiple elements from the same request by seperating `id`s with a space.
 
 ```html
-<form x-ajax ajax-confirm="Are you sure?" id="delete-comment-form" method="delete" action="/delete-comment">
-  <button>Delete Comment</button>
+<p id="comment-count">1</p>
+<ul id="comments">
+  <li>Comment #1</li>
+</ul>
+<form x-data x-ajax="comments comment-count" method="post" action="/post-comment">
+  <input type="text" name="comment" required />
+  <button>Post Comment</button>
 </form>
+
+<!--
+On submit the server should respond with markup similar to this:
+
+<p id="comment-count">2</p>
+<ul id="comments">
+  <li>Comment #1</li>
+  <li>Comment #2</li>
+</ul>
+
+This markup will replace both the old `#comments` list and the `#comment-count` element.
+-->
 ```
 
-### Add AJAX Behavior to a Group of Elements
+## Add AJAX Behavior to a Group of Elements
 
-When the `x-ajax` directive is added to an element that is not an internal link or form, all child links and forms will issue AJAX requests.
+All descentant links and forms of an `x-ajax` component will issue AJAX requests.
 
-You can stop AJAX behavior on an element using the `ajax-ignore` attribute.
+You can stop AJAX behavior on any element by adding the `noajax` attribute.
 
 ```html
-<!-- The "tabs" container will be replaced when the "Link 1" link is clicked. The "Link 2" and "Link 3" links will trigger a full page reload. -->
-<div x-ajax id="tabs">
+<!-- The "tabs" container will be replaced when the "Tab 1" link is clicked. The "Tab 2" and "Tab 3" links will trigger a full page reload because "Tab 2" has the `noajax` attribute and "Tab 3" is an external URL. -->
+<div x-data x-ajax id="tabs">
   <ul>
-    <li><a href="/link1">Link 1</a></li>
-    <li><a ajax-ignore href="/link2">Link 2</a></li>
-    <li><a href="https://twitter.com/vampirebiues/status/1248738179232006146">Link 3</a></li>
+    <li><a href="/tab-1">Tab 1</a></li>
+    <li><a noajax href="/tab-2">Tab 2</a></li>
+    <li><a href="https://twitter.com/vampirebiues/status/1248738179232006146">Tab 3</a></li>
   </ul>
   <div>...</div>
 </div>
@@ -85,43 +101,29 @@ You can stop AJAX behavior on an element using the `ajax-ignore` attribute.
 
 ## Events
 
-When an AJAX request is triggered it emits a few event hooks:
+You can listen for AJAX events to perform additional actions during an AJAX request:
 
 Event Name | Description
 ---|---
-ajax:before | Fired before the request is made.
-ajax:success | Fired on a successful request.
-ajax:error | Fired when a non 200 status code is received.
+ajax:before | Fired before the request is made. If this event is cancelled using `$event.preventDefault()` the request will be aborted.
+ajax:success | Fired when a network request completes. `detail` contains the server response data.
+ajax:error | Fired on a configuration or network error. `detail` contains the error data.
 ajax:after | Fired after both successful and unsuccessful requests.
 
-Here's an example of loading remote content into a model using the `ajax:before` event:
+Here's an example of aborting a form request when the user cancels a dialog prompt:
 
 ```html
-<!-- The open/close state of the modal is kept in an Alpine store named `userModal` -->
-<script>Alpine.store('userModal', false)</script>
+<form id="delete-user" x-data x-ajax @ajax:before="confirm('Are you sure?') || $event.preventDefault()">
+  <button>Delete User</button>
+</form>
+```
 
-<ul x-ajax="user-info" @ajax:before="$store.userModal = true">
-  <a href="/users/1">User #1</a>
-  <a href="/users/2">User #2</a>
-  <a href="/users/3">User #3</a>
-</ul>
+Here's an example of handling a failed network request:
 
-<div x-data x-show="$store.userModal">
-  <div id="user-info">Loading...</div>
-  <button @click="$store.userModal = false">Close Modal</button>
-</div>
-
-<!--
-When clicking the `User #1` link the server should respond with markup similar to this:
-
-<div id="user-info">
-  <h1>User #1</h1>
-  ...
-</div>
-
-This markup will be inserted into the now visible modal.
--->
-
+```html
+<form id="delete-user" x-data x-ajax @ajax:error="alert('Check your network connection and try again.')">
+  <button>Delete User</button>
+</form>
 ```
 
 ## Prior Art

@@ -1,79 +1,109 @@
-import { request } from './utils/request'
 import './utils/submitter-polyfill'
+import { morph } from '@alpinejs/morph/src/morph'
 
 export default function (Alpine) {
-  Alpine.addRootSelector(() => '[x-ajax]')
+  Alpine.directive('ajax', (el, { expression }, { cleanup }) => {
+    let targets = expression.split(' ').filter(id => id)
+    if (targets.length === 0) {
+      targets = [el.id]
+    }
 
-  Alpine.directive('ajax', (el, values, { cleanup }) => {
-    let listeners = (['click', 'submit']).map(event => listenForAjaxEvent(el, event))
+    let stopListeningForSubmit = listenForSubmit(el, targets)
+    let stopListeningForClick = listenForClick(el, targets)
 
     cleanup(() => {
-      listeners.forEach(remove => remove())
+      stopListeningForSubmit()
+      stopListeningForClick()
     })
   })
 }
 
-function listenForAjaxEvent(el, name) {
-  let handler = event => {
-    let source = getSourceElement(event.target, name)
-    if (! isValidSourceElement(source)) return
-    event.stopPropagation()
+function listenForSubmit(el, targets) {
+  let handler = async event => {
+    let form = event.target
+    if (form.hasAttribute('noajax')) return
     event.preventDefault()
-    let ids = el.getAttribute('x-ajax')
-    ids = ids ? ids.split(',') : [el.id]
-    let targets = ids.map(id => {
-      let element = document.getElementById(id)
-      if (! element) {
-        throw Error('Target with ID `' + id + '` not found.')
+    event.stopPropagation()
+    let method = (form.getAttribute('method') || 'GET').toUpperCase()
+    let action = form.getAttribute('action') || window.location.href
+    let body = new FormData(form)
+    if (event?.submitter?.name) {
+      body.append(submitter.name, submitter.value)
+    }
+    let html = await makeRequest(form, method, action, body)
+    if (html === false) return
+    replaceTargets(targets, html)
+  }
+
+  el.addEventListener('submit', handler)
+
+  return () => el.removeEventListener('submit', handler)
+}
+
+function listenForClick(el, targets) {
+  let handler = async event => {
+    let link = event.target
+    if (! isLocalLink(link) || link.hasAttribute('noajax')) return
+    event.preventDefault()
+    event.stopPropagation()
+    let action = link.getAttribute('href')
+    let html = await makeRequest(link, 'GET', action, null)
+    if (html === false) return
+    replaceTargets(targets, html)
+  }
+
+  el.addEventListener('click', handler)
+
+  return () => el.removeEventListener('click', handler)
+}
+
+
+function isLocalLink(el) {
+  return el.tagName === 'A' &&
+    el.getAttribute('href') &&
+    el.getAttribute('href').indexOf("#") !== 0 &&
+    el.hostname === location.hostname
+}
+
+async function makeRequest(el, method, action, body) {
+  if (! dispatch(el, 'ajax:before')) {
+    return false
+  }
+  if (method === 'GET' && body) {
+    let params = Array.from(body.entries()).filter(([key, value]) => value !== '' || value !== null)
+    if (params.length) {
+      let parts = action.split('#')
+      action = parts[0]
+      if (! action.includes('?')) {
+        action += '?'
+      } else {
+        action += '&'
       }
+      action += new URLSearchParams(params)
+      let hash = parts[1]
+      if (hash) {
+          action += '#' + hash
+      }
+    }
+    body = null
+  }
 
-      return element
+  return await fetch(action, { method, body })
+    .then(response => {
+      dispatch(el, 'ajax:success', response)
+      dispatch(el, 'ajax:after', response)
+      return response.text()
     })
-
-    makeAjaxRequest(source, targets, event)
-  }
-
-  el.addEventListener(name, handler)
-
-  return () => {
-    el.removeEventListener(name, handler)
-  }
+    .catch(error => {
+      dispatch(el, 'ajax:error', error)
+      dispatch(el, 'ajax:after', error)
+      return false
+    })
 }
 
-function getSourceElement(trigger, event) {
-  let validTag = {
-    submit: 'FORM',
-    click: 'A',
-  }
-
-  return trigger.closest(validTag[event])
-}
-
-function isValidSourceElement(el) {
-  if (! el) return false
-  let root = el.closest('[x-ajax],[ajax-ignore]')
-  if (root.hasAttribute('ajax-ignore')) return false
-  return el.tagName === 'FORM' ? true : isLocalLink(el);
-}
-
-async function makeAjaxRequest(el, targets, event) {
-  if (el.hasAttribute('ajax-confirm') && !confirm(el.getAttribute('ajax-confirm'))) return;
-
-  dispatch(el, 'ajax:before')
-
-  try {
-    let fragment = await requestFragment(requestOptions(el, event))
-    targets.forEach(target => target.replaceWith(fragment?.getElementById(target.id) ?? ''))
-    dispatch(el, 'ajax:success')
-  } catch (error) {
-    dispatch(el, 'ajax:error', error)
-  }
-
-  dispatch(el, 'ajax:after')
-}
 
 function dispatch(el, name, detail = {}) {
-  el.dispatchEvent(
+  return el.dispatchEvent(
       new CustomEvent(name, {
           detail,
           bubbles: true,
@@ -83,42 +113,24 @@ function dispatch(el, name, detail = {}) {
   )
 }
 
-function requestOptions(el, event) {
-  let defaults = {
-    action: window.location.href,
-    method: 'GET',
+function replaceTargets(targets, html) {
+  let fragment = htmlToFragment(html)
+  let activeElement = document.activeElement
+  targets.forEach(id => morphTarget(id, fragment))
+  if (activeElement) {
+    activeElement.focus()
   }
-
-  let data = el.tagName === 'FORM' ? new FormData(el) : new FormData()
-  if (event.submitter?.name) {
-    data.append(event.submitter.name, event.submitter.value)
-  }
-
-  return {
-    data,
-    action: el.getAttribute(isLocalLink(el) ? 'href' : 'action') || defaults.action,
-    method: (el.getAttribute('method') || defaults.method).toUpperCase(),
-  }
-}
-
-function isLocalLink(el) {
-  return el.tagName === 'A' &&
-    location.hostname === el.hostname &&
-    el.getAttribute('href') &&
-    el.getAttribute('href').indexOf("#") !== 0
-}
-
-async function requestFragment(options) {
-  let response = ''
-  try {
-    response = await request(options.method, options.action, options.data, options)
-  } catch (response) {
-    throw Error(response.xhr.statusText)
-  }
-
-  return htmlToFragment(response)
 }
 
 function htmlToFragment(html) {
   return document.createRange().createContextualFragment(html);
+}
+
+function morphTarget(id, fragment) {
+  let toHtml = fragment.getElementById(id)?.outerHTML ?? ''
+  if (toHtml) {
+    morph(document.getElementById(id), toHtml)
+  } else {
+    document.getElementById(id).replaceWith('')
+  }
 }

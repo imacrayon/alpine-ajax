@@ -3,67 +3,6 @@
   factory();
 }((function () { 'use strict';
 
-  function request(method, url, data, options) {
-    if (method === 'GET') {
-      let params = Array.from(data.entries()).filter(([key, value]) => value !== '' || value !== null);
-
-      if (params.length) {
-        let splitUrl = url.split('#');
-        let anchor = splitUrl[1];
-        url = splitUrl[0];
-
-        if (!url.includes('?')) {
-          url += '?';
-        } else {
-          url += '&';
-        }
-
-        url += new URLSearchParams(params);
-
-        if (anchor) {
-          url += '#' + anchor;
-        }
-      }
-
-      data = null;
-    }
-
-    return new Promise((resolve, reject) => {
-      let xhr = new XMLHttpRequest();
-      xhr.open(method, url);
-      xhr.overrideMimeType('text/html');
-      let headers = Object.assign({
-        'X-Alpine-Request': 'true'
-      }, options.headers);
-
-      for (const [key, value] of Object.entries(headers)) {
-        xhr.setRequestHeader(key, value);
-      }
-
-      if (options.progress && xhr.upload) {
-        xhr.upload.addEventListener('progress', options.progress);
-      }
-
-      let info = {
-        xhr,
-        url,
-        data,
-        options
-      };
-
-      xhr.onload = function () {
-        if (this.status >= 200 && this.status < 400) return resolve(xhr.response);
-        reject(info);
-      };
-
-      xhr.onerror = function () {
-        reject(info);
-      };
-
-      xhr.send(data);
-    });
-  }
-
   /*
    * SubmitEvent API Submitter Polyfill
    * https://stackoverflow.com/a/61110260
@@ -92,76 +31,558 @@
     }, true);
   }();
 
+  class DomManager {
+      el = undefined
+
+      constructor(el) {
+          this.el = el;
+      }
+
+      traversals = {
+          'first': 'firstElementChild',
+          'next': 'nextElementSibling',
+          'parent': 'parentElement',
+      }
+
+      nodes() {
+          this.traversals = {
+              'first': 'firstChild',
+              'next': 'nextSibling',
+              'parent': 'parentNode',
+          }; return this
+      }
+
+      first() {
+          return this.teleportTo(this.el[this.traversals['first']])
+      }
+
+      next() {
+          return this.teleportTo(this.teleportBack(this.el[this.traversals['next']]))
+      }
+
+      before(insertee) {
+          this.el[this.traversals['parent']].insertBefore(insertee, this.el); return insertee
+      }
+
+      replace(replacement) {
+          this.el[this.traversals['parent']].replaceChild(replacement, this.el); return replacement
+      }
+
+      append(appendee) {
+          this.el.appendChild(appendee); return appendee
+      }
+
+      teleportTo(el) {
+          if (! el) return el
+          if (el._x_teleport) return el._x_teleport
+          return el
+      }
+
+      teleportBack(el) {
+          if (! el) return el
+          if (el._x_teleportBack) return el._x_teleportBack
+          return el
+      }
+  }
+
+  function dom(el) {
+      return new DomManager(el)
+  }
+
+  function createElement(html) {
+      const template = document.createElement('template');
+      template.innerHTML = html;
+      return template.content.firstElementChild
+  }
+
+  function textOrComment(el) {
+      return el.nodeType === 3
+          || el.nodeType === 8
+  }
+
+  let resolveStep = () => {};
+
+  let logger = () => {};
+
+  async function morph(from, toHtml, options) {
+      // We're defining these globals and methods inside this function (instead of outside)
+      // because it's an async function and if run twice, they would overwrite
+      // each other.
+
+      let fromEl;
+      let toEl;
+      let key
+          ,lookahead
+          ,updating
+          ,updated
+          ,removing
+          ,removed
+          ,adding
+          ,added
+          ,debug;
+
+
+      function breakpoint(message) {
+          if (! debug) return
+
+          logger((message || '').replace('\n', '\\n'), fromEl, toEl);
+
+          return new Promise(resolve => resolveStep = () => resolve())
+      }
+
+      function assignOptions(options = {}) {
+          let defaultGetKey = el => el.getAttribute('key');
+          let noop = () => {};
+
+          updating = options.updating || noop;
+          updated = options.updated || noop;
+          removing = options.removing || noop;
+          removed = options.removed || noop;
+          adding = options.adding || noop;
+          added = options.added || noop;
+          key = options.key || defaultGetKey;
+          lookahead = options.lookahead || false;
+          debug = options.debug || false;
+      }
+
+      async function patch(from, to) {
+          // This is a time saver, however, it won't catch differences in nested <template> tags.
+          // I'm leaving this here as I believe it's an important speed improvement, I just
+          // don't see a way to enable it currently:
+          //
+          // if (from.isEqualNode(to)) return
+
+          if (differentElementNamesTypesOrKeys(from, to)) {
+              let result = patchElement(from, to);
+
+              await breakpoint('Swap elements');
+
+              return result
+          }
+
+          let updateChildrenOnly = false;
+
+          if (shouldSkip(updating, from, to, () => updateChildrenOnly = true)) return
+
+          window.Alpine && initializeAlpineOnTo(from, to);
+
+          if (textOrComment(to)) {
+              await patchNodeValue(from, to);
+              updated(from, to);
+
+              return
+          }
+
+          if (! updateChildrenOnly) {
+              await patchAttributes(from, to);
+          }
+
+          updated(from, to);
+
+          await patchChildren(from, to);
+      }
+
+      function differentElementNamesTypesOrKeys(from, to) {
+          return from.nodeType != to.nodeType
+              || from.nodeName != to.nodeName
+              || getKey(from) != getKey(to)
+      }
+
+      function patchElement(from, to) {
+          if (shouldSkip(removing, from)) return
+
+          let toCloned = to.cloneNode(true);
+
+          if (shouldSkip(adding, toCloned)) return
+
+          dom(from).replace(toCloned);
+
+          removed(from);
+          added(toCloned);
+      }
+
+      async function patchNodeValue(from, to) {
+          let value = to.nodeValue;
+
+          if (from.nodeValue !== value) {
+              from.nodeValue = value;
+
+              await breakpoint('Change text node to: ' + value);
+          }
+      }
+
+      async function patchAttributes(from, to) {
+          if (from._x_isShown && ! to._x_isShown) {
+              return
+          }
+          if (! from._x_isShown && to._x_isShown) {
+              return
+          }
+
+          let domAttributes = Array.from(from.attributes);
+          let toAttributes = Array.from(to.attributes);
+
+          for (let i = domAttributes.length - 1; i >= 0; i--) {
+              let name = domAttributes[i].name;
+
+              if (! to.hasAttribute(name)) {
+                  from.removeAttribute(name);
+
+                  await breakpoint('Remove attribute');
+              }
+          }
+
+          for (let i = toAttributes.length - 1; i >= 0; i--) {
+              let name = toAttributes[i].name;
+              let value = toAttributes[i].value;
+
+              if (from.getAttribute(name) !== value) {
+                  from.setAttribute(name, value);
+
+                  await breakpoint(`Set [${name}] attribute to: "${value}"`);
+              }
+          }
+      }
+
+      async function patchChildren(from, to) {
+          let domChildren = from.childNodes;
+          let toChildren = to.childNodes;
+
+          keyToMap(toChildren);
+          let domKeyDomNodeMap = keyToMap(domChildren);
+
+          let currentTo = dom(to).nodes().first();
+          let currentFrom = dom(from).nodes().first();
+
+          let domKeyHoldovers = {};
+
+          while (currentTo) {
+              let toKey = getKey(currentTo);
+              let domKey = getKey(currentFrom);
+
+              // Add new elements
+              if (! currentFrom) {
+                  if (toKey && domKeyHoldovers[toKey]) {
+                      let holdover = domKeyHoldovers[toKey];
+
+                      dom(from).append(holdover);
+                      currentFrom = holdover;
+
+                      await breakpoint('Add element (from key)');
+                  } else {
+                      let added = addNodeTo(currentTo, from) || {};
+
+                      await breakpoint('Add element: ' + (added.outerHTML || added.nodeValue));
+
+                      currentTo = dom(currentTo).nodes().next();
+
+                      continue
+                  }
+              }
+
+              if (lookahead) {
+                  let nextToElementSibling = dom(currentTo).next();
+
+                  let found = false;
+
+                  while (!found && nextToElementSibling) {
+                      if (currentFrom.isEqualNode(nextToElementSibling)) {
+                          found = true;
+
+                          currentFrom = addNodeBefore(currentTo, currentFrom);
+
+                          domKey = getKey(currentFrom);
+
+                          await breakpoint('Move element (lookahead)');
+                      }
+
+                      nextToElementSibling = dom(nextToElementSibling).next();
+                  }
+              }
+
+              if (toKey !== domKey) {
+                  if (! toKey && domKey) {
+                      domKeyHoldovers[domKey] = currentFrom;
+                      currentFrom = addNodeBefore(currentTo, currentFrom);
+                      domKeyHoldovers[domKey].remove();
+                      currentFrom = dom(currentFrom).nodes().next();
+                      currentTo = dom(currentTo).nodes().next();
+
+                      await breakpoint('No "to" key');
+
+                      continue
+                  }
+
+                  if (toKey && ! domKey) {
+                      if (domKeyDomNodeMap[toKey]) {
+                          currentFrom = dom(currentFrom).replace(domKeyDomNodeMap[toKey]);
+
+                          await breakpoint('No "from" key');
+                      }
+                  }
+
+                  if (toKey && domKey) {
+                      domKeyHoldovers[domKey] = currentFrom;
+                      let domKeyNode = domKeyDomNodeMap[toKey];
+
+                      if (domKeyNode) {
+                          currentFrom = dom(currentFrom).replace(domKeyNode);
+
+                          await breakpoint('Move "from" key');
+                      } else {
+                          domKeyHoldovers[domKey] = currentFrom;
+                          currentFrom = addNodeBefore(currentTo, currentFrom);
+                          domKeyHoldovers[domKey].remove();
+                          currentFrom = dom(currentFrom).next();
+                          currentTo = dom(currentTo).next();
+
+                          await breakpoint('Swap elements with keys');
+
+                          continue
+                      }
+                  }
+              }
+
+              // Get next from sibling before patching in case the node is replaced
+              let currentFromNext = currentFrom && dom(currentFrom).nodes().next();
+
+              // Patch elements
+              await patch(currentFrom, currentTo);
+
+              currentTo = currentTo && dom(currentTo).nodes().next();
+              currentFrom = currentFromNext;
+          }
+
+          // Cleanup extra froms.
+          let removals = [];
+
+          // We need to collect the "removals" first before actually
+          // removing them so we don't mess with the order of things.
+          while (currentFrom) {
+              if(! shouldSkip(removing, currentFrom)) removals.push(currentFrom);
+
+              currentFrom = dom(currentFrom).nodes().next();
+          }
+
+          // Now we can do the actual removals.
+          while (removals.length) {
+              let domForRemoval = removals.shift();
+
+              domForRemoval.remove();
+
+              await breakpoint('remove el');
+
+              removed(domForRemoval);
+          }
+      }
+
+      function getKey(el) {
+          return el && el.nodeType === 1 && key(el)
+      }
+
+      function keyToMap(els) {
+          let map = {};
+
+          els.forEach(el => {
+              let theKey = getKey(el);
+
+              if (theKey) {
+                  map[theKey] = el;
+              }
+          });
+
+          return map
+      }
+
+      function addNodeTo(node, parent) {
+          if(! shouldSkip(adding, node)) {
+              let clone = node.cloneNode(true);
+
+              dom(parent).append(clone);
+
+              added(clone);
+
+              return clone
+          }
+
+          return null;
+      }
+
+      function addNodeBefore(node, beforeMe) {
+          if(! shouldSkip(adding, node)) {
+              let clone = node.cloneNode(true);
+
+              dom(beforeMe).before(clone);
+
+              added(clone);
+
+              return clone
+          }
+
+          return beforeMe
+      }
+
+      // Finally we morph the element
+
+      assignOptions(options);
+
+      fromEl = from;
+      toEl = createElement(toHtml);
+
+      // If there is no x-data on the element we're morphing,
+      // let's seed it with the outer Alpine scope on the page.
+      if (window.Alpine && window.Alpine.closestDataStack && ! from._x_dataStack) {
+          toEl._x_dataStack = window.Alpine.closestDataStack(from);
+
+          toEl._x_dataStack && window.Alpine.clone(from, toEl);
+      }
+
+      await breakpoint();
+
+      await patch(from, toEl);
+
+      // Release these for the garbage collector.
+      fromEl = undefined;
+      toEl = undefined;
+
+      return from
+  }
+
+  morph.step = () => resolveStep();
+  morph.log = (theLogger) => {
+      logger = theLogger;
+  };
+
+  function shouldSkip(hook, ...args) {
+      let skip = false;
+
+      hook(...args, () => skip = true);
+
+      return skip
+  }
+
+  function initializeAlpineOnTo(from, to, childrenOnly) {
+      if (from.nodeType !== 1) return
+
+      // If the element we are updating is an Alpine component...
+      if (from._x_dataStack) {
+          // Then temporarily clone it (with it's data) to the "to" element.
+          // This should simulate backend Livewire being aware of Alpine changes.
+          window.Alpine.clone(from, to);
+      }
+  }
+
   function ajax (Alpine) {
-    Alpine.addRootSelector(() => '[x-ajax]');
-    Alpine.directive('ajax', (el, values, {
+    Alpine.directive('ajax', (el, {
+      expression
+    }, {
       cleanup
     }) => {
-      let listeners = ['click', 'submit'].map(event => listenForAjaxEvent(el, event));
+      let targets = expression.split(' ').filter(id => id);
+
+      if (targets.length === 0) {
+        targets = [el.id];
+      }
+
+      let stopListeningForSubmit = listenForSubmit(el, targets);
+      let stopListeningForClick = listenForClick(el, targets);
       cleanup(() => {
-        listeners.forEach(remove => remove());
+        stopListeningForSubmit();
+        stopListeningForClick();
       });
     });
   }
 
-  function listenForAjaxEvent(el, name) {
-    let handler = event => {
-      let source = getSourceElement(event.target, name);
-      if (!isValidSourceElement(source)) return;
-      event.stopPropagation();
+  function listenForSubmit(el, targets) {
+    let handler = async event => {
+      var _event$submitter;
+
+      let form = event.target;
+      if (form.hasAttribute('noajax')) return;
       event.preventDefault();
-      let ids = el.getAttribute('x-ajax');
-      ids = ids ? ids.split(',') : [el.id];
-      let targets = ids.map(id => {
-        let element = document.getElementById(id);
+      event.stopPropagation();
+      let method = (form.getAttribute('method') || 'GET').toUpperCase();
+      let action = form.getAttribute('action') || window.location.href;
+      let body = new FormData(form);
 
-        if (!element) {
-          throw Error('Target with ID `' + id + '` not found.');
-        }
+      if (event !== null && event !== void 0 && (_event$submitter = event.submitter) !== null && _event$submitter !== void 0 && _event$submitter.name) {
+        body.append(submitter.name, submitter.value);
+      }
 
-        return element;
-      });
-      makeAjaxRequest(source, targets, event);
+      let html = await makeRequest(form, method, action, body);
+      if (html === false) return;
+      replaceTargets(targets, html);
     };
 
-    el.addEventListener(name, handler);
-    return () => {
-      el.removeEventListener(name, handler);
+    el.addEventListener('submit', handler);
+    return () => el.removeEventListener('submit', handler);
+  }
+
+  function listenForClick(el, targets) {
+    let handler = async event => {
+      let link = event.target;
+      if (!isLocalLink(link) || link.hasAttribute('noajax')) return;
+      event.preventDefault();
+      event.stopPropagation();
+      let action = link.getAttribute('href');
+      let html = await makeRequest(link, 'GET', action, null);
+      if (html === false) return;
+      replaceTargets(targets, html);
     };
+
+    el.addEventListener('click', handler);
+    return () => el.removeEventListener('click', handler);
   }
 
-  function getSourceElement(trigger, event) {
-    let validTag = {
-      submit: 'FORM',
-      click: 'A'
-    };
-    return trigger.closest(validTag[event]);
+  function isLocalLink(el) {
+    return el.tagName === 'A' && el.getAttribute('href') && el.getAttribute('href').indexOf("#") !== 0 && el.hostname === location.hostname;
   }
 
-  function isValidSourceElement(el) {
-    if (!el) return false;
-    let root = el.closest('[x-ajax],[ajax-ignore]');
-    if (root.hasAttribute('ajax-ignore')) return false;
-    return el.tagName === 'FORM' ? true : isLocalLink(el);
-  }
-
-  async function makeAjaxRequest(el, targets, event) {
-    if (el.hasAttribute('ajax-confirm') && !confirm(el.getAttribute('ajax-confirm'))) return;
-    dispatch(el, 'ajax:before');
-
-    try {
-      let fragment = await requestFragment(requestOptions(el, event));
-      targets.forEach(target => target.replaceWith((fragment === null || fragment === void 0 ? void 0 : fragment.getElementById(target.id)) ?? ''));
-      dispatch(el, 'ajax:success');
-    } catch (error) {
-      dispatch(el, 'ajax:error', error);
+  async function makeRequest(el, method, action, body) {
+    if (!dispatch(el, 'ajax:before')) {
+      return false;
     }
 
-    dispatch(el, 'ajax:after');
+    if (method === 'GET' && body) {
+      let params = Array.from(body.entries()).filter(([key, value]) => value !== '' || value !== null);
+
+      if (params.length) {
+        let parts = action.split('#');
+        action = parts[0];
+
+        if (!action.includes('?')) {
+          action += '?';
+        } else {
+          action += '&';
+        }
+
+        action += new URLSearchParams(params);
+        let hash = parts[1];
+
+        if (hash) {
+          action += '#' + hash;
+        }
+      }
+
+      body = null;
+    }
+
+    return await fetch(action, {
+      method,
+      body
+    }).then(response => {
+      dispatch(el, 'ajax:success', response);
+      dispatch(el, 'ajax:after', response);
+      return response.text();
+    }).catch(error => {
+      dispatch(el, 'ajax:error', error);
+      dispatch(el, 'ajax:after', error);
+      return false;
+    });
   }
 
   function dispatch(el, name, detail = {}) {
-    el.dispatchEvent(new CustomEvent(name, {
+    return el.dispatchEvent(new CustomEvent(name, {
       detail,
       bubbles: true,
       composed: true,
@@ -169,44 +590,30 @@
     }));
   }
 
-  function requestOptions(el, event) {
-    var _event$submitter;
+  function replaceTargets(targets, html) {
+    let fragment = htmlToFragment(html);
+    let activeElement = document.activeElement;
+    targets.forEach(id => morphTarget(id, fragment));
 
-    let defaults = {
-      action: window.location.href,
-      method: 'GET'
-    };
-    let data = el.tagName === 'FORM' ? new FormData(el) : new FormData();
-
-    if ((_event$submitter = event.submitter) !== null && _event$submitter !== void 0 && _event$submitter.name) {
-      data.append(event.submitter.name, event.submitter.value);
+    if (activeElement) {
+      activeElement.focus();
     }
-
-    return {
-      data,
-      action: el.getAttribute(isLocalLink(el) ? 'href' : 'action') || defaults.action,
-      method: (el.getAttribute('method') || defaults.method).toUpperCase()
-    };
-  }
-
-  function isLocalLink(el) {
-    return el.tagName === 'A' && location.hostname === el.hostname && el.getAttribute('href') && el.getAttribute('href').indexOf("#") !== 0;
-  }
-
-  async function requestFragment(options) {
-    let response = '';
-
-    try {
-      response = await request(options.method, options.action, options.data, options);
-    } catch (response) {
-      throw Error(response.xhr.statusText);
-    }
-
-    return htmlToFragment(response);
   }
 
   function htmlToFragment(html) {
     return document.createRange().createContextualFragment(html);
+  }
+
+  function morphTarget(id, fragment) {
+    var _fragment$getElementB;
+
+    let toHtml = ((_fragment$getElementB = fragment.getElementById(id)) === null || _fragment$getElementB === void 0 ? void 0 : _fragment$getElementB.outerHTML) ?? '';
+
+    if (toHtml) {
+      morph(document.getElementById(id), toHtml);
+    } else {
+      document.getElementById(id).replaceWith('');
+    }
   }
 
   document.addEventListener('alpine:initializing', () => {

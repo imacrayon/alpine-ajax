@@ -5,11 +5,17 @@
 </head>
 <body>
 
-  <form x-ajax="replace-me" action="/examples/partial.html">
+  <h2 id="form-replace">Replace Me</h2>
+  <form x-data x-ajax="form-replace" action="/examples/partial.html">
     <button>Submit</button>
   </form>
 
-  <h1 id="replace-me">Replace Me</h1>
+  <h2 id="link-replace">Replace Me</h2>
+  <ul x-data x-ajax="link-replace">
+    <li><a href="/examples/partial.html">Replace</a></li>
+    <li><a href="/examples/partial.html" noajax>Ignored</a></li>
+    <li><a href="https://example.com">External</a></li>
+  </ul>
 
   <script src="../dist/cdn.js"></script>
 </body>
