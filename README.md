@@ -4,7 +4,7 @@ The Alpine AJAX plugin allows forms and internal links to make asynchronous HTTP
 
 This is useful for creating dynamic interfaces that can submit forms or display remote content without a full page reload.
 
-Here's a simple example with an explaination below:
+Here's a simple example with an explanation below:
 
 ```html
 <form x-data x-ajax id="star-repo" method="post" action="/repos/1/star">
