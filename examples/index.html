@@ -11,8 +11,11 @@
   </form>
 
   <h2 id="link-replace">Replace Me</h2>
-  <ul x-data x-ajax="link-replace">
-    <li><a href="/examples/partial.html">Replace</a></li>
+  <a href="/examples/partial.html" x-data x-ajax="link-replace">Click Me</a>
+
+  <h2 id="link-list-replace">Replace Me</h2>
+  <ul x-data x-ajax="link-list-replace">
+    <li><a href="/examples/partial.html">Click me</a></li>
     <li><a href="/examples/partial.html" noajax>Ignored</a></li>
     <li><a href="https://example.com">External</a></li>
   </ul>

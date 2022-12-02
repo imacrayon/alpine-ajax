@@ -484,13 +484,30 @@
         targets = [el.id];
       }
 
+      progressivelyEnhanceLinks(el);
       let stopListeningForSubmit = listenForSubmit(el, targets);
-      let stopListeningForClick = listenForClick(el, targets);
+      let stoplisteningForNavigate = listenForNavigate(el, targets);
       cleanup(() => {
         stopListeningForSubmit();
-        stopListeningForClick();
+        stoplisteningForNavigate();
       });
     });
+  }
+
+  function progressivelyEnhanceLinks(el) {
+    if (el.hasAttribute('noajax') || el.hasAttribute('data-action')) return;
+    [el, ...Array.from(el.querySelectorAll('[href]:not([noajax]):not([data-action])'))].forEach(link => {
+      if (!isLocalLink(link)) return;
+      link.setAttribute('role', 'button');
+      link.setAttribute('data-action', link.getAttribute('href'));
+      link.tabIndex = 0;
+      link.removeAttribute('href');
+      link.addEventListener('keydown', event => event.keyCode === 32 && event.target.click());
+    });
+  }
+
+  function isLocalLink(el) {
+    return el.tagName === 'A' && el.getAttribute('href') && el.getAttribute('href').indexOf("#") !== 0 && el.hostname === location.hostname;
   }
 
   function listenForSubmit(el, targets) {
@@ -518,13 +535,13 @@
     return () => el.removeEventListener('submit', handler);
   }
 
-  function listenForClick(el, targets) {
+  function listenForNavigate(el, targets) {
     let handler = async event => {
       let link = event.target;
-      if (!isLocalLink(link) || link.hasAttribute('noajax')) return;
+      let action = link.dataset.action;
+      if (!action || link.hasAttribute('noajax')) return;
       event.preventDefault();
       event.stopPropagation();
-      let action = link.getAttribute('href');
       let html = await makeRequest(link, 'GET', action, null);
       if (html === false) return;
       replaceTargets(targets, html);
@@ -532,10 +549,6 @@
 
     el.addEventListener('click', handler);
     return () => el.removeEventListener('click', handler);
-  }
-
-  function isLocalLink(el) {
-    return el.tagName === 'A' && el.getAttribute('href') && el.getAttribute('href').indexOf("#") !== 0 && el.hostname === location.hostname;
   }
 
   async function makeRequest(el, method, action, body) {

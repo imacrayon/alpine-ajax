@@ -99,6 +99,10 @@ You can stop AJAX behavior on any element by adding the `noajax` attribute.
 </div>
 ```
 
+## AJAX Link Accessibility
+
+Since AJAX enabed links no longer function as normal browser links this plugin will progressively enhance them to meet [accessibility best practices](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/button_role#best_practices). AJAX links are given the `button` role, their `href` is removed, and the `<a>` element is wired to respond to button keyboard events.
+
 ## Events
 
 You can listen for AJAX events to perform additional actions during an AJAX request:

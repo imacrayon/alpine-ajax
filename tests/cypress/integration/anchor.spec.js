@@ -72,3 +72,21 @@ test('AJAX behavior is ignored with noajax',
       cy.wait('@response').then(() => cy.get('#title').should('exist'))
     }
 )
+
+test('AJAX links are progressively enhanced to buttons',
+    html`<a x-data x-ajax id="replace" href="/">Click Me</a>`,
+    ({ get }) => {
+      cy.intercept('GET', '/', {
+        statusCode: 200,
+        body: '<div id="replace">Replaced</div>'
+      }).as('response')
+      cy.get('#replace')
+        .should('have.attr', 'role', 'button')
+        .should('have.attr', 'tabindex', '0')
+        .should('have.attr', 'data-action', '/')
+        .should('have.attr', 'data-action', '/')
+        .should('not.have.attr', 'href')
+      cy.get('#replace').trigger('keydown', { keyCode: 32 })
+      cy.wait('@response').then(() => cy.get('#replace').should('have.text', 'Replaced'))
+    }
+)
