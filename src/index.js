@@ -100,8 +100,11 @@ async function makeRequest(el, method, action, body) {
     body = null
   }
 
-  return await fetch(action, { method, body })
-    .then(response => {
+  return await fetch(action, {
+    headers: {'X-Alpine-Request': 'true'},
+    method,
+    body,
+  }).then(response => {
       dispatch(el, 'ajax:success', response)
       dispatch(el, 'ajax:after', response)
       return response.text()

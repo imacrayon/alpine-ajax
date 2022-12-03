@@ -581,6 +581,9 @@
     }
 
     return await fetch(action, {
+      headers: {
+        'X-Alpine-Request': 'true'
+      },
       method,
       body
     }).then(response => {
