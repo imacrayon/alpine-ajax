@@ -136,6 +136,20 @@ test('AJAX behavior is inherited',
     }
 )
 
+test('focus is maintained after elements are replaced',
+    html`<form x-data x-ajax id="replace" method="post"><button></button></form>`,
+    ({ get }) => {
+      cy.intercept('POST', 'spec.html', {
+        statusCode: 200,
+        body: '<form x-data x-ajax id="replace" method="post"><button></button></form>'
+      }).as('response')
+      get('button').focus().click()
+      cy.wait('@response').then(() => {
+        cy.get('button').should('have.focus')
+      })
+    }
+)
+
 test('AJAX behavior is ignored with noajax',
     html`<div x-data x-ajax id="replace"><form noajax method="post" action="/"><button></button></form></div>`,
     ({ get }) => {
@@ -175,7 +189,7 @@ test('ajax:before can cancel AJAX requests',
       }).as('response')
       get('button').click()
       cy.wait('@response', {
-        requestTimeout: 1000,
+        requestTimeout: 500,
       }).then(() => {
         cy.get('#title').should('have.text', 'Replace me')
       })

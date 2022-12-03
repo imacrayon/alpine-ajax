@@ -130,11 +130,7 @@ function dispatch(el, name, detail = {}) {
 
 function replaceTargets(targets, html) {
   let fragment = htmlToFragment(html)
-  let activeElement = document.activeElement
   targets.forEach(id => morphTarget(id, fragment))
-  if (activeElement) {
-    activeElement.focus()
-  }
 }
 
 function htmlToFragment(html) {
