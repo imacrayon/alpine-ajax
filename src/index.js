@@ -48,7 +48,7 @@ function listenForSubmit(el, targets) {
     let action = form.getAttribute('action') || window.location.href
     let body = new FormData(form)
     if (event?.submitter?.name) {
-      body.append(submitter.name, submitter.value)
+      body.append(event.submitter.name, event.submitter.value)
     }
     let html = await makeRequest(form, method, action, body)
     if (html === false) return

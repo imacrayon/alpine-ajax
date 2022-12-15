@@ -523,7 +523,7 @@
       let body = new FormData(form);
 
       if (event !== null && event !== void 0 && (_event$submitter = event.submitter) !== null && _event$submitter !== void 0 && _event$submitter.name) {
-        body.append(submitter.name, submitter.value);
+        body.append(event.submitter.name, event.submitter.value);
       }
 
       let html = await makeRequest(form, method, action, body);
@@ -608,12 +608,7 @@
 
   function replaceTargets(targets, html) {
     let fragment = htmlToFragment(html);
-    let activeElement = document.activeElement;
     targets.forEach(id => morphTarget(id, fragment));
-
-    if (activeElement) {
-      activeElement.focus();
-    }
   }
 
   function htmlToFragment(html) {
