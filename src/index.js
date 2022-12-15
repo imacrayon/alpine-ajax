@@ -22,7 +22,7 @@ export default function (Alpine) {
 function progressivelyEnhanceLinks(el) {
   if (el.hasAttribute('noajax') || el.hasAttribute('data-action')) return
   [el, ...Array.from(el.querySelectorAll('[href]:not([noajax]):not([data-action])'))].forEach(link => {
-    if (! isLocalLink(link)) return
+    if (!isLocalLink(link)) return
     link.setAttribute('role', 'button');
     link.setAttribute('data-action', link.getAttribute('href'));
     link.tabIndex = 0;
@@ -64,7 +64,7 @@ function listenForNavigate(el, targets) {
   let handler = async event => {
     let link = event.target
     let action = link.dataset.action
-    if (! action || link.hasAttribute('noajax')) return
+    if (!action || link.hasAttribute('noajax')) return
     event.preventDefault()
     event.stopPropagation()
     let html = await makeRequest(link, 'GET', action, null)
@@ -78,7 +78,7 @@ function listenForNavigate(el, targets) {
 }
 
 async function makeRequest(el, method, action, body) {
-  if (! dispatch(el, 'ajax:before')) {
+  if (!dispatch(el, 'ajax:before')) {
     return false
   }
   if (method === 'GET' && body) {
@@ -86,7 +86,7 @@ async function makeRequest(el, method, action, body) {
     if (params.length) {
       let parts = action.split('#')
       action = parts[0]
-      if (! action.includes('?')) {
+      if (!action.includes('?')) {
         action += '?'
       } else {
         action += '&'
@@ -94,21 +94,21 @@ async function makeRequest(el, method, action, body) {
       action += new URLSearchParams(params)
       let hash = parts[1]
       if (hash) {
-          action += '#' + hash
+        action += '#' + hash
       }
     }
     body = null
   }
 
   return await fetch(action, {
-    headers: {'X-Alpine-Request': 'true'},
+    headers: { 'X-Alpine-Request': 'true' },
     method,
     body,
   }).then(response => {
-      dispatch(el, 'ajax:success', response)
-      dispatch(el, 'ajax:after', response)
-      return response.text()
-    })
+    dispatch(el, 'ajax:success', response)
+    dispatch(el, 'ajax:after', response)
+    return response.text()
+  })
     .catch(error => {
       dispatch(el, 'ajax:error', error)
       dispatch(el, 'ajax:after', error)
@@ -119,12 +119,12 @@ async function makeRequest(el, method, action, body) {
 
 function dispatch(el, name, detail = {}) {
   return el.dispatchEvent(
-      new CustomEvent(name, {
-          detail,
-          bubbles: true,
-          composed: true,
-          cancelable: true,
-      })
+    new CustomEvent(name, {
+      detail,
+      bubbles: true,
+      composed: true,
+      cancelable: true,
+    })
   )
 }
 
