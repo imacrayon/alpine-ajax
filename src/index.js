@@ -105,6 +105,12 @@ async function makeRequest(el, method, action, body) {
     method,
     body,
   }).then(response => {
+    if (!response.ok) {
+      let error = new Error('Network response was not OK.')
+      error.response = response
+      throw error
+    }
+
     dispatch(el, 'ajax:success', response)
     dispatch(el, 'ajax:after', response)
     return response.text()
