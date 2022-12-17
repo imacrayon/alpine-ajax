@@ -2,7 +2,7 @@
 
 A set of AlpineJS utilities that enable forms and links to make asynchronous HTTP requests and render the response to the page.
 
-With a just a few tools you can create complex, dynamic interfaces that can handle forms or display remote content without performing a full page reload.
+These utilities empower you to create modern, dynamic, progressively enhanced, interfaces with very little JavaScript.
 
 Here's a simple example with an explanation below:
 
@@ -113,18 +113,23 @@ ajax:success | Fired when a network request completes. `detail` contains the ser
 ajax:error | Fired on a configuration or network error. `detail` contains the error data.
 ajax:after | Fired after both successful and unsuccessful requests.
 
+Here's an example of opening a modal and then loading remote content inside of it:
+
+```html
+<!-- Keep in mind this is just an example, `dialog` still has browser support problems. -->
+<dialog x-data @modal.window="$el.open = true">
+  <div id="modal-content"></div>
+  ...
+</dialog>
+<a x-data x-ajax x-target="modal-content" @ajax:before="$dispatch('modal')" href="/modal-content">
+  Open in modal
+</a>
+```
+
 Here's an example of aborting a form request when the user cancels a dialog prompt:
 
 ```html
 <form id="delete-user" x-data x-ajax @ajax:before="confirm('Are you sure?') || $event.preventDefault()">
-  <button>Delete User</button>
-</form>
-```
-
-Here's an example of handling a failed network request:
-
-```html
-<form id="delete-user" x-data x-ajax @ajax:error="alert('Check your network connection and try again.')">
   <button>Delete User</button>
 </form>
 ```
