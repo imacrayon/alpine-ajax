@@ -90,3 +90,24 @@ test('AJAX links are progressively enhanced to buttons',
     cy.wait('@response').then(() => cy.get('#replace').should('have.text', 'Replaced'))
   }
 )
+
+test('inserted links are progressively enhanced to buttons',
+  html`<div x-data x-ajax x-target="replace"><h1 id="replace"></h1><a href="/">Click Me</a></div>`,
+  ({ get }) => {
+    cy.intercept('GET', '/', {
+      statusCode: 200,
+      body: '<a id="replace" href="/">Replaced</a>'
+    }).as('response')
+    cy.get('a').click()
+    cy.wait('@response').then(() => {
+      cy.get('#replace')
+        .should('have.attr', 'role', 'button')
+        .should('have.attr', 'tabindex', '0')
+        .should('have.attr', 'data-action', '/')
+        .should('have.attr', 'data-action', '/')
+        .should('not.have.attr', 'href')
+      cy.get('#replace').trigger('keydown', { keyCode: 32 })
+      cy.wait('@response').then(() => cy.get('#replace').should('have.text', 'Replaced'))
+    })
+  }
+)

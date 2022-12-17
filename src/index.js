@@ -2,32 +2,39 @@ import './utils/submitter-polyfill'
 import { morph } from '@alpinejs/morph/src/morph'
 
 export default function (Alpine) {
-  Alpine.directive('ajax', (el, { expression }, { cleanup }) => {
-    let targets = expression.split(' ').filter(id => id)
-    if (targets.length === 0) {
-      targets = [el.id]
-    }
-
+  Alpine.directive('ajax', (el, { }, { cleanup }) => {
     progressivelyEnhanceLinks(el)
-    let stopListeningForSubmit = listenForSubmit(el, targets)
-    let stoplisteningForNavigate = listenForNavigate(el, targets)
+    let stopListeningForSubmit = listenForSubmit(el)
+    let stoplisteningForNavigate = listenForNavigate(el)
 
     cleanup(() => {
       stopListeningForSubmit()
       stoplisteningForNavigate()
     })
   })
+
+  Alpine.directive('load', (el, { value, expression }, { cleanup }) => {
+    // Checking for `data-source` prevents an infinite loop.
+    if (!value && !el.dataset.source) {
+      return handleLoad(el, 'GET', expression)
+    }
+
+    let stopListeningForServerEvent = listenForServerEvent(el, value, expression)
+
+    cleanup(() => {
+      stopListeningForServerEvent()
+    })
+  })
 }
 
 function progressivelyEnhanceLinks(el) {
-  if (el.hasAttribute('noajax') || el.hasAttribute('data-action')) return
-  [el, ...Array.from(el.querySelectorAll('[href]:not([noajax]):not([data-action])'))].forEach(link => {
+  if (el.hasAttribute('data-action')) return
+  if (isLocalLink(el)) {
+    return convertLinkToButton(el)
+  }
+  el.querySelectorAll('[href]:not([noajax]):not([data-action])').forEach(link => {
     if (!isLocalLink(link)) return
-    link.setAttribute('role', 'button');
-    link.setAttribute('data-action', link.getAttribute('href'));
-    link.tabIndex = 0;
-    link.removeAttribute('href');
-    link.addEventListener('keydown', event => event.keyCode === 32 && event.target.click())
+    convertLinkToButton(link)
   })
 }
 
@@ -38,8 +45,16 @@ function isLocalLink(el) {
     el.hostname === location.hostname
 }
 
-function listenForSubmit(el, targets) {
-  let handler = async event => {
+function convertLinkToButton(link) {
+  link.setAttribute('role', 'button');
+  link.dataset.action = link.getAttribute('href');
+  link.tabIndex = 0;
+  link.removeAttribute('href');
+  link.addEventListener('keydown', event => event.keyCode === 32 && event.target.click())
+}
+
+function listenForSubmit(el) {
+  let handler = event => {
     let form = event.target
     if (form.hasAttribute('noajax')) return
     event.preventDefault()
@@ -50,9 +65,7 @@ function listenForSubmit(el, targets) {
     if (event?.submitter?.name) {
       body.append(event.submitter.name, event.submitter.value)
     }
-    let html = await makeRequest(form, method, action, body)
-    if (html === false) return
-    replaceTargets(targets, html)
+    handleAjax(el, form, method, action, body)
   }
 
   el.addEventListener('submit', handler)
@@ -60,16 +73,14 @@ function listenForSubmit(el, targets) {
   return () => el.removeEventListener('submit', handler)
 }
 
-function listenForNavigate(el, targets) {
-  let handler = async event => {
+function listenForNavigate(el) {
+  let handler = event => {
     let link = event.target
     let action = link.dataset.action
-    if (!action || link.hasAttribute('noajax')) return
+    if (!action) return
     event.preventDefault()
     event.stopPropagation()
-    let html = await makeRequest(link, 'GET', action, null)
-    if (html === false) return
-    replaceTargets(targets, html)
+    handleAjax(el, link, 'GET', action, null)
   }
 
   el.addEventListener('click', handler)
@@ -77,7 +88,30 @@ function listenForNavigate(el, targets) {
   return () => el.removeEventListener('click', handler)
 }
 
-async function makeRequest(el, method, action, body) {
+function listenForServerEvent(el, event, action) {
+  let handler = () => handleLoad(el, 'GET', action)
+  window.addEventListener(event, handler)
+
+  return () => window.removeEventListener(event, handler)
+}
+
+async function handleAjax(root, el, method, action, body = null) {
+  let response = await makeRequest(el, method, action, body)
+  if (!response.body) return
+
+  let marker = el.closest('[x-target]')
+  let ids = new Set(marker ? marker.getAttribute('x-target').split(' ').filter(id => id) : [root.id])
+  replaceTargets(ids, response.body, response.url)
+}
+
+async function handleLoad(el, method, action) {
+  let response = await makeRequest(el, method, action)
+  if (!response.body) return
+
+  replaceTargets(new Set([el.id]), response.body, response.url)
+}
+
+async function makeRequest(el, method, action, body = null) {
   if (!dispatch(el, 'ajax:before')) {
     return false
   }
@@ -100,11 +134,16 @@ async function makeRequest(el, method, action, body) {
     body = null
   }
 
-  return await fetch(action, {
-    headers: { 'X-Alpine-Request': 'true' },
-    method,
-    body,
-  }).then(response => {
+  let referrer = el.closest('[data-source]')?.dataset.source
+
+  try {
+    let response = await fetch(action, {
+      headers: { 'X-Alpine-Request': 'true' },
+      referrer,
+      method,
+      body,
+    })
+
     if (!response.ok) {
       let error = new Error('Network response was not OK.')
       error.response = response
@@ -113,15 +152,18 @@ async function makeRequest(el, method, action, body) {
 
     dispatch(el, 'ajax:success', response)
     dispatch(el, 'ajax:after', response)
-    return response.text()
-  })
-    .catch(error => {
-      dispatch(el, 'ajax:error', error)
-      dispatch(el, 'ajax:after', error)
-      return false
-    })
-}
 
+    return { url: response.url, headers: response.headers, body: await response.text() }
+  } catch (error) {
+    let response = error.response
+    if (!response) throw error
+
+    dispatch(el, 'ajax:error', response)
+    dispatch(el, 'ajax:after', response)
+
+    return { url: response.url, headers: response.headers, body: await response.text() }
+  }
+}
 
 function dispatch(el, name, detail = {}) {
   return el.dispatchEvent(
@@ -134,20 +176,23 @@ function dispatch(el, name, detail = {}) {
   )
 }
 
-function replaceTargets(targets, html) {
+function replaceTargets(targets, html, source) {
+  document.querySelectorAll('[x-sync]').forEach(el => {
+    if (!el.id) return
+    targets.add(el.id)
+  })
+
   let fragment = htmlToFragment(html)
-  targets.forEach(id => morphTarget(id, fragment))
+  targets.forEach(async id => {
+    let template = fragment.getElementById(id)
+    if (!template) return
+
+    template.dataset.source = source
+    await morph(document.getElementById(id), template.outerHTML)
+    progressivelyEnhanceLinks(document.getElementById(id))
+  })
 }
 
 function htmlToFragment(html) {
   return document.createRange().createContextualFragment(html);
-}
-
-function morphTarget(id, fragment) {
-  let toHtml = fragment.getElementById(id)?.outerHTML ?? ''
-  if (toHtml) {
-    morph(document.getElementById(id), toHtml)
-  } else {
-    document.getElementById(id).replaceWith('')
-  }
 }

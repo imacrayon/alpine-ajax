@@ -7,21 +7,34 @@
 
 <body>
   <h2 id="form-replace">Replace Me</h2>
-  <form x-data x-ajax="form-replace" action="/examples/partial.html">
+  <form x-data x-ajax x-target="form-replace" action="/examples/partial.html">
     <button>Submit</button>
   </form>
 
   <h2 id="link-replace">Replace Me</h2>
-  <a href="/examples/partial.html" x-data x-ajax="link-replace">Click Me</a>
+  <a href="/examples/partial.html" x-data x-ajax x-target="link-replace">Buttonified Link</a>
 
   <h2 id="link-list-replace">Replace Me</h2>
-  <ul x-data x-ajax="link-list-replace">
-    <li><a href="/examples/partial.html">Click me</a></li>
+  <ul x-data x-ajax id="link-list">
+    <li><a href="/examples/partial.html" x-target="link-list-replace">Replace Heading</a></li>
     <li><a href="/examples/partial.html" noajax>Ignored</a></li>
     <li><a href="https://example.com">External</a></li>
+    <li><a href="/examples/partial.html">Replace List</a></li>
   </ul>
 
   <form x-data x-ajax id="form" action="/examples/partial.html"><button>Like</button></form>
+
+  <div x-data x-ajax x-target="progressive-replace">
+    <h2 id="progressive-replace"></h2>
+    <a href="/examples/partial.html">Load a link from server</a>
+  </div>
+
+  <h2 x-data x-load="/examples/partial.html" id="load-replace"></h2>
+
+  <div x-data>
+    <h2 x-load:updated="/examples/partial.html" id="load-event"></h2>
+    <button x-on:click="$dispatch('updated')">Dispatch "updated" Event</button>
+  </div>
 
   <script src="../dist/cdn.js"></script>
 </body>

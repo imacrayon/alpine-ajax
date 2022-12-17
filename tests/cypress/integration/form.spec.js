@@ -195,4 +195,17 @@ test('ajax:before can cancel AJAX requests',
     })
   }
 )
+
+test('referer header is set when `data-source` exists',
+  html`<form x-data x-ajax id="replace" method="post" data-source="/other.html"><button></button></form>`,
+  ({ get }) => {
+    cy.intercept('POST', 'spec.html', {
+      statusCode: 200,
+      body: '<form x-data x-ajax id="replace" method="post"><button></button></form>'
+    }).as('response')
+    get('button').click()
+    cy.wait('@response').then(network => {
+      expect(network.request.headers.referer).to.contain('/other.html')
+    })
+  }
 )
