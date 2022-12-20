@@ -1,7 +1,7 @@
 {
   "name": "@imacrayon/alpine-ajax",
   "description": "Issue AJAX requests from AlpineJS components.",
-  "version": "0.0.16",
+  "version": "0.0.17",
   "license": "MIT",
   "author": "Christian Taylor <christianbtaylor@gmail.com>",
   "repository": {

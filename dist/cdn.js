@@ -510,13 +510,18 @@
     }
 
     el.querySelectorAll('[href]:not([noajax]):not([data-action])').forEach(link => {
-      if (!isLocalLink(link)) return;
+      if (!isLocalLink(link) || isMarkedIgnored()) return;
       convertLinkToButton(link);
     });
   }
 
   function isLocalLink(el) {
     return el.tagName === 'A' && el.getAttribute('href') && el.getAttribute('href').indexOf("#") !== 0 && el.hostname === location.hostname;
+  }
+
+  function isMarkedIgnored(el) {
+    let root = el.closest('[x-ajax],[noajax]');
+    return root.hasAttribute('noajax');
   }
 
   function convertLinkToButton(link) {
@@ -532,7 +537,7 @@
       var _event$submitter;
 
       let form = event.target;
-      if (form.hasAttribute('noajax')) return;
+      if (isMarkedIgnored(form)) return;
       event.preventDefault();
       event.stopPropagation();
       let method = (form.getAttribute('method') || 'GET').toUpperCase();

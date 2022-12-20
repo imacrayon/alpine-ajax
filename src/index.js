@@ -33,7 +33,7 @@ function progressivelyEnhanceLinks(el) {
     return convertLinkToButton(el)
   }
   el.querySelectorAll('[href]:not([noajax]):not([data-action])').forEach(link => {
-    if (!isLocalLink(link)) return
+    if (!isLocalLink(link) || isMarkedIgnored(link)) return
     convertLinkToButton(link)
   })
 }
@@ -43,6 +43,12 @@ function isLocalLink(el) {
     el.getAttribute('href') &&
     el.getAttribute('href').indexOf("#") !== 0 &&
     el.hostname === location.hostname
+}
+
+function isMarkedIgnored(el) {
+
+  let root = el.closest('[x-ajax],[noajax]')
+  return root.hasAttribute('noajax')
 }
 
 function convertLinkToButton(link) {
@@ -56,7 +62,7 @@ function convertLinkToButton(link) {
 function listenForSubmit(el) {
   let handler = event => {
     let form = event.target
-    if (form.hasAttribute('noajax')) return
+    if (isMarkedIgnored(form)) return
     event.preventDefault()
     event.stopPropagation()
     let method = (form.getAttribute('method') || 'GET').toUpperCase()
