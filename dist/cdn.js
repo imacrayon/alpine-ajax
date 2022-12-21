@@ -510,7 +510,7 @@
     }
 
     el.querySelectorAll('[href]:not([noajax]):not([data-action])').forEach(link => {
-      if (!isLocalLink(link) || isMarkedIgnored()) return;
+      if (!isLocalLink(link) || isMarkedIgnored(link)) return;
       convertLinkToButton(link);
     });
   }
@@ -587,7 +587,7 @@
   async function handleLoad(el, method, action) {
     let response = await makeRequest(el, method, action);
     if (!response.body) return;
-    replaceTargets(new Set([el.id]), response.body, response.url);
+    replaceTargets(new Set([el.id]), response.body, response.url, false);
   }
 
   async function makeRequest(el, method, action, body = null) {
@@ -668,11 +668,14 @@
     }));
   }
 
-  function replaceTargets(targets, html, source) {
-    document.querySelectorAll('[x-sync]').forEach(el => {
-      if (!el.id) return;
-      targets.add(el.id);
-    });
+  function replaceTargets(targets, html, source, sync = true) {
+    if (sync) {
+      document.querySelectorAll('[x-sync]').forEach(el => {
+        if (!el.id) return;
+        targets.add(el.id);
+      });
+    }
+
     let fragment = htmlToFragment(html);
     targets.forEach(async id => {
       let template = fragment.getElementById(id);
