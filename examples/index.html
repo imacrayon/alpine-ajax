@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alpine AJAX</title>
+  <meta name="description" content="Alpine AJAX">
+  <meta name="generator" content="Eleventy v2.0.0">
+  <link rel="stylesheet" href="https://unpkg.com/@exampledev/new.css@1.1.3/new.css">
+  <link rel="stylesheet" href="https://unpkg.com/prism-themes@1.9.0/themes/prism-a11y-dark.min.css">
+  <link rel="stylesheet" href="/alpine-ajax/css/main.css">
+  <script>!function(e){"function"==typeof define&&define.amd?define(e):e()}((function(){"use strict";var e;e=null,document.addEventListener("click",(function(t){t.target.closest&&(e=t.target.closest("button, input[type=submit]"))}),!0),document.addEventListener("submit",(function(t){if(!("submitter"in t)){var n=[document.activeElement,e];e=null;for(var r=0;r<n.length;r++){var i=n[r];if(i&&i.form&&i.matches("button, input[type=button], input[type=image]"))return void(t.submitter=i)}t.submitter=t.target.querySelector("button, input[type=button], input[type=image]")}}),!0);class t{el=void 0;constructor(e){this.el=e}traversals={first:"firstElementChild",next:"nextElementSibling",parent:"parentElement"};nodes(){return this.traversals={first:"firstChild",next:"nextSibling",parent:"parentNode"},this}first(){return this.teleportTo(this.el[this.traversals.first])}next(){return this.teleportTo(this.teleportBack(this.el[this.traversals.next]))}before(e){return this.el[this.traversals.parent].insertBefore(e,this.el),e}replace(e){return this.el[this.traversals.parent].replaceChild(e,this.el),e}append(e){return this.el.appendChild(e),e}teleportTo(e){return e&&e._x_teleport?e._x_teleport:e}teleportBack(e){return e&&e._x_teleportBack?e._x_teleportBack:e}}function n(e){return new t(e)}let r=()=>{},i=()=>{};async function a(e,t,a){let l,u,s,d,c,f,p,m,h,w,v;function b(e){if(v)return i((e||"").replace("\n","\\n"),l,u),new Promise((e=>r=()=>e()))}async function x(e,t){if(function(e,t){return e.nodeType!=t.nodeType||e.nodeName!=t.nodeName||y(e)!=y(t)}(e,t)){let r=function(e,t){if(o(p,e))return;let r=t.cloneNode(!0);if(o(h,r))return;n(e).replace(r),m(e),w(r)}(e,t);return await b("Swap elements"),r}let r=!1;if(!o(c,e,t,(()=>r=!0))){if(window.Alpine&&function(e,t,n){if(1!==e.nodeType)return;e._x_dataStack&&window.Alpine.clone(e,t)}(e,t),3===(i=t).nodeType||8===i.nodeType)return await async function(e,t){let n=t.nodeValue;e.nodeValue!==n&&(e.nodeValue=n,await b("Change text node to: "+n))}(e,t),void f(e,t);var i;r||await async function(e,t){if(e._x_isShown&&!t._x_isShown)return;if(!e._x_isShown&&t._x_isShown)return;let n=Array.from(e.attributes),r=Array.from(t.attributes);for(let r=n.length-1;r>=0;r--){let i=n[r].name;t.hasAttribute(i)||(e.removeAttribute(i),await b("Remove attribute"))}for(let t=r.length-1;t>=0;t--){let n=r[t].name,i=r[t].value;e.getAttribute(n)!==i&&(e.setAttribute(n,i),await b(`Set [${n}] attribute to: "${i}"`))}}(e,t),f(e,t),await async function(e,t){let r=e.childNodes;g(t.childNodes);let i=g(r),a=n(t).nodes().first(),l=n(e).nodes().first(),u={};for(;a;){let t=y(a),r=y(l);if(!l){if(!t||!u[t]){let t=E(a,e)||{};await b("Add element: "+(t.outerHTML||t.nodeValue)),a=n(a).nodes().next();continue}{let r=u[t];n(e).append(r),l=r,await b("Add element (from key)")}}if(d){let e=n(a).next(),t=!1;for(;!t&&e;)l.isEqualNode(e)&&(t=!0,l=A(a,l),r=y(l),await b("Move element (lookahead)")),e=n(e).next()}if(t!==r){if(!t&&r){u[r]=l,l=A(a,l),u[r].remove(),l=n(l).nodes().next(),a=n(a).nodes().next(),await b('No "to" key');continue}if(t&&!r&&i[t]&&(l=n(l).replace(i[t]),await b('No "from" key')),t&&r){u[r]=l;let e=i[t];if(!e){u[r]=l,l=A(a,l),u[r].remove(),l=n(l).next(),a=n(a).next(),await b("Swap elements with keys");continue}l=n(l).replace(e),await b('Move "from" key')}}let o=l&&n(l).nodes().next();await x(l,a),a=a&&n(a).nodes().next(),l=o}let s=[];for(;l;)o(p,l)||s.push(l),l=n(l).nodes().next();for(;s.length;){let e=s.shift();e.remove(),await b("remove el"),m(e)}}(e,t)}}function y(e){return e&&1===e.nodeType&&s(e)}function g(e){let t={};return e.forEach((e=>{let n=y(e);n&&(t[n]=e)})),t}function E(e,t){if(!o(h,e)){let r=e.cloneNode(!0);return n(t).append(r),w(r),r}return null}function A(e,t){if(!o(h,e)){let r=e.cloneNode(!0);return n(t).before(r),w(r),r}return t}return function(e={}){let t=()=>{};c=e.updating||t,f=e.updated||t,p=e.removing||t,m=e.removed||t,h=e.adding||t,w=e.added||t,s=e.key||(e=>e.getAttribute("key")),d=e.lookahead||!1,v=e.debug||!1}(a),l=e,u=function(e){const t=document.createElement("template");return t.innerHTML=e,t.content.firstElementChild}(t),window.Alpine&&window.Alpine.closestDataStack&&!e._x_dataStack&&(u._x_dataStack=window.Alpine.closestDataStack(e),u._x_dataStack&&window.Alpine.clone(e,u)),await b(),await x(e,u),l=void 0,u=void 0,e}function o(e,...t){let n=!1;return e(...t,(()=>n=!0)),n}function l(e){e.directive("ajax",((e,{},{cleanup:t})=>{u(e);let n=function(e){let t=t=>{var n;let r=t.target;if(d(r))return;t.preventDefault(),t.stopPropagation();let i=(r.getAttribute("method")||"GET").toUpperCase(),a=r.getAttribute("action")||window.location.href,o=new FormData(r);null!=t&&null!==(n=t.submitter)&&void 0!==n&&n.name&&o.append(t.submitter.name,t.submitter.value),f(e,r,i,a,o)};return e.addEventListener("submit",t),()=>e.removeEventListener("submit",t)}(e),r=function(e){let t=t=>{let n=t.target,r=n.dataset.action;r&&(t.preventDefault(),t.stopPropagation(),f(e,n,"GET",r,null))};return e.addEventListener("click",t),()=>e.removeEventListener("click",t)}(e);t((()=>{n(),r()}))})),e.directive("load",((e,{value:t,modifiers:n,expression:r},{cleanup:i})=>{if(!t&&!e.dataset.source)return p(e,"GET",r);if(!t&&n.length){let t=n[0].split("ms")[0];setTimeout((()=>p(e,"GET",r)),t)}let a=function(e,t,n){let r=()=>p(e,"GET",n);return window.addEventListener(t,r),()=>window.removeEventListener(t,r)}(e,t,r);i((()=>{a()}))}))}function u(e){if(!e.hasAttribute("data-action"))return s(e)?c(e):void e.querySelectorAll("[href]:not([noajax]):not([data-action])").forEach((e=>{s(e)&&!d(e)&&c(e)}))}function s(e){return"A"===e.tagName&&e.getAttribute("href")&&0!==e.getAttribute("href").indexOf("#")&&e.hostname===location.hostname}function d(e){return e.closest("[x-ajax],[noajax]").hasAttribute("noajax")}function c(e){e.setAttribute("role","button"),e.dataset.action=e.getAttribute("href"),e.tabIndex=0,e.removeAttribute("href"),e.addEventListener("keydown",(e=>32===e.keyCode&&e.target.click()))}async function f(e,t,n,r,i=null){let a=await m(t,n,r,i);if(!a.body)return;let o=t.closest("[x-target]");w(new Set(o?o.getAttribute("x-target").split(" ").filter((e=>e)):[e.id]),a.body,a.url)}async function p(e,t,n){let r=await m(e,t,n);r.body&&w(new Set([e.id]),r.body,r.url,!1)}async function m(e,t,n,r=null){var i;if(!h(e,"ajax:before"))return!1;if("GET"===t&&r){let e=Array.from(r.entries()).filter((([e,t])=>""!==t||null!==t));if(e.length){let t=n.split("#");(n=t[0]).includes("?")?n+="&":n+="?",n+=new URLSearchParams(e);let r=t[1];r&&(n+="#"+r)}r=null}let a=null===(i=e.closest("[data-source]"))||void 0===i?void 0:i.dataset.source;try{let i=await fetch(n,{headers:{"X-Alpine-Request":"true"},referrer:a,method:t,body:r});if(!i.ok){let e=new Error("Network response was not OK.");throw e.response=i,e}return h(e,"ajax:success",i),h(e,"ajax:after",i),{url:i.url,body:await i.text()}}catch(t){let n=t.response;if(!n)throw t;return h(e,"ajax:error",n),h(e,"ajax:after",n),{url:n.url,body:await n.text()}}}function h(e,t,n={}){return e.dispatchEvent(new CustomEvent(t,{detail:n,bubbles:!0,composed:!0,cancelable:!0}))}function w(e,t,n,r=!0){r&&document.querySelectorAll("[x-sync]").forEach((t=>{t.id&&e.add(t.id)}));let i=function(e){return document.createRange().createContextualFragment(e)}(t);e.forEach((async e=>{let t=i.getElementById(e);t&&(t.dataset.source=n,await a(document.getElementById(e),t.outerHTML),u(document.getElementById(e)))}))}a.step=()=>r(),a.log=e=>{i=e},document.addEventListener("alpine:initializing",(()=>{l(window.Alpine)}))}));
+</script>
+  <script defer="" src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <style></style>
+  <script></script>
+</head>
+
+<body>
+  <a href="#main">Skip to content</a>
+  <header>
+    <a href="/alpine-ajax/" aria-current="">Alpine Ajax</a>
+    <nav aria-label="Site">
+      <ul role="list">
+        <a href="/alpine-ajax/reference" aria-current="">Reference</a>
+        <a href="/alpine-ajax/examples" aria-current="page">Examples</a>
+        <a href="https://github.com/imacrayon/alpine-ajax">GitHub</a>
+      </ul>
+    </nav>
+  </header>
+  <main id="main"><h1 id="examples" tabindex="-1">Examples <a class="direct-link" href="#examples" aria-hidden="true">#</a></h1>
+<p>Below are a set of UX patterns implemented using Alpine AJAX with minimal HTML and styling. Many of these patterns were borrowed from <a href="https://htmx.org/examples/">HTMX's excellent UI Examples</a>.</p>
+<p>You can copy and paste them and then adjust them for your needs.</p>
+<dl>
+  <div>
+    <dt><a href="/alpine-ajax/examples/toggle-button">Toggle Button</a></dt>
+    <dd>The classic "Like" toggle button.</dd>
+  </div>
+  <div>
+    <dt><a href="/alpine-ajax/examples/inline-edit">Inline Edit</a></dt>
+    <dd>Edit data inline.</dd>
+  </div>
+  <div>
+    <dt><a href="/alpine-ajax/examples/delete-row">Delete Row</a></dt>
+    <dd>Delete a row from a table.</dd>
+  </div>
+  <div>
+    <dt><a href="/alpine-ajax/examples/edit-row">Edit Row</a></dt>
+    <dd>Edit a table row inline.</dd>
+  </div>
+  <div>
+    <dt><a href="/alpine-ajax/examples/bulk-update">Bulk Update</a></dt>
+    <dd>Change multiple items in a collection at once.</dd>
+  </div>
+  <div>
+    <dt><a href="/alpine-ajax/examples/active-search">Instant Search</a></dt>
+    <dd>Search or filter a data collection while you type.</dd>
+  </div>
+  <div>
+    <dt><a href="/alpine-ajax/examples/notifications">Notifications</a></dt>
+    <dd>Display notification "toasts".</dd>
+  </div>
+  <div>
+    <dt><a href="/alpine-ajax/examples/progress-bar">Progress Bar</a></dt>
+    <dd>A job-runner like progress bar.</dd>
+  </div>
+  <div>
+    <dt><a href="/alpine-ajax/examples/lazy-load">Lazy Load</a></dt>
+    <dd>Lazy load remote content.</dd>
+  </div>
+  <div>
+    <dt><a href="/alpine-ajax/examples/dialog">Dialog (Modal)</a></dt>
+    <dd>Load remote content in a dialog window.</dd>
+  </div>
+  <div>
+    <dt><a href="/alpine-ajax/examples/dialog-form">Dialog (Modal) Form</a></dt>
+    <dd>Handle forms withing a dialog window.</dd>
+  </div>
+  <!-- <div>
+    <dt><a href="/examples/inline-validation">Inline Validation</a></dt>
+    <dd>Inline validation when a form field changes.</dd>
+  </div> -->
+</dl>
+</main>
+
+
+
+</body>
+</html>
