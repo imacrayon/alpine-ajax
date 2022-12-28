@@ -13,7 +13,7 @@ This pattern starts with a simple form:
 </form>
 ```
 
-When the form submitted a `POST` request is issued to the server, the server would record a like and return a new button state:
+When the form is submitted, a `POST` request is issued to the server, and the server will return a new button state:
 
 ```html
 <form x-data x-ajax id="like" method="delete" action="/comments/1/like">
@@ -21,7 +21,7 @@ When the form submitted a `POST` request is issued to the server, the server wou
 </form>
 ```
 
-Note that when this button is toggle with the keyboard, focus is retained between UI updates.
+Note that when this button is toggled using the keyboard, focus is retained between UI updates.
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
