@@ -13,10 +13,15 @@ export default function (Alpine) {
     })
   })
 
-  Alpine.directive('load', (el, { value, expression }, { cleanup }) => {
+  Alpine.directive('load', (el, { value, modifiers, expression }, { cleanup }) => {
     // Checking for `data-source` prevents an infinite loop.
     if (!value && !el.dataset.source) {
       return handleLoad(el, 'GET', expression)
+    }
+
+    if (!value && modifiers.length) {
+      let wait = modifiers[0].split('ms')[0]
+      setTimeout(() => handleLoad(el, 'GET', expression), wait)
     }
 
     let stopListeningForServerEvent = listenForServerEvent(el, value, expression)
