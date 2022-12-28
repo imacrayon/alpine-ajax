@@ -11,10 +11,10 @@ We start with an empty `<dialog>` and a `<table>` of contact data.
 <table>
   <thead>
     <tr>
-      <th>Name</th>
-      <th>Email</th>
-      <th>Status</th>
-      <th>Action</th>
+      <th scope="col">Name</th>
+      <th scope="col">Email</th>
+      <th scope="col">Status</th>
+      <th scope="col">Action</th>
     </tr>
   </thead>
   <tbody x-data x-ajax id="contacts" @ajax:before="$dispatch('dialog:open')" x-load:contact:updated="/contacts">
@@ -155,10 +155,10 @@ Finally, the `contact:updated` event causes the `<tbody>` to refresh with the up
     return `<table>
   <thead>
     <tr>
-      <th>Name</th>
-      <th>Email</th>
-      <th>Status</th>
-      <th width="53">Action</th>
+      <th scope="col">Name</th>
+      <th scope="col">Email</th>
+      <th scope="col">Status</th>
+      <th scope="col" width="53">Action</th>
     </tr>
   </thead>
   <tbody x-data x-ajax id="contacts" @ajax:before="$dispatch('dialog:open')" @ajax:error="alert('test')" x-load:contact:updated="/contacts">

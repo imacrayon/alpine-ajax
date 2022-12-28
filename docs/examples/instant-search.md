@@ -15,9 +15,9 @@ We start with a search form and a table:
 <table>
   <thead>
     <tr>
-      <th>Name</th>
-      <th>Email</th>
-      <th>Status</th>
+      <th scope="col">Name</th>
+      <th scope="col">Email</th>
+      <th scope="col">Status</th>
     </tr>
   </thead>
   <tbody id="contacts">
@@ -91,9 +91,9 @@ form is still functional if JavaScript fails to load or is disabled.
 <table id="contacts">
   <thead>
     <tr>
-      <th>Name</th>
-      <th>Email</th>
-      <th>Status</th>
+      <th scope="col">Name</th>
+      <th scope="col">Email</th>
+      <th scope="col">Status</th>
     </tr>
   </thead>
   <tbody>

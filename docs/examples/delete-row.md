@@ -10,10 +10,10 @@ table markup:
 <table>
   <thead>
     <tr>
-      <th>Name</th>
-      <th>Email</th>
-      <th>Status</th>
-      <th></th>
+      <th scope="col">Name</th>
+      <th scope="col">Email</th>
+      <th scope="col">Status</th>
+      <th scope="col"></th>
     </tr>
   </thead>
   <tbody x-data x-ajax id="contacts" @ajax:before="confirm('Are you sure?') || $event.preventDefault()">
@@ -88,10 +88,10 @@ with a table that is lacking the row which was just deleted.
     return `<table>
   <thead>
     <tr>
-      <th>Name</th>
-      <th>Email</th>
-      <th>Status</th>
-      <th width="71">Action</th>
+      <th scope="col">Name</th>
+      <th scope="col">Email</th>
+      <th scope="col">Status</th>
+      <th scope="col" width="71">Action</th>
     </tr>
   </thead>
   <tbody x-data x-ajax id="contacts" @ajax:before="confirm('Are you sure?') || $event.preventDefault()">

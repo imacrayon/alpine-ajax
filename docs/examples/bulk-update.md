@@ -10,10 +10,10 @@ accomplished by putting a form below a table, with associated checkboxes in the 
 <table id="contacts">
   <thead>
     <tr>
-      <th>Edit</th>
-      <th>Name</th>
-      <th>Email</th>
-      <th>Status</th>
+      <th scope="col">Edit</th>
+      <th scope="col">Name</th>
+      <th scope="col">Email</th>
+      <th scope="col">Status</th>
     </tr>
   </thead>
   <tbody>
@@ -73,10 +73,10 @@ updated rows.
     return `<table id="contacts">
   <thead>
     <tr>
-      <th>Edit</th>
-      <th>Name</th>
-      <th>Email</th>
-      <th>Status</th>
+      <th scope="col">Edit</th>
+      <th scope="col">Name</th>
+      <th scope="col">Email</th>
+      <th scope="col">Status</th>
     </tr>
   </thead>
   <tbody>

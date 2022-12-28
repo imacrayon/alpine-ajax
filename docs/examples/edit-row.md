@@ -9,9 +9,9 @@ This example shows how to implement editable table rows. First let's look at the
 <table>
   <thead>
     <tr>
-      <th>Name</th>
-      <th>Email</th>
-      <th>Actions</th>
+      <th scope="col">Name</th>
+      <th scope="col">Email</th>
+      <th scope="col">Actions</th>
     </tr>
   </thead>
   <tbody x-data x-ajax>
@@ -114,9 +114,9 @@ Finally, here is the edit state that will replace a row:
     return `<table>
   <thead>
     <tr>
-      <th>Name</th>
-      <th>Email</th>
-      <th width="140">Action</th>
+      <th scope="col">Name</th>
+      <th scope="col">Email</th>
+      <th scope="col" width="140">Action</th>
     </tr>
   </thead>
   <tbody x-data x-ajax>
