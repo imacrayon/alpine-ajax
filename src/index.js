@@ -164,7 +164,7 @@ async function makeRequest(el, method, action, body = null) {
     dispatch(el, 'ajax:success', response)
     dispatch(el, 'ajax:after', response)
 
-    return { url: response.url, headers: response.headers, body: await response.text() }
+    return { url: response.url, body: await response.text() }
   } catch (error) {
     let response = error.response
     if (!response) throw error
@@ -172,7 +172,7 @@ async function makeRequest(el, method, action, body = null) {
     dispatch(el, 'ajax:error', response)
     dispatch(el, 'ajax:after', response)
 
-    return { url: response.url, headers: response.headers, body: await response.text() }
+    return { url: response.url, body: await response.text() }
   }
 }
 
