@@ -163,7 +163,7 @@ test('AJAX behavior is ignored with noajax',
 )
 
 test('ajax:before event is fired',
-  html`<h1 id="title">Replace me</h1><p id="before">Change me</p><form x-data x-ajax x-target="title" x-on:ajax:before="document.getElementById('before').textContent = 'Changed'" method="post" action="/"><button></button></form>`,
+  html`<h1 id="title">Replace me</h1><p id="before">Change me</p><form x-data x-ajax x-target="title" @ajax:before="document.getElementById('before').textContent = 'Changed'" method="post" action="/"><button></button></form>`,
   ({ get }) => {
     cy.intercept('POST', '/', {
       statusCode: 200,
@@ -178,7 +178,7 @@ test('ajax:before event is fired',
 )
 
 test('ajax:before can cancel AJAX requests',
-  html`<h1 id="title">Replace me</h1><form x-data x-ajax x-target="title" x-on:ajax:before="$event.preventDefault()" method="post" action="/"><button></button></form>`,
+  html`<h1 id="title">Replace me</h1><form x-data x-ajax x-target="title" @ajax:before="$event.preventDefault()" method="post" action="/"><button></button></form>`,
   ({ get }) => {
     cy.on('fail', (error, runnable) => {
       if (error.message.indexOf('Timed out retrying') !== 0) throw error
