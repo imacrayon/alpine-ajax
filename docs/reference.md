@@ -74,12 +74,30 @@ Review this navigation that demonstrates `noajax` at work:
 
 You can listen for AJAX events to perform additional actions during an AJAX request:
 
-Name | Description
------------- | ---
-ajax:before  | Fired before the request is made. If this event is cancelled using `$event.preventDefault()` the request will be aborted.
-ajax:success | Fired when a network request completes. `detail` contains the server response data.
-ajax:error   | Fired on a configuration or network error. `detail` contains the server response data.
-ajax:after   | Fired after both successful and unsuccessful requests.
+<table>
+  <thead>
+    <th scope="col" width="96">Name</th>
+    <th scope="col">Description</th>
+  </thead>
+  <tbody>
+  <tr>
+    <td>ajax:before</td>
+    <td>Fired before the request is made. If this event is cancelled using `$event.preventDefault()` the request will be aborted.</td>
+  </tr>
+  <tr>
+    <td>ajax:success</td>
+    <td>Fired when a network request completes. `detail` contains the server response data.</td>
+  </tr>
+  <tr>
+    <td>ajax:error</td>
+    <td>Fired on a configuration or network error. `detail` contains the server response data.</td>
+  </tr>
+  <tr>
+    <td>ajax:after</td>
+    <td>Fired after both successful and unsuccessful requests.</td>
+  </tr>
+  </tbody>
+</table>
 
 Here's an example of aborting a form request when the user cancels a dialog prompt:
 
