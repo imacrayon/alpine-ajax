@@ -1,6 +1,11 @@
 {
   "name": "@imacrayon/alpine-ajax",
   "description": "Issue AJAX requests from AlpineJS components.",
+  "keywords": [
+    "AJAX",
+    "HTML",
+    "AlpineJS"
+  ],
   "version": "0.0.18",
   "license": "MIT",
   "author": "Christian Taylor <christianbtaylor@gmail.com>",
@@ -8,19 +13,33 @@
     "type": "git",
     "url": "https://github.com/imacrayon/alpine-ajax"
   },
-  "main": "src/index.js",
+  "files": [
+    "LICENSE.md",
+    "README.md",
+    "dist/*.js"
+  ],
+  "main": "dist/cdn.min.js",
+  "unpkg": "dist/cdn.min.js",
   "scripts": {
     "build": "npm run build:min && npm run build:unmin",
     "build:unmin": "rollup -c",
     "build:min": "NODE_ENV=production rollup -c -o dist/cdn.min.js",
+    "build:docs": "cd docs && env NODE_ENV=production npx eleventy --pathprefix 'alpine-ajax'",
     "watch": "rollup -c -w",
     "test": "cypress run",
-    "cypress": "cypress open"
+    "cypress": "cypress open",
+    "start": "cd docs && npx @11ty/eleventy --serve",
+    "debug": "DEBUG=* npx @11ty/eleventy"
   },
   "devDependencies": {
+    "@11ty/eleventy": "^2.0.0-canary.15",
+    "@11ty/eleventy-plugin-syntaxhighlight": "^4.2.0",
+    "@11ty/eleventy-plugin-webc": "^0.8.1",
     "@babel/core": "^7.12.10",
     "@babel/preset-env": "^7.12.11",
     "cypress": "^7.5.0",
+    "markdown-it": "^13.0.1",
+    "markdown-it-anchor": "^8.6.6",
     "rollup": "^2.35.1",
     "rollup-plugin-babel": "^4.4.0",
     "rollup-plugin-filesize": "^9.1.0",

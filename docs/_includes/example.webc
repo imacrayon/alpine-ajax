@@ -1,0 +1,12 @@
+---
+layout: layout.webc
+---
+
+<template webc:type="11ty" 11ty:type="md,njk">
+  # {{ title }}
+</template>
+<template @raw="content" webc:nokeep></template>
+<template webc:type="11ty" 11ty:type="md">
+  ## Demo
+</template>
+<demo-server webc:nokeep></demo-server>

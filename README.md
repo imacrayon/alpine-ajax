@@ -1,8 +1,8 @@
 # Alpine AJAX
 
-A set of AlpineJS utilities that enable forms and links to make asynchronous HTTP requests and render the response to the page.
+A set of AlpineJS directives that enable forms and links to make asynchronous HTTP requests and render the response to the page.
 
-These utilities empower you to create modern, dynamic, progressively enhanced, interfaces with very little JavaScript.
+These directives empower you to create modern, dynamic, progressively enhanced, interfaces with very little JavaScript.
 
 Here's a simple example with an explanation below:
 
@@ -116,7 +116,7 @@ ajax:after | Fired after both successful and unsuccessful requests.
 Here's an example of opening a modal and then loading remote content inside of it:
 
 ```html
-<!-- Keep in mind this is just an example, `dialog` still has browser support problems. -->
+<!-- Keep in mind this is just an example, `<dialog>` still has browser support problems. -->
 <dialog x-data @modal.window="$el.open = true">
   <div id="modal-content"></div>
   ...
