@@ -57,30 +57,28 @@
 <h3 id="ajax-events" tabindex="-1">AJAX Events <a class="direct-link" href="#ajax-events" aria-hidden="true">#</a></h3>
 <p>You can listen for AJAX events to perform additional actions during an AJAX request:</p>
 <table>
-<thead>
-<tr>
-<th>Name</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>ajax:before</td>
-<td>Fired before the request is made. If this event is cancelled using <code>$event.preventDefault()</code> the request will be aborted.</td>
-</tr>
-<tr>
-<td>ajax:success</td>
-<td>Fired when a network request completes. <code>detail</code> contains the server response data.</td>
-</tr>
-<tr>
-<td>ajax:error</td>
-<td>Fired on a configuration or network error. <code>detail</code> contains the server response data.</td>
-</tr>
-<tr>
-<td>ajax:after</td>
-<td>Fired after both successful and unsuccessful requests.</td>
-</tr>
-</tbody>
+  <thead>
+    <th scope="col" width="96">Name</th>
+    <th scope="col">Description</th>
+  </thead>
+  <tbody>
+  <tr>
+    <td>ajax:before</td>
+    <td>Fired before the request is made. If this event is cancelled using `$event.preventDefault()` the request will be aborted.</td>
+  </tr>
+  <tr>
+    <td>ajax:success</td>
+    <td>Fired when a network request completes. `detail` contains the server response data.</td>
+  </tr>
+  <tr>
+    <td>ajax:error</td>
+    <td>Fired on a configuration or network error. `detail` contains the server response data.</td>
+  </tr>
+  <tr>
+    <td>ajax:after</td>
+    <td>Fired after both successful and unsuccessful requests.</td>
+  </tr>
+  </tbody>
 </table>
 <p>Here's an example of aborting a form request when the user cancels a dialog prompt:</p>
 <pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>form</span> <span class="token attr-name">x-data</span> <span class="token attr-name">x-ajax</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>delete_user<span class="token punctuation">"</span></span> <span class="token attr-name"><span class="token namespace">@ajax:</span>before</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>confirm('Are you sure?') || $event.preventDefault()<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>button</span><span class="token punctuation">></span></span>Delete User<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>button</span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>form</span><span class="token punctuation">></span></span></code></pre>
