@@ -4,7 +4,7 @@ layout: layout.webc
 
 # Examples
 
-Below are a set of UX patterns implemented using Alpine AJAX with minimal HTML and styling. Many of these patterns were borrowed from [HTMX's excellent UI Examples](https://htmx.org/examples/).
+Below are a set of UX patterns implemented using Alpine AJAX with minimal HTML and styling.
 
 You can copy and paste them and then adjust them for your needs.
 
@@ -58,3 +58,5 @@ You can copy and paste them and then adjust them for your needs.
     <dd>Inline validation when a form field changes.</dd>
   </div> -->
 </dl>
+
+Many of these patterns were borrowed from [HTMX's excellent UI Examples](https://htmx.org/examples/).
