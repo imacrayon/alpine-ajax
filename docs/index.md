@@ -6,7 +6,7 @@ layout: layout.webc
 
 A set of [Alpine.js](https://alpinejs.dev) directives that enable forms and links to make asynchronous HTTP requests and render the response to the page.
 
-These directives empower you to progressively enhanced multi-page, server-rendedered, websites and create modern, dynamic, <abbr title="User Interface">UI<abbr>s with very little JavaScript.
+These directives empower you to progressively enhanced multi-page, server-rendedered, websites and create modern, dynamic, <abbr title="User Interface">UI</abbr>s with very little JavaScript.
 
 The Alpine AJAX project values
   1. [Progressive enhancement](https://developer.mozilla.org/en-US/docs/Glossary/Progressive_Enhancement)
