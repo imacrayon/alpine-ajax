@@ -30,7 +30,7 @@ You can copy and paste them and then adjust them for your needs.
     <dd>Change multiple items in a collection at once.</dd>
   </div>
   <div>
-    <dt><a href="/examples/active-search">Instant Search</a></dt>
+    <dt><a href="/examples/instant-search">Instant Search</a></dt>
     <dd>Search or filter a data collection while you type.</dd>
   </div>
   <div>
