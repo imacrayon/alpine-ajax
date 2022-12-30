@@ -91,7 +91,7 @@ with a table that is lacking the row which was just deleted.
       <th scope="col">Name</th>
       <th scope="col">Email</th>
       <th scope="col">Status</th>
-      <th scope="col" width="71">Action</th>
+      <th scope="col" width="66">Action</th>
     </tr>
   </thead>
   <tbody x-data x-ajax id="contacts" @ajax:before="confirm('Are you sure?') || $event.preventDefault()">

@@ -116,7 +116,7 @@ Finally, here is the edit state that will replace a row:
     <tr>
       <th scope="col">Name</th>
       <th scope="col">Email</th>
-      <th scope="col" width="140">Action</th>
+      <th scope="col" width="130">Action</th>
     </tr>
   </thead>
   <tbody x-data x-ajax>
