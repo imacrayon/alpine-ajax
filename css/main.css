@@ -12,6 +12,56 @@
   }
 }
 
+body {
+  max-width: 65ch;
+  padding: 2rem 1rem;
+  border-radius: 0;
+  font-size: 1rem;
+}
+
+h1,
+h2,
+h3 {
+  padding-bottom: .125rem;
+  margin-bottom: .5rem;
+}
+
+a button,
+button,
+a[role="button"],
+input[type="submit"],
+input[type="reset"],
+input[type="button"] {
+  padding: .375rem .75rem;
+  font-size: .875rem;
+  font-weight: 500;
+}
+
+code,
+samp,
+kbd,
+pre {
+  border-radius: .25rem;
+  padding: .25rem .375rem;
+  font-size: .875rem;
+}
+
+pre {
+  padding: 1rem 1.5rem;
+}
+
+details {
+  padding: .75rem 1rem;
+  border-radius: .25rem;
+}
+
+textarea,
+select,
+input {
+  padding: .375rem .75rem;
+  border-radius: .25rem;
+  font-size: 1rem;
+}
 
 [href="#main"] {
   display: block;
@@ -121,9 +171,7 @@ a[href].direct-link:focus:visited,
 }
 
 a[role="button"] {
-  font-size: 1rem;
   display: inline-flex;
-  padding: 6px 12px;
   justify-content: center;
   align-items: center;
   line-height: normal;
@@ -168,6 +216,7 @@ dialog {
 td>input,
 td>select {
   margin-bottom: 0;
+  max-width: 22ch;
 }
 
 dialog>form:first-child {
