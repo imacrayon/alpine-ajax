@@ -9,6 +9,7 @@
   "version": "0.0.19",
   "license": "MIT",
   "author": "Christian Taylor <christianbtaylor@gmail.com>",
+  "homepage": "https://imacrayon.github.io/alpine-ajax/",
   "repository": {
     "type": "git",
     "url": "https://github.com/imacrayon/alpine-ajax"
