@@ -107,11 +107,15 @@ function listenForServerEvent(el, event, action) {
 }
 
 async function handleAjax(root, el, method, action, body = null) {
+  let marker = el.closest('[x-target]')
+  let ids = new Set(marker ? marker.getAttribute('x-target').split(' ').filter(id => id) : [root.id])
+  ids.forEach(id => {
+    let busy = document.getElementById(id)
+    if (busy) busy.setAttribute('aria-busy', 'true')
+  })
   let response = await makeRequest(el, method, action, body)
   if (!response.body) return
 
-  let marker = el.closest('[x-target]')
-  let ids = new Set(marker ? marker.getAttribute('x-target').split(' ').filter(id => id) : [root.id])
   replaceTargets(ids, response.body, response.url)
 }
 
