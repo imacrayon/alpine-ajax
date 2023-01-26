@@ -137,11 +137,11 @@ test('AJAX behavior is inherited',
 )
 
 test('focus is maintained after elements are replaced',
-  html`<form x-data x-ajax id="replace" method="post"><button></button></form>`,
+  html`<form x-data x-ajax id="replace" method="post"><button aria-pressed="false">Like</button></form>`,
   ({ get }) => {
     cy.intercept('POST', 'spec.html', {
       statusCode: 200,
-      body: '<form x-data x-ajax id="replace" method="post"><button></button></form>'
+      body: '<form x-data x-ajax id="replace" method="post"><button aria-pressed="true">Unlike</button></form>'
     }).as('response')
     get('button').focus().click()
     cy.wait('@response').then(() => {

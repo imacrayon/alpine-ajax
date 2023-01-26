@@ -74,17 +74,15 @@ function listenForSubmit(el) {
     let action = form.getAttribute('action') || window.location.href
     let body = new FormData(form)
     let submitter = event.submitter
+    let restoreFocus = false
     if (submitter) {
+      restoreFocus = submitter === document.activeElement
       submitter.setAttribute('disabled', '')
       if (submitter.name) {
-        body.append(event.submitter.name, event.submitter.value)
+        body.append(submitter.name, submitter.value)
       }
     }
-    handleAjax(el, form, method, action, body).then(() => {
-      if (submitter) {
-        submitter.removeAttribute('disabled')
-      }
-    })
+    handleAjax(el, form, method, action, body, submitter, restoreFocus)
   }
 
   el.addEventListener('submit', handler)
@@ -99,7 +97,7 @@ function listenForNavigate(el) {
     if (!action) return
     event.preventDefault()
     event.stopPropagation()
-    handleAjax(el, link, 'GET', action, null)
+    handleAjax(el, link, 'GET', action, null, null)
   }
 
   el.addEventListener('click', handler)
@@ -114,7 +112,8 @@ function listenForServerEvent(el, event, action) {
   return () => window.removeEventListener(event, handler)
 }
 
-async function handleAjax(root, el, method, action, body = null) {
+// TODO: This function is getting nasty, clean it up
+async function handleAjax(root, el, method, action, body = null, submitter = null, restoreFocus = false) {
   let marker = el.closest('[x-target]')
   let ids = new Set(marker ? marker.getAttribute('x-target').split(' ').filter(id => id) : [root.id])
   ids.forEach(id => {
@@ -124,6 +123,13 @@ async function handleAjax(root, el, method, action, body = null) {
   let response = await makeRequest(el, method, action, body)
   if (!response.body) return
 
+  // `disabled` is removed so that the submitter is persisted during DOM morph
+  if (submitter) {
+    submitter.removeAttribute('disabled')
+    if (restoreFocus) {
+      submitter.focus()
+    }
+  }
   replaceTargets(ids, response.body, response.url)
 }
 
