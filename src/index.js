@@ -73,10 +73,18 @@ function listenForSubmit(el) {
     let method = (form.getAttribute('method') || 'GET').toUpperCase()
     let action = form.getAttribute('action') || window.location.href
     let body = new FormData(form)
-    if (event?.submitter?.name) {
-      body.append(event.submitter.name, event.submitter.value)
+    let submitter = event.submitter
+    if (submitter) {
+      submitter.setAttribute('disabled', '')
+      if (submitter.name) {
+        body.append(event.submitter.name, event.submitter.value)
+      }
     }
-    handleAjax(el, form, method, action, body)
+    handleAjax(el, form, method, action, body).then(() => {
+      if (submitter) {
+        submitter.removeAttribute('disabled')
+      }
+    })
   }
 
   el.addEventListener('submit', handler)
