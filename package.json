@@ -19,7 +19,7 @@
     "README.md",
     "dist/*.js"
   ],
-  "main": "dist/cdn.min.js",
+  "main": "src/index.js",
   "unpkg": "dist/cdn.min.js",
   "scripts": {
     "build": "npm run build:min && npm run build:unmin",
