@@ -1,6 +1,7 @@
 :root {
   --nc-lk-1: #2563EB;
   --nc-lk-2: #1d4ed8;
+  --nc-lk-3: #666666;
   --shadow: rgb(0 0 0 / 0.1);
 }
 
@@ -8,6 +9,10 @@
   :root {
     --nc-bg-1: #111111;
     --nc-bg-2: #000000;
+    --nc-lk-1: #60a5fa;
+    --nc-lk-2: #3b82f6;
+    --nc-lk-3: #326DEC;
+    --nc-lk-tx: #000077;
     --shadow: rgb(0 0 0 / 0.3);
   }
 }
@@ -120,7 +125,7 @@ nav ul {
 }
 
 header [aria-current="page"] {
-  color: var(--nc-tx-2);
+  color: var(--nc-lk-3);
 }
 
 .stack {
