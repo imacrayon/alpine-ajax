@@ -105,6 +105,10 @@ ol[role="list"] {
   margin-bottom: 0;
 }
 
+dl>div+div {
+  margin-top: .5rem;
+}
+
 header {
   display: flex;
   justify-content: space-between;
