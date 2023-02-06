@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Delete Table Row | Alpine AJAX</title>
+  <title>Loading Indicator | Alpine AJAX</title>
   <meta name="description" content="Alpine AJAX">
   <meta name="generator" content="Eleventy v2.0.0">
   <link rel="stylesheet" href="https://unpkg.com/@exampledev/new.css@1.1.3/new.css">
@@ -179,71 +179,103 @@
       </ul>
     </nav>
   </header>
-  <main id="main"><h1 id="delete-table-row" tabindex="-1">Delete Table Row <a class="direct-link" href="#delete-table-row" aria-hidden="true">#</a></h1>
+  <main id="main"><h1 id="loading-indicator" tabindex="-1">Loading Indicator <a class="direct-link" href="#loading-indicator" aria-hidden="true">#</a></h1>
 
-<p>This example shows how to implement a delete button that removes a table row when clicked. First let's look at the
-table markup:</p>
-<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>table</span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>thead</span><span class="token punctuation">></span></span><br>    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>tr</span><span class="token punctuation">></span></span><br>      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>th</span> <span class="token attr-name">scope</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>col<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>Name<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>th</span><span class="token punctuation">></span></span><br>      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>th</span> <span class="token attr-name">scope</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>col<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>Email<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>th</span><span class="token punctuation">></span></span><br>      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>th</span> <span class="token attr-name">scope</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>col<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>Status<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>th</span><span class="token punctuation">></span></span><br>      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>th</span> <span class="token attr-name">scope</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>col<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>th</span><span class="token punctuation">></span></span><br>    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>tr</span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>thead</span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>tbody</span> <span class="token attr-name">x-data</span> <span class="token attr-name">x-ajax</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>contacts<span class="token punctuation">"</span></span> <span class="token attr-name"><span class="token namespace">@ajax:</span>before</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>confirm('Are you sure?') || $event.preventDefault()<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br>    ...<br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>tbody</span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>table</span><span class="token punctuation">></span></span></code></pre>
-<p>The table is listening for the <code>ajax:before</code> event to confirm the delete action.</p>
-<p>Each row has a form that will issue a <code>DELETE</code> request to delete the row from the server. This request responds
-with a table that is lacking the row which was just deleted.</p>
-<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>tr</span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>td</span><span class="token punctuation">></span></span>Finn<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>td</span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>td</span><span class="token punctuation">></span></span>fmertins@candykingdom.gov<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>td</span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>td</span><span class="token punctuation">></span></span>Active<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>td</span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>td</span><span class="token punctuation">></span></span><br>    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>form</span> <span class="token attr-name">method</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>delete<span class="token punctuation">"</span></span> <span class="token attr-name">action</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>/contacts/1<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br>      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>button</span><span class="token punctuation">></span></span>Delete<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>button</span><span class="token punctuation">></span></span><br>    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>form</span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>td</span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>tr</span><span class="token punctuation">></span></span></code></pre>
+<p>This example shows how you can use a little CSS to create a nice looking loading indicator that will appear while AJAX requests are in progress.</p>
+<p>We start with a simple card that contains a button. When the button is clicked, a <code>GET</code> request is issued to retrieve a table of contact information.</p>
+<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>card<span class="token punctuation">"</span></span> <span class="token attr-name">x-data</span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>table<span class="token punctuation">"</span></span> <span class="token attr-name">x-ajax</span><span class="token punctuation">></span></span><br>    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>a</span> <span class="token attr-name">href</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>/contacts<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>Load Contacts<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>a</span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span></code></pre>
+<p>The contact table could take a while to fetch if it's large and it would be helpful to indicate to our users that the app is processing thier request.</p>
+<p>Fortunately, Alpine AJAX adds <code>aria-busy=&quot;true&quot;</code> to AJAX targets while a request is processing. We can can use this attribute in our CSS to automatically show and hide a loading indicator:</p>
+<pre class="language-css"><code class="language-css"><span class="token selector">[aria-busy]</span> <span class="token punctuation">{</span><br>  <span class="token property">--loading-size</span><span class="token punctuation">:</span> 64px<span class="token punctuation">;</span><br>  <span class="token property">--loading-stroke</span><span class="token punctuation">:</span> 6px<span class="token punctuation">;</span><br>  <span class="token property">--loading-duration</span><span class="token punctuation">:</span> 1s<span class="token punctuation">;</span><br>  <span class="token property">opacity</span><span class="token punctuation">:</span> .75<br><span class="token punctuation">}</span><br><span class="token selector">[aria-busy]:before</span> <span class="token punctuation">{</span><br>  <span class="token property">content</span><span class="token punctuation">:</span> <span class="token string">''</span><span class="token punctuation">;</span><br>  <span class="token property">position</span><span class="token punctuation">:</span> absolute<span class="token punctuation">;</span><br>  <span class="token property">top</span><span class="token punctuation">:</span> 50%<span class="token punctuation">;</span><br>  <span class="token property">left</span><span class="token punctuation">:</span> 50%<span class="token punctuation">;</span><br>  <span class="token property">width</span><span class="token punctuation">:</span> <span class="token function">var</span><span class="token punctuation">(</span>--loading-size<span class="token punctuation">)</span><span class="token punctuation">;</span><br>  <span class="token property">height</span><span class="token punctuation">:</span> <span class="token function">var</span><span class="token punctuation">(</span>--loading-size<span class="token punctuation">)</span><span class="token punctuation">;</span><br>  <span class="token property">margin-top</span><span class="token punctuation">:</span> <span class="token function">calc</span><span class="token punctuation">(</span><span class="token function">var</span><span class="token punctuation">(</span>--loading-size<span class="token punctuation">)</span> / 2 * -1<span class="token punctuation">)</span><span class="token punctuation">;</span><br>  <span class="token property">margin-left</span><span class="token punctuation">:</span> <span class="token function">calc</span><span class="token punctuation">(</span><span class="token function">var</span><span class="token punctuation">(</span>--loading-size<span class="token punctuation">)</span> / 2 * -1<span class="token punctuation">)</span><span class="token punctuation">;</span><br>  <span class="token property">border</span><span class="token punctuation">:</span> <span class="token function">var</span><span class="token punctuation">(</span>--loading-stroke<span class="token punctuation">)</span> solid <span class="token function">rgba</span><span class="token punctuation">(</span>0<span class="token punctuation">,</span> 0<span class="token punctuation">,</span> 0<span class="token punctuation">,</span> 0.15<span class="token punctuation">)</span><span class="token punctuation">;</span><br>  <span class="token property">border-radius</span><span class="token punctuation">:</span> 50%<span class="token punctuation">;</span><br>  <span class="token property">border-top-color</span><span class="token punctuation">:</span> <span class="token function">rgba</span><span class="token punctuation">(</span>0<span class="token punctuation">,</span> 0<span class="token punctuation">,</span> 0<span class="token punctuation">,</span> 0.5<span class="token punctuation">)</span><span class="token punctuation">;</span><br>  <span class="token property">animation</span><span class="token punctuation">:</span> rotate <span class="token function">calc</span><span class="token punctuation">(</span><span class="token function">var</span><span class="token punctuation">(</span>--loading-duration<span class="token punctuation">)</span><span class="token punctuation">)</span> linear infinite<span class="token punctuation">;</span><br><span class="token punctuation">}</span><br><span class="token atrule"><span class="token rule">@keyframes</span> rotate</span> <span class="token punctuation">{</span><br>  <span class="token selector">100%</span> <span class="token punctuation">{</span> <span class="token property">transform</span><span class="token punctuation">:</span> <span class="token function">rotate</span><span class="token punctuation">(</span>360deg<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token punctuation">}</span><br><span class="token punctuation">}</span></code></pre>
+<style>
+  [aria-busy] {
+    --loading-size: 64px;
+    --loading-stroke: 6px;
+    --loading-duration: 1s;
+    position: relative;
+    opacity: .75
+  }
+  [aria-busy]:before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: var(--loading-size);
+    height: var(--loading-size);
+    margin-top: calc(var(--loading-size) / 2 * -1);
+    margin-left: calc(var(--loading-size) / 2 * -1);
+    border: var(--loading-stroke) solid rgba(0, 0, 0, 0.15);
+    border-radius: 50%;
+    border-top-color: rgba(0, 0, 0, 0.5);
+    animation: rotate calc(var(--loading-duration)) linear infinite;
+  }
+  @keyframes rotate {
+    100% { transform: rotate(360deg); }
+  }
+
+  #card {
+    box-shadow: 0 10px 15px -3px var(--shadow), 0 4px 6px -4px var(--shadow);
+    padding: 1rem;
+    border-radius: .5rem;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+  }
+
+  #table {
+    margin-bottom: 0;
+    min-height: 164px
+  }
+
+</style>
 <script>
-  let database = function () {
-    let data = [
-      { id: 1, name: "Finn", email: "fmertins@candykingdom.gov", status: "Active" },
-      { id: 2, name: "Jake", email: "jake@candykingdom.gov", status: "Active" },
-      { id: 3, name: "BMO", email: "bmo@moco.com", status: "Active" },
-      { id: 4, name: "Marceline", email: "marceline@vampirequeen.me", status: "Inactive" }
-    ];
-    return {
-      find: (id) => data.find(contact => contact.id === parseInt(id)),
-      remove: (id) => {
-        let index = data.findIndex(contact => contact.id === parseInt(id))
-        if (index !== -1) {
-          data.splice(index, 1)
-        }
-      },
-      all: () => data,
-    }
-  }()
-
   document.addEventListener('DOMContentLoaded', () => {
-    let routes = {
-      'GET /contacts': () => view(database.all()),
-    }
-    database.all().forEach(contact => {
-      routes[`DELETE /contacts/${contact.id}`] = () => {
-        database.remove(contact.id)
-        return view(database.all())
-      }
-    })
-    window.server(routes).get('/contacts')
+    window.server({
+      'GET /dashboard': () => dashboard(),
+      'GET /contacts': () => new Promise(resolve => {
+        setTimeout(() => resolve(contacts()), 2000)
+      }),
+    }).get('/dashboard')
   })
 
-  function view(contacts) {
-    let rows = contacts.map(contact => `<tr>
-  <td>${contact.name}</td>
-  <td>${contact.email}</td>
-  <td>${contact.status}</td>
-  <td>
-    <form method="delete" action="/contacts/${contact.id}" style="margin:0;">
-      <button>Delete</button>
-    </form>
-  </td>
-</tr>`).join('\n')
+  function dashboard() {
+    return `<div id="card" x-data>
+  <div id="table" x-ajax>
+    <a href="/contacts">Load Contacts</a>
+  </div>
+</div>`
+  }
 
-    return `<table>
+  function contacts(rows) {
+    return `<table id="table">
   <thead>
     <tr>
       <th scope="col">Name</th>
       <th scope="col">Email</th>
       <th scope="col">Status</th>
-      <th scope="col" width="66">Action</th>
     </tr>
   </thead>
-  <tbody x-data x-ajax id="contacts" @ajax:before="confirm('Are you sure?') || $event.preventDefault()">
-    ${rows}
+  <tbody>
+    <tr>
+      <td>Finn</td>
+      <td>fmertins@candykingdom.gov</td>
+      <td>Active</td>
+    </tr>
+    <tr>
+      <td>Jake</td>
+      <td>jake@candykingdom.gov</td>
+      <td>Inactive</td>
+    </tr>
+    <tr>
+      <td>BMO</td>
+      <td>bmo@moco.com</td>
+      <td>Inactive</td>
+    </tr>
+    <tr>
+      <td>Marceline</td>
+      <td>marceline@vampirequeen.me</td>
+      <td>Active</td>
+    </tr>
   </tbody>
 </table>`
   }
