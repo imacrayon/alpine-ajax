@@ -13,7 +13,7 @@ We start with a loading indicator that looks like this:
 </article>
 ```
 
-This loading indicator exists on the while we fetch the articles's content. You can use any CSS or SVG magic you'd like to create a fancy looking loading indicator.
+This loading indicator exists on the page while we fetch the articles's content. You can use any CSS or SVG magic you'd like to create a fancy looking loading indicator.
 
 The loaded content is then inserted into the UI once the request has succeeded:
 

@@ -38,6 +38,10 @@ You can copy and paste them and then adjust them for your needs.
     <dd>Display notification "toasts".</dd>
   </div>
   <div>
+    <dt><a href="/examples/loading">Loading Indicator</a></dt>
+    <dd>Indicate when AJAX requests are processing.</dd>
+  </div>
+  <div>
     <dt><a href="/examples/progress-bar">Progress Bar</a></dt>
     <dd>A job-runner like progress bar.</dd>
   </div>

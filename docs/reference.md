@@ -8,6 +8,7 @@ layout: layout.webc
     * [noajax](#noajax)
     * [AJAX Events](#ajax-events)
     * [Progressive Enhancement](#progressive-enhancement)
+    * [Loading States](#loading-states)
 2. [x-target](#x-target)
 3. [x-sync](#x-sync)
 4. [x-load](#x-load)
@@ -123,6 +124,13 @@ Since AJAX enabled links no longer trigger full page navigation, they are transf
 
 Behavior added with `x-ajax` degrades gracefully if JavaScript is not enabled: Links and forms continue to work as normal, they simply don't fire AJAX requests. This is known as [Progressive Enhancement](https://developer.mozilla.org/en-US/docs/Glossary/Progressive_Enhancement), and it allows a wider audience to use your sites functionality.
 
+### Loading States
+
+While an AJAX request is in progress there are a few loading states to be aware of:
+
+  * If a form submission triggered the request, the form's submit button is automatically disabled, this prevents users from triggering additional network requests by accidentally double clicking the submit button.
+  * During an AJAX request, `aria-busy="true"` is set on all targets of the request. This attribute can be used in CSS to provide a loading indicator, check out the [Loading Indicator example](/examples/loading) for more details.
+
 ## x-target
 
 Use this directive to target another element `id` on the page to be replaced instead of the `x-ajax` element.
@@ -178,7 +186,7 @@ Consider this list of notifications:
 </div>
 ```
 
-Every server response that includes a `notifications` element will get inserted into this `aria-live` region.
+Every server response that includes a `notifications` element will get inserted into this `aria-live` region. Take a look at the [Notifications example](/examples/notifications) for a demonstration.
 
 ## x-load
 
