@@ -11,7 +11,7 @@
     var lastBtn = null;
     document.addEventListener('click', function (e) {
       if (!e.target.closest) return;
-      lastBtn = e.target.closest('button, input[type=submit]');
+      lastBtn = e.target.closest('button, input[type=submit], input[type=image]');
     }, true);
     document.addEventListener('submit', function (e) {
       if ('submitter' in e) return;
@@ -540,8 +540,6 @@
 
   function listenForSubmit(el) {
     let handler = event => {
-      var _event$submitter;
-
       let form = event.target;
       if (isMarkedIgnored(form)) return;
       event.preventDefault();
@@ -549,12 +547,19 @@
       let method = (form.getAttribute('method') || 'GET').toUpperCase();
       let action = form.getAttribute('action') || window.location.href;
       let body = new FormData(form);
+      let submitter = event.submitter;
+      let restoreFocus = false;
 
-      if (event !== null && event !== void 0 && (_event$submitter = event.submitter) !== null && _event$submitter !== void 0 && _event$submitter.name) {
-        body.append(event.submitter.name, event.submitter.value);
+      if (submitter) {
+        restoreFocus = submitter === document.activeElement;
+        submitter.setAttribute('disabled', '');
+
+        if (submitter.name) {
+          body.append(submitter.name, submitter.value);
+        }
       }
 
-      handleAjax(el, form, method, action, body);
+      handleAjax(el, form, method, action, body, submitter, restoreFocus);
     };
 
     el.addEventListener('submit', handler);
@@ -568,7 +573,7 @@
       if (!action) return;
       event.preventDefault();
       event.stopPropagation();
-      handleAjax(el, link, 'GET', action, null);
+      handleAjax(el, link, 'GET', action, null, null);
     };
 
     el.addEventListener('click', handler);
@@ -580,13 +585,27 @@
 
     window.addEventListener(event, handler);
     return () => window.removeEventListener(event, handler);
-  }
+  } // TODO: This function is getting nasty, clean it up
 
-  async function handleAjax(root, el, method, action, body = null) {
-    let response = await makeRequest(el, method, action, body);
-    if (!response.body) return;
+
+  async function handleAjax(root, el, method, action, body = null, submitter = null, restoreFocus = false) {
     let marker = el.closest('[x-target]');
     let ids = new Set(marker ? marker.getAttribute('x-target').split(' ').filter(id => id) : [root.id]);
+    ids.forEach(id => {
+      let busy = document.getElementById(id);
+      if (busy) busy.setAttribute('aria-busy', 'true');
+    });
+    let response = await makeRequest(el, method, action, body);
+    if (!response.body) return; // `disabled` is removed so that the submitter is persisted during DOM morph
+
+    if (submitter) {
+      submitter.removeAttribute('disabled');
+
+      if (restoreFocus) {
+        submitter.focus();
+      }
+    }
+
     replaceTargets(ids, response.body, response.url);
   }
 
