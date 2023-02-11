@@ -15,7 +15,7 @@ We start with a simple card that contains a button. When the button is clicked, 
 </div>
 ```
 
-The contact table could take a while to fetch if it's large and it would be helpful to indicate to our users that the app is processing thier request.
+The contact table could take a while to fetch if it's large and it would be helpful to indicate to our users that the app is processing their request.
 
 Fortunately, Alpine AJAX adds `aria-busy="true"` to AJAX targets while a request is processing. We can can use this attribute in our CSS to automatically show and hide a loading indicator:
 

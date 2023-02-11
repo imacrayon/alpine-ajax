@@ -12,7 +12,7 @@ This pattern starts with an empty list for our notifications, the list needs an 
 </ul>
 ```
 
-We'll also add a `<form>` to this demo so that we can issue requests to the server that will trigger new notifiations.
+We'll also add a `<form>` to this demo so that we can issue requests to the server that will trigger new notifications.
 
 ```html
 <form x-data x-ajax id="action" method="post" action="/action">

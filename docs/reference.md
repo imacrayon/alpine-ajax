@@ -150,7 +150,7 @@ Take a look at this comment list:
 
 When the "Post a Comment" form is submitted the `comments` list will be updated with the response instead of the `x-ajax` form.
 
-### Defining Mutiple Targets
+### Defining Multiple Targets
 
 You can even replace multiple elements from the same server response by separating `id`s with a space.
 
@@ -228,4 +228,4 @@ or, you can decouple your form dependencies by triggering the event in a server 
 <script x-init="$dispatch('comment_added')"></script>
 ```
 
-Combining `x-load` with events sent from the server provides a powerful pattern you can use to control dependencies and interactions between desparate parts of your interface. Instead of updating multiple pieces of a complex page in a singe request, include a single event `script` in any server response and elements on the page will handle updating their own content independently.
+Combining `x-load` with events sent from the server provides a powerful pattern you can use to control dependencies and interactions between desperate parts of your interface. Instead of updating multiple pieces of a complex page in a singe request, include a single event `script` in any server response and elements on the page will handle updating their own content independently.

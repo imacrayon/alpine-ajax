@@ -71,7 +71,7 @@ Notice the `<form>` has the `x-ajax` attribute so that both success and error re
 
 When the `<form>` is submitted a `PUT` request is issued to `/contacts/1` and the `contact:updated` event is fired upon a successful response.
 
-Finally, the `contact:updated` event causes the `<tbody>` to refresh with the upated contact data.
+Finally, the `contact:updated` event causes the `<tbody>` to refresh with the updated contact data.
 
 <script>
   var database = function () {
