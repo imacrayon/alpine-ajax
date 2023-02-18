@@ -1,92 +1,92 @@
 (function (factory) {
   typeof define === 'function' && define.amd ? define(factory) :
   factory();
-}((function () { 'use strict';
+})((function () { 'use strict';
 
-  /*
-   * SubmitEvent API Submitter Polyfill
-   * https://stackoverflow.com/a/61110260
-   */
-  !function () {
-    var lastBtn = null;
-    document.addEventListener('click', function (e) {
-      if (!e.target.closest) return;
-      lastBtn = e.target.closest('button, input[type=submit], input[type=image]');
-    }, true);
-    document.addEventListener('submit', function (e) {
-      if ('submitter' in e) return;
-      var canditates = [document.activeElement, lastBtn];
-      lastBtn = null;
-
-      for (var i = 0; i < canditates.length; i++) {
-        var candidate = canditates[i];
-        if (!candidate) continue;
-        if (!candidate.form) continue;
-        if (!candidate.matches('button, input[type=button], input[type=image]')) continue;
-        e.submitter = candidate;
-        return;
-      }
-
-      e.submitter = e.target.querySelector('button, input[type=button], input[type=image]');
-    }, true);
-  }();
-
-  class DomManager {
-      el = undefined
-
-      constructor(el) {
-          this.el = el;
-      }
-
-      traversals = {
-          'first': 'firstElementChild',
-          'next': 'nextElementSibling',
-          'parent': 'parentElement',
-      }
-
-      nodes() {
-          this.traversals = {
-              'first': 'firstChild',
-              'next': 'nextSibling',
-              'parent': 'parentNode',
-          }; return this
-      }
-
-      first() {
-          return this.teleportTo(this.el[this.traversals['first']])
-      }
-
-      next() {
-          return this.teleportTo(this.teleportBack(this.el[this.traversals['next']]))
-      }
-
-      before(insertee) {
-          this.el[this.traversals['parent']].insertBefore(insertee, this.el); return insertee
-      }
-
-      replace(replacement) {
-          this.el[this.traversals['parent']].replaceChild(replacement, this.el); return replacement
-      }
-
-      append(appendee) {
-          this.el.appendChild(appendee); return appendee
-      }
-
-      teleportTo(el) {
-          if (! el) return el
-          if (el._x_teleport) return el._x_teleport
-          return el
-      }
-
-      teleportBack(el) {
-          if (! el) return el
-          if (el._x_teleportBack) return el._x_teleportBack
-          return el
-      }
+  function findSubmitterFromClickTarget(target) {
+    const element = target instanceof Element ? target : target instanceof Node ? target.parentElement : null;
+    const candidate = element ? element.closest("input, button") : null;
+    return candidate?.type == "submit" ? candidate : null;
   }
+  function clickCaptured(event) {
+    const submitter = findSubmitterFromClickTarget(event.target);
+    if (submitter && submitter.form) {
+      submittersByForm.set(submitter.form, submitter);
+    }
+  }
+  (function () {
+    if ("submitter" in Event.prototype) return;
+    let prototype = window.Event.prototype;
+    // Certain versions of Safari 15 have a bug where they won't
+    // populate the submitter. This hurts TurboDrive's enable/disable detection.
+    // See https://bugs.webkit.org/show_bug.cgi?id=229660
+    if ("SubmitEvent" in window && /Apple Computer/.test(navigator.vendor)) {
+      prototype = window.SubmitEvent.prototype;
+    } else if ("SubmitEvent" in window) {
+      return; // polyfill not needed
+    }
 
-  function dom(el) {
-      return new DomManager(el)
+    addEventListener("click", clickCaptured, true);
+    Object.defineProperty(prototype, "submitter", {
+      get() {
+        if (this.type == "submit" && this.target instanceof HTMLFormElement) {
+          return submittersByForm.get(this.target);
+        }
+      }
+    });
+  })();
+
+  function progressivelyEnhanceLinks(el) {
+    if (el.hasAttribute('data-action')) return;
+    if (isLocalLink(el)) {
+      return convertLinkToButton(el);
+    }
+    el.querySelectorAll('[href]:not([noajax]):not([data-action])').forEach(link => {
+      if (!isLocalLink(link) || isIgnored(link)) return;
+      convertLinkToButton(link);
+    });
+    return el;
+  }
+  function targets(root, trigger = null, sync = false) {
+    let ids = [];
+    if (trigger && trigger.hasAttribute('x-target')) {
+      ids = trigger.getAttribute('x-target').split(' ');
+    } else if (root.hasAttribute('x-target')) {
+      ids = root.getAttribute('x-target').split(' ');
+    } else {
+      ids = [root.id];
+    }
+    ids = ids.filter(id => id);
+    if (ids.length === 0) {
+      let description = (root.outerHTML.match(/<[^>]+>/) ?? [])[0] ?? '[Element]';
+      throw Error(`${description} is missing an ID to target.`);
+    }
+    if (sync) {
+      document.querySelectorAll('[x-sync]').forEach(el => {
+        if (!el.id) {
+          let description = (el.outerHTML.match(/<[^>]+>/) ?? [])[0] ?? '[x-sync]';
+          throw Error(`${description} is missing an ID to target.`);
+        }
+        if (!ids.includes(el.id)) {
+          ids.push(el.id);
+        }
+      });
+    }
+    return ids;
+  }
+  function isIgnored(el) {
+    let root = el.closest('[x-ajax],[noajax]');
+    return root.hasAttribute('noajax');
+  }
+  function isLocalLink(el) {
+    return el.tagName === 'A' && el.getAttribute('href') && el.getAttribute('href').indexOf("#") !== 0 && el.hostname === location.hostname;
+  }
+  function convertLinkToButton(link) {
+    link.setAttribute('role', 'button');
+    link.dataset.action = link.getAttribute('href');
+    link.tabIndex = 0;
+    link.removeAttribute('href');
+    link.addEventListener('keydown', event => event.keyCode === 32 && event.target.click());
   }
 
   function createElement(html) {
@@ -100,16 +100,72 @@
           || el.nodeType === 8
   }
 
+  let dom = {
+      replace(children, old, replacement) {
+          let index = children.indexOf(old);
+
+          if (index === -1) throw 'Cant find element in children'
+
+          old.replaceWith(replacement);
+
+          children[index] = replacement;
+
+          return children
+      },
+      before(children, reference, subject) {
+          let index = children.indexOf(reference);
+
+          if (index === -1) throw 'Cant find element in children'
+
+          reference.before(subject);
+
+          children.splice(index, 0, subject);
+
+          return children
+      },
+      append(children, subject, appendFn) {
+          children[children.length - 1];
+
+          appendFn(subject);
+
+          children.push(subject);
+
+          return children
+      },
+      remove(children, subject) {
+          let index = children.indexOf(subject);
+
+          if (index === -1) throw 'Cant find element in children'
+
+          subject.remove();
+
+          return children.filter(i => i !== subject)
+      },
+      first(children) {
+          return this.teleportTo(children[0])
+      },
+      next(children, reference) {
+          let index = children.indexOf(reference);
+
+          if (index === -1) return
+
+          return this.teleportTo(this.teleportBack(children[index + 1]))
+      },
+      teleportTo(el) {
+          if (! el) return el
+          if (el._x_teleport) return el._x_teleport
+          return el
+      },
+      teleportBack(el) {
+          if (! el) return el
+          if (el._x_teleportBack) return el._x_teleportBack
+          return el
+      }
+  };
+
   let resolveStep = () => {};
 
-  let logger = () => {};
-
-  async function morph(from, toHtml, options) {
-      // We're defining these globals and methods inside this function (instead of outside)
-      // because it's an async function and if run twice, they would overwrite
-      // each other.
-
-      let fromEl;
+  function morph(from, toHtml, options) {
       let toEl;
       let key
           ,lookahead
@@ -118,17 +174,7 @@
           ,removing
           ,removed
           ,adding
-          ,added
-          ,debug;
-
-
-      function breakpoint(message) {
-          if (! debug) return
-
-          logger((message || '').replace('\n', '\\n'), fromEl, toEl);
-
-          return new Promise(resolve => resolveStep = () => resolve())
-      }
+          ,added;
 
       function assignOptions(options = {}) {
           let defaultGetKey = el => el.getAttribute('key');
@@ -142,10 +188,9 @@
           added = options.added || noop;
           key = options.key || defaultGetKey;
           lookahead = options.lookahead || false;
-          debug = options.debug || false;
       }
 
-      async function patch(from, to) {
+      function patch(from, to) {
           // This is a time saver, however, it won't catch differences in nested <template> tags.
           // I'm leaving this here as I believe it's an important speed improvement, I just
           // don't see a way to enable it currently:
@@ -153,11 +198,8 @@
           // if (from.isEqualNode(to)) return
 
           if (differentElementNamesTypesOrKeys(from, to)) {
-              let result = patchElement(from, to);
-
-              await breakpoint('Swap elements');
-
-              return result
+              // Swap elements...
+              return patchElement(from, to)
           }
 
           let updateChildrenOnly = false;
@@ -167,19 +209,21 @@
           window.Alpine && initializeAlpineOnTo(from, to);
 
           if (textOrComment(to)) {
-              await patchNodeValue(from, to);
+              patchNodeValue(from, to);
               updated(from, to);
 
               return
           }
 
           if (! updateChildrenOnly) {
-              await patchAttributes(from, to);
+              patchAttributes(from, to);
           }
 
           updated(from, to);
 
-          await patchChildren(from, to);
+          patchChildren(Array.from(from.childNodes), Array.from(to.childNodes), (toAppend) => {
+              from.appendChild(toAppend);
+          });
       }
 
       function differentElementNamesTypesOrKeys(from, to) {
@@ -195,23 +239,22 @@
 
           if (shouldSkip(adding, toCloned)) return
 
-          dom(from).replace(toCloned);
+          dom.replace([from], from, toCloned);
 
           removed(from);
           added(toCloned);
       }
 
-      async function patchNodeValue(from, to) {
+      function patchNodeValue(from, to) {
           let value = to.nodeValue;
 
           if (from.nodeValue !== value) {
+              // Change text node...
               from.nodeValue = value;
-
-              await breakpoint('Change text node to: ' + value);
           }
       }
 
-      async function patchAttributes(from, to) {
+      function patchAttributes(from, to) {
           if (from._x_isShown && ! to._x_isShown) {
               return
           }
@@ -226,9 +269,8 @@
               let name = domAttributes[i].name;
 
               if (! to.hasAttribute(name)) {
+                  // Remove attribute...
                   from.removeAttribute(name);
-
-                  await breakpoint('Remove attribute');
               }
           }
 
@@ -238,105 +280,150 @@
 
               if (from.getAttribute(name) !== value) {
                   from.setAttribute(name, value);
-
-                  await breakpoint(`Set [${name}] attribute to: "${value}"`);
               }
           }
       }
 
-      async function patchChildren(from, to) {
-          let domChildren = from.childNodes;
-          let toChildren = to.childNodes;
+      function patchChildren(fromChildren, toChildren, appendFn) {
+          // I think I can get rid of this for now:
+          let fromKeyDomNodeMap = {}; // keyToMap(fromChildren)
+          let fromKeyHoldovers = {};
 
-          keyToMap(toChildren);
-          let domKeyDomNodeMap = keyToMap(domChildren);
-
-          let currentTo = dom(to).nodes().first();
-          let currentFrom = dom(from).nodes().first();
-
-          let domKeyHoldovers = {};
+          let currentTo = dom.first(toChildren);
+          let currentFrom = dom.first(fromChildren);
 
           while (currentTo) {
               let toKey = getKey(currentTo);
-              let domKey = getKey(currentFrom);
+              let fromKey = getKey(currentFrom);
 
               // Add new elements
               if (! currentFrom) {
-                  if (toKey && domKeyHoldovers[toKey]) {
-                      let holdover = domKeyHoldovers[toKey];
+                  if (toKey && fromKeyHoldovers[toKey]) {
+                      // Add element (from key)...
+                      let holdover = fromKeyHoldovers[toKey];
 
-                      dom(from).append(holdover);
+                      fromChildren = dom.append(fromChildren, holdover, appendFn);
                       currentFrom = holdover;
-
-                      await breakpoint('Add element (from key)');
                   } else {
-                      let added = addNodeTo(currentTo, from) || {};
+                      if(! shouldSkip(adding, currentTo)) {
+                          // Add element...
+                          let clone = currentTo.cloneNode(true);
 
-                      await breakpoint('Add element: ' + (added.outerHTML || added.nodeValue));
+                          fromChildren = dom.append(fromChildren, clone, appendFn);
 
-                      currentTo = dom(currentTo).nodes().next();
+                          added(clone);
+                      }
+
+                      currentTo = dom.next(toChildren, currentTo);
 
                       continue
                   }
               }
 
-              if (lookahead) {
-                  let nextToElementSibling = dom(currentTo).next();
+              // Handle conditional markers (presumably added by backends like Livewire)...
+              let isIf = node => node.nodeType === 8 && node.textContent === ' __BLOCK__ ';
+              let isEnd = node => node.nodeType === 8 && node.textContent === ' __ENDBLOCK__ ';
+
+              if (isIf(currentTo) && isIf(currentFrom)) {
+                  let newFromChildren = [];
+                  let appendPoint;
+                  let nestedIfCount = 0;
+                  while (currentFrom) {
+                      let next = dom.next(fromChildren, currentFrom);
+
+                      if (isIf(next)) {
+                          nestedIfCount++;
+                      } else if (isEnd(next) && nestedIfCount > 0) {
+                          nestedIfCount--;
+                      } else if (isEnd(next) && nestedIfCount === 0) {
+                          currentFrom = dom.next(fromChildren, next);
+                          appendPoint = next;
+
+                          break;
+                      }
+
+                      newFromChildren.push(next);
+                      currentFrom = next;
+                  }
+
+                  let newToChildren = [];
+                  nestedIfCount = 0;
+                  while (currentTo) {
+                      let next = dom.next(toChildren, currentTo);
+
+                      if (isIf(next)) {
+                          nestedIfCount++;
+                      } else if (isEnd(next) && nestedIfCount > 0) {
+                          nestedIfCount--;
+                      } else if (isEnd(next) && nestedIfCount === 0) {
+                          currentTo = dom.next(toChildren, next);
+
+                          break;
+                      }
+
+                      newToChildren.push(next);
+                      currentTo = next;
+                  }
+
+                  patchChildren(newFromChildren, newToChildren, node => appendPoint.before(node));
+
+                  continue
+              }
+
+              // Lookaheads should only apply to non-text-or-comment elements...
+              if (currentFrom.nodeType === 1 && lookahead) {
+                  let nextToElementSibling = dom.next(toChildren, currentTo);
 
                   let found = false;
 
-                  while (!found && nextToElementSibling) {
+                  while (! found && nextToElementSibling) {
                       if (currentFrom.isEqualNode(nextToElementSibling)) {
-                          found = true;
+                          found = true; // This ";" needs to be here...
 
-                          currentFrom = addNodeBefore(currentTo, currentFrom);
+                          [fromChildren, currentFrom] = addNodeBefore(fromChildren, currentTo, currentFrom);
 
-                          domKey = getKey(currentFrom);
-
-                          await breakpoint('Move element (lookahead)');
+                          fromKey = getKey(currentFrom);
                       }
 
-                      nextToElementSibling = dom(nextToElementSibling).next();
+                      nextToElementSibling = dom.next(toChildren, nextToElementSibling);
                   }
               }
 
-              if (toKey !== domKey) {
-                  if (! toKey && domKey) {
-                      domKeyHoldovers[domKey] = currentFrom;
-                      currentFrom = addNodeBefore(currentTo, currentFrom);
-                      domKeyHoldovers[domKey].remove();
-                      currentFrom = dom(currentFrom).nodes().next();
-                      currentTo = dom(currentTo).nodes().next();
-
-                      await breakpoint('No "to" key');
+              if (toKey !== fromKey) {
+                  if (! toKey && fromKey) {
+                      // No "to" key...
+                      fromKeyHoldovers[fromKey] = currentFrom; // This ";" needs to be here...
+                      [fromChildren, currentFrom] = addNodeBefore(fromChildren, currentTo, currentFrom);
+                      fromChildren = dom.remove(fromChildren, fromKeyHoldovers[fromKey]);
+                      currentFrom = dom.next(fromChildren, currentFrom);
+                      currentTo = dom.next(toChildren, currentTo);
 
                       continue
                   }
 
-                  if (toKey && ! domKey) {
-                      if (domKeyDomNodeMap[toKey]) {
-                          currentFrom = dom(currentFrom).replace(domKeyDomNodeMap[toKey]);
-
-                          await breakpoint('No "from" key');
+                  if (toKey && ! fromKey) {
+                      if (fromKeyDomNodeMap[toKey]) {
+                          // No "from" key...
+                          fromChildren = dom.replace(fromChildren, currentFrom, fromKeyDomNodeMap[toKey]);
+                          currentFrom = fromKeyDomNodeMap[toKey];
                       }
                   }
 
-                  if (toKey && domKey) {
-                      domKeyHoldovers[domKey] = currentFrom;
-                      let domKeyNode = domKeyDomNodeMap[toKey];
+                  if (toKey && fromKey) {
+                      let fromKeyNode = fromKeyDomNodeMap[toKey];
 
-                      if (domKeyNode) {
-                          currentFrom = dom(currentFrom).replace(domKeyNode);
-
-                          await breakpoint('Move "from" key');
+                      if (fromKeyNode) {
+                          // Move "from" key...
+                          fromKeyHoldovers[fromKey] = currentFrom;
+                          fromChildren = dom.replace(fromChildren, currentFrom, fromKeyNode);
+                          currentFrom = fromKeyNode;
                       } else {
-                          domKeyHoldovers[domKey] = currentFrom;
-                          currentFrom = addNodeBefore(currentTo, currentFrom);
-                          domKeyHoldovers[domKey].remove();
-                          currentFrom = dom(currentFrom).next();
-                          currentTo = dom(currentTo).next();
-
-                          await breakpoint('Swap elements with keys');
+                          // Swap elements with keys...
+                          fromKeyHoldovers[fromKey] = currentFrom; // This ";" needs to be here...
+                          [fromChildren, currentFrom] = addNodeBefore(fromChildren, currentTo, currentFrom);
+                          fromChildren = dom.remove(fromChildren, fromKeyHoldovers[fromKey]);
+                          currentFrom = dom.next(fromChildren, currentFrom);
+                          currentTo = dom.next(toChildren, currentTo);
 
                           continue
                       }
@@ -344,12 +431,12 @@
               }
 
               // Get next from sibling before patching in case the node is replaced
-              let currentFromNext = currentFrom && dom(currentFrom).nodes().next();
+              let currentFromNext = currentFrom && dom.next(fromChildren, currentFrom);
 
               // Patch elements
-              await patch(currentFrom, currentTo);
+              patch(currentFrom, currentTo);
 
-              currentTo = currentTo && dom(currentTo).nodes().next();
+              currentTo = currentTo && dom.next(toChildren, currentTo);
               currentFrom = currentFromNext;
           }
 
@@ -361,7 +448,7 @@
           while (currentFrom) {
               if(! shouldSkip(removing, currentFrom)) removals.push(currentFrom);
 
-              currentFrom = dom(currentFrom).nodes().next();
+              currentFrom = dom.next(fromChildren, currentFrom);
           }
 
           // Now we can do the actual removals.
@@ -369,8 +456,6 @@
               let domForRemoval = removals.shift();
 
               domForRemoval.remove();
-
-              await breakpoint('remove el');
 
               removed(domForRemoval);
           }
@@ -380,54 +465,24 @@
           return el && el.nodeType === 1 && key(el)
       }
 
-      function keyToMap(els) {
-          let map = {};
-
-          els.forEach(el => {
-              let theKey = getKey(el);
-
-              if (theKey) {
-                  map[theKey] = el;
-              }
-          });
-
-          return map
-      }
-
-      function addNodeTo(node, parent) {
+      function addNodeBefore(children, node, beforeMe) {
           if(! shouldSkip(adding, node)) {
               let clone = node.cloneNode(true);
 
-              dom(parent).append(clone);
+              children = dom.before(children, beforeMe, clone);
 
               added(clone);
 
-              return clone
+              return [children, clone]
           }
 
-          return null;
-      }
-
-      function addNodeBefore(node, beforeMe) {
-          if(! shouldSkip(adding, node)) {
-              let clone = node.cloneNode(true);
-
-              dom(beforeMe).before(clone);
-
-              added(clone);
-
-              return clone
-          }
-
-          return beforeMe
+          return [children, node]
       }
 
       // Finally we morph the element
 
       assignOptions(options);
-
-      fromEl = from;
-      toEl = createElement(toHtml);
+      toEl = typeof toHtml === 'string' ? createElement(toHtml) : toHtml;
 
       // If there is no x-data on the element we're morphing,
       // let's seed it with the outer Alpine scope on the page.
@@ -437,12 +492,7 @@
           toEl._x_dataStack && window.Alpine.clone(from, toEl);
       }
 
-      await breakpoint();
-
-      await patch(from, toEl);
-
-      // Release these for the garbage collector.
-      fromEl = undefined;
+      patch(from, toEl);
       toEl = undefined;
 
       return from
@@ -450,7 +500,6 @@
 
   morph.step = () => resolveStep();
   morph.log = (theLogger) => {
-      logger = theLogger;
   };
 
   function shouldSkip(hook, ...args) {
@@ -472,16 +521,216 @@
       }
   }
 
+  let queue = {};
+  async function render(request, ids, el) {
+    let dispatch = (name, detail = {}) => {
+      return el.dispatchEvent(new CustomEvent(name, {
+        detail,
+        bubbles: true,
+        composed: true,
+        cancelable: true
+      }));
+    };
+    if (!dispatch('ajax:before')) return;
+    ids.forEach(id => {
+      let busy = document.getElementById(id);
+      if (busy) busy.setAttribute('aria-busy', 'true');
+    });
+    let response = await send(request);
+    if (response.ok) {
+      dispatch('ajax:success', response);
+    } else {
+      dispatch('ajax:error', response);
+    }
+    dispatch('ajax:after', response);
+    if (!response.html) return;
+    let fragment = document.createRange().createContextualFragment(response.html);
+    ids.forEach(id => {
+      let template = fragment.getElementById(id);
+      let target = document.getElementById(id);
+      if (!template) {
+        console.warn(`Target #${id} not found in AJAX response.`);
+        return morph(target, target.cloneNode(false));
+      }
+      template.dataset.source = response.url;
+      target = morph(target, template);
+      return progressivelyEnhanceLinks(target);
+    });
+  }
+  async function send({
+    method,
+    action,
+    body,
+    referrer
+  }) {
+    let onSuccess = response => response;
+    let onError = error => error;
+    let proxy;
+    if (method === 'GET') {
+      proxy = enqueue(action);
+      if (isLocked(action)) {
+        return proxy;
+      }
+      onSuccess = response => dequeue(action, job => job.resolve(response));
+      onError = error => dequeue(action, job => job.reject(error));
+    }
+    referrer = referrer || window.location.href;
+    let response = fetch(action, {
+      headers: {
+        'X-Alpine-Request': 'true'
+      },
+      referrer,
+      method,
+      body
+    }).then(readHtml).then(onSuccess).catch(onError);
+    return method === 'GET' ? proxy : response;
+  }
+  function readHtml(response) {
+    return response.text().then(html => {
+      response.html = html;
+      return response;
+    });
+  }
+  function enqueue(key) {
+    if (!queue[key]) {
+      queue[key] = [];
+    }
+    let job = {};
+    let proxy = new Promise((resolve, reject) => {
+      job.resolve = resolve;
+      job.reject = reject;
+    });
+    queue[key].push(job);
+    return proxy;
+  }
+  function isLocked(key) {
+    return queue[key].length > 1;
+  }
+  function dequeue(key, resolver) {
+    (queue[key] || []).forEach(resolver);
+    queue[key] = undefined;
+  }
+
+  function listenForSubmit(el) {
+    let handler = event => {
+      let form = event.target;
+      if (isIgnored(form)) return;
+      event.preventDefault();
+      event.stopPropagation();
+      return withSubmitter(event.submitter, () => {
+        return render(formRequest(form, event.submitter), targets(el, form, true), form);
+      });
+    };
+    el.addEventListener('submit', handler);
+    return () => el.removeEventListener('submit', handler);
+  }
+  function formRequest(form, submitter = null) {
+    let method = (form.getAttribute('method') || 'GET').toUpperCase();
+    let action = form.getAttribute('action') || window.location.href;
+    let body = new FormData(form);
+    if (method === 'GET') {
+      action = mergeBodyIntoAction(body, action);
+      body = null;
+    }
+    if (submitter.name) {
+      body.append(submitter.name, submitter.value);
+    }
+    let referrer = form.closest('[data-source]')?.dataset.source;
+    return {
+      method,
+      action,
+      body,
+      referrer
+    };
+  }
+  async function withSubmitter(submitter, callback) {
+    if (!submitter) return await callback();
+    let disableEvent = e => e.preventDefault();
+    submitter.setAttribute('aria-disabled', 'true');
+    submitter.addEventListener('click', disableEvent);
+    let focus = submitter === document.activeElement;
+    let result = await callback();
+    submitter.removeAttribute('aria-disabled');
+    submitter.removeEventListener('click', disableEvent);
+    if (focus && submitter.isConnected) submitter.focus();
+    return result;
+  }
+  function mergeBodyIntoAction(body, action) {
+    let params = Array.from(body.entries()).filter(([key, value]) => value !== '' || value !== null);
+    if (params.length) {
+      let parts = action.split('#');
+      action = parts[0];
+      if (!action.includes('?')) {
+        action += '?';
+      } else {
+        action += '&';
+      }
+      action += new URLSearchParams(params);
+      let hash = parts[1];
+      if (hash) {
+        action += '#' + hash;
+      }
+    }
+    return action;
+  }
+
+  function listenForNavigate(el) {
+    let handler = event => {
+      let link = event.target;
+      if (!link.dataset.action) return;
+      event.preventDefault();
+      event.stopPropagation();
+      render(navigateRequest(link), targets(el, link, true), link);
+    };
+    el.addEventListener('click', handler);
+    return () => el.removeEventListener('click', handler);
+  }
+  function navigateRequest(link) {
+    return {
+      method: 'GET',
+      action: link.dataset.action,
+      referrer: link.closest('[data-source]')?.dataset.source,
+      body: null
+    };
+  }
+
+  function listenForLoad(el, action, event, delay = 0) {
+    // Checking for `data-source` prevents an infinite loop.
+    if (event) {
+      return listenForEvent(event, el, action);
+    } else if (delay > 0) {
+      setTimeout(() => load(el, action), delay);
+      return () => {};
+    } else if (!el.dataset.source) {
+      load(el, action);
+      return () => {};
+    }
+  }
+  function listenForEvent(event, el, action) {
+    let handler = () => {
+      load(el, action);
+      window.removeEventListener(event, handler);
+    };
+    window.addEventListener(event, handler);
+    return () => window.removeEventListener(event, handler);
+  }
+  function load(el, action) {
+    render({
+      method: 'GET',
+      action
+    }, [el.id], el);
+  }
+
   function ajax (Alpine) {
     Alpine.directive('ajax', (el, {}, {
       cleanup
     }) => {
       progressivelyEnhanceLinks(el);
       let stopListeningForSubmit = listenForSubmit(el);
-      let stoplisteningForNavigate = listenForNavigate(el);
+      let stopListeningForNavigate = listenForNavigate(el);
       cleanup(() => {
         stopListeningForSubmit();
-        stoplisteningForNavigate();
+        stopListeningForNavigate();
       });
     });
     Alpine.directive('load', (el, {
@@ -491,230 +740,16 @@
     }, {
       cleanup
     }) => {
-      // Checking for `data-source` prevents an infinite loop.
-      if (!value && !el.dataset.source) {
-        return handleLoad(el, 'GET', expression);
-      }
-
-      if (!value && modifiers.length) {
-        let wait = modifiers[0].split('ms')[0];
-        setTimeout(() => handleLoad(el, 'GET', expression), wait);
-      }
-
-      let stopListeningForServerEvent = listenForServerEvent(el, value, expression);
+      let delay = modifiers.length ? modifiers[0].split('ms')[0] : 0;
+      let stopListeningForLoad = listenForLoad(el, expression, value, delay);
       cleanup(() => {
-        stopListeningForServerEvent();
+        stopListeningForLoad();
       });
     });
-  }
-
-  function progressivelyEnhanceLinks(el) {
-    if (el.hasAttribute('data-action')) return;
-
-    if (isLocalLink(el)) {
-      return convertLinkToButton(el);
-    }
-
-    el.querySelectorAll('[href]:not([noajax]):not([data-action])').forEach(link => {
-      if (!isLocalLink(link) || isMarkedIgnored(link)) return;
-      convertLinkToButton(link);
-    });
-  }
-
-  function isLocalLink(el) {
-    return el.tagName === 'A' && el.getAttribute('href') && el.getAttribute('href').indexOf("#") !== 0 && el.hostname === location.hostname;
-  }
-
-  function isMarkedIgnored(el) {
-    let root = el.closest('[x-ajax],[noajax]');
-    return root.hasAttribute('noajax');
-  }
-
-  function convertLinkToButton(link) {
-    link.setAttribute('role', 'button');
-    link.dataset.action = link.getAttribute('href');
-    link.tabIndex = 0;
-    link.removeAttribute('href');
-    link.addEventListener('keydown', event => event.keyCode === 32 && event.target.click());
-  }
-
-  function listenForSubmit(el) {
-    let handler = event => {
-      let form = event.target;
-      if (isMarkedIgnored(form)) return;
-      event.preventDefault();
-      event.stopPropagation();
-      let method = (form.getAttribute('method') || 'GET').toUpperCase();
-      let action = form.getAttribute('action') || window.location.href;
-      let body = new FormData(form);
-      let submitter = event.submitter;
-      let restoreFocus = false;
-
-      if (submitter) {
-        restoreFocus = submitter === document.activeElement;
-        submitter.setAttribute('disabled', '');
-
-        if (submitter.name) {
-          body.append(submitter.name, submitter.value);
-        }
-      }
-
-      handleAjax(el, form, method, action, body, submitter, restoreFocus);
-    };
-
-    el.addEventListener('submit', handler);
-    return () => el.removeEventListener('submit', handler);
-  }
-
-  function listenForNavigate(el) {
-    let handler = event => {
-      let link = event.target;
-      let action = link.dataset.action;
-      if (!action) return;
-      event.preventDefault();
-      event.stopPropagation();
-      handleAjax(el, link, 'GET', action, null, null);
-    };
-
-    el.addEventListener('click', handler);
-    return () => el.removeEventListener('click', handler);
-  }
-
-  function listenForServerEvent(el, event, action) {
-    let handler = () => handleLoad(el, 'GET', action);
-
-    window.addEventListener(event, handler);
-    return () => window.removeEventListener(event, handler);
-  } // TODO: This function is getting nasty, clean it up
-
-
-  async function handleAjax(root, el, method, action, body = null, submitter = null, restoreFocus = false) {
-    let marker = el.closest('[x-target]');
-    let ids = new Set(marker ? marker.getAttribute('x-target').split(' ').filter(id => id) : [root.id]);
-    ids.forEach(id => {
-      let busy = document.getElementById(id);
-      if (busy) busy.setAttribute('aria-busy', 'true');
-    });
-    let response = await makeRequest(el, method, action, body);
-    if (!response.body) return; // `disabled` is removed so that the submitter is persisted during DOM morph
-
-    if (submitter) {
-      submitter.removeAttribute('disabled');
-
-      if (restoreFocus) {
-        submitter.focus();
-      }
-    }
-
-    replaceTargets(ids, response.body, response.url);
-  }
-
-  async function handleLoad(el, method, action) {
-    let response = await makeRequest(el, method, action);
-    if (!response.body) return;
-    replaceTargets(new Set([el.id]), response.body, response.url, false);
-  }
-
-  async function makeRequest(el, method, action, body = null) {
-    var _el$closest;
-
-    if (!dispatch(el, 'ajax:before')) {
-      return false;
-    }
-
-    if (method === 'GET' && body) {
-      let params = Array.from(body.entries()).filter(([key, value]) => value !== '' || value !== null);
-
-      if (params.length) {
-        let parts = action.split('#');
-        action = parts[0];
-
-        if (!action.includes('?')) {
-          action += '?';
-        } else {
-          action += '&';
-        }
-
-        action += new URLSearchParams(params);
-        let hash = parts[1];
-
-        if (hash) {
-          action += '#' + hash;
-        }
-      }
-
-      body = null;
-    }
-
-    let referrer = (_el$closest = el.closest('[data-source]')) === null || _el$closest === void 0 ? void 0 : _el$closest.dataset.source;
-
-    try {
-      let response = await fetch(action, {
-        headers: {
-          'X-Alpine-Request': 'true'
-        },
-        referrer,
-        method,
-        body
-      });
-
-      if (!response.ok) {
-        let error = new Error('Network response was not OK.');
-        error.response = response;
-        throw error;
-      }
-
-      dispatch(el, 'ajax:success', response);
-      dispatch(el, 'ajax:after', response);
-      return {
-        url: response.url,
-        body: await response.text()
-      };
-    } catch (error) {
-      let response = error.response;
-      if (!response) throw error;
-      dispatch(el, 'ajax:error', response);
-      dispatch(el, 'ajax:after', response);
-      return {
-        url: response.url,
-        body: await response.text()
-      };
-    }
-  }
-
-  function dispatch(el, name, detail = {}) {
-    return el.dispatchEvent(new CustomEvent(name, {
-      detail,
-      bubbles: true,
-      composed: true,
-      cancelable: true
-    }));
-  }
-
-  function replaceTargets(targets, html, source, sync = true) {
-    if (sync) {
-      document.querySelectorAll('[x-sync]').forEach(el => {
-        if (!el.id) return;
-        targets.add(el.id);
-      });
-    }
-
-    let fragment = htmlToFragment(html);
-    targets.forEach(async id => {
-      let template = fragment.getElementById(id);
-      if (!template) return;
-      template.dataset.source = source;
-      await morph(document.getElementById(id), template.outerHTML);
-      progressivelyEnhanceLinks(document.getElementById(id));
-    });
-  }
-
-  function htmlToFragment(html) {
-    return document.createRange().createContextualFragment(html);
   }
 
   document.addEventListener('alpine:initializing', () => {
     ajax(window.Alpine);
   });
 
-})));
+}));

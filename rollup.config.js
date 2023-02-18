@@ -1,7 +1,7 @@
 import babel from 'rollup-plugin-babel'
 import filesize from 'rollup-plugin-filesize'
 import resolve from 'rollup-plugin-node-resolve'
-import { terser } from 'rollup-plugin-terser';
+import { terser } from 'rollup-plugin-terser'
 
 const config = {
   input: 'builds/cdn.js',
@@ -33,7 +33,7 @@ const config = {
 }
 
 if (process.env.NODE_ENV === 'production') {
-  config.plugins.push(terser());
+  config.plugins.push(terser())
 }
 
 export default config

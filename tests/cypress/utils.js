@@ -20,7 +20,7 @@ function injectHtmlAndBootAlpine(cy, templateAndPotentiallyScripts, callback, pa
 
     el.evalScripts(scripts)
 
-    cy.get('[alpine-is-ready]', { timeout: 5000 }).should('be.visible');
+    cy.get('[alpine-is-ready]', { timeout: 5000 }).should('be.visible')
 
     // We can't just simply reload a page from a test, because we need to
     // re-inject all the templates and such. This is a helper to allow
@@ -33,7 +33,7 @@ function injectHtmlAndBootAlpine(cy, templateAndPotentiallyScripts, callback, pa
 
         el.evalScripts(scripts)
 
-        cy.get('[alpine-is-ready]', { timeout: 5000 }).should('be.visible');
+        cy.get('[alpine-is-ready]', { timeout: 5000 }).should('be.visible')
       })
     }
 
