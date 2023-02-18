@@ -7,13 +7,13 @@
   <title @text="title ? `${title} | Alpine AJAX` : `Alpine AJAX`"></title>
   <meta name="description" :content="description || `Alpine AJAX`">
   <meta name="generator" :content="eleventy.generator">
-  <link rel="stylesheet" href="https://unpkg.com/@exampledev/new.css@1.1.3/new.css" webc:keep>
-  <link rel="stylesheet" href="https://unpkg.com/prism-themes@1.9.0/themes/prism-a11y-dark.min.css" webc:keep>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@exampledev/new.css@1.1.3/new.css" webc:keep>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prism-themes@1.9.0/themes/prism-a11y-dark.min.css" webc:keep>
   <link rel="stylesheet" href="/css/main.css" webc:keep>
   <script webc:type="js" webc:is="script" webc:keep>
     require("fs").readFileSync('../dist/cdn.min.js', 'utf8')
   </script>
-  <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" webc:keep></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" webc:keep></script>
   <style @raw="getCss(page.url)" webc:keep></style>
   <script @raw="getJs(page.url)" webc:keep></script>
 </head>

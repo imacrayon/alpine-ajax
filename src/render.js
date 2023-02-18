@@ -1,7 +1,12 @@
 import { progressivelyEnhanceLinks } from './helpers'
-import { morph } from '@alpinejs/morph/src/morph'
 
 let queue = {}
+
+let renderElement
+
+export function setRenderer(renderer) {
+  renderElement = renderer
+}
 
 export async function render(request, ids, el) {
   let dispatch = (name, detail = {}) => {
@@ -39,11 +44,11 @@ export async function render(request, ids, el) {
     let target = document.getElementById(id)
     if (!template) {
       console.warn(`Target #${id} not found in AJAX response.`)
-      return morph(target, target.cloneNode(false))
+      return renderElement(target, target.cloneNode(false))
     }
 
     template.dataset.source = response.url
-    target = morph(target, template)
+    target = renderElement(target, template)
     return progressivelyEnhanceLinks(target)
   })
 }

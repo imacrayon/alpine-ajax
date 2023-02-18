@@ -3,8 +3,14 @@ import { listenForSubmit } from './form'
 import { listenForNavigate } from './link'
 import { listenForLoad } from './load'
 import { progressivelyEnhanceLinks } from './helpers'
+import { setRenderer } from './render'
 
 export default function (Alpine) {
+  setRenderer(Alpine.morph ?? (from => {
+    console.warn(`You can't use Alpine AJAX without first installing the "morph" plugin here: https://alpinejs.dev/plugins/morph`)
+    return from
+  }))
+
   Alpine.directive('ajax', (el, { }, { cleanup }) => {
     progressivelyEnhanceLinks(el)
     let stopListeningForSubmit = listenForSubmit(el)

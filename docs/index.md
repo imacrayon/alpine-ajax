@@ -37,32 +37,35 @@ This simple pattern of updating a piece of your frontend instead of the entire p
 
 ## Installation
 
-You can use Alpine AJAX by either including it from a `<script>` tag or installing it via NPM:
+You can use Alpine AJAX by either including it from a `<script>` tag or installing it via NPM. The [Alpine Morph](https://alpinejs.dev/plugins/morph) plugin also required to make everything work.
 
 ### Via CDN
 
-Include the CDN build of Alpine AJAX as a `<script>` tag, just make sure to include it **before** Alpine's core JS file.
+Include the CDN build of Alpine AJAX & Morph as a `<script>` tag, just make sure to include it **before** Alpine's core JS file.
 
 ```html
-<script defer src="https://unpkg.com/@imacrayon/alpine-ajax"></script>
-<script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/morph@3.11.1/dist/cdn.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/@imacrayon/alpine-ajax"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.10.5/dist/cdn.min.js"></script>
 ```
 
 ### Via NPM
 
-Install Alpine AJAX from NPM for use inside your bundle like so:
+Install Alpine AJAX & Morph from NPM for use inside your bundle like so:
 
 ```bash
-npm i @imacrayon/alpine-ajax
+npm i @imacrayon/alpine-ajax @alpinejs/morph
 ```
 
 Then initialize it from your bundle:
 
 ```js
 import Alpine from 'alpinejs'
+import morph from '@alpinejs/morph'
 import ajax from '@imacrayon/alpine-ajax'
 
 window.Alpine = Alpine
+Alpine.plugin(morph)
 Alpine.plugin(ajax)
 ```
 
