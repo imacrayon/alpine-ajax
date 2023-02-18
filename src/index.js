@@ -2,7 +2,7 @@ import './submitter-polyfill'
 import { listenForSubmit } from './form'
 import { listenForNavigate } from './link'
 import { listenForLoad } from './load'
-import { progressivelyEnhanceLinks } from './helpers'
+import { progressivelyEnhanceLinks } from './link'
 import { setRenderer } from './render'
 
 export default function (Alpine) {

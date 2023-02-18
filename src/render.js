@@ -1,4 +1,4 @@
-import { progressivelyEnhanceLinks } from './helpers'
+import { progressivelyEnhanceLinks } from './link'
 
 let queue = {}
 
