@@ -48,8 +48,8 @@ export async function render(request, ids, el) {
     }
 
     template.dataset.source = response.url
-    target = renderElement(target, template)
-    return progressivelyEnhanceLinks(target)
+    renderElement(target, template)
+    return progressivelyEnhanceLinks(document.getElementById(id))
   })
 }
 

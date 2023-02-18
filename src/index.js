@@ -1,15 +1,17 @@
 import './submitter-polyfill'
-import { listenForSubmit } from './form'
-import { listenForNavigate } from './link'
-import { listenForLoad } from './load'
-import { progressivelyEnhanceLinks } from './link'
 import { setRenderer } from './render'
+import { listenForLoad } from './load'
+import { listenForSubmit } from './form'
+import { listenForPrefetch } from './prefetch'
+import { listenForNavigate, progressivelyEnhanceLinks } from './link'
 
 export default function (Alpine) {
   setRenderer(Alpine.morph ?? (from => {
     console.warn(`You can't use Alpine AJAX without first installing the "morph" plugin here: https://alpinejs.dev/plugins/morph`)
     return from
   }))
+
+  listenForPrefetch(document)
 
   Alpine.directive('ajax', (el, { }, { cleanup }) => {
     progressivelyEnhanceLinks(el)
