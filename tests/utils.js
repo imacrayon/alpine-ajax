@@ -9,7 +9,7 @@ export let test = function (name, template, callback) {
 }
 
 function injectHtmlAndBootAlpine(cy, template, callback) {
-  cy.visit(__dirname)
+  cy.visit('/tests')
 
   cy.get('#root').then(([el]) => {
     el.innerHTML = template
