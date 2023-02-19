@@ -34,10 +34,10 @@
     "@11ty/eleventy": "^2.0.0-canary.15",
     "@11ty/eleventy-plugin-syntaxhighlight": "^4.2.0",
     "@11ty/eleventy-plugin-webc": "^0.8.1",
-    "cypress": "^7.5.0",
     "@alpinejs/morph": "^3.11.1",
     "alpinejs": "^3.11.1",
     "brotli-size": "^4.0.0",
+    "cypress": "^12.6.0",
     "esbuild": "^0.17.8",
     "markdown-it": "^13.0.1",
     "markdown-it-anchor": "^8.6.6"
