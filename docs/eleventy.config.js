@@ -3,6 +3,7 @@ const markdownItAnchor = require('markdown-it-anchor')
 const { EleventyHtmlBasePlugin } = require('@11ty/eleventy')
 const pluginWebc = require('@11ty/eleventy-plugin-webc')
 const pluginSyntaxHighlight = require('@11ty/eleventy-plugin-syntaxhighlight')
+const esbuild = require('esbuild')
 
 module.exports = function (eleventyConfig) {
   eleventyConfig.addPassthroughCopy('css')
@@ -10,6 +11,15 @@ module.exports = function (eleventyConfig) {
   eleventyConfig.addPlugin(EleventyHtmlBasePlugin)
   eleventyConfig.addPlugin(pluginWebc)
   eleventyConfig.addPlugin(pluginSyntaxHighlight)
+
+  eleventyConfig.on("eleventy.before", async () => {
+    await esbuild.build({
+      entryPoints: ['js/main.js'],
+      bundle: true,
+      outfile: '_site/js/main.js',
+      minify: true,
+    })
+  })
 
   let markdownLibrary = markdownIt({
     html: true,
@@ -24,4 +34,8 @@ module.exports = function (eleventyConfig) {
     slugify: eleventyConfig.getFilter('slugify')
   })
   eleventyConfig.setLibrary('md', markdownLibrary)
+
+  eleventyConfig.setServerOptions({
+    watch: ['_sites/**/*.js'],
+  })
 }

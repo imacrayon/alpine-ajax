@@ -16,7 +16,7 @@ Clone this repo and run `npm install` to get started.
 
 The documentation site is located in `/docs`.
 
-`npm run start` will start up the documentation site built with [Eleventy](https://www.11ty.dev/). The documentation site automatically includes the latest Alpine AJAX build in `/dist/cdn.min.js`.
+`npm run start` will start up the documentation site built with [Eleventy](https://www.11ty.dev/). The documentation site automatically bundles the latest Alpine AJAX build in `/js/main.js`.
 
 ## Testing
 
