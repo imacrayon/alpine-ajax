@@ -29,5 +29,5 @@ function load(el, action) {
   if (!el.id) {
     throw new MissingIdError(el)
   }
-  render({ method: 'GET', action }, [el.id], el)
+  render({ method: 'get', action }, [el.id], el)
 }

@@ -18,7 +18,7 @@ export function listenForNavigate(el) {
 
 function navigateRequest(link) {
   return {
-    method: 'GET',
+    method: 'get',
     action: link.dataset.href,
     referrer: link.closest('[data-source]')?.dataset.source,
     body: null

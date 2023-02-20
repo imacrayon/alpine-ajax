@@ -31,8 +31,8 @@ export default function (Alpine) {
     return (action, options) => {
       let request = {
         action,
-        method: options?.method ? options.method.toUpperCase() : 'GET',
-        body: options?.body,
+        method: options?.method ? options.method.toLowerCase() : 'get',
+        body: options?.body ? new FormData(body) : null,
         referrer: el.closest('[data-source]')?.dataset.source,
       }
 

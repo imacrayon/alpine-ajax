@@ -54,12 +54,12 @@ export async function render(request, ids, el) {
 }
 
 async function send({ method, action, body, referrer }) {
-  // When duplicate GET requests are issued we'll proxy
+  // When duplicate `GET` requests are issued we'll proxy
   // the initial request to save network roundtrips.
   let proxy
   let onSuccess = response => response
   let onError = error => error
-  if (method === 'GET') {
+  if (method === 'get') {
     proxy = enqueue(action)
     if (isLocked(action)) {
       return proxy
@@ -77,7 +77,7 @@ async function send({ method, action, body, referrer }) {
     body,
   }).then(readHtml).then(onSuccess).catch(onError)
 
-  return method === 'GET' ? proxy : response
+  return method === 'get' ? proxy : response
 }
 
 function enqueue(key) {
