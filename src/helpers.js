@@ -11,15 +11,13 @@ export function targets(root, trigger = null, sync = false) {
   ids = ids.filter(id => id)
 
   if (ids.length === 0) {
-    let description = (root.outerHTML.match(/<[^>]+>/) ?? [])[0] ?? '[Element]'
-    throw Error(`${description} is missing an ID to target.`)
+    throw new MissingIdError(root)
   }
 
   if (sync) {
     document.querySelectorAll('[x-sync]').forEach(el => {
       if (!el.id) {
-        let description = (el.outerHTML.match(/<[^>]+>/) ?? [])[0] ?? '[x-sync]'
-        throw Error(`${description} is missing an ID to target.`)
+        throw new MissingIdError(el)
       }
 
       if (!ids.includes(el.id)) {
@@ -34,4 +32,12 @@ export function targets(root, trigger = null, sync = false) {
 export function isIgnored(el) {
   let root = el.closest('[x-ajax],[noajax]')
   return root.hasAttribute('noajax')
+}
+
+export class MissingIdError extends Error {
+  constructor(el) {
+    let description = (el.outerHTML.match(/<[^>]+>/) ?? [])[0] ?? '[Element]'
+    super(`${description} is missing an ID to target.`)
+    this.name = 'Target Missing ID'
+  }
 }

@@ -1,4 +1,5 @@
 import { render } from './render'
+import { MissingIdError } from './helpers'
 
 export function listenForLoad(el, action, event, delay = 0) {
   // Checking for `data-source` prevents an infinite loop.
@@ -25,5 +26,8 @@ function listenForEvent(event, el, action) {
 }
 
 function load(el, action) {
+  if (!el.id) {
+    throw new MissingIdError(el)
+  }
   render({ method: 'GET', action }, [el.id], el)
 }
