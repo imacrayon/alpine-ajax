@@ -13,7 +13,10 @@ layout: layout.webc
 4. [x-load](#x-load)
 5. [x-prefetch](#x-prefetch)
     * [noprefetch](#noprefetch)
-6. [Loading States](#loading-states)
+6. [$ajax](#ajax)
+    * [$ajax Options](#ajax-options)
+    * [Server Events](#server-events)
+7. [Loading States](#loading-states)
 
 ## x-ajax
 
@@ -118,25 +121,25 @@ You can listen for AJAX events to perform additional actions during an AJAX requ
 
 <table>
   <thead>
-    <th scope="col" width="96">Name</th>
+    <th scope="col" width="117">Name</th>
     <th scope="col">Description</th>
   </thead>
   <tbody>
   <tr>
-    <td>ajax:before</td>
-    <td>Fired before the request is made. If this event is cancelled using <code>$event.preventDefault()</code> the request will be aborted.</td>
+    <td><code>ajax:before</code></td>
+    <td>Fired before a network request is made. If this event is cancelled using <code>$event.preventDefault()</code> the request will be aborted.</td>
   </tr>
   <tr>
-    <td>ajax:success</td>
+    <td><code>ajax:success</code></td>
     <td>Fired when a network request completes. <code>detail</code> contains the server response data.</td>
   </tr>
   <tr>
-    <td>ajax:error</td>
-    <td>Fired on a configuration or network error. <code>detail</code> contains the server response data.</td>
+    <td><code>ajax:error</code></td>
+    <td>Fired when a request responds with a `400` or `500` status code. <code>detail</code> contains the server response data.</td>
   </tr>
   <tr>
-    <td>ajax:after</td>
-    <td>Fired after both successful and unsuccessful requests.</td>
+    <td><code>ajax:after</code></td>
+    <td>Fired after every successful or unsuccessful request.</td>
   </tr>
   </tbody>
 </table>
@@ -149,15 +152,7 @@ Here's an example of aborting a form request when the user cancels a dialog prom
 </form>
 ```
 
-Here's an example of notifying the user that there were errors when submitting a form:
-
-```html
-<form x-data x-ajax id="edit_email" @ajax:error="alert('The email your entered is invalid.')">
-  <label for="email">Email</label>
-  <input type="email" name="email" id="email" >
-  <button>Update</button>
-</form>
-```
+**Note:** The `ajax:success` and `ajax:error` events only convey the status code of a request. You'll often find that using the [Server Events](#server-events) pattern is what you need to build more robust applications.
 
 ### Progressive Enhancement
 
@@ -204,27 +199,6 @@ You can also specify a delay when loading content:
 
 This works great in situations where you may need to continuously poll the server for info on long running processes. See the [Progress Bar](/examples/progress-bar) example for a more complete demonstration.
 
-`x-load` can also listen for events before loading content. Check out this markup for a list of comments:
-
-```html
-<ul x-data x-load:comment_added="/comments" id="comments"></ul>
-```
-
-The comment list will listen for an event named `comment_added` to trigger on the root `window` object. When the `comment_added` event is triggered a `GET` request is issued to `/comments` and the comments list is reloaded with a fresh list of comments.
-
-Alpine makes it easy to dispatch events from any component using the `$dispatch` magic helper. You can trigger the `comment_added` event in the previous example on a successful form submission like this:
-
-```html
-<form x-data x-ajax @ajax:success="$dispatch('comment_added')" method="post" action="/comments/new">
-```
-or, you can decouple your form dependencies by triggering the event in a server response like this:
-
-```html
-<script x-init="$dispatch('comment_added')"></script>
-```
-
-Combining `x-load` with events sent from the server provides a powerful pattern you can use to control dependencies and interactions between desperate parts of your interface. Instead of updating multiple pieces of a complex page in a singe request, include a single event `script` in any server response and elements on the page will handle updating their own content independently.
-
 ## x-prefetch
 
 Alpine AJAX can prefetch `GET` requests to speed up both page loading and rendering. To enable prefetching add `x-prefetch` to the `<body>` of your webpage:
@@ -245,6 +219,135 @@ You may disable prefetching on any link by adding the `noprefetch` attribute:
 <body x-prefetch>
   <a href="/write-to-database" noprefetch>I'm not prefetched</a>
 </body>
+```
+
+## $ajax
+
+You can use `$ajax` to programmatically issue AJAX requests triggered by events. Here we've wired it up to an input's `change` event to perform some server-side validation for an email:
+
+```html
+<div
+  x-data="{ email: '' }"
+  @change="$ajax('/validate-email', {
+    method: 'post',
+    body: { email: this.email }
+  })"
+>
+  <label for="email">Email</label>
+  <input type="email" name="email" id="email" x-model="email">
+</div>
+```
+
+In this example we make a `POST` request with the `email` value to the `/validate-email` endpoint. If the email is invalid the server should return the field markup including an error.
+
+### $ajax Options
+
+<table>
+  <thead>
+    <th scope="col" width="68">Option</th>
+    <th scope="col" width="60">Default</th>
+    <th scope="col">Description</th>
+  </thead>
+  <tbody>
+  <tr>
+    <td><code>method</code></td>
+    <td><code>get</code></td>
+    <td>The request method.</td>
+  </tr>
+  <tr>
+    <td><code>body</code></td>
+    <td><code>null</code></td>
+    <td>The request body.</td>
+  </tr>
+  <tr>
+    <td><code>sync</code></td>
+    <td><code>false</code></td>
+    <td>Whether to target `x-sync` elements in the request.</td>
+  </tr>
+  </tbody>
+</table>
+
+### Server Events
+
+Issuing AJAX requests in response to custom events is where the real magic happens, check out this markup for a list of comments:
+
+```html
+<ul x-data @comment_added.window="$ajax('/comments')" id="comments">
+```
+
+The comment list will listen for an event named `comment_added` to trigger on the root `window` object. When the `comment_added` event is triggered a `GET` request is issued to `/comments` and the comments list is reloaded with a fresh list of comments. Alpine makes it easy to dispatch custom events from any component using the `$dispatch` magic helper. You can trigger the `comment_added` event after a successful form submission by including markup like this in your server response:
+
+```html
+<script x-init="$dispatch('comment_added')"></script>
+```
+
+Combining `$ajax` with events rendered from the server provides a powerful pattern you can use to share server state between desperate parts of your interface. Let's break this pattern down with an example:
+
+Imagine inside an app, after a comment is created, you would like to perform the following:
+1. Display a notification message
+2. Increment a comment count
+3. Add the new comment to a listing of all comments
+4. Close an open dialog somewhere in your UI
+5. Load details related to the comment's author
+
+You might be inclined to create a form that updates a big, ugly, list of targets like this:
+
+```html
+<form x-data x-ajax method="post" action="/comments" target="notifications comment_counter comments_list comment_dialog comment_author">
+```
+
+Instead, wire up each of your UI elements to respond to a single `comment_added` event:
+
+```html
+// With a single dispatched event you can...
+<script x-init="$dispatch('comment_added', { comment_id: 3 })"></script>
+
+// ...reveal a notification...
+<div role="alert" x-data="{ show: false }" x-show="show" @comment_added.window="this.show = true">
+
+// ...increment a counter...
+<span x-data="{ commentCount: 2 }" @comment_added.window="commentCount++" x-text="commentCount">
+
+// ...refresh a listing...
+<ul x-data @comment_added.window="$ajax('/comments')" id="comments_list">
+
+// ...close an open dialog window...
+<dialog x-data @comment_added.window="$el.close()">
+
+// ...load related details...
+<div x-data @comment_added.window="$ajax(`/comments/${$event.detail.comment_id}/author`)">
+
+// ...any UI actions you can dream up, all triggered from a single event.
+```
+
+An `x-sync` container in your base layout serves as a convenient place to dispatch events from your server without having to target specific element IDs in every AJAX request:
+
+```html
+<div x-sync id="server_events" role="alert">
+  <div x-init="$dispatch('comment_added')">New comment created!</div>
+</div>
+```
+
+Here's sudo code for how this could be designed to work on the server:
+
+```js
+// Server-side code
+
+Session.server_events = new Array()
+comment = new Comment({ body: Request.comment_body })
+comment.saveToDatabase()
+Session.server_events.push(new Event({ name: "comment_added", detail: comment, message: "New comment created!" }))
+
+return new View("comments.template") with Session
+```
+```html
+<!-- comments.template -->
+
+<div x-sync id="server_events" role="alert">
+  [ for event in Session.server_events ]
+    <div x-init="$dispatch([ event.name ], [ event.detail ])">[ event.message ]</div>
+  [ /for ]
+</div>
 ```
 
 ## Loading States
