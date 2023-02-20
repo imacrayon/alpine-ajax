@@ -12,7 +12,9 @@ export default function (Alpine) {
     return from
   }))
 
-  listenForPrefetch(document)
+  if (document.body.hasAttribute('x-prefetch')) {
+    listenForPrefetch(document)
+  }
 
   Alpine.directive('ajax', (el, { }, { cleanup }) => {
     progressivelyEnhanceLinks(el)
