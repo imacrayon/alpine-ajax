@@ -1,8 +1,9 @@
 import './submitter-polyfill'
-import { setRenderer } from './render'
+import { targets } from './helpers'
 import { listenForLoad } from './load'
 import { listenForSubmit } from './form'
 import { listenForPrefetch } from './prefetch'
+import { setRenderer, render } from './render'
 import { listenForNavigate, progressivelyEnhanceLinks } from './link'
 
 export default function (Alpine) {
@@ -22,6 +23,19 @@ export default function (Alpine) {
       stopListeningForSubmit()
       stopListeningForNavigate()
     })
+  })
+
+  Alpine.magic('ajax', (el) => {
+    return (action, options) => {
+      let request = {
+        action,
+        method: options?.method ? options.method.toUpperCase() : 'GET',
+        body: options?.body,
+        referrer: el.closest('[data-source]')?.dataset.source,
+      }
+
+      return render(request, targets(el, options?.sync), el)
+    }
   })
 
   Alpine.directive('load', (el, { value, modifiers, expression }, { cleanup }) => {

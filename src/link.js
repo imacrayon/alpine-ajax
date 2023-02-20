@@ -8,7 +8,7 @@ export function listenForNavigate(el) {
     if (!link.dataset.href) return
     event.preventDefault()
     event.stopPropagation()
-    render(navigateRequest(link), targets(el, link, true), link)
+    render(navigateRequest(link), targets(el, true, link), link)
   }
 
   el.addEventListener('click', handler)

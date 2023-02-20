@@ -1,4 +1,4 @@
-export function targets(root, trigger = null, sync = false) {
+export function targets(root, sync = false, trigger = null) {
   let ids = []
   if (trigger && trigger.hasAttribute('x-target')) {
     ids = trigger.getAttribute('x-target').split(' ')
