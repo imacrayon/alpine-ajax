@@ -105,8 +105,8 @@ test('request URL is determined by action attribute',
   }
 )
 
-test('x-target changes the updated target',
-  html`<div id="replace"></div><div x-data x-ajax><form x-target="replace" method="post" action="/tests"><button></button></form><div>`,
+test('target changes the updated target',
+  html`<div id="replace"></div><div x-data x-ajax><form target="replace" method="post" action="/tests"><button></button></form><div>`,
   ({ get }) => {
     cy.intercept('POST', '/tests', {
       statusCode: 200,
@@ -121,8 +121,8 @@ test('x-target changes the updated target',
   }
 )
 
-test('x-target can be inherited',
-  html`<div id="replace"></div><div x-data x-ajax x-target="replace"><form method="post" action="/tests"><button></button></form><div>`,
+test('target can be inherited',
+  html`<div id="replace"></div><div x-data x-ajax target="replace"><form method="post" action="/tests"><button></button></form><div>`,
   ({ get }) => {
     cy.intercept('POST', '/tests', {
       statusCode: 200,
@@ -179,7 +179,7 @@ test('AJAX behavior is ignored with noajax',
 )
 
 test('ajax:before event is fired',
-  html`<h1 id="title">Replace me</h1><p id="before">Change me</p><form x-data x-ajax x-target="title" @ajax:before="document.getElementById('before').textContent = 'Changed'" method="post" action="/tests"><button></button></form>`,
+  html`<h1 id="title">Replace me</h1><p id="before">Change me</p><form x-data x-ajax target="title" @ajax:before="document.getElementById('before').textContent = 'Changed'" method="post" action="/tests"><button></button></form>`,
   ({ get }) => {
     cy.intercept('POST', '/tests', {
       statusCode: 200,
@@ -194,7 +194,7 @@ test('ajax:before event is fired',
 )
 
 test('ajax:before can cancel AJAX requests',
-  html`<h1 id="title">Replace me</h1><form x-data x-ajax x-target="title" @ajax:before="$event.preventDefault()" method="post" action="/"><button></button></form>`,
+  html`<h1 id="title">Replace me</h1><form x-data x-ajax target="title" @ajax:before="$event.preventDefault()" method="post" action="/"><button></button></form>`,
   ({ get }) => {
     cy.on('fail', (error, runnable) => {
       if (error.message.indexOf('Timed out retrying') !== 0) throw error

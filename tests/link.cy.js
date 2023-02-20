@@ -31,7 +31,7 @@ test('request URL is determined by link href',
 )
 
 test('target can be set in attribute',
-  html`<div id="replace"></div><a href="/tests" x-data x-ajax x-target="replace">Link</a>`,
+  html`<div id="replace"></div><a href="/tests" x-data x-ajax target="replace">Link</a>`,
   ({ get }) => {
     cy.intercept('GET', '/tests', {
       statusCode: 200,
@@ -91,7 +91,7 @@ test('AJAX links are progressively enhanced to buttons',
 )
 
 test('inserted links are progressively enhanced to buttons',
-  html`<div x-data x-ajax x-target="replace"><h1 id="replace"></h1><a href="/tests">Link</a></div>`,
+  html`<div x-data x-ajax target="replace"><h1 id="replace"></h1><a href="/tests">Link</a></div>`,
   ({ get }) => {
     cy.intercept('GET', '/tests', {
       statusCode: 200,

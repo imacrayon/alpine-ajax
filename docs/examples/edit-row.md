@@ -26,7 +26,7 @@ Here is the HTML for a table row:
   <td>Finn Mertins</td>
   <td>fmertins@candykingdom.gov</td>
   <td>
-    <a href="/contacts/1/edit" x-target="contact_1">Edit</a>
+    <a href="/contacts/1/edit" target="contact_1">Edit</a>
   </td>
 </tr>
 ```
@@ -41,8 +41,8 @@ Finally, here is the edit state that will replace a row:
   <td><input aria-label="Email" form="contact_1_form" name="email" type="email" value="fmertins@candykingdom.gov">
   </td>
   <td>
-    <a x-target="contact_1" href="/contacts">Cancel</a>
-    <form x-target="contact_1" id="contact_1_form" method="put" action="/contacts/1">
+    <a target="contact_1" href="/contacts">Cancel</a>
+    <form target="contact_1" id="contact_1_form" method="put" action="/contacts/1">
       <button>Save</button>
     </form>
   </td>
@@ -91,7 +91,7 @@ Finally, here is the edit state that will replace a row:
     let rows = contacts.map(contact => `<tr id="contact_${contact.id}">
   <td>${contact.name}</td>
   <td>${contact.email}</td>
-  <td><a href="/contacts/${contact.id}/edit" x-target="contact_${contact.id}">Edit</a></td>
+  <td><a href="/contacts/${contact.id}/edit" target="contact_${contact.id}">Edit</a></td>
 </tr>`).join('\n')
     return table(rows)
   }
@@ -101,8 +101,8 @@ Finally, here is the edit state that will replace a row:
   <td><input aria-label="Name" form="contact_${contact.id}_form" name="name" value="${contact.name}"></td>
   <td><input aria-label="Email" form="contact_${contact.id}_form" name="email" value="${contact.email}"></td>
   <td>
-      <a x-target="contact_${contact.id}" href="/contacts">Cancel</a>
-      <form x-target="contact_${contact.id}" id="contact_${contact.id}_form" method="put" action="/contacts/${contact.id}" style="margin:0;display:inline-flex;">
+      <a target="contact_${contact.id}" href="/contacts">Cancel</a>
+      <form target="contact_${contact.id}" id="contact_${contact.id}_form" method="put" action="/contacts/${contact.id}" style="margin:0;display:inline-flex;">
         <button>Save</button>
       </form>
   </td>

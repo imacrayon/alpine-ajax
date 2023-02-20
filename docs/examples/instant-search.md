@@ -8,7 +8,7 @@ This example actively searches a contacts database as the user enters text.
 We start with a search form and a table:
 
 ```html
-<form x-data x-ajax x-target="contacts" action="/contacts" role="search" aria-label="Contacts">
+<form x-data x-ajax target="contacts" action="/contacts" role="search" aria-label="Contacts">
   <input type="search" name="search" aria-label="Search Term" placeholder="Type to filter contacts..." @input.debounce="$el.form.requestSubmit()" @search="$el.form.requestSubmit()">
   <button x-show="false">Search</button>
 </form>
@@ -83,7 +83,7 @@ form is still functional if JavaScript fails to load or is disabled.
   <td>${contact.status}</td>
 </tr>`).join('\n')
 
-    return `<form x-data x-ajax x-target="contacts" action="/contacts" role="search" aria-label="Contacts">
+    return `<form x-data x-ajax target="contacts" action="/contacts" role="search" aria-label="Contacts">
   <input type="search" name="search" placeholder="Type to filter contacts..."
       @input.debounce="$el.form.requestSubmit()" @search="$el.form.requestSubmit()">
       <button x-show="false">Search</button>

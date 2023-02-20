@@ -1,9 +1,9 @@
 export function targets(root, sync = false, trigger = null) {
   let ids = []
-  if (trigger && trigger.hasAttribute('x-target')) {
-    ids = trigger.getAttribute('x-target').split(' ')
-  } else if (root.hasAttribute('x-target')) {
-    ids = root.getAttribute('x-target').split(' ')
+  if (trigger && trigger.hasAttribute('target')) {
+    ids = trigger.getAttribute('target').split(' ')
+  } else if (root.hasAttribute('target')) {
+    ids = root.getAttribute('target').split(' ')
   } else {
     ids = [root.id]
   }

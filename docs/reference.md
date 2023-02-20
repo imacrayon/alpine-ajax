@@ -5,13 +5,13 @@ layout: layout.webc
 # Reference
 
 1. [x-ajax](#x-ajax)
+    * [target](#target)
     * [noajax](#noajax)
     * [AJAX Events](#ajax-events)
     * [Progressive Enhancement](#progressive-enhancement)
-    * [Loading States](#loading-states)
-2. [x-target](#x-target)
 3. [x-sync](#x-sync)
 4. [x-load](#x-load)
+6. [Loading States](#loading-states)
 
 ## x-ajax
 
@@ -52,6 +52,45 @@ When the "Edit" link is clicked, the response should return a page for editing t
 ```
 
 Since the `<form>` in this response has a matching `contact_1` id. The original contact details will be replaced with the edit form. Notice that the page's `<h1>` isn't inside the `<form>`. This means it'll be ignored when the form replaces the contact details.
+
+### target
+
+Add the `target` attribute to target another element `id` on the page to be replaced instead of the `x-ajax` element.
+
+Take a look at this comment list:
+
+```html
+<ul id="comments">
+  <li>Comment #1</li>
+</ul>
+<h2 id="comment_form_title">Post a Comment</h2>
+<form x-data x-ajax target="comments" method="post" action="/comment" aria-labelledby="comment_form_title">
+  <input aria-label="Comment text" name="text" required />
+  <button>Submit</button>
+</form>
+```
+
+When the "Post a Comment" form is submitted the `comments` list will be updated with the response instead of the `x-ajax` form.
+
+#### Defining Multiple Targets
+
+You can even replace multiple elements from the same server response by separating `id`s with a space.
+
+Here's an expanded comment list example:
+
+```html
+<h2>Comments (<span id="comments_count">1</span>)</h2>
+<ul id="comments">
+  <li>Comment #1</li>
+</ul>
+<h2 id="comment_form_title">Post a Comment</h2>
+<form x-data x-ajax target="comments comments_count" method="post" action="/comment" aria-labelledby="comment_form_title">
+  <input name="comment" required />
+  <button>Submit</button>
+</form>
+```
+
+Now, when the form is submitted, both the `comments` list, and the `comments_count` indicator will be updated.
 
 ### noajax
 
@@ -124,55 +163,9 @@ Since AJAX enabled links no longer trigger full page navigation, they are transf
 
 Behavior added with `x-ajax` degrades gracefully if JavaScript is not enabled: Links and forms continue to work as normal, they simply don't fire AJAX requests. This is known as [Progressive Enhancement](https://developer.mozilla.org/en-US/docs/Glossary/Progressive_Enhancement), and it allows a wider audience to use your sites functionality.
 
-### Loading States
-
-While an AJAX request is in progress there are a few loading states to be aware of:
-
-  * If a form submission triggered the request, the form's submit button is automatically disabled, this prevents users from triggering additional network requests by accidentally double clicking the submit button.
-  * During an AJAX request, `aria-busy="true"` is set on all targets of the request. This attribute can be used in CSS to provide a loading indicator, check out the [Loading Indicator example](/examples/loading) for more details.
-
-## x-target
-
-Use this directive to target another element `id` on the page to be replaced instead of the `x-ajax` element.
-
-Take a look at this comment list:
-
-```html
-<ul id="comments">
-  <li>Comment #1</li>
-</ul>
-<h2 id="comment_form_title">Post a Comment</h2>
-<form x-data x-ajax x-target="comments" method="post" action="/comment" aria-labelledby="comment_form_title">
-  <input aria-label="Comment text" name="text" required />
-  <button>Submit</button>
-</form>
-```
-
-When the "Post a Comment" form is submitted the `comments` list will be updated with the response instead of the `x-ajax` form.
-
-### Defining Multiple Targets
-
-You can even replace multiple elements from the same server response by separating `id`s with a space.
-
-Here's an expanded comment list example:
-
-```html
-<h2>Comments (<span id="comments_count">1</span>)</h2>
-<ul id="comments">
-  <li>Comment #1</li>
-</ul>
-<h2 id="comment_form_title">Post a Comment</h2>
-<form x-data x-ajax x-target="comments comments_count" method="post" action="/comment" aria-labelledby="comment_form_title">
-  <input name="comment" required />
-  <button>Submit</button>
-</form>
-```
-
-Now, when the form is submitted, both the `comments` list, and the `comments_count` indicator will be updated.
-
 ## x-sync
 
-Elements with the `x-sync` attribute are updated whenever the server sends a matching element, even if the element isn't targeted with `x-target`.
+Elements with the `x-sync` attribute are updated whenever the server sends a matching element, even if the element isn't targeted with `target`.
 
 `x-sync` elements must have a unique `id`. The `id` is used to match the content being replaced when requesting content from the server.
 
@@ -229,3 +222,10 @@ or, you can decouple your form dependencies by triggering the event in a server 
 ```
 
 Combining `x-load` with events sent from the server provides a powerful pattern you can use to control dependencies and interactions between desperate parts of your interface. Instead of updating multiple pieces of a complex page in a singe request, include a single event `script` in any server response and elements on the page will handle updating their own content independently.
+
+## Loading States
+
+While an AJAX request is in progress there are a few loading states to be aware of:
+
+  * If a form submission triggered the request, the form's submit button is automatically disabled, this prevents users from triggering additional network requests by accidentally double clicking the submit button.
+  * During an AJAX request, `aria-busy="true"` is set on all targets of the request. This attribute can be used in CSS to provide a loading indicator, check out the [Loading Indicator example](/examples/loading) for more details.
