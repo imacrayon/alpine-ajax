@@ -1,5 +1,6 @@
 // Most of this code is borrowed from https://github.com/instantpage/instant.page
-// and modified to work with progressively enhanced buttons.
+// It has been modified to work with progressively enhanced buttons
+// that use the [data-prefetch] & [data-href] attributes.
 
 let lastTouchedAt
 let mouseoverTimer
@@ -60,7 +61,7 @@ function mouseoverListener(event) {
   mouseoverTimer = setTimeout(() => {
     prefetch(link.href || link.dataset.href, 'high')
     mouseoverTimer = undefined
-  }, 65)
+  }, 65) // Hover delay to ensure a click
 }
 
 function mouseoutListener(event) {

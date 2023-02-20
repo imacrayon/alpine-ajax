@@ -11,6 +11,8 @@ layout: layout.webc
     * [Progressive Enhancement](#progressive-enhancement)
 3. [x-sync](#x-sync)
 4. [x-load](#x-load)
+5. [x-prefetch](#x-prefetch)
+    * [noprefetch](#noprefetch)
 6. [Loading States](#loading-states)
 
 ## x-ajax
@@ -222,6 +224,28 @@ or, you can decouple your form dependencies by triggering the event in a server 
 ```
 
 Combining `x-load` with events sent from the server provides a powerful pattern you can use to control dependencies and interactions between desperate parts of your interface. Instead of updating multiple pieces of a complex page in a singe request, include a single event `script` in any server response and elements on the page will handle updating their own content independently.
+
+## x-prefetch
+
+Alpine AJAX can prefetch `GET` requests to speed up both page loading and rendering. To enable prefetching add `x-prefetch` to the `<body>` of your webpage:
+
+```html
+<body x-prefetch>
+```
+
+With prefetching enabled, Alpine AJAX will instantly start fetching a page in the background, as soon as a user hovers over a link. This head start in loading will make your user interface feel snappier.
+
+**Warning:** If you have a link that performs a side effect on the server (like writing to the session or database), prefetching **will** executed these side effects unpredictably. It's best to keep your `GET` requests [idempotent](https://en.wikipedia.org/wiki/Idempotence) and [safe](http://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol#Safe_methods). In the event that you can't create a safe `GET` endpoint, you can disable prefetching on a link by adding the `noprefetch` attribute.
+
+### noprefetch
+
+You may disable prefetching on any link by adding the `noprefetch` attribute:
+
+```html
+<body x-prefetch>
+  <a href="/write-to-database" noprefetch>I'm not prefetched</a>
+</body>
+```
 
 ## Loading States
 
