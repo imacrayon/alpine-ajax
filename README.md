@@ -8,20 +8,20 @@ Learn more at [https://imacrayon.github.io/alpine-ajax/](https://imacrayon.githu
 
 Clone this repo and run `npm install` to get started.
 
-`npm run build` will build a fresh version of the library in `/dist`
+`npm run build` will build a fresh version of the library in `/dist`.
 
 `npm run watch` will watch for file changes and rebuild the library.
 
 ## Documentation
 
-The documentation site is located in `/docs`.
+The documentation site is hosted at [https://imacrayon.github.io/alpine-ajax/](https://imacrayon.github.io/alpine-ajax/), the source files are located in `/docs`.
 
-`npm run start` will start up the documentation site built with [Eleventy](https://www.11ty.dev/). The documentation site automatically bundles the latest Alpine AJAX build in `/js/main.js`.
+`npm run start` will locally server the documentation site built with [Eleventy](https://www.11ty.dev/). The site automatically bundles the latest Alpine AJAX build in `/docs/js/main.js`.
 
 ## Testing
 
 Tests are located in `/tests`.
 
-`npm run test` will run the test suite in the commandline.
+`npm run test` will run the test suite in the [Cypress](https://www.cypress.io/) CLI.
 
-`npm run cypress` will open the [Cypress](https://www.cypress.io/) UI.
+`npm run cypress` will open the Cypress browser UI.
