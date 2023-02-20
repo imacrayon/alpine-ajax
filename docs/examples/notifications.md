@@ -33,7 +33,7 @@ When the`<form>` is submitted the server will respond with a new notification in
 </ul>
 ```
 
-Notice that our form doesn't target the `notification_list` element, however because our list has the `x-sync` directive it automatically updates any time the server's response includes an element with the `id` of `notification_list`.
+Notice that our form doesn't target the `notification_list` element, however because our list has the `x-sync` attribute it automatically updates any time the server's response includes an element with the `id` of `notification_list`.
 
 We can sprinkle in some additional Alpine code to animate the our notifications:
 

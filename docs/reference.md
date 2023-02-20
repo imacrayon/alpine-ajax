@@ -262,7 +262,7 @@ In this example we make a `POST` request with the `email` value to the `/validat
   <tr>
     <td><code>sync</code></td>
     <td><code>false</code></td>
-    <td>Whether to target `x-sync` elements in the request.</td>
+    <td>Setting this to <code>true</code> will include <code>x-sync</code> targets in the request.</td>
   </tr>
   </tbody>
 </table>
