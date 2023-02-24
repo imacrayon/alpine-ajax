@@ -5,7 +5,10 @@ let queue = {}
 let renderElement
 
 export function setRenderer(renderer) {
-  renderElement = renderer
+  renderElement = renderer || (from => {
+    console.warn(`You can't use Alpine AJAX without first installing the "morph" plugin here: https://alpinejs.dev/plugins/morph`)
+    return from
+  })
 }
 
 export async function render(request, ids, el) {

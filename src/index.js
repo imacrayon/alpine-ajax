@@ -7,10 +7,7 @@ import { setRenderer, render } from './render'
 import { listenForNavigate, progressivelyEnhanceLinks } from './link'
 
 export default function (Alpine) {
-  setRenderer(Alpine.morph ?? (from => {
-    console.warn(`You can't use Alpine AJAX without first installing the "morph" plugin here: https://alpinejs.dev/plugins/morph`)
-    return from
-  }))
+  setRenderer(Alpine.morph)
 
   if (document.body.hasAttribute('x-prefetch')) {
     listenForPrefetch(document)
