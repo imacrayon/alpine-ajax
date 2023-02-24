@@ -1,3 +1,5 @@
+let submittersByForm = new WeakMap()
+
 function findSubmitterFromClickTarget(target) {
   const element = target instanceof Element ? target : target instanceof Node ? target.parentElement : null
   const candidate = element ? element.closest("input, button") : null
