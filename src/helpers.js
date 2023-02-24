@@ -1,3 +1,9 @@
+export let Alpine
+
+export function setAlpine(alpine) {
+  Alpine = alpine
+}
+
 export function targets(root, sync = false, trigger = null) {
   let ids = []
   if (trigger && trigger.hasAttribute('target')) {
