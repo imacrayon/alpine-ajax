@@ -1,6 +1,6 @@
 import { test, html } from './utils'
 
-test('content is lazily loaded on page load',
+test('content is lazily loaded with x-init',
   html``,
   ({ get }) => {
     cy.intercept('GET', '/tests', {
@@ -11,6 +11,25 @@ test('content is lazily loaded on page load',
     // because this request fires immediately
     cy.get('#root').then(([el]) => {
       el.innerHTML = `<div x-init="$ajax('/tests')" id="replace"></div>`
+    })
+    cy.wait('@response').then(() => {
+      cy.get('#title').should('not.exist')
+      cy.get('#replace').should('have.text', 'Loaded')
+    })
+  }
+)
+
+test('content is lazily loaded x-load',
+  html``,
+  ({ get }) => {
+    cy.intercept('GET', '/tests', {
+      statusCode: 200,
+      body: '<h1 id="title">Success</h1><div id="replace">Loaded</div>'
+    }).as('response')
+    // Injecting the component code after the intercept has been setup
+    // because this request fires immediately
+    cy.get('#root').then(([el]) => {
+      el.innerHTML = `<div x-load="$ajax('/tests')" id="replace"></div>`
     })
     cy.wait('@response').then(() => {
       cy.get('#title').should('not.exist')
