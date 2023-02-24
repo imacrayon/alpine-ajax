@@ -46,7 +46,6 @@ async function withSubmitter(submitter, callback) {
 
   submitter.removeAttribute('aria-disabled')
   submitter.removeEventListener('click', disableEvent)
-  if (focus && submitter.isConnected) submitter.focus()
 
   return result
 }

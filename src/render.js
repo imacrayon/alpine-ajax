@@ -1,3 +1,5 @@
+import { Alpine } from './helpers'
+import { focusable } from "tabbable"
 
 let queue = {}
 
@@ -45,12 +47,23 @@ export async function render(request, ids, el, events = true) {
   if (!response.html) return
 
   let fragment = document.createRange().createContextualFragment(response.html)
-  ids.forEach(id => {
+  let targets = ids.map(id => {
     let template = fragment.getElementById(id)
     let target = document.getElementById(id)
     if (!template) {
-      console.warn(`Target #${id} not found in AJAX response.`)
-      return renderElement(target, target.cloneNode(false))
+      if (!dispatch('ajax:missing', response)) {
+        return
+      }
+
+      if (!target.hasAttribute('x-sync')) {
+        console.warn(`Target #${id} not found in AJAX response.`)
+      }
+
+      if (response.ok) {
+        return renderElement(target, target.cloneNode(false))
+      }
+
+      return window.location.href = response.url
     }
 
     renderElement(target, template)
@@ -60,6 +73,17 @@ export async function render(request, ids, el, events = true) {
 
     return freshEl
   })
+
+  let initialFocus = Alpine.bound(el, 'initial-focus')
+  if (initialFocus !== undefined && initialFocus !== 'false') {
+    setTimeout(() => {
+      Alpine.bound(el, 'initial-focus').focus()
+    }, 0);
+  } else if (targets.length) {
+    focusFirstElement(targets[0])
+  }
+
+  return targets
 }
 
 async function send({ method, action, body, referrer }) {
@@ -117,4 +141,19 @@ function readHtml(response) {
     response.html = html
     return response
   })
+}
+
+function focusFirstElement(el) {
+  let focusables = focusable(el, { displayCheck: 'none' })
+
+  let focus = focusables[0] ?? null
+
+  if (!focus) {
+    return
+  }
+
+  setTimeout(() => {
+    if (!focus.hasAttribute('tabindex')) focus.setAttribute('tabindex', '0')
+    focus.focus()
+  }, 0)
 }

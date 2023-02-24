@@ -41,5 +41,8 @@
     "esbuild": "^0.17.8",
     "markdown-it": "^13.0.1",
     "markdown-it-anchor": "^8.6.6"
+  },
+  "dependencies": {
+    "tabbable": "^6.1.1"
   }
 }
