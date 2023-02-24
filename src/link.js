@@ -1,5 +1,5 @@
-import { targets, isIgnored } from './helpers'
 import { isPrefetchable } from './prefetch'
+import { targets, isIgnored, source } from './helpers'
 import { render } from './render'
 
 export function listenForNavigate(el) {
@@ -20,7 +20,7 @@ function navigateRequest(link) {
   return {
     method: 'get',
     action: link.dataset.href,
-    referrer: link.closest('[data-source]')?.dataset.source,
+    referrer: source(link),
     body: null
   }
 }

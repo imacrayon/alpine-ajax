@@ -41,3 +41,7 @@ export class MissingIdError extends Error {
     this.name = 'Target Missing ID'
   }
 }
+
+export function source(el) {
+  return el.closest('[data-source]')?.dataset.source
+}

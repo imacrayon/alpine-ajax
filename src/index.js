@@ -1,6 +1,6 @@
 import './submitter-polyfill'
-import { targets } from './helpers'
 import { listenForLoad } from './load'
+import { targets, source } from './helpers'
 import { listenForSubmit } from './form'
 import { listenForPrefetch } from './prefetch'
 import { setRenderer, render } from './render'
@@ -30,7 +30,7 @@ export default function (Alpine) {
         action,
         method: options?.method ? options.method.toLowerCase() : 'get',
         body: options?.body ? new FormData(body) : null,
-        referrer: el.closest('[data-source]')?.dataset.source,
+        referrer: source(el),
       }
 
       return render(request, targets(el, options?.sync), el)
