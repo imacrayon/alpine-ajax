@@ -1,5 +1,5 @@
-import { Alpine } from './helpers'
 import { focusable } from "tabbable"
+import { Alpine } from './helpers'
 
 let queue = {}
 

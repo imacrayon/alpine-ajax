@@ -1,8 +1,8 @@
-import './submitter-polyfill'
 import { setAlpine, targets, source } from './helpers'
-import { listenForSubmit } from './form'
 import { setRenderer, render } from './render'
 import { listenForNavigate } from './link'
+import { listenForSubmit } from './form'
+import './submitter-polyfill'
 
 export default function (Alpine) {
   setAlpine(Alpine)
