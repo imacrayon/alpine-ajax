@@ -92,7 +92,7 @@ async function send({ method, action, body, referrer }) {
   let proxy
   let onSuccess = response => response
   let onError = error => error
-  if (method === 'get') {
+  if (method === 'GET') {
     proxy = enqueue(action)
     if (isLocked(action)) {
       return proxy
@@ -110,7 +110,7 @@ async function send({ method, action, body, referrer }) {
     body,
   }).then(readHtml).then(onSuccess).catch(onError)
 
-  return method === 'get' ? proxy : response
+  return method === 'GET' ? proxy : response
 }
 
 function enqueue(key) {

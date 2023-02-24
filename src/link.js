@@ -17,7 +17,7 @@ export function listenForNavigate(el) {
 
 function navigateRequest(link) {
   return {
-    method: 'get',
+    method: 'GET',
     action: link.href,
     referrer: source(link),
     body: null

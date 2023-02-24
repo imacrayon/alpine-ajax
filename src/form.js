@@ -18,10 +18,10 @@ export function listenForSubmit(el) {
 }
 
 function formRequest(form, submitter = null) {
-  let method = (form.getAttribute('method') || 'get').toLowerCase()
+  let method = (form.getAttribute('method') || 'GET').toUpperCase()
   let action = form.getAttribute('action') || window.location.href
   let body = new FormData(form)
-  if (method === 'get') {
+  if (method === 'GET') {
     action = mergeBodyIntoAction(body, action)
     body = null
   }
