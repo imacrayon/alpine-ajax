@@ -16,7 +16,7 @@ table markup:
       <th scope="col"></th>
     </tr>
   </thead>
-  <tbody x-data x-ajax id="contacts" @ajax:before="confirm('Are you sure?') || $event.preventDefault()">
+  <tbody x-ajax id="contacts" @ajax:before="confirm('Are you sure?') || $event.preventDefault()">
     ...
   </tbody>
 </table>
@@ -94,7 +94,7 @@ with a table that is lacking the row which was just deleted.
       <th scope="col" width="66">Action</th>
     </tr>
   </thead>
-  <tbody x-data x-ajax id="contacts" @ajax:before="confirm('Are you sure?') || $event.preventDefault()">
+  <tbody x-ajax id="contacts" @ajax:before="confirm('Are you sure?') || $event.preventDefault()">
     ${rows}
   </tbody>
 </table>`

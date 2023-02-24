@@ -28,7 +28,7 @@ When this form is submitted a `POST` request is issued to `/repos/1/star` and th
 Now let's enhance this form with Alpine AJAX:
 
 ```html
-<form x-data x-ajax id="star_repo" method="post" action="/repos/1/star">
+<form x-ajax id="star_repo" method="post" action="/repos/1/star">
 ```
 
 These three new attributes change this form's behavior: Now, when this form is submitted, a `POST` request is issued to `/repos/1/star` and the form is replace with the element that has the `id` `star_repo` in the response's content. The browser window doesn't refresh, and UI state and keyboard focus are all preserved when content is changed.

@@ -8,7 +8,7 @@ This example shows how to implement a smoothly scrolling progress bar.
 We start with a `<form>` that issues a `POST` to `/jobs` to begin a job process:
 
 ```html
-<form id="jobs" x-data x-ajax method="post" action="/jobs">
+<form id="jobs" x-ajax method="post" action="/jobs">
   <h3>New Job</h3>
   <button>Start New Job</button>
 </form>
@@ -17,7 +17,7 @@ We start with a `<form>` that issues a `POST` to `/jobs` to begin a job process:
 This `<form>` is then replaced with a new `<div>` that reloads itself every 600ms:
 
 ```html
-<div id="jobs" x-data x-load.600ms="/jobs/1">
+<div id="jobs" x-load="setTimeout(() => $ajax('/jobs/1'), 600)">
   <h3 id="progress_label">Job Progress</h3>
   <div role="progressbar" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100" aria-labelledby="progress_label">
     <svg style="width:25%; transition: width .3s " width="24" height="24" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
@@ -62,14 +62,19 @@ Finally, when the job is complete, the `x-load` directive is removed and a resta
   })
 
   function create() {
-    return `<form x-data x-ajax id="jobs" method="post" action="/jobs">
+    return `<form x-ajax id="jobs" method="post" action="/jobs">
     <h3>New Job</h3>
   <button>Start New Job</button>
 </form>`;
   }
 
   function show(job) {
-    return `<div x-data ${job.complete ? '' : 'x-load.600ms="/jobs/1" '}id="jobs">
+    let directive = ''
+    if (!job.complete) {
+      directive = `x-load="setTimeout(() => $ajax('/jobs/1'), 600)" `
+    }
+
+    return `<div ${directive}id="jobs">
   <h3 id="progress_label">Job Progress</label>
   <div role="progressbar" aria-valuenow="${job.progress}" aria-valuemin="0" aria-valuemax="100" aria-labelledby="progress_label" style="overflow:hidden;">
     <svg style="width:${job.progress}%;transition: width .3s " width="24" height="24" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">

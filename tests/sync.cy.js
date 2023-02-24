@@ -1,7 +1,7 @@
 import { test, html } from './utils'
 
 test('x-sync content is synced with the response',
-  html`<div id="sync" x-sync></div><a href="/tests" x-data x-ajax id="replace">Link</a>`,
+  html`<div id="sync" x-sync></div><a href="/tests" x-ajax id="replace">Link</a>`,
   ({ get }) => {
     cy.intercept('GET', '/tests', {
       statusCode: 200,

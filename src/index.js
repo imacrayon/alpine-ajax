@@ -1,5 +1,4 @@
 import './submitter-polyfill'
-import { listenForLoad } from './load'
 import { setAlpine, targets, source } from './helpers'
 import { listenForSubmit } from './form'
 import { setRenderer, render } from './render'
@@ -9,6 +8,7 @@ export default function (Alpine) {
   setAlpine(Alpine)
   setRenderer(Alpine.morph)
 
+  Alpine.addInitSelector(() => `[${Alpine.prefixed('ajax')}]`)
 
   Alpine.directive('ajax', (el, { }, { cleanup }) => {
     let stopListeningForSubmit = listenForSubmit(el)
@@ -33,12 +33,13 @@ export default function (Alpine) {
     }
   })
 
-  Alpine.directive('load', (el, { value, modifiers, expression }, { cleanup }) => {
-    let delay = modifiers.length ? modifiers[0].split('ms')[0] : 0
-    let stopListeningForLoad = listenForLoad(el, expression, value, delay)
+  Alpine.addInitSelector(() => `[${Alpine.prefixed('load')}]`)
 
-    cleanup(() => {
-      stopListeningForLoad()
-    })
+  Alpine.directive('load', (el, { expression }, { evaluate }) => {
+    if (typeof expression === 'string') {
+      return !!expression.trim() && evaluate(expression)
+    }
+
+    return evaluate(expression)
   })
 }

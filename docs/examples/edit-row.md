@@ -14,7 +14,7 @@ This example shows how to implement editable table rows. First let's look at the
       <th scope="col">Actions</th>
     </tr>
   </thead>
-  <tbody x-data x-ajax>
+  <tbody x-ajax>
     ...
   </tbody>
 </table>
@@ -119,7 +119,7 @@ Finally, here is the edit state that will replace a row:
       <th scope="col" width="130">Action</th>
     </tr>
   </thead>
-  <tbody x-data x-ajax>
+  <tbody x-ajax>
     ${rows}
   </tbody>
 </table>`

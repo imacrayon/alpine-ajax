@@ -8,7 +8,7 @@ This example shows how to load remote content into a dialog window.
 We start an empty `<dialog>` and a list of links that target the `<dialog>`.
 
 ```html
-<ul x-data x-ajax target="contact" @ajax:before="$dispatch('dialog:open')">
+<ul x-ajax target="contact" @ajax:before="$dispatch('dialog:open')">
   <li><a href="/contacts/1">Finn Mertins</a></li>
   ...
 <ul>
@@ -74,7 +74,7 @@ Finally, the server responds with the modal content:
 
   function index(contacts) {
     let items = contacts.map(contact => `<li><a href="/contacts/${contact.id}">${contact.name}</a>`).join('\n')
-    return `<ul x-data x-ajax target="contact" @ajax:before="$dispatch('dialog:open')">
+    return `<ul x-ajax target="contact" @ajax:before="$dispatch('dialog:open')">
   ${items}
 </ul>
 <dialog @dialog:open.window="$el.showModal()">

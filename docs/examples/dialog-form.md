@@ -17,12 +17,12 @@ We start with an empty `<dialog>` and a `<table>` of contact data.
       <th scope="col">Action</th>
     </tr>
   </thead>
-  <tbody x-data x-ajax id="contacts" @ajax:before="$dispatch('dialog:open')" x-load:contact:updated="/contacts">
+  <tbody x-ajax id="contacts" @ajax:before="$dispatch('dialog:open')" @contact:updated="$ajax('/contacts')">
     ...
   </tbody>
 </table>
 
-<dialog x-data @dialog:open.window="$el.open = true">
+<dialog x-data @dialog:open.window="$el.showModal()">
   <div id="contact"></div>
 </dialog>
 ```
@@ -47,7 +47,7 @@ In each table row we have an "Edit" link targeting the empty `#contact` `<div>` 
 Clicking the "Edit" link issues a `GET` request to `/contacts/1/edit` which returns the corresponding `<form>` for the contact inside the `<dialog>`:
 
 ```html
-<form id="contact" x-data x-ajax @ajax:success="$dispatch('contact:updated')" method="put" action="/contacts/1" aria-label="Contact Information">
+<form id="contact" x-ajax @ajax:success="$dispatch('contact:updated')" method="put" action="/contacts/1" aria-label="Contact Information">
   <div>
     <label for="name">Name</label>
     <input id="name" name="name" value="Finn">
@@ -131,7 +131,7 @@ Finally, the `contact:updated` event causes the `<tbody>` to refresh with the up
   }
 
   function edit(contact) {
-    return `<form id="contact" x-data x-ajax @ajax:success="$dispatch('contact:updated')" method="put" action="/contacts/${contact.id}" aria-label="Contact Information">
+    return `<form id="contact" x-ajax @ajax:success="$dispatch('contact:updated')" method="put" action="/contacts/${contact.id}" aria-label="Contact Information">
     <div>
       <label for="name">Name</label>
       <input id="name" name="name" value="${contact.name}">
@@ -161,7 +161,7 @@ Finally, the `contact:updated` event causes the `<tbody>` to refresh with the up
       <th scope="col" width="53">Action</th>
     </tr>
   </thead>
-  <tbody x-data x-ajax id="contacts" @ajax:before="$dispatch('dialog:open')" @ajax:error="alert('test')" x-load:contact:updated="/contacts">
+  <tbody id="contacts" x-ajax @ajax:before="$dispatch('dialog:open')" @contact:updated.window="$ajax('/contacts')">
     ${rows}
   </tbody>
 </table>

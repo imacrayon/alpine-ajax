@@ -7,45 +7,35 @@ layout: layout.webc
 1. [x-ajax](#x-ajax)
     * [target](#target)
     * [noajax](#noajax)
-    * [AJAX Events](#ajax-events)
-    * [Progressive Enhancement](#progressive-enhancement)
-3. [x-sync](#x-sync)
+    * [Events](#events)
+    * [Progressive enhancement](#progressive-enhancement)
+2. [x-sync](#x-sync)
+3. [$ajax](#ajax)
+   * [$ajax options](#ajax-options)
+    * [Server events](#server-events)
 4. [x-load](#x-load)
-6. [$ajax](#ajax)
-    * [$ajax Options](#ajax-options)
-    * [Server Events](#server-events)
-7. [Loading States](#loading-states)
+5. [Loading states](#loading-states)
 
 ## x-ajax
 
-This directive defines parts of a page to be updated on request. Any links and forms inside this element are captured, and the `x-ajax` element is automatically replaced after receiving a response. Regardless of whether the server provides a full document, or just a HTML fragment, only the `x-ajax` element will be extracted from the response to replace the existing content.
+This directive defines an AJAX Component. All link clicks and form submissions inside an AJAX Component are captured, and the component is automatically updated after receiving a response. Regardless of whether the server provides a full document, or just a HTML fragment, only the AJAX Component that triggered the request will be extracted from the response and updated on the page.
 
-`x-ajax` elements must have a unique `id`. The `id` is used to match the content being replaced when requesting content from the server.
+AJAX Components must have a unique `id`. The `id` is used to find the AJAX Component in the  HTML response sent from the server. You'll see a helpful error in the console if you forget to include an `id` on any AJAX Component.
 
-Consider this contact list entry:
+Consider this editable email address:
 
 ```html
-<div x-data x-ajax id="contact_1">
-  <p><strong>First Name</strong>: Finn</p>
-  <p><strong>Last Name</strong>: Mertens</p>
-  <p><strong>Email</strong>: fmertens@candykingdom.gov</p>
+<div x-ajax id="contact_1">
+  <p>fmertens@candykingdom.gov</p>
   <a href="/contacts/1/edit">Edit</a>
 </div>
 ```
 
-When the "Edit" link is clicked, the response should return a page for editing the contact entry:
+When the "Edit" link is clicked, the server should return a page containing a form for editing the email:
 
 ```html
 <h1>Edit Contact Details</h1>
-<form x-data x-ajax id="contact_1" method="put" action="/contacts/1">
-  <div>
-    <label for="first_name">First Name</label>
-    <input id="first_name" name="first_name" value="Finn">
-  </div>
-  <div>
-    <label for="last_name">Last Name</label>
-    <input id="last_name" name="last_name" value="Mertens">
-  </div>
+<form x-ajax id="contact_1" method="put" action="/contacts/1">
   <div>
     <label for="email">Email</label>
     <input type="email" id="email" name="email" value="fmertens@candykingdom.gov">
@@ -54,28 +44,28 @@ When the "Edit" link is clicked, the response should return a page for editing t
 </form>
 ```
 
-Since the `<form>` in this response has a matching `contact_1` id. The original contact details will be replaced with the edit form. Notice that the page's `<h1>` isn't inside the `<form>`. This means it'll be ignored when the form replaces the contact details.
+Since the `<form>` in this response has `id="contact_1"`. The original contact details will be replaced with the edit form. Notice that the page's `<h1>` isn't inside the `<form>`. This means it'll be ignored when the form replaces the contact details.
 
 ### target
 
-Add the `target` attribute to target another element `id` on the page to be replaced instead of the `x-ajax` element.
+Add the `target` attribute to target another element `id` on the page to be replaced instead of the default `x-ajax` component.
 
-Take a look at this comment list:
+Take a look at this comment list, notice the `target="comments"` attribute on the `<form>`:
 
 ```html
 <ul id="comments">
   <li>Comment #1</li>
 </ul>
 <h2 id="comment_form_title">Post a Comment</h2>
-<form x-data x-ajax target="comments" method="post" action="/comment" aria-labelledby="comment_form_title">
+<form x-ajax target="comments" method="post" action="/comment" aria-labelledby="comment_form_title">
   <input aria-label="Comment text" name="text" required />
   <button>Submit</button>
 </form>
 ```
 
-When the "Post a Comment" form is submitted the `comments` list will be updated with the response instead of the `x-ajax` form.
+When the "Post a Comment" form is submitted the `comments` list will be updated with the response instead of the form.
 
-#### Defining Multiple Targets
+#### Multiple targets
 
 You can even replace multiple elements from the same server response by separating `id`s with a space.
 
@@ -87,7 +77,7 @@ Here's an expanded comment list example:
   <li>Comment #1</li>
 </ul>
 <h2 id="comment_form_title">Post a Comment</h2>
-<form x-data x-ajax target="comments comments_count" method="post" action="/comment" aria-labelledby="comment_form_title">
+<form x-ajax target="comments comments_count" method="post" action="/comment" aria-labelledby="comment_form_title">
   <input name="comment" required />
   <button>Submit</button>
 </form>
@@ -102,7 +92,7 @@ You can stop AJAX behavior on any element by adding the `noajax` attribute. Just
 Review this navigation that demonstrates `noajax` at work:
 
 ```html
-<nav x-data x-ajax id="sidebar">
+<nav x-ajax id="sidebar">
   <ul>
     <li><a noajax href="/page-1">Disabled</a></li>
     <li noajax><a href="/page-2">Disabled by parent</a></li>
@@ -113,7 +103,7 @@ Review this navigation that demonstrates `noajax` at work:
 
  The first two links will behave like regular links, causing a full page reload when clicked. Only the third link will issue an AJAX request.
 
-### AJAX Events
+### x-ajax events
 
 You can listen for AJAX events to perform additional actions during an AJAX request:
 
@@ -125,7 +115,7 @@ You can listen for AJAX events to perform additional actions during an AJAX requ
   <tbody>
   <tr>
     <td><code>ajax:before</code></td>
-    <td>Fired before a network request is made. If this event is cancelled using <code>$event.preventDefault()</code> the request will be aborted.</td>
+    <td>Fired before a network request is made. If this event is canceled using <code>$event.preventDefault()</code> the request will be aborted.</td>
   </tr>
   <tr>
     <td><code>ajax:success</code></td>
@@ -145,14 +135,14 @@ You can listen for AJAX events to perform additional actions during an AJAX requ
 Here's an example of aborting a form request when the user cancels a dialog prompt:
 
 ```html
-<form x-data x-ajax id="delete_user" @ajax:before="confirm('Are you sure?') || $event.preventDefault()">
+<form x-ajax id="delete_user" @ajax:before="confirm('Are you sure?') || $event.preventDefault()">
   <button>Delete User</button>
 </form>
 ```
 
 **Note:** The `ajax:success` and `ajax:error` events only convey the status code of a request. You'll often find that using the [Server Events](#server-events) pattern is what you need to build more robust applications.
 
-### Progressive Enhancement
+### Progressive enhancement
 
 Behavior added with `x-ajax` degrades gracefully if JavaScript is not enabled: Links and forms continue to work as normal, they simply don't fire AJAX requests. This is known as [Progressive Enhancement](https://developer.mozilla.org/en-US/docs/Glossary/Progressive_Enhancement), and it allows a wider audience to use your sites functionality.
 
@@ -174,30 +164,9 @@ Consider this list of notifications:
 
 Every server response that includes a `notifications` element will get inserted into this `aria-live` region. Take a look at the [Notifications example](/examples/notifications) for a demonstration.
 
-## x-load
-
-You can lazy load content onto the page using the `x-load` directive:
-
-```html
-<div x-data x-load="/large-complex-chart" id="chart"></div>
-```
-
-This will issue a `GET` request to the server when the page loads, or as soon as this element is inserted into the DOM.
-
-You can also specify a delay when loading content:
-
-```html
-<div x-data x-load.600ms="/progress">
-  <label for="file">File progress:</label>
-  <progress id="file" max="100" value="70">70%</progress>
-</div>
-```
-
-This works great in situations where you may need to continuously poll the server for info on long running processes. See the [Progress Bar](/examples/progress-bar) example for a more complete demonstration.
-
 ## $ajax
 
-You can use `$ajax` to programmatically issue AJAX requests triggered by events. Here we've wired it up to an input's `change` event to perform some server-side validation for an email:
+The `$ajax` magic helper is `x-ajax`'s little sidekick. While `x-ajax` alone should cover about 80% of your use cases, there are still cases where you might need fine-grained AJAX control. That's where `$ajax` comes in, use it to programmatically issue AJAX requests in response to events. Here we've wired it up to an input's `change` event to perform some server-side validation for an email:
 
 ```html
 <div
@@ -214,7 +183,9 @@ You can use `$ajax` to programmatically issue AJAX requests triggered by events.
 
 In this example we make a `POST` request with the `email` value to the `/validate-email` endpoint. If the email is invalid the server should return the field markup including an error.
 
-### $ajax Options
+**Note:** Since `$ajax` is intended to be used in side effects it doesn't emit any events or target `x-sync` elements like `x-ajax`. However, you can change these defaults using the `$ajax` options.
+
+### $ajax options
 
 <table>
   <thead>
@@ -241,23 +212,25 @@ In this example we make a `POST` request with the `email` value to the `/validat
   </tbody>
 </table>
 
-### Server Events
+### Server events
 
-Issuing AJAX requests in response to custom events is where the real magic happens, check out this markup for a list of comments:
+Using `$ajax` to issuing AJAX requests in response to custom events is where the real magic happens, check out this markup for a list of comments:
 
 ```html
-<ul x-data @comment_added.window="$ajax('/comments')" id="comments">
+<ul x-init @comment_added.window="$ajax('/comments')" id="comments">
 ```
 
-The comment list will listen for an event named `comment_added` to trigger on the root `window` object. When the `comment_added` event is triggered a `GET` request is issued to `/comments` and the comments list is reloaded with a fresh list of comments. Alpine makes it easy to dispatch custom events from any component using the `$dispatch` magic helper. You can trigger the `comment_added` event after a successful form submission by including markup like this in your server response:
+This comment list will listen for an event named `comment_added` to trigger on the root `window` object. When the `comment_added` event is triggered a `GET` request is issued to `/comments` and the comments list is reloaded with a fresh list of comments.
+
+Alpine makes it easy to dispatch custom events (like `comment_added`) from any component using the `$dispatch` magic helper. You can trigger the `comment_added` event after a successful form submission by including markup like this in your server response:
 
 ```html
 <script x-init="$dispatch('comment_added')"></script>
 ```
 
-Combining `$ajax` with events rendered from the server provides a powerful pattern you can use to share server state between desperate parts of your interface. Let's break this pattern down with an example:
+Combining `$ajax` with events rendered from the server provides a powerful pattern you can use to share your server's state between desperate parts of your interface. Let's break this pattern down with an example:
 
-Imagine inside an app, after a comment is created, you would like to perform the following:
+Imagine a basic comment thread, after a comment is created, you would like to perform the following:
 1. Display a notification message
 2. Increment a comment count
 3. Add the new comment to a listing of all comments
@@ -267,7 +240,7 @@ Imagine inside an app, after a comment is created, you would like to perform the
 You might be inclined to create a form that updates a big, ugly, list of targets like this:
 
 ```html
-<form x-data x-ajax method="post" action="/comments" target="notifications comment_counter comments_list comment_dialog comment_author">
+<form x-ajax method="post" action="/comments" target="notifications comment_counter comments_list comment_dialog comment_author">
 ```
 
 Instead, wire up each of your UI elements to respond to a single `comment_added` event:
@@ -324,7 +297,22 @@ return new View("comments.template") with Session
 </div>
 ```
 
-## Loading States
+## x-load
+
+The `x-load` directive works just like Alpine's `x-init`, the only difference being that `x-load` will run each time a component is reloaded by an AJAX response. In contrast, `x-init` will only run the first time the component is initialized on the page.
+
+Here we're using `x-load` to continuously poll for new data every second:
+
+```html
+<div x-load="setTimeout(() => $ajax('/progress'), 1000)">
+  <label for="file">File progress:</label>
+  <progress id="file" max="100" value="70">70%</progress>
+</div>
+```
+
+Note that if we were to replace `x-load` with `x-init` in this markup, the polling request would only be issued once. See the [Progress Bar](/examples/progress-bar) example for a more complete demonstration.
+
+## Loading states
 
 While an AJAX request is in progress there are a few loading states to be aware of:
 

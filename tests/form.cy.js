@@ -1,7 +1,7 @@
 import { test, html } from './utils'
 
 test('makes GET requests for naked form',
-  html`<form x-data x-ajax id="replace"><button></button></form>`,
+  html`<form x-ajax id="replace"><button></button></form>`,
   ({ get }) => {
     cy.intercept('GET', '/tests', {
       statusCode: 200,
@@ -16,7 +16,7 @@ test('makes GET requests for naked form',
 )
 
 test('makes GET requests for form',
-  html`<form x-data x-ajax id="replace" method="get"><button></button></form>`,
+  html`<form x-ajax id="replace" method="get"><button></button></form>`,
   ({ get }) => {
     cy.intercept('GET', '/tests', {
       statusCode: 200,
@@ -31,7 +31,7 @@ test('makes GET requests for form',
 )
 
 test('makes POST requests for form',
-  html`<form x-data x-ajax id="replace" method="post"><button></button></form>`,
+  html`<form x-ajax id="replace" method="post"><button></button></form>`,
   ({ get }) => {
     cy.intercept('POST', '/tests', {
       statusCode: 200,
@@ -46,7 +46,7 @@ test('makes POST requests for form',
 )
 
 test('makes PUT requests for form',
-  html`<form x-data x-ajax id="replace" method="put"><button></button></form>`,
+  html`<form x-ajax id="replace" method="put"><button></button></form>`,
   ({ get }) => {
     cy.intercept('PUT', '/tests', {
       statusCode: 200,
@@ -61,7 +61,7 @@ test('makes PUT requests for form',
 )
 
 test('makes PATCH requests for form',
-  html`<form x-data x-ajax id="replace" method="patch"><button></button></form>`,
+  html`<form x-ajax id="replace" method="patch"><button></button></form>`,
   ({ get }) => {
     cy.intercept('PATCH', '/tests', {
       statusCode: 200,
@@ -76,7 +76,7 @@ test('makes PATCH requests for form',
 )
 
 test('makes DELETE requests for form',
-  html`<form x-data x-ajax id="replace" method="delete"><button></button></form>`,
+  html`<form x-ajax id="replace" method="delete"><button></button></form>`,
   ({ get }) => {
     cy.intercept('DELETE', '/tests', {
       statusCode: 200,
@@ -91,7 +91,7 @@ test('makes DELETE requests for form',
 )
 
 test('request URL is determined by action attribute',
-  html`<form x-data x-ajax id="replace" action="other.html"><button></button></form>`,
+  html`<form x-ajax id="replace" action="other.html"><button></button></form>`,
   ({ get }) => {
     cy.intercept('GET', '/tests/other.html', {
       statusCode: 200,
@@ -106,7 +106,7 @@ test('request URL is determined by action attribute',
 )
 
 test('target changes the updated target',
-  html`<div id="replace"></div><div x-data x-ajax><form target="replace" method="post" action="/tests"><button></button></form><div>`,
+  html`<div id="replace"></div><div x-ajax><form target="replace" method="post" action="/tests"><button></button></form><div>`,
   ({ get }) => {
     cy.intercept('POST', '/tests', {
       statusCode: 200,
@@ -122,7 +122,7 @@ test('target changes the updated target',
 )
 
 test('target can be inherited',
-  html`<div id="replace"></div><div x-data x-ajax target="replace"><form method="post" action="/tests"><button></button></form><div>`,
+  html`<div id="replace"></div><div x-ajax target="replace"><form method="post" action="/tests"><button></button></form><div>`,
   ({ get }) => {
     cy.intercept('POST', '/tests', {
       statusCode: 200,
@@ -138,7 +138,7 @@ test('target can be inherited',
 )
 
 test('AJAX behavior is inherited',
-  html`<div x-data x-ajax id="replace"><form method="post" action="/tests"><button></button></form></div>`,
+  html`<div x-ajax id="replace"><form method="post" action="/tests"><button></button></form></div>`,
   ({ get }) => {
     cy.intercept('POST', '/tests', {
       statusCode: 200,
@@ -153,11 +153,11 @@ test('AJAX behavior is inherited',
 )
 
 test('focus is maintained after elements are replaced',
-  html`<form x-data x-ajax id="replace" method="post"><button aria-pressed="false">Like</button></form>`,
+  html`<form x-ajax id="replace" method="post"><button aria-pressed="false">Like</button></form>`,
   ({ get }) => {
     cy.intercept('POST', '/tests', {
       statusCode: 200,
-      body: '<form x-data x-ajax id="replace" method="post"><button aria-pressed="true">Unlike</button></form>'
+      body: '<form x-ajax id="replace" method="post"><button aria-pressed="true">Unlike</button></form>'
     }).as('response')
     get('button').focus().click()
     cy.wait('@response').then(() => {
@@ -167,7 +167,7 @@ test('focus is maintained after elements are replaced',
 )
 
 test('AJAX behavior is ignored with noajax',
-  html`<div x-data x-ajax id="replace"><form noajax method="post" action="/tests"><button></button></form></div>`,
+  html`<div x-ajax id="replace"><form noajax method="post" action="/tests"><button></button></form></div>`,
   ({ get }) => {
     cy.intercept('POST', '/tests', {
       statusCode: 200,
@@ -179,7 +179,7 @@ test('AJAX behavior is ignored with noajax',
 )
 
 test('ajax:before event is fired',
-  html`<h1 id="title">Replace me</h1><p id="before">Change me</p><form x-data x-ajax target="title" @ajax:before="document.getElementById('before').textContent = 'Changed'" method="post" action="/tests"><button></button></form>`,
+  html`<h1 id="title">Replace me</h1><p id="before">Change me</p><form x-ajax target="title" @ajax:before="document.getElementById('before').textContent = 'Changed'" method="post" action="/tests"><button></button></form>`,
   ({ get }) => {
     cy.intercept('POST', '/tests', {
       statusCode: 200,
@@ -194,7 +194,7 @@ test('ajax:before event is fired',
 )
 
 test('ajax:before can cancel AJAX requests',
-  html`<h1 id="title">Replace me</h1><form x-data x-ajax target="title" @ajax:before="$event.preventDefault()" method="post" action="/"><button></button></form>`,
+  html`<h1 id="title">Replace me</h1><form x-ajax target="title" @ajax:before="$event.preventDefault()" method="post" action="/"><button></button></form>`,
   ({ get }) => {
     cy.on('fail', (error, runnable) => {
       if (error.message.indexOf('Timed out retrying') !== 0) throw error
@@ -213,11 +213,11 @@ test('ajax:before can cancel AJAX requests',
 )
 
 test('referer header is set when `data-source` exists',
-  html`<form x-data x-ajax id="replace" method="post" data-source="/tests/other.html"><button></button></form>`,
+  html`<form x-ajax id="replace" method="post" data-source="/tests/other.html"><button></button></form>`,
   ({ get }) => {
     cy.intercept('POST', '/tests', {
       statusCode: 200,
-      body: '<form x-data x-ajax id="replace" method="post"><button></button></form>'
+      body: '<form x-ajax id="replace" method="post"><button></button></form>'
     }).as('response')
     get('button').click()
     cy.wait('@response').then(network => {

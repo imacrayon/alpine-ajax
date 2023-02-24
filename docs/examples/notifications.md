@@ -15,7 +15,7 @@ This pattern starts with an empty list for our notifications, the list needs an 
 We'll also add a `<form>` to this demo so that we can issue requests to the server that will trigger new notifications.
 
 ```html
-<form x-data x-ajax id="action" method="post" action="/action">
+<form x-ajax id="action" method="post" action="/action">
   <button>Click Me</button>
 </form>
 ```
@@ -23,7 +23,7 @@ We'll also add a `<form>` to this demo so that we can issue requests to the serv
 When the`<form>` is submitted the server will respond with a new notification in the list:
 
 ```html
-<form x-data x-ajax id="action" method="post" action="/action">
+<form x-ajax id="action" method="post" action="/action">
   <button>Click Me</button>
 </form>
 <ul x-sync id="notification_list" role="status" aria-live="polite">
@@ -132,7 +132,7 @@ And finally, we can make our notifications automatically dismiss themselves afte
   })
 
   function view() {
-    return `<form x-data x-ajax id="action" method="post" action="/action">
+    return `<form x-ajax id="action" method="post" action="/action">
   <button>Click Me</button>
 </form>
 <ul x-sync id="notification_list" role="status" aria-live="polite">
