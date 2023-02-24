@@ -129,6 +129,10 @@ You can listen for AJAX events to perform additional actions during an AJAX requ
     <td><code>ajax:after</code></td>
     <td>Fired after every successful or unsuccessful request.</td>
   </tr>
+  <tr>
+    <td><code>ajax:missing</code></td>
+    <td>Fired if a matching target is not found in the response body. <code>detail</code> contains the server response data. You may cancel this event using <code>$event.preventDefault()</code> to override the default behavior.</td>
+  </tr>
   </tbody>
 </table>
 
