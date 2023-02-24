@@ -25,7 +25,7 @@ function formRequest(form, submitter = null) {
     action = mergeBodyIntoAction(body, action)
     body = null
   }
-  if (submitter.name) {
+  if (submitter && submitter.name) {
     body.append(submitter.name, submitter.value)
   }
   let referrer = form.closest('[data-source]')?.dataset.source
