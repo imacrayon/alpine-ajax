@@ -2,20 +2,15 @@ import './submitter-polyfill'
 import { listenForLoad } from './load'
 import { setAlpine, targets, source } from './helpers'
 import { listenForSubmit } from './form'
-import { listenForPrefetch } from './prefetch'
 import { setRenderer, render } from './render'
-import { listenForNavigate, progressivelyEnhanceLinks } from './link'
+import { listenForNavigate } from './link'
 
 export default function (Alpine) {
   setAlpine(Alpine)
   setRenderer(Alpine.morph)
 
-  if (document.body.hasAttribute('x-prefetch')) {
-    listenForPrefetch(document)
-  }
 
   Alpine.directive('ajax', (el, { }, { cleanup }) => {
-    progressivelyEnhanceLinks(el)
     let stopListeningForSubmit = listenForSubmit(el)
     let stopListeningForNavigate = listenForNavigate(el)
 

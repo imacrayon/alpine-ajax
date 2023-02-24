@@ -1,4 +1,3 @@
-import { progressivelyEnhanceLinks } from './link'
 
 let queue = {}
 
@@ -50,9 +49,12 @@ export async function render(request, ids, el) {
       return renderElement(target, target.cloneNode(false))
     }
 
-    template.dataset.source = response.url
     renderElement(target, template)
-    return progressivelyEnhanceLinks(document.getElementById(id))
+
+    let freshEl = document.getElementById(id);
+    freshEl.dataset.source = response.url
+
+    return freshEl
   })
 }
 

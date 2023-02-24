@@ -11,8 +11,6 @@ layout: layout.webc
     * [Progressive Enhancement](#progressive-enhancement)
 3. [x-sync](#x-sync)
 4. [x-load](#x-load)
-5. [x-prefetch](#x-prefetch)
-    * [noprefetch](#noprefetch)
 6. [$ajax](#ajax)
     * [$ajax Options](#ajax-options)
     * [Server Events](#server-events)
@@ -156,8 +154,6 @@ Here's an example of aborting a form request when the user cancels a dialog prom
 
 ### Progressive Enhancement
 
-Since AJAX enabled links no longer trigger full page navigation, they are transformed into buttons to meet [accessibility best practices](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/button_role#best_practices). AJAX links are given the `button` role, their `href` is removed, and the `<a>` element is wired to respond to button keyboard events.
-
 Behavior added with `x-ajax` degrades gracefully if JavaScript is not enabled: Links and forms continue to work as normal, they simply don't fire AJAX requests. This is known as [Progressive Enhancement](https://developer.mozilla.org/en-US/docs/Glossary/Progressive_Enhancement), and it allows a wider audience to use your sites functionality.
 
 ## x-sync
@@ -198,28 +194,6 @@ You can also specify a delay when loading content:
 ```
 
 This works great in situations where you may need to continuously poll the server for info on long running processes. See the [Progress Bar](/examples/progress-bar) example for a more complete demonstration.
-
-## x-prefetch
-
-Alpine AJAX can prefetch `GET` requests to speed up both page loading and rendering. To enable prefetching add `x-prefetch` to the `<body>` of your webpage:
-
-```html
-<body x-prefetch>
-```
-
-With prefetching enabled, Alpine AJAX will instantly start fetching a page in the background, as soon as a user hovers over a link. This head start in loading will make your user interface feel snappier.
-
-**Warning:** If you have a link that performs a side effect on the server (like writing to the session or database), prefetching **will** executed these side effects unpredictably. It's best to keep your `GET` requests [idempotent](https://en.wikipedia.org/wiki/Idempotence) and [safe](http://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol#Safe_methods). In the event that you can't create a safe `GET` endpoint, you can disable prefetching on a link by adding the `noprefetch` attribute.
-
-### noprefetch
-
-You may disable prefetching on any link by adding the `noprefetch` attribute:
-
-```html
-<body x-prefetch>
-  <a href="/write-to-database" noprefetch>I'm not prefetched</a>
-</body>
-```
 
 ## $ajax
 
