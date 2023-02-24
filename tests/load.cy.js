@@ -34,7 +34,7 @@ test('replaced content gets a source',
 )
 
 test('content is lazily loaded with a custom event trigger',
-  html`<div x-data><div @button:clicked="$ajax('/tests')" id="replace"></div><button type="button" @click="$dispatch('button:clicked')"></button></div>`,
+  html`<div x-data><div @button:clicked.window="$ajax('/tests')" id="replace"></div><button type="button" @click="$dispatch('button:clicked')"></button></div>`,
   ({ get }) => {
     cy.intercept('GET', '/tests', {
       statusCode: 200,
