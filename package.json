@@ -6,9 +6,9 @@
     "HTML",
     "AlpineJS"
   ],
-  "version": "0.0.22",
+  "version": "0.1.0",
   "license": "MIT",
-  "author": "Christian Taylor <christianbtaylor@gmail.com>",
+  "author": "Christian Taylor",
   "homepage": "https://imacrayon.github.io/alpine-ajax/",
   "repository": {
     "type": "git",
