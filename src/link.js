@@ -4,7 +4,7 @@ import { render } from './render'
 export function listenForNavigate(el) {
   let handler = event => {
     let link = event.target
-    if (!isLocalLink(link)) return
+    if (!isLocalLink(link) || isIgnored(link)) return
     event.preventDefault()
     event.stopPropagation()
     render(navigateRequest(link), targets(el, true, link), link)
