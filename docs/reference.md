@@ -209,6 +209,11 @@ In this example we make a `POST` request with the `email` value to the `/validat
     <td>The request body.</td>
   </tr>
   <tr>
+    <td><code>events</code></td>
+    <td><code>false</code></td>
+    <td>Setting this to <code>true</code> will fire AJAX request events.</td>
+  </tr>
+  <tr>
     <td><code>sync</code></td>
     <td><code>false</code></td>
     <td>Setting this to <code>true</code> will include <code>x-sync</code> targets in the request.</td>
