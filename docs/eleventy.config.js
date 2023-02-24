@@ -17,6 +17,7 @@ module.exports = function (eleventyConfig) {
       entryPoints: ['js/main.js'],
       bundle: true,
       outfile: '_site/js/main.js',
+      sourcemap: true,
       minify: true,
     })
   })
