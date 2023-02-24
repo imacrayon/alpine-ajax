@@ -10,7 +10,7 @@ export function setRenderer(renderer) {
   })
 }
 
-export async function render(request, ids, el) {
+export async function render(request, ids, el, events = true) {
   let dispatch = (name, detail = {}) => {
     return el.dispatchEvent(
       new CustomEvent(name, {
@@ -20,6 +20,10 @@ export async function render(request, ids, el) {
         cancelable: true,
       })
     )
+  }
+
+  if (!events) {
+    dispatch = () => true
   }
 
   if (!dispatch('ajax:before')) return

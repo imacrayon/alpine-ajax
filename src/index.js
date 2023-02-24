@@ -29,7 +29,7 @@ export default function (Alpine) {
         referrer: source(el),
       }
 
-      return render(request, targets(el, options?.sync), el)
+      return render(request, targets(el, options?.sync), el, Boolean(options?.events))
     }
   })
 
