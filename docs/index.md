@@ -4,14 +4,9 @@ layout: layout.webc
 
 # Alpine AJAX
 
-A set of [Alpine.js](https://alpinejs.dev) directives that enable forms and links to make asynchronous HTTP requests and render the response to the page.
+The missing [Alpine.js](https://alpinejs.dev) attributes for interacting with your server. It's `jQuery.ajax()` for the modern web.
 
-These directives empower you to progressively enhanced multi-page, server-rendered, websites and create modern, dynamic, <abbr title="User Interface">UI</abbr>s with very little JavaScript.
-
-The Alpine AJAX project values
-  1. [Progressive enhancement](https://developer.mozilla.org/en-US/docs/Glossary/Progressive_Enhancement)
-  2. HTML over JavaScript
-  3. [Accessibility](https://www.w3.org/WAI/ARIA/apg/)
+Alpine AJAX empowers you to progressively enhanced multi-page websites to create fast, responsive web experiences with very little JavaScript.
 
 ## An Introduction
 
@@ -31,49 +26,15 @@ Now let's enhance this form with Alpine AJAX:
 <form x-ajax id="star_repo" method="post" action="/repos/1/star">
 ```
 
-These three new attributes change this form's behavior: Now, when this form is submitted, a `POST` request is issued to `/repos/1/star` and the form is replace with the element that has the `id` `star_repo` in the response's content. The browser window doesn't refresh, and UI state and keyboard focus are all preserved when content is changed.
+Adding `x-ajax` and `id` changes this form's behavior: Now, when this form is submitted, a `POST` request is issued to `/repos/1/star` and the form is replace with the element that has the `id` `star_repo` in the response's content. The browser window doesn't refresh, and UI state (like keyboard focus) is preserved when the content changes.
 
-This simple pattern of updating a piece of your frontend instead of the entire page can be expanded to create rich user experiences as demonstrated on the [Examples](/examples) page.
-
-## Installation
-
-You can use Alpine AJAX by either including it from a `<script>` tag or installing it via NPM. The [Alpine Morph](https://alpinejs.dev/plugins/morph) plugin also required to make everything work.
-
-### Via CDN
-
-Include the CDN build of Alpine AJAX & Morph as a `<script>` tag, just make sure to include it **before** Alpine's core JS file.
-
-```html
-<script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/morph@3.11.1/dist/cdn.min.js"></script>
-<script defer src="https://cdn.jsdelivr.net/npm/@imacrayon/alpine-ajax"></script>
-<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.10.5/dist/cdn.min.js"></script>
-```
-
-### Via NPM
-
-Install Alpine AJAX & Morph from NPM for use inside your bundle like so:
-
-```bash
-npm i @imacrayon/alpine-ajax @alpinejs/morph
-```
-
-Then initialize it from your bundle:
-
-```js
-import Alpine from 'alpinejs'
-import morph from '@alpinejs/morph'
-import ajax from '@imacrayon/alpine-ajax'
-
-window.Alpine = Alpine
-Alpine.plugin(morph)
-Alpine.plugin(ajax)
-```
+This simple pattern of updating a piece of your frontend instead of the entire page can be expanded to create rich user experiences.
 
 Visit the [Reference](/reference) page to learn how Alpine AJAX works, and then check the [Examples](/examples) page to learn how to apply it.
 
 ## Prior Art
 
-Alpine AJAX is inspired by these other awesome HTML-first projects:
+Alpine AJAX is inspired by these other awesome HTML-over-the-wire projects:
 
 * [HTMX](https://htmx.org)
 * [Hotwire Turbo](https://turbo.hotwired.dev)

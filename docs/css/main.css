@@ -1,93 +1,38 @@
 :root {
+  --nc-font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  --nc-font-mono: Consolas, monaco, 'Ubuntu Mono', 'Liberation Mono', 'Courier New', Courier, monospace;
+  --nc-tx-1: #000000;
+  --nc-tx-2: #1A1A1A;
+  --nc-bg-1: #FFFFFF;
+  --nc-bg-2: #F6F8FA;
+  --nc-bg-3: #E5E7EB;
   --nc-lk-1: #2563EB;
   --nc-lk-2: #1d4ed8;
   --nc-lk-3: #666666;
+  --nc-lk-tx: #FFFFFF;
+  --nc-ac-1: #79FFE1;
+  --nc-ac-tx: #0C4047;
+  --pad: clamp(1.13rem, calc(0.65rem + 2.39vw), 2.50rem);
   --shadow: rgb(0 0 0 / 0.1);
+  font-size: clamp(1.13rem, calc(1.08rem + 0.22vw), 1.2rem);
+  line-height: 1.696;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
+    --nc-tx-1: #ffffff;
+    --nc-tx-2: #eeeeee;
     --nc-bg-1: #111111;
     --nc-bg-2: #000000;
+    --nc-bg-3: #222222;
     --nc-lk-1: #60a5fa;
     --nc-lk-2: #3b82f6;
     --nc-lk-3: #326DEC;
     --nc-lk-tx: #000077;
+    --nc-ac-1: #7928CA;
+    --nc-ac-tx: #FFFFFF;
     --shadow: rgb(0 0 0 / 0.3);
   }
-}
-
-body {
-  max-width: 65ch;
-  padding: 2rem 1rem;
-  border-radius: 0;
-  font-size: 1rem;
-}
-
-h1,
-h2,
-h3 {
-  padding-bottom: .125rem;
-  margin-bottom: .5rem;
-}
-
-h3,
-h4,
-h5,
-h6 {
-  font-weight: 600;
-}
-
-a button,
-button,
-a[role="button"],
-input[type="submit"],
-input[type="reset"],
-input[type="button"] {
-  padding: .375rem .75rem;
-  font-size: .875rem;
-  font-weight: 500;
-}
-
-code,
-samp,
-kbd,
-pre {
-  border-radius: .25rem;
-  padding: .25rem .375rem;
-  font-size: .875rem;
-}
-
-pre {
-  padding: 1rem 1.5rem;
-}
-
-details {
-  padding: .75rem 1rem;
-  border-radius: .25rem;
-}
-
-textarea,
-select,
-input {
-  padding: .375rem .75rem;
-  border-radius: .25rem;
-  font-size: 1rem;
-}
-
-[href="#main"] {
-  display: block;
-  background: var(--nc-bg-2);
-  padding: 1.5rem;
-  margin: -2rem calc(0px - (50vw - 50%)) 2rem;
-  padding-left: calc(50vw - 50%);
-  padding-right: calc(50vw - 50%);
-  position: absolute;
-  top: -10rem
-}
-
-[href="#main"]:focus {
-  position: static;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -105,6 +50,331 @@ input {
   }
 }
 
+* {
+  margin: 0;
+  padding: 0;
+}
+
+address,
+area,
+article,
+aside,
+audio,
+blockquote,
+datalist,
+details,
+dl,
+fieldset,
+figure,
+form,
+input,
+iframe,
+img,
+meter,
+nav,
+ol,
+optgroup,
+option,
+output,
+p,
+pre,
+progress,
+ruby,
+section,
+table,
+textarea,
+ul,
+video {
+  margin-bottom: 1rem;
+}
+
+html,
+input,
+select,
+button {
+  font-family: var(--nc-font-sans);
+}
+
+html {
+  position: relative;
+  height: 100%;
+}
+
+body {
+  padding: 0;
+  background: var(--nc-bg-1);
+  color: var(--nc-tx-2);
+  height: 100%;
+}
+
+::selection {
+  background: var(--nc-ac-1);
+  color: var(--nc-ac-tx);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  line-height: 1.13;
+  color: var(--nc-tx-1);
+  margin-top: 1em;
+}
+
+h1:first-child,
+h2:first-child,
+h3:first-child,
+h4:first-child,
+h5:first-child,
+h6:first-child {
+  margin-top: 0;
+}
+
+h1,
+h2,
+h3 {
+  color: var(--nc-tx-1);
+  padding-bottom: 2px;
+  margin-bottom: .414em;
+  border-bottom: 1px solid var(--nc-bg-2);
+}
+
+h4,
+h5,
+h6 {
+  margin-bottom: .414rem;
+  padding-bottom: .125rem;
+}
+
+h1 {
+  font-size: 2.25rem;
+}
+
+h2 {
+  font-size: 1.88rem;
+}
+
+h3 {
+  font-size: 1.59rem;
+}
+
+h4 {
+  font-size: 1.25rem;
+}
+
+h5 {
+  font-size: 1rem;
+}
+
+h6 {
+  font-size: .88rem;
+}
+
+a {
+  color: var(--nc-lk-1);
+}
+
+a:hover {
+  color: var(--nc-lk-2);
+}
+
+abbr:hover {
+  cursor: help;
+}
+
+blockquote {
+  padding: 1.5rem;
+  background: var(--nc-bg-2);
+  border-left: 5px solid var(--nc-bg-3);
+}
+
+abbr {
+  cursor: help;
+}
+
+blockquote *:last-child {
+  padding-bottom: 0;
+  margin-bottom: 0;
+}
+
+header {
+  background: var(--nc-bg-2);
+  border-right: 1px solid var(--nc-bg-3);
+}
+
+a button,
+button,
+input[type="submit"],
+input[type="reset"],
+input[type="button"] {
+  font-size: .88rem;
+  display: inline-block;
+  font-weight: 500;
+  padding: .375rem .75rem;
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
+  background: var(--nc-lk-1);
+  color: var(--nc-lk-tx);
+  border: 0;
+  border-radius: 4px;
+  box-sizing: border-box;
+  cursor: pointer;
+  color: var(--nc-lk-tx);
+}
+
+a button[disabled],
+button[disabled],
+input[type="submit"][disabled],
+input[type="reset"][disabled],
+input[type="button"][disabled] {
+  cursor: default;
+  opacity: .5;
+
+  /* Set the [X] cursor while hovering a disabled link */
+  cursor: not-allowed;
+}
+
+.button:focus,
+.button:hover,
+button:focus,
+button:hover,
+input[type="submit"]:focus,
+input[type="submit"]:hover,
+input[type="reset"]:focus,
+input[type="reset"]:hover,
+input[type="button"]:focus,
+input[type="button"]:hover {
+  background: var(--nc-lk-2);
+}
+
+code,
+pre,
+kbd,
+samp {
+  /* Set the font family for monospaced elements */
+  font-family: var(--nc-font-mono);
+}
+
+code,
+samp,
+kbd,
+pre {
+  /* The main preformatted style. This is changed slightly across different cases. */
+  background: var(--nc-bg-2);
+  border: 1px solid var(--nc-bg-3);
+  border-radius: .25rem;
+  padding: .13rem .31rem;
+  font-size: .88rem;
+}
+
+kbd {
+  /* Makes the kbd element look like a keyboard key */
+  border-bottom: 3px solid var(--nc-bg-3);
+}
+
+pre {
+  padding: 1rem 1.414rem;
+  max-width: 100%;
+  overflow: auto;
+}
+
+pre code {
+  /* When <code> is in a <pre>, reset it's formatting to blend in */
+  background: inherit;
+  font-size: inherit;
+  color: inherit;
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+
+code pre {
+  /* When <pre> is in a <code>, reset it's formatting to blend in */
+  display: inline;
+  background: inherit;
+  font-size: inherit;
+  color: inherit;
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+
+details {
+  /* Make the <details> look more "clickable" */
+  padding: .88rem 1rem;
+  background: var(--nc-bg-2);
+  border: 1px solid var(--nc-bg-3);
+  border-radius: .25rem;
+}
+
+summary {
+  /* Makes the <summary> look more like a "clickable" link with the pointer cursor */
+  cursor: pointer;
+  font-weight: bold;
+}
+
+dt {
+  font-weight: bold;
+}
+
+dd::before {
+  /* Add an arrow to data table definitions */
+  content: '→ ';
+}
+
+hr {
+  /* Reset the border of the <hr> separator, then set a better line */
+  border: 0;
+  border-bottom: 1px solid var(--nc-bg-3);
+  margin: 1rem auto;
+}
+
+fieldset {
+  margin-top: 1rem;
+  padding: 2rem;
+  border: 1px solid var(--nc-bg-3);
+  border-radius: 4px;
+}
+
+legend {
+  padding: auto .5rem;
+}
+
+table {
+  /* border-collapse sets the table's elements to share borders, rather than floating as separate "boxes". */
+  border-collapse: collapse;
+  width: 100%
+}
+
+td,
+th {
+  border: 1px solid var(--nc-bg-3);
+  text-align: left;
+  padding: .5rem;
+}
+
+th {
+  background: var(--nc-bg-2);
+}
+
+tr:nth-child(even) {
+  /* Set every other cell slightly darker. Improves readability. */
+  background: var(--nc-bg-2);
+}
+
+table caption {
+  font-weight: bold;
+  margin-bottom: .5rem;
+}
+
+textarea {
+  /* Don't let the <textarea> extend off the screen naturally or when dragged by the user */
+  max-width: 100%;
+}
+
 ul[role="list"],
 ol[role="list"] {
   list-style: none;
@@ -112,14 +382,80 @@ ol[role="list"] {
   margin-bottom: 0;
 }
 
-dl>div+div {
-  margin-top: .5rem;
+ol,
+ul {
+  /* Replace the browser default padding */
+  padding-left: 2rem;
 }
 
-header {
-  display: flex;
-  justify-content: space-between;
-  gap: 2rem;
+li {
+  margin-top: .414rem;
+}
+
+ul ul,
+ol ul,
+ul ol,
+ol ol {
+  margin-bottom: 0;
+}
+
+mark {
+  padding: 3px 6px;
+  background: var(--nc-ac-1);
+  color: var(--nc-ac-tx);
+}
+
+textarea,
+select,
+input {
+  font-size: 1rem;
+  padding: .375rem .75rem;
+  margin-bottom: .5rem;
+  background: var(--nc-bg-2);
+  color: var(--nc-tx-2);
+  border: 1px solid var(--nc-bg-3);
+  border-radius: .25rem;
+  box-shadow: none;
+  box-sizing: border-box;
+}
+
+img {
+  max-width: 100%;
+}
+
+[href="#main"] {
+  display: block;
+  background: var(--nc-bg-2);
+  padding: 1.5rem;
+  position: absolute;
+  top: -10rem
+}
+
+[href="#main"]:focus {
+  position: static;
+}
+
+dl>div+div {
+  margin-top: .414rem;
+}
+
+header>nav {
+  padding: var(--pad);
+  position: sticky;
+  top: 0;
+}
+
+header>nav>ul>:first-child {
+  font-weight: 700;
+}
+
+header>nav ul ol {
+  padding-left: 1.44rem;
+}
+
+header>nav ol {
+  color: var(--nc-lk-3);
+  font-size: .88rem;
 }
 
 header>a {
@@ -127,16 +463,16 @@ header>a {
   flex-shrink: 0;
 }
 
-nav ul {
-  font-size: .875rem;
-  display: flex;
-  justify-content: end;
-  flex-wrap: wrap;
-  gap: 1rem;
-}
-
 header [aria-current="page"] {
   color: var(--nc-lk-3);
+}
+
+main {
+  padding: var(--pad);
+  box-sizing: content-box;
+  margin-inline: auto;
+  max-inline-size: 65ch;
+  background: var(--nc-bg-1);
 }
 
 .stack {
@@ -186,33 +522,6 @@ a[href].direct-link:focus:visited,
   width: 1px
 }
 
-a[role="button"] {
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  line-height: normal;
-  text-decoration: none;
-  white-space: nowrap;
-  background: var(--nc-lk-1);
-  color: var(--nc-lk-tx);
-  border: 0;
-  border-radius: 4px;
-  box-sizing: border-box;
-  cursor: pointer;
-  color: var(--nc-lk-tx);
-}
-
-a[role="button"][disabled] {
-  cursor: default;
-  opacity: .5;
-  cursor: not-allowed;
-}
-
-a[role="button"]:not([disabled]):focus,
-a[role="button"]:not([disabled]):hover {
-  background: var(--nc-lk-2);
-}
-
 dialog {
   border: none;
   border-radius: .5rem;
@@ -242,4 +551,38 @@ dialog>form:first-child {
 
 dialog>form:last-child {
   margin-bottom: 0;
+}
+
+.with-sidebar {
+  max-width: calc(65ch + 10rem + 8rem);
+  margin-inline: auto;
+  min-height: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gap);
+}
+
+.with-sidebar> :first-child {
+  flex-grow: 1;
+}
+
+.with-sidebar> :last-child {
+  flex-basis: 0;
+  flex-grow: 999;
+  min-inline-size: 68%;
+}
+
+.with-sidebar::before {
+  content: '';
+  position: fixed;
+  left: 0;
+  width: 50%;
+  height: 100%;
+  background: var(--nc-bg-2);
+  z-index: -1;
+}
+
+code[class*="language-"],
+pre[class*="language-"] {
+  line-height: 2;
 }

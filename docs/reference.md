@@ -4,17 +4,39 @@ layout: layout.webc
 
 # Reference
 
-1. [x-ajax](#x-ajax)
-    * [target](#target)
-    * [noajax](#noajax)
-    * [Events](#events)
-    * [Progressive enhancement](#progressive-enhancement)
-2. [x-sync](#x-sync)
-3. [$ajax](#ajax)
-   * [$ajax options](#ajax-options)
-    * [Server events](#server-events)
-4. [x-load](#x-load)
-5. [Loading states](#loading-states)
+## Installation
+
+You can use Alpine AJAX by either including it from a `<script>` tag or installing it via NPM. You _must_ also include the [Alpine Morph](https://alpinejs.dev/plugins/morph) plugin for Alpine AJAX to work.
+
+### Via CDN
+
+Include the CDN build of Alpine AJAX & Morph as a `<script>` tag, just make sure to include it **before** Alpine's core JS file.
+
+```html
+<script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/morph@3.11.1/dist/cdn.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/@imacrayon/alpine-ajax"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.10.5/dist/cdn.min.js"></script>
+```
+
+### Via NPM
+
+Install Alpine AJAX & Morph from NPM for use inside your bundle like so:
+
+```bash
+npm i @imacrayon/alpine-ajax @alpinejs/morph
+```
+
+Then initialize it from your bundle:
+
+```js
+import Alpine from 'alpinejs'
+import morph from '@alpinejs/morph'
+import ajax from '@imacrayon/alpine-ajax'
+
+window.Alpine = Alpine
+Alpine.plugin(morph)
+Alpine.plugin(ajax)
+```
 
 ## x-ajax
 
