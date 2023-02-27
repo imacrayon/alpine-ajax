@@ -155,7 +155,7 @@
     document.getElementById("demo-timeline").insertAdjacentHTML("afterbegin", `<li id="${id}-link"><button onclick="showTimelineEntry('${id}')" style="cursor: pointer">${method} ${url}</a></li>`);
     let bodyDiv = `<dl id="${id}">
       <div><dt>Request</dt><dd>${method} ${url}</dd></div>
-      <div><dt>Parameters</dt><dd><pre class="language-html"><code class="language-html">${JSON.stringify(params)}</code></pre></dd></div>
+      <div><dt>Parameters</dt><dd><pre class="language-json"><code class="language-json">${JSON.stringify(params)}</code></pre></dd></div>
       <div><dt>Response</dt><dd><pre class="language-html"><code class="language-html">${escapeHtml(body)}</code></pre></dd></div>
     </dl>`;
     document.getElementById("demo-current-request").insertAdjacentHTML("afterbegin", bodyDiv);
