@@ -84,6 +84,7 @@
   function server(routes) {
     window.requestCount = 0
     window.fetch = async (url, options) => {
+      url = url.replace(location.origin, '')
       let method = options.method.toUpperCase()
       console.log(method, url, options)
       let data = options.body || new FormData
