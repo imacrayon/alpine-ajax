@@ -1,36 +1,4 @@
 (() => {
-  // src/submitter-polyfill.js
-  var submittersByForm = /* @__PURE__ */ new WeakMap();
-  function findSubmitterFromClickTarget(target) {
-    const element = target instanceof Element ? target : target instanceof Node ? target.parentElement : null;
-    const candidate = element ? element.closest("input, button") : null;
-    return candidate?.type == "submit" ? candidate : null;
-  }
-  function clickCaptured(event) {
-    const submitter = findSubmitterFromClickTarget(event.target);
-    if (submitter && submitter.form) {
-      submittersByForm.set(submitter.form, submitter);
-    }
-  }
-  (function() {
-    if ("submitter" in Event.prototype)
-      return;
-    let prototype = window.Event.prototype;
-    if ("SubmitEvent" in window && /Apple Computer/.test(navigator.vendor)) {
-      prototype = window.SubmitEvent.prototype;
-    } else if ("SubmitEvent" in window) {
-      return;
-    }
-    addEventListener("click", clickCaptured, true);
-    Object.defineProperty(prototype, "submitter", {
-      get() {
-        if (this.type == "submit" && this.target instanceof HTMLFormElement) {
-          return submittersByForm.get(this.target);
-        }
-      }
-    });
-  })();
-
   // src/helpers.js
   var Alpine;
   function setAlpine(alpine) {
@@ -398,6 +366,31 @@
     }, 0);
   }
 
+  // src/link.js
+  function listenForNavigate(el) {
+    let handler = (event) => {
+      let link = event.target;
+      if (!isLocalLink(link) || isIgnored(link))
+        return;
+      event.preventDefault();
+      event.stopPropagation();
+      render(navigateRequest(link), targets(el, true, link), link);
+    };
+    el.addEventListener("click", handler);
+    return () => el.removeEventListener("click", handler);
+  }
+  function navigateRequest(link) {
+    return {
+      method: "GET",
+      action: link.href,
+      referrer: source(link),
+      body: null
+    };
+  }
+  function isLocalLink(el) {
+    return el.href && !el.hash && el.origin == location.origin;
+  }
+
   // src/form.js
   function listenForSubmit(el) {
     let handler = (event) => {
@@ -458,30 +451,37 @@
     return action;
   }
 
-  // src/link.js
-  function listenForNavigate(el) {
-    let handler = (event) => {
-      let link = event.target;
-      if (!isLocalLink(link) || isIgnored(link))
-        return;
-      event.preventDefault();
-      event.stopPropagation();
-      render(navigateRequest(link), targets(el, true, link), link);
-    };
-    el.addEventListener("click", handler);
-    return () => el.removeEventListener("click", handler);
+  // src/submitter-polyfill.js
+  var submittersByForm = /* @__PURE__ */ new WeakMap();
+  function findSubmitterFromClickTarget(target) {
+    const element = target instanceof Element ? target : target instanceof Node ? target.parentElement : null;
+    const candidate = element ? element.closest("input, button") : null;
+    return candidate?.type == "submit" ? candidate : null;
   }
-  function navigateRequest(link) {
-    return {
-      method: "GET",
-      action: link.href,
-      referrer: source(link),
-      body: null
-    };
+  function clickCaptured(event) {
+    const submitter = findSubmitterFromClickTarget(event.target);
+    if (submitter && submitter.form) {
+      submittersByForm.set(submitter.form, submitter);
+    }
   }
-  function isLocalLink(el) {
-    return el.href && !el.hash && el.origin == location.origin;
-  }
+  (function() {
+    if ("submitter" in Event.prototype)
+      return;
+    let prototype = window.Event.prototype;
+    if ("SubmitEvent" in window && /Apple Computer/.test(navigator.vendor)) {
+      prototype = window.SubmitEvent.prototype;
+    } else if ("SubmitEvent" in window) {
+      return;
+    }
+    addEventListener("click", clickCaptured, true);
+    Object.defineProperty(prototype, "submitter", {
+      get() {
+        if (this.type == "submit" && this.target instanceof HTMLFormElement) {
+          return submittersByForm.get(this.target);
+        }
+      }
+    });
+  })();
 
   // src/index.js
   function src_default(Alpine2) {
