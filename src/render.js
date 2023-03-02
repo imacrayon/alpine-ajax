@@ -1,4 +1,3 @@
-import { focusable } from "tabbable"
 import { Alpine } from './helpers'
 
 let queue = {}
@@ -74,13 +73,13 @@ export async function render(request, ids, el, events = true) {
     return freshEl
   })
 
-  let initialFocus = Alpine.bound(el, 'initial-focus')
-  if (initialFocus !== undefined && initialFocus !== 'false') {
-    setTimeout(() => {
-      Alpine.bound(el, 'initial-focus').focus()
-    }, 0);
-  } else if (targets.length) {
-    focusFirstElement(targets[0])
+  let focus = Alpine.bound(el, 'focus')
+  if (focus !== undefined) {
+    if (targets.length && typeof focus === 'string') {
+      focusOn(targets[0].querySelector(Alpine.bound(el, 'focus')))
+    } else {
+      focusOn(focus)
+    }
   }
 
   return targets
@@ -143,17 +142,9 @@ function readHtml(response) {
   })
 }
 
-function focusFirstElement(el) {
-  let focusables = focusable(el, { displayCheck: 'none' })
-
-  let focus = focusables[0] ?? null
-
-  if (!focus) {
-    return
-  }
-
+function focusOn(el) {
   setTimeout(() => {
-    if (!focus.hasAttribute('tabindex')) focus.setAttribute('tabindex', '0')
-    focus.focus()
-  }, 0)
+    if (!el.hasAttribute('tabindex')) el.setAttribute('tabindex', '0')
+    el.focus()
+  }, 0);
 }
