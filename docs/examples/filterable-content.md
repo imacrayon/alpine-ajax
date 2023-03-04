@@ -9,7 +9,7 @@ We start with some filter buttons and a table inside an AJAX component with `id=
 
 ```html
 <div x-ajax id="contacts">
-  <form action="/contacts" role="search" aria-label="Filter contacts">
+  <form action="/contacts" aria-label="Filter contacts">
     <button name="status" value="Active" aria-pressed="false">Active</button>
     <button name="status" value="Inactive" aria-pressed="false">Inactive</button>
   </form>
@@ -55,7 +55,7 @@ First, the table in the response will include only content related to the active
 Second, the response will include the modified state of the filter form. Notice that the "Active" button has `aria-pressed="true"` to indicate that it has been selected and that the form includes a new button to reset the filter settings:
 
 ```html
-<form action="/contacts" role="search" aria-label="Filter contacts">
+<form action="/contacts" aria-label="Filter contacts">
   <button name="status" value="Active" aria-pressed="true">Active</button>
   <button name="status" value="Inactive" aria-pressed="false">Inactive</button>
   <button name="status" value="" aria-pressed="false">Reset</button>
@@ -106,7 +106,7 @@ The `<form>` and `<table>` should be wrapped an AJAX component with `id="contact
     let reset = filter ? `<button name="status" value="">Reset</button>` : ``
 
     return `<div x-ajax id="contacts">
-<form action="/contacts" role="search" aria-label="Filter contacts">
+<form action="/contacts" aria-label="Filter contacts">
   <button name="status" value="Active" aria-pressed="${String(filter === 'Active')}">Active</button>
   <button name="status" value="Inactive" aria-pressed="${String(filter === 'Inactive')}">Inactive</button>
   ${reset}
