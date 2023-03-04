@@ -212,12 +212,12 @@
     let method = (form.getAttribute("method") || "GET").toUpperCase();
     let action = form.getAttribute("action") || window.location.href;
     let body2 = new FormData(form);
+    if (submitter && submitter.name) {
+      body2.append(submitter.name, submitter.value);
+    }
     if (method === "GET") {
       action = mergeBodyIntoAction(body2, action);
       body2 = null;
-    }
-    if (submitter && submitter.name) {
-      body2.append(submitter.name, submitter.value);
     }
     let referrer = form.closest("[data-source]")?.dataset.source;
     return { method, action, body: body2, referrer };

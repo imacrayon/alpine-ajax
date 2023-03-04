@@ -21,12 +21,12 @@ function formRequest(form, submitter = null) {
   let method = (form.getAttribute('method') || 'GET').toUpperCase()
   let action = form.getAttribute('action') || window.location.href
   let body = new FormData(form)
+  if (submitter && submitter.name) {
+    body.append(submitter.name, submitter.value)
+  }
   if (method === 'GET') {
     action = mergeBodyIntoAction(body, action)
     body = null
-  }
-  if (submitter && submitter.name) {
-    body.append(submitter.name, submitter.value)
   }
   let referrer = form.closest('[data-source]')?.dataset.source
 
