@@ -34,6 +34,10 @@ You can copy and paste them and then adjust them for your needs.
     <dd>Search or filter a data collection while you type.</dd>
   </div>
   <div>
+    <dt><a href="/examples/filterable-content">Filterable Content</a></dt>
+    <dd>Filter down a table or list of content.</dd>
+  </div>
+  <div>
     <dt><a href="/examples/notifications">Notifications</a></dt>
     <dd>Display notification "toasts".</dd>
   </div>

@@ -250,6 +250,10 @@ input[type="button"]:hover {
   background: var(--nc-lk-2);
 }
 
+button[aria-pressed="true"] {
+  background: var(--nc-lk-3);
+}
+
 code,
 pre,
 kbd,
