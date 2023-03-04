@@ -5,7 +5,7 @@ title: Lazy Loading
 
 This example shows how to lazily load an element on a page.
 
-We start with a loading indicator that looks like this:
+We start with a loading indicator inside an `<article>`. Note that the article is assigned `id="post"` :
 
 ```html
 <article id="post" x-init="$ajax('/posts/1')">
@@ -13,7 +13,7 @@ We start with a loading indicator that looks like this:
 </article>
 ```
 
-This loading indicator exists on the page while we fetch the articles's content. You can use any CSS or SVG magic you'd like to create a fancy looking loading indicator.
+This loading indicator will exist on the page while we fetch the articles's content. You can use any CSS or SVG magic you'd like to create a fancy looking loading indicator.
 
 The loaded content is then inserted into the UI once the request has succeeded:
 
@@ -89,7 +89,8 @@ The loaded content is then inserted into the UI once the request has succeeded:
   })
 
   function dashboard() {
-    return `<article id="post" x-init="$ajax('/posts/1')">
+    return `<p>Refresh the page to watch this post lazy load into view:</p>
+<article id="post" x-init="$ajax('/posts/1')">
   <svg class="loader" aria-label="Loading content" viewBox="0 0 442 107" fill="var(--nc-bg-1)" xmlns="http://www.w3.org/2000/svg">
     <path d="M442 79.1H0V65.5h412.4v-7.1H0V0h442v79.1Zm0 7.1V107H181.2v-7.1H0V86.2h442ZM50.1 24.6v7.2h53.3v-7.2H50.1Zm0-16.8v7.1h89.3V7.8H50.1ZM19.3 38.9c10.6 0 19.2-8.7 19.2-19.4C38.5 8.7 30 0 19.3 0A19.4 19.4 0 0 0 0 19.5c0 10.7 8.6 19.4 19.3 19.4Z" />
   </svg>

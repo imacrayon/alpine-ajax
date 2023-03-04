@@ -5,7 +5,7 @@ title: Inline Edit
 
 The inline edit pattern provides a way to edit parts of a record without a page refresh.
 
-This pattern starts with a UI that shows the details of a contact. The `<div>` has a link that will fetch the editing UI for the contact from `/contacts/1/edit`
+This pattern starts with a UI that shows the details of a contact inside an AJAX Component assigned `id="contact_1"`. The AJAX Component contains a link that will fetch the UI for editing a contact from `/contacts/1/edit`.
 
 ```html
 <div x-ajax id="contact_1">
@@ -37,7 +37,7 @@ This returns a form that can be used to edit the contact:
 </form>
 ```
 
-The form issues a `PUT` back to `/contacts/1`, following the usual REST-ful pattern.
+When submitted, the form issues a `PUT` back to `/contacts/1`, following the usual REST-ful pattern.
 
 <script>
   let contact = {

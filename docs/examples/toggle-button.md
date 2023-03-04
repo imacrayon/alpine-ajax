@@ -5,7 +5,7 @@ title: Toggle Button
 
 This demo shows how to implement a toggle button that alters server state.
 
-This pattern starts with a simple form:
+This pattern starts with an AJAX form assigned `id="like"`:
 
 ```html
 <form x-ajax id="like" method="post" action="/comments/1/like">

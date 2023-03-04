@@ -12,7 +12,7 @@ This pattern starts with an empty list for our notifications, the list needs an 
 </ul>
 ```
 
-We'll also add a `<form>` to this demo so that we can issue requests to the server that will trigger new notifications.
+We'll also add an AJAX form to this demo so that we can issue requests to the server that will trigger new notifications.
 
 ```html
 <form x-ajax id="action" method="post" action="/action">
@@ -20,12 +20,9 @@ We'll also add a `<form>` to this demo so that we can issue requests to the serv
 </form>
 ```
 
-When the`<form>` is submitted the server will respond with a new notification in the list:
+When the AJAX form is submitted the server will respond with a new notification in the list:
 
 ```html
-<form x-ajax id="action" method="post" action="/action">
-  <button>Click Me</button>
-</form>
 <ul x-sync id="notification_list" role="status" aria-live="polite">
   <li>
     <span>The button was pressed 1 time.</span>
@@ -33,9 +30,9 @@ When the`<form>` is submitted the server will respond with a new notification in
 </ul>
 ```
 
-Notice that our form doesn't target the `notification_list` element, however because our list has the `x-sync` attribute it automatically updates any time the server's response includes an element with the `id` of `notification_list`.
+Notice that our AJAX form **does not** target the `notification_list` element, however since our list has the `x-sync` attribute, it will automatically update any time the server responds with an element assigned `id="notification_list"`.
 
-We can sprinkle in some additional Alpine code to animate the our notifications:
+We can sprinkle in some additional Alpine code to animate our notifications:
 
 ```html
 <li key="1" x-data="{
@@ -72,7 +69,7 @@ Additionally, we can add a "Dismiss" button to each notification:
 </li>
 ```
 
-And finally, we can make our notifications automatically dismiss themselves after 6 seconds, by adding a `setTimeout` in the `init` method:
+And finally, we can make our notifications automatically dismiss after 6 seconds, by adding a `setTimeout` in the `init` method:
 
 ```html
 <li key="1" x-data="{

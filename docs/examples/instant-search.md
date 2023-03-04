@@ -31,19 +31,15 @@ We start with a search form and a table:
 </table>
 ```
 
-The input issues a `GET` request to `/contacts?search=` on the `input` event and sets the body of the table to be
-the resulting content.
+Note that the search form targets the table's `<tbody>`, and that the input inside the form is listening for the `input` event.
 
-We add the `debounce` modifier to the trigger a delay sending the query until the user stops typing.
+The input issues a `GET` request to `/contacts?search=` on the `input` event and sets the body of the table to be the resulting content.
 
-Since we use a `search` type input we will get an `x` in the input field to clear the input.
-To make this trigger a new `POST` we have to specify another trigger. We specify another trigger by using a comma to
-separate them. The `search` trigger will be run when the field is cleared but it also makes it possible to override
-the debounce delay by just pressing enter.
+We add the `debounce` modifier to the `input` event so that the AJAX request is only sent once the user stops typing.
 
-We use `x-show="false"` on the form's submit button so that it gets hidden when JavaScript is loaded. This ensures
-that search
-form is still functional if JavaScript fails to load or is disabled.
+Since we use a `search` type input we will get an "x" in the input field to clear the input. To make this trigger a new `GET` request we also add a `search` listener.
+
+We use `x-show="false"` on the form's submit button so that it is hidden when JavaScript is loaded. This ensures that the search form is still functional if JavaScript fails to load or is disabled.
 
 <script>
   let database = function () {

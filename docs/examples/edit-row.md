@@ -33,7 +33,7 @@ Here is the HTML for a table row:
 
 Notice the "Edit" link in the table row is targeting its own row, this will tell the request triggered by the "Edit" link to replace the entire table row.
 
-Finally, here is the edit state that will replace a row:
+Finally, here is the edit state that will replace a row, note the matching `id="contact_1"` which is used to match the table row being replaced:
 
 ```html
 <tr id="contact_1">

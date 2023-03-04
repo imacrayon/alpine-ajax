@@ -4,7 +4,7 @@ title: Bulk Update
 ---
 
 This demo shows how to implement a common pattern where rows are selected and then bulk updated. This is
-accomplished by putting a form below a table, with associated checkboxes in the table, and then including the checked values in a `PUT` request to `/contacts`.
+accomplished by putting an AJAX form below a table, with associated checkboxes in the table. When the AJAX form is submitted, each checked value will be included in a `PUT` request to `/contacts`.
 
 ```html
 <table id="contacts">
@@ -32,7 +32,7 @@ accomplished by putting a form below a table, with associated checkboxes in the 
 </form>
 ```
 
-The server will either activate or deactivate the checked users and then rerender the `#contacts` table with
+Notice the AJAX form is targeting the `contacts` table. The server will either activate or deactivate the checked users and then rerender the `contacts` table with
 updated rows.
 
 <script>

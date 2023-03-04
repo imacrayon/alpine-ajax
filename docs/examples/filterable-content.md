@@ -5,7 +5,7 @@ title: Filterable Content
 
 This example filters down a table of contacts based on the user's selection.
 
-We start with some filter buttons and a table:
+We start with some filter buttons and a table inside an AJAX component with `id="contacts"`.
 
 ```html
 <div x-ajax id="contacts">
@@ -27,15 +27,32 @@ We start with some filter buttons and a table:
         <td>fmertins@candykingdom.gov</td>
         <td>Active</td>
       </tr>
+      <tr>
+        <td>Jake</td>
+        <td>jake@candykingdom.gov</td>
+        <td>Inactive</td>
+      </tr>
       ...
     </tbody>
   </table>
 </div>
 ```
 
-Clicking a filter button submits the form which issues a `GET` request to `/contacts?status=` and replaces the table with filtered content.
+Clicking a filter button issues a `GET` request to `/contacts?status=` which returns a response with updated content.
 
-The response will also update the state of the filter form:
+First, the table in the response will include only content related to the active filter:
+
+```html
+<tbody>
+  <tr>
+    <td>Finn</td>
+    <td>fmertins@candykingdom.gov</td>
+    <td>Active</td>
+  </tr>
+</tbody>
+```
+
+Second, the response will include the modified state of the filter form. Notice that the "Active" button has `aria-pressed="true"` to indicate that it has been selected and that the form includes a new button to reset the filter settings:
 
 ```html
 <form action="/contacts" role="search" aria-label="Filter contacts">
@@ -45,7 +62,14 @@ The response will also update the state of the filter form:
 </form>
 ```
 
-Notice that the "Active" button has `aria-pressed="true"` to indicate that it has been selected and that the form includes a new button to reset the current filter.
+The `<form>` and `<table>` should be wrapped an AJAX component with `id="contacts"` to indicate that both elements should be updated when a request is issued.
+
+```html
+<div x-ajax id="contacts">
+  <form>...</form>
+  <table>...</table>
+</div>
+```
 
 <script>
   let database = function () {

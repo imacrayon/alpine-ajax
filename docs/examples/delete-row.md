@@ -22,7 +22,7 @@ table markup:
 </table>
 ```
 
-The table is listening for the `ajax:before` event to confirm the delete action.
+The table body is assigned `id="contacts"` and is listening for the `ajax:before` event to confirm any delete actions.
 
 Each row has a form that will issue a `DELETE` request to delete the row from the server. This request responds
 with a table that is lacking the row which was just deleted.

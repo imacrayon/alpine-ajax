@@ -5,16 +5,16 @@ title: Progress Bar
 
 This example shows how to implement a smoothly scrolling progress bar.
 
-We start with a `<form>` that issues a `POST` to `/jobs` to begin a job process:
+We start with an AJAX form that issues a `POST` request to `/jobs` to begin a job process:
 
 ```html
-<form id="jobs" x-ajax method="post" action="/jobs">
+<form x-ajax id="jobs" method="post" action="/jobs">
   <h3>New Job</h3>
   <button>Start New Job</button>
 </form>
 ```
 
-This `<form>` is then replaced with a new `<div>` that reloads itself every 600ms:
+Note that the form is assigned `id="jobs"`. When the form is submitted, it is then replaced with a new `<div>` that reloads itself every 600ms:
 
 ```html
 <div id="jobs" x-load="setTimeout(() => $ajax('/jobs/1'), 600)">
@@ -28,7 +28,7 @@ This `<form>` is then replaced with a new `<div>` that reloads itself every 600m
 ```
 
 This HTML is rerendered every 600 milliseconds, with the `width` style attribute on the progress bar being updated.
-Here we've also added a `transition` rule, make the visual transition continuous rather than jumpy.
+Here we've also added a `transition` rule, to make the visual transition continuous rather than jumpy.
 
 Finally, when the job is complete, the `x-load` directive is removed and a restart `<form>` is added to the UI:
 

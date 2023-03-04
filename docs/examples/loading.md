@@ -5,19 +5,19 @@ title: Loading Indicator
 
 This example shows how you can use a little CSS to create a nice looking loading indicator that will appear while AJAX requests are in progress.
 
-We start with a simple card that contains a button. When the button is clicked, a `GET` request is issued to retrieve a table of contact information.
+We start with a card that contains a link. When the link is clicked, a `GET` request is issued to retrieve a table of contact information.
 
 ```html
-<div id="card" x-data>
-  <div id="table" x-ajax>
+<div id="card">
+  <div x-ajax id="table">
     <a href="/contacts">Load Contacts</a>
   </div>
 </div>
 ```
 
-The contact table could take a while to fetch if it's large and it would be helpful to indicate to our users that the app is processing their request.
+The contact table could take a long time to load if it is large, so it would be helpful to indicate to our users that the app is processing their request.
 
-Fortunately, Alpine AJAX adds `aria-busy="true"` to AJAX targets while a request is processing. We can can use this attribute in our CSS to automatically show and hide a loading indicator:
+Fortunately, Alpine AJAX adds `aria-busy="true"` to AJAX targets while a request is processing. We can use this attribute in our CSS to automatically show and hide a loading indicator:
 
 ```css
 [aria-busy] {
