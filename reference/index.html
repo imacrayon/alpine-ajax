@@ -20,11 +20,12 @@
     <header>
       <nav aria-label="Site">
         <ul role="list">
-          <li><a href="/alpine-ajax/" aria-current="">Alpine Ajax</a></li>
+          <li><a href="/alpine-ajax/" aria-current="">Alpine AJAX</a></li>
           <li>
             <a href="/alpine-ajax/reference" aria-current="page">Reference</a>
             <ol>
               <li><a href="/alpine-ajax/reference/#installation" aria-current="">Installation</a></li>
+              <li><a href="/alpine-ajax/reference/#usage" aria-current="">Usage</a></li>
               <li><a href="/alpine-ajax/reference/#x-ajax" aria-current="">x-ajax</a></li>
               <li><a href="/alpine-ajax/reference/#ajax" aria-current="">$ajax</a></li>
               <li><a href="/alpine-ajax/reference/#x-sync" aria-current="">x-sync</a></li>
@@ -33,6 +34,7 @@
             </ol>
           </li>
           <li><a href="/alpine-ajax/examples" aria-current="">Examples</a></li>
+          <li><a href="/alpine-ajax/comparisons" aria-current="">Comparisons</a></li>
           <li><a href="https://github.com/imacrayon/alpine-ajax">GitHub</a></li>
         </ul>
       </nav>
@@ -48,6 +50,8 @@
 <pre class="language-bash"><code class="language-bash"><span class="token function">npm</span> i @imacrayon/alpine-ajax @alpinejs/morph</code></pre>
 <p>Then initialize it from your bundle:</p>
 <pre class="language-js"><code class="language-js"><span class="token keyword">import</span> Alpine <span class="token keyword">from</span> <span class="token string">'alpinejs'</span><br><span class="token keyword">import</span> morph <span class="token keyword">from</span> <span class="token string">'@alpinejs/morph'</span><br><span class="token keyword">import</span> ajax <span class="token keyword">from</span> <span class="token string">'@imacrayon/alpine-ajax'</span><br><br>window<span class="token punctuation">.</span>Alpine <span class="token operator">=</span> Alpine<br>Alpine<span class="token punctuation">.</span><span class="token function">plugin</span><span class="token punctuation">(</span>morph<span class="token punctuation">)</span><br>Alpine<span class="token punctuation">.</span><span class="token function">plugin</span><span class="token punctuation">(</span>ajax<span class="token punctuation">)</span></code></pre>
+<h2 id="usage" tabindex="-1">Usage <a class="direct-link" href="#usage" aria-hidden="true">#</a></h2>
+<p>Alpine AJAX is designed to make it easy to build resilient, accessible user interfaces. It’s good practice to start your interaction design <strong>without</strong> Alpine AJAX. Make your entire application work as it would if Alpine AJAX were not available, then sprinkle in AJAX functionality at the end. Working in this way will ensure that your AJAX interactions degrade gracefully <a href="https://www.kryogenix.org/code/browser/everyonehasjs.html">when JavaScript is not available</a>: Links and forms continue to work as normal, they simply don't fire AJAX requests. This is known as <a href="https://developer.mozilla.org/en-US/docs/Glossary/Progressive_Enhancement">Progressive Enhancement</a>, and it allows a wider audience to use your sites functionality.</p>
 <h2 id="x-ajax" tabindex="-1">x-ajax <a class="direct-link" href="#x-ajax" aria-hidden="true">#</a></h2>
 <p>This directive defines an AJAX Component. All link clicks and form submissions inside an AJAX Component are captured, and the component is automatically updated after receiving a response. Regardless of whether the server provides a full document, or just a HTML fragment, only the AJAX Component that triggered the request will be extracted from the response and updated on the page.</p>
 <p>AJAX Components must have a unique <code>id</code>. The <code>id</code> is used to find the AJAX Component in the  HTML response sent from the server. You'll see a helpful error in the console if you forget to include an <code>id</code> on any AJAX Component.</p>
@@ -104,8 +108,6 @@
 <p>Here's an example of aborting a form request when the user cancels a dialog prompt:</p>
 <pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>form</span> <span class="token attr-name">x-ajax</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>delete_user<span class="token punctuation">"</span></span> <span class="token attr-name"><span class="token namespace">@ajax:</span>before</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>confirm('Are you sure?') || $event.preventDefault()<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>button</span><span class="token punctuation">></span></span>Delete User<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>button</span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>form</span><span class="token punctuation">></span></span></code></pre>
 <p><strong>Note:</strong> The <code>ajax:success</code> and <code>ajax:error</code> events only convey the status code of a request. You'll often find that using the <a href="#server-events">Server Events</a> pattern is what you need to build more robust applications.</p>
-<h3 id="progressive-enhancement" tabindex="-1">Progressive enhancement <a class="direct-link" href="#progressive-enhancement" aria-hidden="true">#</a></h3>
-<p>Behavior added with <code>x-ajax</code> degrades gracefully if JavaScript is not enabled: Links and forms continue to work as normal, they simply don't fire AJAX requests. This is known as <a href="https://developer.mozilla.org/en-US/docs/Glossary/Progressive_Enhancement">Progressive Enhancement</a>, and it allows a wider audience to use your sites functionality.</p>
 <h2 id="x-sync" tabindex="-1">x-sync <a class="direct-link" href="#x-sync" aria-hidden="true">#</a></h2>
 <p>Elements with the <code>x-sync</code> attribute are updated whenever the server sends a matching element, even if the element isn't targeted with <code>target</code>.</p>
 <p><code>x-sync</code> elements must have a unique <code>id</code>. The <code>id</code> is used to match the content being replaced when requesting content from the server.</p>
