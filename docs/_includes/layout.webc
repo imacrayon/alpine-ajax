@@ -21,11 +21,12 @@
     <header>
       <nav aria-label="Site">
         <ul role="list">
-          <li><a href="/" :aria-current="page.url == '/' ? 'page' : ''">Alpine Ajax</a></li>
+          <li><a href="/" :aria-current="page.url == '/' ? 'page' : ''">Alpine AJAX</a></li>
           <li>
             <a href="/reference" :aria-current="page.url == '/reference/' ? 'page' : ''">Reference</a>
             <ol>
               <li><a href="/reference/#installation" :aria-current="page.url == '/installation/' ? 'page' : ''">Installation</a></li>
+              <li><a href="/reference/#usage" :aria-current="page.url == '/usage/' ? 'page' : ''">Usage</a></li>
               <li><a href="/reference/#x-ajax" :aria-current="page.url == '/x-ajax/' ? 'page' : ''">x-ajax</a></li>
               <li><a href="/reference/#ajax" :aria-current="page.url == '/ajax/' ? 'page' : ''">$ajax</a></li>
               <li><a href="/reference/#x-sync" :aria-current="page.url == '/x-sync/' ? 'page' : ''">x-sync</a></li>
@@ -34,6 +35,7 @@
             </ol>
           </li>
           <li><a href="/examples" :aria-current="page.url == '/examples/' ? 'page' : ''">Examples</a></li>
+          <li><a href="/comparisons" :aria-current="page.url == '/comparisons/' ? 'page' : ''">Comparisons</a></li>
           <li><a href="https://github.com/imacrayon/alpine-ajax">GitHub</a></li>
         </ul>
       </nav>

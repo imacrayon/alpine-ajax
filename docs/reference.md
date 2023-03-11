@@ -38,6 +38,10 @@ Alpine.plugin(morph)
 Alpine.plugin(ajax)
 ```
 
+## Usage
+
+Alpine AJAX is designed to make it easy to build resilient, accessible user interfaces. It’s good practice to start your interaction design **without** Alpine AJAX. Make your entire application work as it would if Alpine AJAX were not available, then sprinkle in AJAX functionality at the end. Working in this way will ensure that your AJAX interactions degrade gracefully [when JavaScript is not available](https://www.kryogenix.org/code/browser/everyonehasjs.html): Links and forms continue to work as normal, they simply don't fire AJAX requests. This is known as [Progressive Enhancement](https://developer.mozilla.org/en-US/docs/Glossary/Progressive_Enhancement), and it allows a wider audience to use your sites functionality.
+
 ## x-ajax
 
 This directive defines an AJAX Component. All link clicks and form submissions inside an AJAX Component are captured, and the component is automatically updated after receiving a response. Regardless of whether the server provides a full document, or just a HTML fragment, only the AJAX Component that triggered the request will be extracted from the response and updated on the page.
@@ -167,10 +171,6 @@ Here's an example of aborting a form request when the user cancels a dialog prom
 ```
 
 **Note:** The `ajax:success` and `ajax:error` events only convey the status code of a request. You'll often find that using the [Server Events](#server-events) pattern is what you need to build more robust applications.
-
-### Progressive enhancement
-
-Behavior added with `x-ajax` degrades gracefully if JavaScript is not enabled: Links and forms continue to work as normal, they simply don't fire AJAX requests. This is known as [Progressive Enhancement](https://developer.mozilla.org/en-US/docs/Glossary/Progressive_Enhancement), and it allows a wider audience to use your sites functionality.
 
 ## x-sync
 

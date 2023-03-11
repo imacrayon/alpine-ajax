@@ -31,14 +31,3 @@ Adding `x-ajax` and `id` changes this form's behavior: Now, when this form is su
 This simple pattern of updating a piece of your frontend instead of the entire page can be expanded to create rich user experiences.
 
 Visit the [Reference](/reference) page to learn how Alpine AJAX works, and then check the [Examples](/examples) page to learn how to apply it.
-
-## Prior Art
-
-Alpine AJAX is inspired by these other awesome HTML-over-the-wire projects:
-
-* [HTMX](https://htmx.org)
-* [Hotwire Turbo](https://turbo.hotwired.dev)
-* [Unpoly](https://unpoly.com)
-* [Trimmings](https://postlight.github.io/trimmings)
-* [Laravel Livewire](https://laravel-livewire.com)
-* [jQuery PJAX](https://pjax.herokuapp.com)

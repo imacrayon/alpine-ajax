@@ -17,7 +17,7 @@ We start with a card that contains a link. When the link is clicked, a `GET` req
 
 The contact table could take a long time to load if it is large, so it would be helpful to indicate to our users that the app is processing their request.
 
-Fortunately, Alpine AJAX adds `aria-busy="true"` to AJAX targets while a request is processing. We can use this attribute in our CSS to automatically show and hide a loading indicator:
+Fortunately, Alpine AJAX adds `aria-busy="true"` to targets while a request is processing. We can use this attribute in our CSS to automatically show and hide a loading indicator:
 
 ```css
 [aria-busy] {
