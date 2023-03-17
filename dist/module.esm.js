@@ -3,34 +3,28 @@ var Alpine;
 function setAlpine(alpine) {
   Alpine = alpine;
 }
-function targets(root, sync = false, trigger = null) {
-  let ids = [];
-  if (trigger && trigger.hasAttribute("target")) {
-    ids = trigger.getAttribute("target").split(" ");
-  } else if (root.hasAttribute("target")) {
-    ids = root.getAttribute("target").split(" ");
-  } else {
-    ids = [root.id];
-  }
+function targets(el, sync = false) {
+  el = el.closest("[x-target],[x-ajax]") ?? el;
+  let ids = el.hasAttribute("x-target") ? el.getAttribute("x-target").split(" ") : [el.id];
   ids = ids.filter((id) => id);
   if (ids.length === 0) {
-    throw new MissingIdError(root);
+    throw new MissingIdError(el);
   }
   if (sync) {
-    document.querySelectorAll("[x-sync]").forEach((el) => {
-      if (!el.id) {
-        throw new MissingIdError(el);
+    document.querySelectorAll("[x-sync]").forEach((el2) => {
+      if (!el2.id) {
+        throw new MissingIdError(el2);
       }
-      if (!ids.includes(el.id)) {
-        ids.push(el.id);
+      if (!ids.includes(el2.id)) {
+        ids.push(el2.id);
       }
     });
   }
   return ids;
 }
 function isIgnored(el) {
-  let root = el.closest("[x-ajax],[noajax]");
-  return root.hasAttribute("noajax");
+  let root = el.closest("[x-ajax],[x-noajax]");
+  return root.hasAttribute("x-noajax");
 }
 var MissingIdError = class extends Error {
   constructor(el) {
@@ -175,7 +169,7 @@ function listenForNavigate(el) {
       return;
     event.preventDefault();
     event.stopPropagation();
-    render(navigateRequest(link), targets(el, true, link), link);
+    render(navigateRequest(link), targets(link, true), link);
   };
   el.addEventListener("click", handler);
   return () => el.removeEventListener("click", handler);
@@ -201,7 +195,7 @@ function listenForSubmit(el) {
     event.preventDefault();
     event.stopPropagation();
     return withSubmitter(event.submitter, () => {
-      return render(formRequest(form, event.submitter), targets(el, true, form), form);
+      return render(formRequest(form, event.submitter), targets(form, true), form);
     });
   };
   el.addEventListener("submit", handler);
