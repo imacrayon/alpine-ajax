@@ -1,5 +1,5 @@
 let fs = require('fs')
-let brotliSize = require('brotli-size')
+let zlib = require('zlib');
 let esbuild = require('esbuild')
 
 let builds = [
@@ -46,7 +46,7 @@ function size(file) {
     name: 'size',
     setup(build) {
       build.onEnd(() => {
-        let size = bytesToSize(brotliSize.sync(fs.readFileSync(file)))
+        let size = bytesToSize(zlib.brotliCompressSync(fs.readFileSync(file)).length)
 
         console.log("\x1b[32m", `${file}: ${size}`)
       })
