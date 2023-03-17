@@ -133,6 +133,7 @@ Review this navigation that demonstrates `noajax` at work:
 
 You can listen for AJAX events to perform additional actions during an AJAX request:
 
+<div class="table">
 <table>
   <thead>
     <th scope="col" width="117">Name</th>
@@ -161,6 +162,7 @@ You can listen for AJAX events to perform additional actions during an AJAX requ
   </tr>
   </tbody>
 </table>
+</div>
 
 Here's an example of aborting a form request when the user cancels a dialog prompt:
 
@@ -213,6 +215,7 @@ In this example we make a `POST` request with the `email` value to the `/validat
 
 ### $ajax options
 
+<div class="table">
 <table>
   <thead>
     <th scope="col" width="68">Option</th>
@@ -242,6 +245,7 @@ In this example we make a `POST` request with the `email` value to the `/validat
   </tr>
   </tbody>
 </table>
+</div>
 
 ### Server events
 

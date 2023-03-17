@@ -63,15 +63,15 @@ When submitted, the form issues a `PUT` back to `/contacts/1`, following the usu
     return `<form x-ajax id="contact_1" method="put" action="/contacts/1" aria-label="Contact Information">
   <div>
     <label for="first_name">First Name</label>
-    <input id="first_name" name="first_name" value="${contact.first_name}">
+    <input id="first_name" name="first_name" value="${contact.first_name}" style="width:18ch">
   </div>
   <div>
     <label for="last_name">Last Name</label>
-    <input id="last_name" name="last_name" value="${contact.last_name}">
+    <input id="last_name" name="last_name" value="${contact.last_name}" style="width:18ch">
   </div>
   <div>
     <label for="email">Email</label>
-    <input type="email" id="email" name="email" value="${contact.email}">
+    <input type="email" id="email" name="email" value="${contact.email}" style="width:22ch">
   </div>
   <button class="primary">Update</button>
   <a href="/contacts/1">Cancel</a>

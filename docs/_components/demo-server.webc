@@ -30,6 +30,8 @@
 
   #demo-canvas {
     margin-bottom: calc(40vh + 4rem);
+    max-width: 100%;
+    overflow-x: auto;
   }
 
   #demo-activity {

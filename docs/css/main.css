@@ -350,6 +350,11 @@ legend {
   padding: auto .5rem;
 }
 
+.table {
+  overflow-x: auto;
+  max-width: 100%;
+}
+
 table {
   /* border-collapse sets the table's elements to share borders, rather than floating as separate "boxes". */
   border-collapse: collapse;
