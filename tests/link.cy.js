@@ -61,8 +61,8 @@ test('AJAX behavior is inherited by parent element',
   }
 )
 
-test('AJAX behavior is ignored with noajax',
-  html`<div x-ajax id="replace"><a noajax id="link" href="/tests">Link</a></div>`,
+test('AJAX behavior is ignored with x-noajax',
+  html`<div x-ajax id="replace"><a x-noajax id="link" href="/tests">Link</a></div>`,
   ({ get }) => {
     cy.intercept('GET', '/tests', {
       statusCode: 200,

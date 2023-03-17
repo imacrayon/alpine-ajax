@@ -166,8 +166,8 @@ test('focus is maintained after elements are replaced',
   }
 )
 
-test('AJAX behavior is ignored with noajax',
-  html`<div x-ajax id="replace"><form noajax method="post" action="/tests"><button></button></form></div>`,
+test('AJAX behavior is ignored with x-noajax',
+  html`<div x-ajax id="replace"><form x-noajax method="post" action="/tests"><button></button></form></div>`,
   ({ get }) => {
     cy.intercept('POST', '/tests', {
       statusCode: 200,

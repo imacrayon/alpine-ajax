@@ -111,17 +111,17 @@ Here's an expanded comment list example:
 
 Now, when the form is submitted, both the `comments` list, and the `comments_count` indicator will be updated.
 
-### noajax
+### x-noajax
 
-You can stop AJAX behavior on any element by adding the `noajax` attribute. Just like `x-ajax`, `noajax` is inherited by child elements.
+You can stop AJAX behavior on any element by adding the `x-noajax` attribute. Just like `x-ajax`, `x-noajax` is inherited by child elements.
 
-Review this navigation that demonstrates `noajax` at work:
+Review this navigation that demonstrates `x-noajax` at work:
 
 ```html
 <nav x-ajax id="sidebar">
   <ul>
-    <li><a noajax href="/page-1">Disabled</a></li>
-    <li noajax><a href="/page-2">Disabled by parent</a></li>
+    <li><a x-noajax href="/page-1">Disabled</a></li>
+    <li x-noajax><a href="/page-2">Disabled by parent</a></li>
     <li><a href="/page-3">AJAX enabled</a></li>
   </ul>
 </nav>

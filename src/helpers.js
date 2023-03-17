@@ -32,8 +32,8 @@ export function targets(el, sync = false) {
 }
 
 export function isIgnored(el) {
-  let root = el.closest('[x-ajax],[noajax]')
-  return root.hasAttribute('noajax')
+  let root = el.closest('[x-ajax],[x-noajax]')
+  return root.hasAttribute('x-noajax')
 }
 
 export class MissingIdError extends Error {
