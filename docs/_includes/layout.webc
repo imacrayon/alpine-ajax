@@ -9,7 +9,7 @@
   <meta name="generator" :content="eleventy.generator">
   <meta name="google-site-verification" content="KhOCyk8VyxCmepwpHn1DYq6uIPae0czI_8Z1atrRwJM" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prism-themes@1.9.0/themes/prism-a11y-dark.min.css" webc:keep>
-  <link rel="stylesheet" href="/css/main.css?id=1" webc:keep>
+  <link rel="stylesheet" href="/css/main.css?id=3" webc:keep>
   <script defer src="/js/main.js" webc:keep></script>
   <style @raw="getCss(page.url)" webc:keep></style>
   <script @raw="getJs(page.url)" webc:keep></script>
