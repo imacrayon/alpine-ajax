@@ -36,6 +36,7 @@
           </li>
           <li><a href="/examples" :aria-current="page.url == '/examples/' ? 'page' : ''">Examples</a></li>
           <li><a href="/comparisons" :aria-current="page.url == '/comparisons/' ? 'page' : ''">Comparisons</a></li>
+          <li><a href="https://github.com/imacrayon/alpine-ajax/releases">Changelog</a></li>
           <li><a href="https://github.com/imacrayon/alpine-ajax">GitHub</a></li>
         </ul>
       </nav>
