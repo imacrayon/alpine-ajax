@@ -1,4 +1,4 @@
-import { targets, isIgnored } from './helpers'
+import { targets, isIgnored, source } from './helpers'
 import { render } from './render'
 
 export function listenForSubmit(el) {
@@ -19,7 +19,8 @@ export function listenForSubmit(el) {
 
 function formRequest(form, submitter = null) {
   let method = (form.getAttribute('method') || 'GET').toUpperCase()
-  let action = form.getAttribute('action') || window.location.href
+  let referrer = source(form)
+  let action = form.getAttribute('action') || referrer || window.location.href
   let body = new FormData(form)
   if (submitter && submitter.name) {
     body.append(submitter.name, submitter.value)
@@ -28,7 +29,6 @@ function formRequest(form, submitter = null) {
     action = mergeBodyIntoAction(body, action)
     body = null
   }
-  let referrer = form.closest('[data-source]')?.dataset.source
 
   return { method, action, body, referrer }
 }

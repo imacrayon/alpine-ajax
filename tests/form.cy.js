@@ -194,7 +194,7 @@ test('ajax:before event is fired',
 )
 
 test('ajax:before can cancel AJAX requests',
-  html`<h1 id="title">Replace me</h1><form x-ajax x-target="title" @ajax:before="$event.preventDefault()" method="post" action="/"><button></button></form>`,
+  html`<h1 id="title">Replace me</h1><form x-ajax x-target="title" @ajax:before="$event.preventDefault()" method="post" action="/tests"><button></button></form>`,
   ({ get }) => {
     cy.on('fail', (error, runnable) => {
       if (error.message.indexOf('Timed out retrying') !== 0) throw error
@@ -213,7 +213,7 @@ test('ajax:before can cancel AJAX requests',
 )
 
 test('referer header is set when `data-source` exists',
-  html`<form x-ajax id="replace" method="post" data-source="/tests/other.html"><button></button></form>`,
+  html`<form x-ajax id="replace" method="post" action="/tests" data-source="/tests/other.html"><button></button></form>`,
   ({ get }) => {
     cy.intercept('POST', '/tests', {
       statusCode: 200,
@@ -222,6 +222,21 @@ test('referer header is set when `data-source` exists',
     get('button').click()
     cy.wait('@response').then(network => {
       expect(network.request.headers.referer).to.contain('/tests/other.html')
+    })
+  }
+)
+
+test('action is set to referrer for naked form when `data-source` exists',
+  html`<form x-ajax id="replace" data-source="/tests/other.html"><button></button></form>`,
+  ({ get }) => {
+    cy.intercept('GET', '/tests/other.html', {
+      statusCode: 200,
+      body: '<h1 id="title">Success</h1><div id="replace">Replaced</div>'
+    }).as('response')
+    get('button').click()
+    cy.wait('@response').then(() => {
+      cy.get('#title').should('not.exist')
+      cy.get('#replace').should('have.text', 'Replaced')
     })
   }
 )

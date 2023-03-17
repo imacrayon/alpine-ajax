@@ -204,7 +204,8 @@
   }
   function formRequest(form, submitter = null) {
     let method = (form.getAttribute("method") || "GET").toUpperCase();
-    let action = form.getAttribute("action") || window.location.href;
+    let referrer = source(form);
+    let action = form.getAttribute("action") || referrer || window.location.href;
     let body2 = new FormData(form);
     if (submitter && submitter.name) {
       body2.append(submitter.name, submitter.value);
@@ -213,7 +214,6 @@
       action = mergeBodyIntoAction(body2, action);
       body2 = null;
     }
-    let referrer = form.closest("[data-source]")?.dataset.source;
     return { method, action, body: body2, referrer };
   }
   async function withSubmitter(submitter, callback) {

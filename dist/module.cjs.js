@@ -230,9 +230,9 @@ function listenForSubmit(el) {
   return () => el.removeEventListener("submit", handler);
 }
 function formRequest(form, submitter = null) {
-  var _a;
   let method = (form.getAttribute("method") || "GET").toUpperCase();
-  let action = form.getAttribute("action") || window.location.href;
+  let referrer = source(form);
+  let action = form.getAttribute("action") || referrer || window.location.href;
   let body2 = new FormData(form);
   if (submitter && submitter.name) {
     body2.append(submitter.name, submitter.value);
@@ -241,7 +241,6 @@ function formRequest(form, submitter = null) {
     action = mergeBodyIntoAction(body2, action);
     body2 = null;
   }
-  let referrer = (_a = form.closest("[data-source]")) == null ? void 0 : _a.dataset.source;
   return { method, action, body: body2, referrer };
 }
 async function withSubmitter(submitter, callback) {
