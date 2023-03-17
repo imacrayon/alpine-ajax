@@ -40,7 +40,7 @@ Finally, when the job is complete, the `x-load` directive is removed and a resta
       <rect x="0" y="0" width="100%" height="100%" fill="blue"></rect>
     </svg>
   </div>
-  <form x-ajax target="jobs" method="post" action="/jobs">
+  <form x-ajax x-target="jobs" method="post" action="/jobs">
     <button>Restart Job</button>
   </form>
 </div>
@@ -87,7 +87,7 @@ Finally, when the job is complete, the `x-load` directive is removed and a resta
 
   function restart(job) {
     if (!job.complete) return '';
-    return `<form x-ajax target="jobs" method="post" action="/jobs">
+    return `<form x-ajax x-target="jobs" method="post" action="/jobs">
   <button>Restart Job</button>
 </form>`
   }

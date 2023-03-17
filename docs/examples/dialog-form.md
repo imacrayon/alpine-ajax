@@ -38,7 +38,7 @@ Here is the HTML for a table row:
   <td>Finn Mertins</td>
   <td>fmertins@candykingdom.gov</td>
   <td>Active</td>
-  <td><a href="/contacts/1/edit" target="contact">Edit</a></td>
+  <td><a href="/contacts/1/edit" x-target="contact">Edit</a></td>
 </tr>
 ```
 
@@ -117,7 +117,7 @@ Finally, the `contact:updated` event causes the `<tbody>` to refresh with the up
   <td>${contact.name}</td>
   <td>${contact.email}</td>
   <td>${contact.status}</td>
-  <td><a href="/contacts/${contact.id}/edit" target="contact">Edit</a></td>
+  <td><a href="/contacts/${contact.id}/edit" x-target="contact">Edit</a></td>
 </tr>`).join('\n')
     return table(rows)
   }

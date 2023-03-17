@@ -31,7 +31,7 @@ test('request URL is determined by link href',
 )
 
 test('target can be set in attribute',
-  html`<div id="replace"></div><a href="/tests" x-ajax target="replace">Link</a>`,
+  html`<div id="replace"></div><a href="/tests" x-ajax x-target="replace">Link</a>`,
   ({ get }) => {
     cy.intercept('GET', '/tests', {
       statusCode: 200,

@@ -72,18 +72,18 @@ When the "Edit" link is clicked, the server should return a page containing a fo
 
 Since the `<form>` in this response has `id="contact_1"`. The original contact details will be replaced with the edit form. Notice that the page's `<h1>` isn't inside the `<form>`. This means it'll be ignored when the form replaces the contact details.
 
-### target
+### x-target
 
-Add the `target` attribute to target another element `id` on the page to be replaced instead of the default `x-ajax` component.
+Add the `x-target` attribute to target another element `id` on the page to be replaced instead of the default `x-ajax` component.
 
-Take a look at this comment list, notice the `target="comments"` attribute on the `<form>`:
+Take a look at this comment list, notice the `x-target="comments"` attribute on the `<form>`:
 
 ```html
 <ul id="comments">
   <li>Comment #1</li>
 </ul>
 <h2 id="comment_form_title">Post a Comment</h2>
-<form x-ajax target="comments" method="post" action="/comment" aria-labelledby="comment_form_title">
+<form x-ajax x-target="comments" method="post" action="/comment" aria-labelledby="comment_form_title">
   <input aria-label="Comment text" name="text" required />
   <button>Submit</button>
 </form>
@@ -103,7 +103,7 @@ Here's an expanded comment list example:
   <li>Comment #1</li>
 </ul>
 <h2 id="comment_form_title">Post a Comment</h2>
-<form x-ajax target="comments comments_count" method="post" action="/comment" aria-labelledby="comment_form_title">
+<form x-ajax x-target="comments comments_count" method="post" action="/comment" aria-labelledby="comment_form_title">
   <input name="comment" required />
   <button>Submit</button>
 </form>
@@ -176,7 +176,7 @@ Here's an example of aborting a form request when the user cancels a dialog prom
 
 ## x-sync
 
-Elements with the `x-sync` attribute are updated whenever the server sends a matching element, even if the element isn't targeted with `target`.
+Elements with the `x-sync` attribute are updated whenever the server sends a matching element, even if the element isn't targeted with `x-target`.
 
 `x-sync` elements must have a unique `id`. The `id` is used to match the content being replaced when requesting content from the server.
 
@@ -275,7 +275,7 @@ Imagine a basic comment thread, after a comment is created, you would like to pe
 You might be inclined to create a form that updates a big, ugly, list of targets like this:
 
 ```html
-<form x-ajax method="post" action="/comments" target="notifications comment_counter comments_list comment_dialog comment_author">
+<form x-ajax method="post" action="/comments" x-target="notifications comment_counter comments_list comment_dialog comment_author">
 ```
 
 Instead, wire up each of your UI elements to respond to a single `comment_added` event:
