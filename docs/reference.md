@@ -14,8 +14,8 @@ Include the CDN build of Alpine AJAX & Morph as a `<script>` tag, just make sure
 
 ```html
 <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/morph@3.11.1/dist/cdn.min.js"></script>
-<script defer src="https://cdn.jsdelivr.net/npm/@imacrayon/alpine-ajax@0.1.3/dist/cdn.min.js"></script>
-<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.10.5/dist/cdn.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/@imacrayon/alpine-ajax@{{ APLINE_AJAX_VERSION }}/dist/cdn.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.11.1/dist/cdn.min.js"></script>
 ```
 
 ### Via NPM

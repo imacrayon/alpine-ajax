@@ -12,6 +12,8 @@ module.exports = function (eleventyConfig) {
   eleventyConfig.addPlugin(pluginWebc)
   eleventyConfig.addPlugin(pluginSyntaxHighlight)
 
+  eleventyConfig.addGlobalData('APLINE_AJAX_VERSION', () => process.env.npm_package_version)
+
   eleventyConfig.on("eleventy.before", async () => {
     await esbuild.build({
       entryPoints: ['js/main.js'],
