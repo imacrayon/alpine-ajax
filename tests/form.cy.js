@@ -122,7 +122,7 @@ test('x-target changes the updated target',
 )
 
 test('x-target can be inherited',
-  html`<div id="replace"></div><div x-target="replace"><div x-ajax><form method="post" action="/tests"><button></button></form><div></div>`,
+  html`<div id="replace"></div><div x-ajax x-target="replace"><form method="post" action="/tests"><button></button></form><div></div>`,
   ({ get }) => {
     cy.intercept('POST', '/tests', {
       statusCode: 200,

@@ -7,7 +7,7 @@ export function listenForNavigate(el) {
     if (!isLocalLink(link) || isIgnored(link)) return
     event.preventDefault()
     event.stopPropagation()
-    render(navigateRequest(link), targets(el, true, link), link)
+    render(navigateRequest(link), targets(link, true), link)
   }
 
   el.addEventListener('click', handler)

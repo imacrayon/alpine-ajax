@@ -8,7 +8,7 @@ export function listenForSubmit(el) {
     event.preventDefault()
     event.stopPropagation()
     return withSubmitter(event.submitter, () => {
-      return render(formRequest(form, event.submitter), targets(el, true, form), form)
+      return render(formRequest(form, event.submitter), targets(form, true), form)
     })
   }
 

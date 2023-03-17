@@ -4,20 +4,16 @@ export function setAlpine(alpine) {
   Alpine = alpine
 }
 
-export function targets(root, sync = false, trigger = null) {
-  let ids = []
-  if (trigger && trigger.hasAttribute('x-target')) {
-    ids = trigger.getAttribute('x-target').split(' ')
-  } else if (root.hasAttribute('x-target')) {
-    ids = root.getAttribute('x-target').split(' ')
-  } else {
-    ids = [root.id]
-  }
+export function targets(el, sync = false) {
+  el = el.closest('[x-target],[x-ajax]') ?? el
+  let ids = el.hasAttribute('x-target')
+    ? el.getAttribute('x-target').split(' ')
+    : [el.id]
 
   ids = ids.filter(id => id)
 
   if (ids.length === 0) {
-    throw new MissingIdError(root)
+    throw new MissingIdError(el)
   }
 
   if (sync) {
