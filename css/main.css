@@ -593,4 +593,5 @@ dialog>form:last-child {
 code[class*="language-"],
 pre[class*="language-"] {
   line-height: 2;
+  font-family: var(--nc-font-mono);
 }
