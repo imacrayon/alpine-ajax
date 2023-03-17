@@ -396,10 +396,15 @@ li {
   margin-top: .414rem;
 }
 
+li:first-child {
+  margin-top: 0;
+}
+
 ul ul,
 ol ul,
 ul ol,
 ol ol {
+  margin-top: .414rem;
   margin-bottom: 0;
 }
 
