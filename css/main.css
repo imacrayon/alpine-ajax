@@ -3,11 +3,12 @@
   --nc-font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   --nc-tx-1: #000000;
   --nc-tx-2: #1A1A1A;
-  --nc-bg-1: #FFFFFF;
-  --nc-bg-2: #F6F8FA;
-  --nc-bg-3: #E5E7EB;
-  --nc-bg-4: #F6F8FA;
-  --nc-bg-5: #F6F8FA;
+  --bg-base: #FFFFFF;
+  --bg-accent: #F6F8FA;
+  --bg-border: #E5E7EB;
+  --bg-border-code: #E5E7EB;
+  --bg-sidebar: #F6F8FA;
+  --bg-light: #F6F8FA;
   --nc-lk-1: #2563EB;
   --nc-lk-2: #1d4ed8;
   --nc-lk-3: #666666;
@@ -24,11 +25,12 @@
   :root {
     --nc-tx-1: #ffffff;
     --nc-tx-2: #eeeeee;
-    --nc-bg-1: #111111;
-    --nc-bg-2: #2b2b2b;
-    --nc-bg-3: #222222;
-    --nc-bg-4: #000000;
-    --nc-bg-5: #222222;
+    --bg-base: #111111;
+    --bg-accent: #2b2b2b;
+    --bg-border: #222222;
+    --bg-border-code: #000000;
+    --bg-sidebar: #000000;
+    --bg-light: #222222;
     --nc-lk-1: #60a5fa;
     --nc-lk-2: #3b82f6;
     --nc-lk-3: #326DEC;
@@ -106,7 +108,7 @@ html {
 
 body {
   padding: 0;
-  background: var(--nc-bg-1);
+  background: var(--bg-base);
   color: var(--nc-tx-2);
   height: 100%;
 }
@@ -142,7 +144,7 @@ h3 {
   color: var(--nc-tx-1);
   padding-bottom: 2px;
   margin-bottom: .414em;
-  border-bottom: 1px solid var(--nc-bg-2);
+  border-bottom: 1px solid var(--bg-accent);
 }
 
 h4,
@@ -190,8 +192,8 @@ abbr:hover {
 
 blockquote {
   padding: 1.5rem;
-  background: var(--nc-bg-2);
-  border-left: 5px solid var(--nc-bg-3);
+  background: var(--bg-accent);
+  border-left: 5px solid var(--bg-border);
 }
 
 abbr {
@@ -204,8 +206,8 @@ blockquote *:last-child {
 }
 
 header {
-  background: var(--nc-bg-4);
-  border-right: 1px solid var(--nc-bg-3);
+  background: var(--bg-sidebar);
+  border-right: 1px solid var(--bg-border);
 }
 
 a button,
@@ -269,16 +271,15 @@ code,
 samp,
 kbd,
 pre {
-  background: var(--nc-bg-2);
-  border: 1px solid var(--nc-bg-4);
+  background: var(--bg-accent);
+  border: 1px solid var(--bg-border-code);
   border-radius: .25rem;
   padding: .13rem .31rem;
   font-size: .88rem;
 }
 
 kbd {
-  /* Makes the kbd element look like a keyboard key */
-  border-bottom: 3px solid var(--nc-bg-3);
+  border-bottom: 3px solid var(--bg-border-code);
 }
 
 pre {
@@ -311,8 +312,8 @@ code pre {
 details {
   /* Make the <details> look more "clickable" */
   padding: .88rem 1rem;
-  background: var(--nc-bg-5);
-  border: 1px solid var(--nc-bg-3);
+  background: var(--bg-light);
+  border: 1px solid var(--bg-border);
   border-radius: .25rem;
 }
 
@@ -334,14 +335,14 @@ dd::before {
 hr {
   /* Reset the border of the <hr> separator, then set a better line */
   border: 0;
-  border-bottom: 1px solid var(--nc-bg-3);
+  border-bottom: 1px solid var(--bg-border);
   margin: 1rem auto;
 }
 
 fieldset {
   margin-top: 1rem;
   padding: 2rem;
-  border: 1px solid var(--nc-bg-3);
+  border: 1px solid var(--bg-border);
   border-radius: 4px;
 }
 
@@ -357,18 +358,18 @@ table {
 
 td,
 th {
-  border: 1px solid var(--nc-bg-3);
+  border: 1px solid var(--bg-border);
   text-align: left;
   padding: .5rem;
 }
 
 th {
-  background: var(--nc-bg-2);
+  background: var(--bg-accent);
 }
 
 tr:nth-child(even) {
   /* Set every other cell slightly darker. Improves readability. */
-  background: var(--nc-bg-2);
+  background: var(--bg-accent);
 }
 
 table caption {
@@ -422,9 +423,9 @@ input {
   font-size: 1rem;
   padding: .375rem .75rem;
   margin-bottom: .5rem;
-  background: var(--nc-bg-2);
+  background: var(--bg-accent);
   color: var(--nc-tx-2);
-  border: 1px solid var(--nc-bg-3);
+  border: 1px solid var(--bg-border);
   border-radius: .25rem;
   box-shadow: none;
   box-sizing: border-box;
@@ -436,7 +437,7 @@ img {
 
 [href="#main"] {
   display: block;
-  background: var(--nc-bg-2);
+  background: var(--bg-accent);
   padding: 1.5rem;
   position: absolute;
   top: -10rem
@@ -483,7 +484,7 @@ main {
   box-sizing: content-box;
   margin-inline: auto;
   max-inline-size: 65ch;
-  background: var(--nc-bg-1);
+  background: var(--bg-base);
 }
 
 .stack {
@@ -536,7 +537,7 @@ a[href].direct-link:focus:visited,
 dialog {
   border: none;
   border-radius: .5rem;
-  border: 1px solid var(--nc-bg-3);
+  border: 1px solid var(--bg-border);
   box-shadow: 0 10px 15px -3px var(--shadow), 0 4px 6px -4px var(--shadow);
   padding: 1rem;
   max-width: 56ch;
@@ -546,7 +547,7 @@ dialog {
   margin-right: auto;
   transform: translate(0, -50%);
   color: var(--nc-tx-1);
-  background: var(--nc-bg-1);
+  background: var(--bg-base);
 }
 
 td>input,
@@ -589,7 +590,7 @@ dialog>form:last-child {
   left: 0;
   width: 50%;
   height: 100%;
-  background: var(--nc-bg-4);
+  background: var(--bg-sidebar);
   z-index: -1;
 }
 
