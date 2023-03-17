@@ -6,6 +6,8 @@
   --nc-bg-1: #FFFFFF;
   --nc-bg-2: #F6F8FA;
   --nc-bg-3: #E5E7EB;
+  --nc-bg-4: #F6F8FA;
+  --nc-bg-5: #F6F8FA;
   --nc-lk-1: #2563EB;
   --nc-lk-2: #1d4ed8;
   --nc-lk-3: #666666;
@@ -23,8 +25,10 @@
     --nc-tx-1: #ffffff;
     --nc-tx-2: #eeeeee;
     --nc-bg-1: #111111;
-    --nc-bg-2: #000000;
+    --nc-bg-2: #2b2b2b;
     --nc-bg-3: #222222;
+    --nc-bg-4: #000000;
+    --nc-bg-5: #222222;
     --nc-lk-1: #60a5fa;
     --nc-lk-2: #3b82f6;
     --nc-lk-3: #326DEC;
@@ -200,7 +204,7 @@ blockquote *:last-child {
 }
 
 header {
-  background: var(--nc-bg-2);
+  background: var(--nc-bg-4);
   border-right: 1px solid var(--nc-bg-3);
 }
 
@@ -265,9 +269,8 @@ code,
 samp,
 kbd,
 pre {
-  /* The main preformatted style. This is changed slightly across different cases. */
   background: var(--nc-bg-2);
-  border: 1px solid var(--nc-bg-3);
+  border: 1px solid var(--nc-bg-4);
   border-radius: .25rem;
   padding: .13rem .31rem;
   font-size: .88rem;
@@ -308,7 +311,7 @@ code pre {
 details {
   /* Make the <details> look more "clickable" */
   padding: .88rem 1rem;
-  background: var(--nc-bg-2);
+  background: var(--nc-bg-5);
   border: 1px solid var(--nc-bg-3);
   border-radius: .25rem;
 }
@@ -586,7 +589,7 @@ dialog>form:last-child {
   left: 0;
   width: 50%;
   height: 100%;
-  background: var(--nc-bg-2);
+  background: var(--nc-bg-4);
   z-index: -1;
 }
 
