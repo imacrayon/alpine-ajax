@@ -197,19 +197,16 @@ Every server response that includes a `notifications` element will get inserted 
 The `$ajax` magic helper is `x-ajax`'s little sidekick. While `x-ajax` alone should cover about 80% of your use cases, there are still cases where you might need fine-grained AJAX control. That's where `$ajax` comes in, use it to programmatically issue AJAX requests in response to events. Here we've wired it up to an input's `change` event to perform some server-side validation for an email:
 
 ```html
-<div
-  x-data="{ email: '' }"
-  @change="$ajax('/validate-email', {
-    method: 'post',
-    body: { email: this.email }
-  })"
->
+<div id="email_field" x-data="{email : ''}" @change="$ajax('/validate-email', {
+  method: 'post',
+  body: { email },
+})">
   <label for="email">Email</label>
   <input type="email" name="email" id="email" x-model="email">
 </div>
 ```
 
-In this example we make a `POST` request with the `email` value to the `/validate-email` endpoint. If the email is invalid the server should return the field markup including an error.
+In this example we make a `POST` request with the `email` value to the `/validate-email` endpoint. See the [Inline Validation example](/examples/inline-validation) for a complete demonstration.
 
 **Note:** Since `$ajax` is intended to be used in side effects it doesn't emit any events or target `x-sync` elements like `x-ajax`. However, you can change these defaults using the `$ajax` options.
 
@@ -345,7 +342,7 @@ Here we're using `x-load` to continuously poll for new data every second:
 </div>
 ```
 
-Note that if we were to replace `x-load` with `x-init` in this markup, the polling request would only be issued once. See the [Progress Bar](/examples/progress-bar) example for a more complete demonstration.
+Note that if we were to replace `x-load` with `x-init` in this markup, the polling request would only be issued once. See the [Progress Bar example](/examples/progress-bar) for a more complete demonstration.
 
 ## Loading states
 

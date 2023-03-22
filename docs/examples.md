@@ -38,6 +38,10 @@ You can copy and paste them and then adjust them for your needs.
     <dd>Filter down a table or list of content.</dd>
   </div>
   <div>
+    <dt><a href="/examples/inline-validation">Inline Validation</a></dt>
+    <dd>Validate an input field before it is submitted.</dd>
+  </div>
+  <div>
     <dt><a href="/examples/notifications">Notifications</a></dt>
     <dd>Display notification "toasts".</dd>
   </div>
