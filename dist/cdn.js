@@ -108,7 +108,7 @@
     }
     return targets2;
   }
-  async function send({ method, action, body: body2, referrer }) {
+  async function send({ method, action, body, referrer }) {
     let proxy;
     let onSuccess = (response2) => response2;
     let onError = (error) => error;
@@ -125,7 +125,7 @@
       headers: { "X-Alpine-Request": "true" },
       referrer,
       method,
-      body: body2
+      body
     }).then(readHtml).then(onSuccess).catch(onError);
     return method === "GET" ? proxy : response;
   }
@@ -206,15 +206,15 @@
     let method = (form.getAttribute("method") || "GET").toUpperCase();
     let referrer = source(form);
     let action = form.getAttribute("action") || referrer || window.location.href;
-    let body2 = new FormData(form);
+    let body = new FormData(form);
     if (submitter && submitter.name) {
-      body2.append(submitter.name, submitter.value);
+      body.append(submitter.name, submitter.value);
     }
     if (method === "GET") {
-      action = mergeBodyIntoAction(body2, action);
-      body2 = null;
+      action = mergeBodyIntoAction(body, action);
+      body = null;
     }
-    return { method, action, body: body2, referrer };
+    return { method, action, body, referrer };
   }
   async function withSubmitter(submitter, callback) {
     if (!submitter)
@@ -228,8 +228,8 @@
     submitter.removeEventListener("click", disableEvent);
     return result;
   }
-  function mergeBodyIntoAction(body2, action) {
-    let params = Array.from(body2.entries()).filter(([key, value]) => value !== "" || value !== null);
+  function mergeBodyIntoAction(body, action) {
+    let params = Array.from(body.entries()).filter(([key, value]) => value !== "" || value !== null);
     if (params.length) {
       let parts = action.split("#");
       action = parts[0];
@@ -294,10 +294,19 @@
     });
     Alpine2.magic("ajax", (el) => {
       return (action, options) => {
+        let body = null;
+        if (options.body instanceof HTMLFormElement) {
+          body = options.body;
+        } else if (options.body) {
+          body = new FormData();
+          for (let key in options.body) {
+            body.append(key, options.body[key]);
+          }
+        }
         let request = {
           action,
           method: options?.method ? options.method.toUpperCase() : "GET",
-          body: options?.body ? new FormData(body) : null,
+          body,
           referrer: source(el)
         };
         return render(request, targets(el, options?.sync), el, Boolean(options?.events));

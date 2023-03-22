@@ -22,10 +22,20 @@ export default function (Alpine) {
 
   Alpine.magic('ajax', (el) => {
     return (action, options) => {
+      let body = null
+      if (options.body instanceof HTMLFormElement) {
+        body = options.body
+      } else if (options.body) {
+        body = new FormData
+        for (let key in options.body) {
+          body.append(key, options.body[key]);
+        }
+      }
+
       let request = {
         action,
         method: options?.method ? options.method.toUpperCase() : 'GET',
-        body: options?.body ? new FormData(body) : null,
+        body,
         referrer: source(el),
       }
 
