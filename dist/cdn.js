@@ -295,12 +295,14 @@
     Alpine2.magic("ajax", (el) => {
       return (action, options) => {
         let body = null;
-        if (options.body instanceof HTMLFormElement) {
-          body = options.body;
-        } else if (options.body) {
-          body = new FormData();
-          for (let key in options.body) {
-            body.append(key, options.body[key]);
+        if (options && options.body) {
+          if (options.body instanceof HTMLFormElement) {
+            body = options.body;
+          } else {
+            body = new FormData();
+            for (let key in options.body) {
+              body.append(key, options.body[key]);
+            }
           }
         }
         let request = {
