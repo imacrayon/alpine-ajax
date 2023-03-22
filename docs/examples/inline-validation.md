@@ -3,7 +3,7 @@ layout: example.webc
 title: Inline Validation
 ---
 
-This example shows how to do inline field validation, in this case of an email address. To do this we need to create a form with an input that POSTs back to the server with the value to be validated and updates the DOM with the validation results.
+This example shows how to do inline field validation. In this example we'll create an email field that can issue requests to our server with an email to be validated, the server will then render validation messages that will be inserted into the DOM.
 
 We start with this form:
 
