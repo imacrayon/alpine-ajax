@@ -311,7 +311,7 @@ code pre {
 
 details {
   /* Make the <details> look more "clickable" */
-  padding: .88rem 1rem;
+  padding: .44rem .88rem;
   background: var(--bg-light);
   border: 1px solid var(--bg-border);
   border-radius: .25rem;

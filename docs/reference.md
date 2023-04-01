@@ -375,6 +375,18 @@ route('POST', '/update-quantity', (request) => {
 
 Now, instead of issuing a real `POST` request to `/update-quantity`, Alpine AJAX will simply use the HTML returned in our route definition as the response. Note that any form data included in the AJAX request is made available too you in the `route` function.
 
+<details>
+  <summary>Mock server example on CodePen</summary>
+  <div>
+    <p class="codepen" data-height="300" data-default-tab="html,result" data-slug-hash="NWLZOrP" data-user="imacrayon" style="height: 300px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; border: 2px solid; margin: 1em 0; padding: 1em;">
+      <span>See the Pen <a href="https://codepen.io/imacrayon/pen/NWLZOrP">
+      Alpine AJAX Demo</a> by Christian Taylor (<a href="https://codepen.io/imacrayon">@imacrayon</a>)
+      on <a href="https://codepen.io">CodePen</a>.</span>
+    </p>
+    <script async src="https://cpwebassets.codepen.io/assets/embed/ei.js"></script>
+  </div>
+</details>
+
 Mocked routes should only be used in demos and testing, this utility is not designed for production environments.
 
 ## Loading states
