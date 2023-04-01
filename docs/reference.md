@@ -344,6 +344,31 @@ Here we're using `x-load` to continuously poll for new data every second:
 
 Note that if we were to replace `x-load` with `x-init` in this markup, the polling request would only be issued once. See the [Progress Bar example](/examples/progress-bar) for a more complete demonstration.
 
+## Creating Demos
+
+Use the mock server script included with Alpine AJAX when you need to build a quick prototype or demonstrate a bug, without a server. The mock server script adds a global `route` helper function for mocking server endpoints on the frontend:
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/@imacrayon/alpine-ajax@{{ APLINE_AJAX_VERSION }}/dist/server.js"></script>
+
+<script>
+route('POST', '/update-quantity', (request) => {
+  return `<output id="current_quantity">${request.quantity}</output>`
+})
+</script>
+
+<output id="current_quantity">0</output>
+<form x-ajax x-target="current_quantity" method="POST" action="/update-quantity">
+  <label form="quantity">Quantity</label>
+  <input type="number" id="quantity" name="quantity">
+  <button>Update</button>
+</form>
+```
+
+Now, instead of issuing a real `POST` request to `/update-quantity`, Alpine AJAX will simply use the HTML returned in our route definition as the response. Note that any form data included in the AJAX request is made available too you in the `route` function.
+
+Mocked routes should only be used in demos and testing, this utility is not designed for production environments.
+
 ## Loading states
 
 While an AJAX request is in progress there are a few loading states to be aware of:

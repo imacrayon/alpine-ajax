@@ -62,15 +62,13 @@ We use `x-show="false"` on the form's submit button so that it is hidden when Ja
     }
   }()
 
-  document.addEventListener('DOMContentLoaded', () => {
-    window.server({
-      'GET /contacts': (formData, params) => {
-        let search = params.get('search')
-        let contacts = search ? database.search(search) : database.all()
-        return view(contacts)
-      },
-    }).get('/contacts')
-  })
+    window.route('GET', '/contacts', (input) => {
+      let contacts = input.search ? database.search(input.search) : database.all()
+
+      return view(contacts)
+    })
+
+    example('/contacts')
 
   function view(contacts) {
     let rows = contacts.map(contact => `<tr>

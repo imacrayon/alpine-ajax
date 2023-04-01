@@ -93,24 +93,17 @@ Finally, the `contact:updated` event causes the `<tbody>` to refresh with the up
     }
   }()
 
-  document.addEventListener('DOMContentLoaded', () => {
-    let routes = {
-      'GET /contacts': () => index(database.all()),
-    }
-    database.all().forEach(contact => {
-      routes[`GET /contacts/${contact.id}`] = () => show(database.find(contact.id))
-      routes[`GET /contacts/${contact.id}/edit`] = () => edit(database.find(contact.id))
-      routes[`PUT /contacts/${contact.id}`] = (formData) => {
-        database.update(contact.id, {
-          name: formData.get('name'),
-          email: formData.get('email'),
-          status: formData.get('status'),
-        })
-        return show(database.find(contact.id))
-      }
+  window.route('GET', '/contacts', () => index(database.all()))
+  database.all().forEach(contact => {
+    window.route('GET', `/contacts/${contact.id}`, () => show(database.find(contact.id)))
+    window.route('GET', `/contacts/${contact.id}/edit`, () => edit(database.find(contact.id)))
+    window.route('PUT', `/contacts/${contact.id}`, (input) => {
+      database.update(contact.id, input)
+      return show(database.find(contact.id))
     })
-    window.server(routes).get('/contacts')
   })
+
+  example('/contacts')
 
   function index(contacts) {
     let rows = contacts.map(contact => `<tr id="contact_${contact.id}">

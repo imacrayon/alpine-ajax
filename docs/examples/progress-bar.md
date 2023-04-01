@@ -47,19 +47,17 @@ Finally, when the job is complete, the `x-load` directive is removed and a resta
 ```
 
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    window.server({
-      'GET /jobs/create': () => create(),
-      'POST /jobs': () => {
-        let job = jobManager.start()
-        return show(job)
-      },
-      'GET /jobs/1': () => {
-        let job = jobManager.currentProcess()
-        return show(job)
-      },
-    }).get('/jobs/create')
+  window.route('GET', '/jobs/create', () => create())
+  window.route('POST', '/jobs', () => {
+    let job = jobManager.start()
+    return show(job)
   })
+  window.route('GET', '/jobs/1', () => {
+    let job = jobManager.currentProcess()
+    return show(job)
+  })
+
+  example('/jobs/create')
 
   function create() {
     return `<form x-ajax id="jobs" method="post" action="/jobs">

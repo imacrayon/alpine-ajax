@@ -46,18 +46,16 @@ When submitted, the form issues a `PUT` back to `/contacts/1`, following the usu
     "email": "fmertens@candykingdom.gov"
   };
 
-  document.addEventListener('DOMContentLoaded', () => {
-    window.server({
-      'GET /contacts/1': () => show(contact),
-      'GET /contacts/1/edit': () => edit(contact),
-      'PUT /contacts/1': (formData) => {
-        contact.first_name = formData.get('first_name');
-        contact.last_name = formData.get('last_name');
-        contact.email = formData.get('email');
-        return show(contact);
-      }
-    }).get('/contacts/1')
+  window.route('GET', '/contacts/1', () => show(contact))
+  window.route('GET', '/contacts/1/edit', () => edit(contact))
+  window.route('PUT', '/contacts/1', (input) => {
+    contact.first_name = input.first_name
+    contact.last_name = input.last_name
+    contact.email = input.email
+    return show(contact)
   })
+
+  example('/contacts/1')
 
   function edit(contact) {
     return `<form x-ajax id="contact_1" method="put" action="/contacts/1" aria-label="Contact Information">

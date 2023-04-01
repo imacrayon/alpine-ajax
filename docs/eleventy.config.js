@@ -7,6 +7,7 @@ const esbuild = require('esbuild')
 
 module.exports = function (eleventyConfig) {
   eleventyConfig.addPassthroughCopy('css')
+  eleventyConfig.addPassthroughCopy({ '../dist/server.js': 'js/server.js' })
 
   eleventyConfig.addPlugin(EleventyHtmlBasePlugin)
   eleventyConfig.addPlugin(pluginWebc)

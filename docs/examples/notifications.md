@@ -118,15 +118,14 @@ And finally, we can make our notifications automatically dismiss after 6 seconds
 
 <script>
   var count = 0;
-  document.addEventListener('DOMContentLoaded', () => {
-    window.server({
-      'GET /action': () => view(),
-      'POST /action': () => {
-        count++
-        return view()
-      }
-    }).get('/action')
+
+  window.route('GET', '/action', () => view())
+  window.route('POST', '/action', () => {
+    count++
+    return view()
   })
+
+  example('/action')
 
   function view() {
     return `<form x-ajax id="action" method="post" action="/action">

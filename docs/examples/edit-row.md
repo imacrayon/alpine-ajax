@@ -69,23 +69,17 @@ Finally, here is the edit state that will replace a row, note the matching `id="
     }
   }()
 
-  document.addEventListener('DOMContentLoaded', () => {
-    let routes = {
-      'GET /contacts': () => view(database.all()),
-    }
-    database.all().forEach(contact => {
-      routes[`GET /contacts/${contact.id}/edit`] = () => edit(database.all())
+  window.route('GET', '/contacts', () => view(database.all()))
+  database.all().forEach(contact => {
+    window.route('GET', `/contacts/${contact.id}/edit`, () => edit(database.all()))
+    window.route('PUT', `/contacts/${contact.id}`, (input) => {
+      database.update(contact.id, input)
 
-      routes[`PUT /contacts/${contact.id}`] = (formData) => {
-        database.update(contact.id, {
-          name: formData.get('name'),
-          email: formData.get('email'),
-        })
-        return view(database.all())
-      }
+      return view(database.all())
     })
-    window.server(routes).get('/contacts')
   })
+
+  example('/contacts')
 
   function view(contacts) {
     let rows = contacts.map(contact => `<tr id="contact_${contact.id}">

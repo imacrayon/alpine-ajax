@@ -49,18 +49,17 @@ updated rows.
     }
   }()
 
-  document.addEventListener('DOMContentLoaded', () => {
-    window.server({
-      'GET /contacts': () => view(database.all()),
-      'PUT /contacts': (formData) => {
-        let ids = formData.getAll('ids') || []
-        ids.forEach(id => {
-          database.find(id)['status'] = formData.get('status');
-        })
-        return view(database.all());
-      },
-    }).get('/contacts')
+  window.route('GET', '/contacts', () => view(database.all()))
+  window.route('PUT', '/contacts', (input) => {
+    let ids = Array.isArray(input.ids) ? input.ids : [input.ids]
+    ids.filter(id => id).forEach(id => {
+      database.find(id)['status'] = input.status
+    })
+
+    return view(database.all());
   })
+
+  example('/contacts')
 
   function view(contacts) {
     let rows = contacts.map(contact => `<tr>

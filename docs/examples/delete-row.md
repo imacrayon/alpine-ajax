@@ -60,18 +60,16 @@ with a table that is lacking the row which was just deleted.
     }
   }()
 
-  document.addEventListener('DOMContentLoaded', () => {
-    let routes = {
-      'GET /contacts': () => view(database.all()),
-    }
-    database.all().forEach(contact => {
-      routes[`DELETE /contacts/${contact.id}`] = () => {
-        database.remove(contact.id)
-        return view(database.all())
-      }
+  window.route('GET',  '/contacts', () => view(database.all()))
+  database.all().forEach(contact => {
+    window.route('DELETE', `/contacts/${contact.id}`, () => {
+      database.remove(contact.id)
+
+      return view(database.all())
     })
-    window.server(routes).get('/contacts')
   })
+
+  example('/contacts')
 
   function view(contacts) {
     let rows = contacts.map(contact => `<tr>

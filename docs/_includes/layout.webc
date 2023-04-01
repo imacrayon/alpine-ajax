@@ -32,6 +32,7 @@
               <li><a href="/reference/#x-sync" :aria-current="page.url == '/x-sync/' ? 'page' : ''">x-sync</a></li>
               <li><a href="/reference/#x-load" :aria-current="page.url == '/x-load/' ? 'page' : ''">x-load</a></li>
               <li><a href="/reference/#loading-states" :aria-current="page.url == '/loading-states/' ? 'page' : ''">Loading States</a></li>
+              <li><a href="/reference/#creating-demos" :aria-current="page.url == '/creating-demos/' ? 'page' : ''">Creating Demos</a></li>
             </ol>
           </li>
           <li><a href="/examples" :aria-current="page.url == '/examples/' ? 'page' : ''">Examples</a></li>

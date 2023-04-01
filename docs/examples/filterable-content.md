@@ -87,13 +87,8 @@ The `<form>` and `<table>` should be wrapped an AJAX component with `id="contact
     }
   }()
 
-  document.addEventListener('DOMContentLoaded', () => {
-    window.server({
-      'GET /contacts': (formData, params) => {
-        return view(params.get('status'))
-      },
-    }).get('/contacts')
-  })
+  window.route('GET', '/contacts', (input) => view(input.status))
+  example('/contacts')
 
   function view(filter = null) {
     let contacts = filter ? database.filter('status', filter) : database.all()

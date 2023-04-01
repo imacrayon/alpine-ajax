@@ -51,22 +51,19 @@ Below is a working demo of this example. Any email input without an "@" is consi
   }
 </style>
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    window.server({
-      'GET /register': (formData, params) => {
-        return view()
-      },
-      'POST /validate-email': (formData, params) => {
-        if (formData.get('email') === 'test@example.com') {
-          return view()
-        } else if (formData.get('email').includes('@')) {
-          return view('The email is already taken.')
-        }
 
-        return view('The email field is invalid.')
-      }
-    }).get('/register')
+  window.route('GET', '/register', () => view())
+  window.route('POST', '/validate-email', (input) => {
+    if (input.email === 'test@example.com') {
+      return view()
+    } else if (input.email.includes('@')) {
+      return view('The email is already taken.')
+    }
+
+    return view('The email field is invalid.')
   })
+
+  example('/register')
 
   function view(message = '') {
     message = message ? `<div id="email_error" style="color:#cc0000">${message}</div>` : ''

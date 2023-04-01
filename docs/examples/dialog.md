@@ -62,15 +62,12 @@ Finally, the server responds with the modal content:
     }
   }()
 
-  document.addEventListener('DOMContentLoaded', () => {
-    let routes = {
-      'GET /contacts': () => index(database.all()),
-    }
-    database.all().forEach(contact => {
-      routes[`GET /contacts/${contact.id}`] = () => show(database.find(contact.id))
-    })
-    window.server(routes).get('/contacts')
+  window.route('GET', '/contacts', () => index(database.all()))
+  database.all().forEach(contact => {
+    window.route('GET', `/contacts/${contact.id}`, () => show(database.find(contact.id)))
   })
+
+  example('/contacts')
 
   function index(contacts) {
     let items = contacts.map(contact => `<li><a href="/contacts/${contact.id}">${contact.name}</a>`).join('\n')

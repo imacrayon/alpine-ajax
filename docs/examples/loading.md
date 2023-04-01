@@ -89,14 +89,12 @@ Fortunately, Alpine AJAX adds `aria-busy="true"` to targets while a request is p
 
 
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    window.server({
-      'GET /dashboard': () => dashboard(),
-      'GET /contacts': () => new Promise(resolve => {
-        setTimeout(() => resolve(contacts()), 2000)
-      }),
-    }).get('/dashboard')
-  })
+  window.route('GET', '/dashboard', () => dashboard())
+  window.route('GET', '/contacts', () => new Promise(resolve => {
+    setTimeout(() => resolve(contacts()), 2000)
+  }))
+
+  example('/dashboard')
 
   function dashboard() {
     return `<div id="card" x-data>

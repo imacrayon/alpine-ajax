@@ -79,14 +79,12 @@ The loaded content is then inserted into the UI once the request has succeeded:
 
 
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    window.server({
-      'GET /posts': () => dashboard(),
-      'GET /posts/1': () => new Promise(resolve => {
-        setTimeout(() => resolve(post()), 2000)
-      }),
-    }).get('/posts')
-  })
+  window.route('GET', '/posts', () => dashboard())
+  window.route('GET', '/posts/1', () => new Promise(resolve => {
+    setTimeout(() => resolve(post()), 2000)
+  }))
+
+  example('/posts')
 
   function dashboard() {
     return `<p>Refresh the page to watch this post lazy load into view:</p>
