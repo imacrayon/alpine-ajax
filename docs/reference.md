@@ -360,13 +360,14 @@ Include the typical required scripts before the mock server:
 
 <script>
 route('POST', '/update-quantity', (request) => {
-  return `<output id="current_quantity">${request.quantity}</output>`
+  return `<output id="current_quantity">${Number(request.quantity)}</output>`
 })
 </script>
 
+<label for="current_quantity">Current quantity</label>
 <output id="current_quantity">0</output>
 <form x-ajax x-target="current_quantity" method="POST" action="/update-quantity">
-  <label form="quantity">Quantity</label>
+  <label form="quantity">New quantity</label>
   <input type="number" id="quantity" name="quantity">
   <button>Update</button>
 </form>
