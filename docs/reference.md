@@ -345,6 +345,13 @@ Here we're using `x-load` to continuously poll for new data every second:
 
 Note that if we were to replace `x-load` with `x-init` in this markup, the polling request would only be issued once. See the [Progress Bar example](/examples/progress-bar) for a more complete demonstration.
 
+## Loading states
+
+While an AJAX request is in progress there are a few loading states to be aware of:
+
+  * If a form submission triggered the request, the form's submit button is automatically disabled, this prevents users from triggering additional network requests by accidentally double clicking the submit button.
+  * During an AJAX request, `aria-busy="true"` is set on all targets of the request. This attribute can be used in CSS to provide a loading indicator, check out the [Loading Indicator example](/examples/loading) for more details.
+
 ## Creating Demos
 
 Use the mock server script included with Alpine AJAX when you need to build a quick prototype or demonstrate a bug, without a server. The mock server script adds a global `route` helper function for mocking server endpoints on the frontend:
@@ -388,10 +395,3 @@ Now, instead of issuing a real `POST` request to `/update-quantity`, Alpine AJAX
 </details>
 
 Mocked routes should only be used in demos and testing, this utility is not designed for production environments.
-
-## Loading states
-
-While an AJAX request is in progress there are a few loading states to be aware of:
-
-  * If a form submission triggered the request, the form's submit button is automatically disabled, this prevents users from triggering additional network requests by accidentally double clicking the submit button.
-  * During an AJAX request, `aria-busy="true"` is set on all targets of the request. This attribute can be used in CSS to provide a loading indicator, check out the [Loading Indicator example](/examples/loading) for more details.
