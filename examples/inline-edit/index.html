@@ -10,8 +10,130 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prism-themes@1.9.0/themes/prism-a11y-dark.min.css">
   <link rel="stylesheet" href="/alpine-ajax/css/main.css?id=3">
   <script defer="" src="/alpine-ajax/js/main.js"></script>
-  <style></style>
-  <script></script>
+  <style>
+  #example {
+    overflow-x: auto;
+    padding: 4px;
+    margin: -4px;
+    margin-bottom: calc(40vh + 4rem);
+    max-width: 100%;
+  }
+
+  #server_info {
+    position: fixed;
+    bottom: 0;
+    right: .5rem;
+    left: .5rem;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+    box-shadow: 0 10px 15px -3px var(--shadow), 0 4px 6px -4px var(--shadow);
+    margin: 0;
+  }
+
+  #server_activity {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    height: 40vh;
+    overflow: scroll;
+  }
+
+  #server_activity> :first-child {
+    flex-grow: 1;
+    position: relative;
+  }
+
+  #server_activity> :last-child {
+    flex-basis: 0;
+    flex-grow: 999;
+    min-inline-size: 50%;
+    margin-top: .4rem;
+  }
+
+  #server_activity [aria-current="step"] button {
+    font-weight: 700;
+  }
+
+  #server_activity dl>div:not(:first-child) dd::before {
+    content: '';
+  }
+
+  #server_activity dl>div:first-child {
+    display: flex;
+    gap: .4rem;
+    align-items: center;
+    margin-bottom: .4rem;
+  }
+
+  #server_timeline {
+    position: sticky;
+    top: 0;
+  }
+
+  #server_timeline button {
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: var(--nc-lk-1);
+    text-decoration: underline;
+  }
+
+  #server_timeline button:hover,
+  #server_timeline button:focus {
+    color: var(--nc-lk-2);
+  }
+
+</style>
+  <script>
+  function example(action) {
+    let requestCount = 1
+    document.addEventListener('DOMContentLoaded', () => {
+      window.fetch(action)
+        .then(response => response.text())
+        .then(html => document.getElementById('example').innerHTML = html)
+    })
+    document.body.addEventListener('server:response', (event) => {
+      logActivity(requestCount++, event.detail.method, event.detail.url, event.detail.data, event.detail.body)
+    })
+  }
+
+  function showTimelineEntry(id) {
+    Array.from(document.getElementById("server_view").children).forEach(child => {
+      if (child.id == id) {
+        child.removeAttribute('hidden');
+      } else {
+        child.setAttribute('hidden', true);
+      }
+    })
+    Array.from(document.getElementById("server_timeline").children).forEach(child => {
+      if (child.id == id + "-link") {
+        child.setAttribute('aria-current', 'step');
+      } else {
+        child.removeAttribute('aria-current');
+      }
+    })
+  }
+
+  function logActivity(id, method, url, params, body) {
+    document.getElementById("server_request_count").innerHTML = id
+    document.getElementById("server_timeline").insertAdjacentHTML("afterbegin", `<li id="${id}-link"><button onclick="showTimelineEntry('${id}')" style="cursor: pointer">${method} ${url}</a></li>`);
+    let bodyDiv = `<dl id="${id}">
+    <div><dt>Request</dt><dd>${method} ${url}</dd></div>
+    <div><dt>Parameters</dt><dd><pre class="language-json"><code class="language-json">${JSON.stringify(params, null, 2)}</code></pre></dd></div>
+    <div><dt>Response</dt><dd><pre class="language-html"><code class="language-html">${escapeHtml(body)}</code></pre></dd></div>
+  </dl>`;
+    document.getElementById("server_view").insertAdjacentHTML("afterbegin", bodyDiv);
+    showTimelineEntry(id);
+    // Prism.highlightAll();
+  }
+
+  function escapeHtml(string) {
+    let pre = document.createElement('pre');
+    let text = document.createTextNode(string);
+    pre.appendChild(text);
+    return pre.innerHTML;
+  }
+</script>
 </head>
 
 <body>
@@ -98,6 +220,26 @@
 </script>
 
 <h2 id="demo" tabindex="-1">Demo <a class="direct-link" href="#demo" aria-hidden="true">#</a></h2>
+
+<noscript>
+  <strong>This demo would normally function without JavaScript enabled</strong>. However, this website is static and
+  mocks HTTP responses using JavaScript instead of interacting with a real server, so you will need to enable
+  JavaScript to view this demo.
+</noscript>
+<div id="example"></div>
+<details id="server_info">
+  <summary>Server Requests (<span id="server_request_count"></span>)</summary>
+  <div id="server_activity">
+    <div>
+      <ol id="server_timeline" reversed="">
+      </ol>
+    </div>
+    <div id="server_view">
+    </div>
+  </div>
+</details>
+
+
 
 
 </main>
