@@ -358,22 +358,19 @@ legend {
 table {
   /* border-collapse sets the table's elements to share borders, rather than floating as separate "boxes". */
   border-collapse: collapse;
-  width: 100%
+  width: 100%;
 }
 
 td,
 th {
-  border: 1px solid var(--bg-border);
+  font-size: .88rem;
+  border-top: 1px solid var(--bg-border);
+  border-bottom: 1px solid var(--bg-border);
   text-align: left;
   padding: .5rem;
 }
 
 th {
-  background: var(--bg-accent);
-}
-
-tr:nth-child(even) {
-  /* Set every other cell slightly darker. Improves readability. */
   background: var(--bg-accent);
 }
 

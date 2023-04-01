@@ -10,162 +10,8 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prism-themes@1.9.0/themes/prism-a11y-dark.min.css">
   <link rel="stylesheet" href="/alpine-ajax/css/main.css?id=3">
   <script defer="" src="/alpine-ajax/js/main.js"></script>
-  <style>
-  #demo-server-info {
-    position: fixed;
-    bottom: 0;
-    right: .5rem;
-    left: .5rem;
-    border-bottom-right-radius: 0;
-    border-bottom-left-radius: 0;
-    box-shadow: 0 10px 15px -3px var(--shadow), 0 4px 6px -4px var(--shadow);
-    margin: 0;
-  }
-
-  #demo-canvas {
-    margin-bottom: calc(40vh + 4rem);
-    max-width: 100%;
-    overflow-x: auto;
-  }
-
-  #demo-activity {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 2rem;
-    height: 40vh;
-    overflow: scroll;
-  }
-
-  #demo-activity> :first-child {
-    flex-grow: 1;
-  }
-
-  #demo-activity> :last-child {
-    flex-basis: 0;
-    flex-grow: 999;
-    min-inline-size: 50%;
-    margin-top: .4rem;
-  }
-
-  #demo-activity [aria-current="step"] button {
-    font-weight: 700;
-  }
-
-  #demo-activity dl>div:not(:first-child) dd::before {
-    content: '';
-  }
-
-  #demo-activity dl>div:first-child {
-    display: flex;
-    gap: .4rem;
-    align-items: center;
-    margin-bottom: .4rem;
-  }
-
-  #demo-timeline button {
-    padding: 0;
-    border: none;
-    background: transparent;
-    color: var(--nc-lk-1);
-    text-decoration: underline;
-  }
-
-  #demo-timeline button:hover,
-  #demo-timeline button:focus {
-    color: var(--nc-lk-2);
-  }
-
-</style>
-  <script>
-  function server(routes) {
-    window.requestCount = 0
-    window.fetch = async (url, options) => {
-      url = url.replace(location.origin, '')
-      let method = options.method.toUpperCase()
-      console.log(method, url, options)
-      let data = options.body || new FormData
-      let params = new URLSearchParams(url.split('?')[1])
-      let body = await Promise.resolve(routes[routeKey(method, url)](data, params))
-      window.requestCount++
-      logActivity(window.requestCount, method, url, formatData(data), body);
-      return Promise.resolve({
-        ok: true,
-        url,
-        text: () => Promise.resolve(body)
-      })
-    }
-
-    function routeKey(method, url) {
-      let name = url.split('?')[0]
-      return `${method} ${name}`
-    }
-
-    function formatData(formData) {
-      let params = {};
-      formData.forEach((value, key) => {
-        if (!params.hasOwnProperty(key)) {
-          params[key] = value;
-          return;
-        }
-        if (!Array.isArray(params[key])) {
-          params[key] = [params[key]];
-        }
-        params[key].push(value);
-      })
-
-      return params
-    }
-
-    return {
-      get: async (url) => {
-        let content = await new Promise(resolve => resolve(routes[`GET ${url}`](new FormData, new URLSearchParams)))
-        let canvas = document.getElementById("demo-canvas");
-        if (canvas) {
-          canvas.innerHTML = content;
-        }
-        window.requestCount++
-        logActivity(window.requestCount, 'GET', url, {}, content);
-      }
-    }
-  }
-
-  function showTimelineEntry(id) {
-    Array.from(document.getElementById("demo-current-request").children).forEach(child => {
-      if (child.id == id) {
-        child.removeAttribute('hidden');
-      } else {
-        child.setAttribute('hidden', true);
-      }
-    })
-    Array.from(document.getElementById("demo-timeline").children).forEach(child => {
-      if (child.id == id + "-link") {
-        child.setAttribute('aria-current', 'step');
-      } else {
-        child.removeAttribute('aria-current');
-      }
-    })
-  }
-
-  function logActivity(id, method, url, params, body) {
-    document.getElementById("request-count").innerHTML = window.requestCount
-    document.getElementById("demo-timeline").insertAdjacentHTML("afterbegin", `<li id="${id}-link"><button onclick="showTimelineEntry('${id}')" style="cursor: pointer">${method} ${url}</a></li>`);
-    let bodyDiv = `<dl id="${id}">
-      <div><dt>Request</dt><dd>${method} ${url}</dd></div>
-      <div><dt>Parameters</dt><dd><pre class="language-json"><code class="language-json">${JSON.stringify(params)}</code></pre></dd></div>
-      <div><dt>Response</dt><dd><pre class="language-html"><code class="language-html">${escapeHtml(body)}</code></pre></dd></div>
-    </dl>`;
-    document.getElementById("demo-current-request").insertAdjacentHTML("afterbegin", bodyDiv);
-    showTimelineEntry(id);
-    // Prism.highlightAll();
-  }
-
-  function escapeHtml(string) {
-    let pre = document.createElement('pre');
-    let text = document.createTextNode(string);
-    pre.appendChild(text);
-    return pre.innerHTML;
-  }
-</script>
+  <style></style>
+  <script></script>
 </head>
 
 <body>
@@ -185,6 +31,7 @@
               <li><a href="/alpine-ajax/reference/#x-sync" aria-current="">x-sync</a></li>
               <li><a href="/alpine-ajax/reference/#x-load" aria-current="">x-load</a></li>
               <li><a href="/alpine-ajax/reference/#loading-states" aria-current="">Loading States</a></li>
+              <li><a href="/alpine-ajax/reference/#creating-demos" aria-current="">Creating Demos</a></li>
             </ol>
           </li>
           <li><a href="/alpine-ajax/examples" aria-current="">Examples</a></li>
@@ -194,7 +41,8 @@
         </ul>
       </nav>
     </header>
-    <main id="main"><h1 id="loading-indicator" tabindex="-1">Loading Indicator <a class="direct-link" href="#loading-indicator" aria-hidden="true">#</a></h1>
+    <main id="main"><script src="/alpine-ajax/js/server.js"></script>
+<h1 id="loading-indicator" tabindex="-1">Loading Indicator <a class="direct-link" href="#loading-indicator" aria-hidden="true">#</a></h1>
 
 <p>This example shows how you can use a little CSS to create a nice looking loading indicator that will appear while AJAX requests are in progress.</p>
 <p>We start with a card that contains a link. When the link is clicked, a <code>GET</code> request is issued to retrieve a table of contact information.</p>
@@ -244,14 +92,12 @@
 
 </style>
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    window.server({
-      'GET /dashboard': () => dashboard(),
-      'GET /contacts': () => new Promise(resolve => {
-        setTimeout(() => resolve(contacts()), 2000)
-      }),
-    }).get('/dashboard')
-  })
+  window.route('GET', '/dashboard', () => dashboard())
+  window.route('GET', '/contacts', () => new Promise(resolve => {
+    setTimeout(() => resolve(contacts()), 2000)
+  }))
+
+  example('/dashboard')
 
   function dashboard() {
     return `<div id="card" x-data>
@@ -297,26 +143,6 @@
 </script>
 
 <h2 id="demo" tabindex="-1">Demo <a class="direct-link" href="#demo" aria-hidden="true">#</a></h2>
-
-<noscript>
-  <strong>This demo would normally function without JavaScript enabled</strong>. However, this website is static and
-  mocks HTTP responses using JavaScript instead of interacting with a real server, so you will need to enable
-  JavaScript to view this demo.
-</noscript>
-<div id="demo-canvas"></div>
-<details id="demo-server-info">
-  <summary>Server Requests (<span id="request-count"></span>)</summary>
-  <div id="demo-activity">
-    <div>
-      <ol id="demo-timeline" reversed="">
-      </ol>
-    </div>
-    <div id="demo-current-request">
-    </div>
-  </div>
-</details>
-
-
 
 
 </main>

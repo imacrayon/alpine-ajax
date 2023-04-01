@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tabs | Alpine AJAX</title>
+  <meta name="description" content="Alpine AJAX">
+  <meta name="generator" content="Eleventy v2.0.0">
+  <meta name="google-site-verification" content="KhOCyk8VyxCmepwpHn1DYq6uIPae0czI_8Z1atrRwJM">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prism-themes@1.9.0/themes/prism-a11y-dark.min.css">
+  <link rel="stylesheet" href="/alpine-ajax/css/main.css?id=3">
+  <script defer="" src="/alpine-ajax/js/main.js"></script>
+  <style></style>
+  <script></script>
+</head>
+
+<body>
+  <a href="#main">Skip to content</a>
+  <div class="with-sidebar">
+    <header>
+      <nav aria-label="Site">
+        <ul role="list">
+          <li><a href="/alpine-ajax/" aria-current="">Alpine AJAX</a></li>
+          <li>
+            <a href="/alpine-ajax/reference" aria-current="">Reference</a>
+            <ol>
+              <li><a href="/alpine-ajax/reference/#installation" aria-current="">Installation</a></li>
+              <li><a href="/alpine-ajax/reference/#usage" aria-current="">Usage</a></li>
+              <li><a href="/alpine-ajax/reference/#x-ajax" aria-current="">x-ajax</a></li>
+              <li><a href="/alpine-ajax/reference/#ajax" aria-current="">$ajax</a></li>
+              <li><a href="/alpine-ajax/reference/#x-sync" aria-current="">x-sync</a></li>
+              <li><a href="/alpine-ajax/reference/#x-load" aria-current="">x-load</a></li>
+              <li><a href="/alpine-ajax/reference/#loading-states" aria-current="">Loading States</a></li>
+              <li><a href="/alpine-ajax/reference/#creating-demos" aria-current="">Creating Demos</a></li>
+            </ol>
+          </li>
+          <li><a href="/alpine-ajax/examples" aria-current="">Examples</a></li>
+          <li><a href="/alpine-ajax/comparisons" aria-current="">Comparisons</a></li>
+          <li><a href="https://github.com/imacrayon/alpine-ajax/releases">Changelog</a></li>
+          <li><a href="https://github.com/imacrayon/alpine-ajax">GitHub</a></li>
+        </ul>
+      </nav>
+    </header>
+    <main id="main"><script src="/alpine-ajax/js/server.js"></script>
+<h1 id="tabs" tabindex="-1">Tabs <a class="direct-link" href="#tabs" aria-hidden="true">#</a></h1>
+
+<script>
+route('POST', '/update-quantity', (request) => {
+  return `<output id="current_quantity">${request.quantity}</output>`
+})
+</script>
+<p><output id="current_quantity">0</output></p>
+<form x-ajax="" x-target="current_quantity" method="POST" action="/alpine-ajax/update-quantity">
+  <label form="quantity">Quantity</label>
+  <input type="number" id="quantity" name="quantity">
+  <button>Update</button>
+</form>
+
+<h2 id="demo" tabindex="-1">Demo <a class="direct-link" href="#demo" aria-hidden="true">#</a></h2>
+
+
+</main>
+  </div>
+
+
+
+</body>
+</html>
