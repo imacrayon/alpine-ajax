@@ -1,5 +1,6 @@
 ---
 layout: layout.webc
+title: Comparisons
 ---
 
 # Comparisons

@@ -1,5 +1,6 @@
 ---
 layout: layout.webc
+title: Examples
 ---
 
 # Examples
