@@ -175,7 +175,7 @@
 <style>
   .loader {
     animation: loading 1s linear infinite;
-    background-image: linear-gradient(90deg, var(--nc-bg-1), var(--nc-bg-2), var(--nc-bg-3), var(--nc-bg-1), var(--nc-bg-2));
+    background-image: linear-gradient(90deg, var(--bg-base), var(--bg-accent), var(--bg-border), var(--bg-base), var(--bg-accent));
     background-size: 600% 100%;
   }
 
@@ -210,7 +210,7 @@
 
   article header svg {
     border-radius: 100px;
-    background: var(--nc-bg-3);
+    background: var(--bg-border);
     color: var(--nc-lk-1);
   }
 
@@ -235,7 +235,7 @@
   function dashboard() {
     return `<p>Refresh the page to watch this post lazy load into view:</p>
 <article id="post" x-init="$ajax('/posts/1')">
-  <svg class="loader" aria-label="Loading content" viewBox="0 0 442 107" fill="var(--nc-bg-1)" xmlns="http://www.w3.org/2000/svg">
+  <svg class="loader" aria-label="Loading content" viewBox="0 0 442 107" fill="var(--bg-base)" xmlns="http://www.w3.org/2000/svg">
     <path d="M442 79.1H0V65.5h412.4v-7.1H0V0h442v79.1Zm0 7.1V107H181.2v-7.1H0V86.2h442ZM50.1 24.6v7.2h53.3v-7.2H50.1Zm0-16.8v7.1h89.3V7.8H50.1ZM19.3 38.9c10.6 0 19.2-8.7 19.2-19.4C38.5 8.7 30 0 19.3 0A19.4 19.4 0 0 0 0 19.5c0 10.7 8.6 19.4 19.3 19.4Z" />
   </svg>
 </article>`
