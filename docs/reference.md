@@ -350,6 +350,12 @@ Note that if we were to replace `x-load` with `x-init` in this markup, the polli
 Use the mock server script included with Alpine AJAX when you need to build a quick prototype or demonstrate a bug, without a server. The mock server script adds a global `route` helper function for mocking server endpoints on the frontend:
 
 ```html
+<!--
+Include the typical required scripts before the mock server:
+<script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/morph@3.11.1/dist/cdn.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/@imacrayon/alpine-ajax@{{ APLINE_AJAX_VERSION }}/dist/cdn.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.11.1/dist/cdn.min.js"></script>
+-->
 <script src="https://cdn.jsdelivr.net/npm/@imacrayon/alpine-ajax@{{ APLINE_AJAX_VERSION }}/dist/server.js"></script>
 
 <script>
