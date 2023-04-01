@@ -104,11 +104,11 @@ And finally, we can make our notifications automatically dismiss after 6 seconds
     display: flex;
     align-items: center;
     font-size: .875rem;
-    background: var(--nc-bg-1);
+    background: var(--bg-light);
     padding: 1rem;
     box-shadow: 0 10px 15px -3px var(--shadow), 0 4px 6px -4px var(--shadow);
     border-radius: .5rem;
-    border: 1px solid var(--nc-bg-3);
+    border: 1px solid var(--bg-border);
   }
   #notification_list > li :first-child {
     flex: 1;
