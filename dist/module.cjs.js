@@ -60,6 +60,14 @@ var MissingIdError = class extends Error {
     this.name = "Target Missing ID";
   }
 };
+var FailedResponseError = class extends Error {
+  constructor(el) {
+    var _a, _b;
+    let description = (_b = ((_a = el.outerHTML.match(/<[^>]+>/)) != null ? _a : [])[0]) != null ? _b : "[Element]";
+    super(`${description} received a failed response.`);
+    this.name = "Failed Response";
+  }
+};
 function source(el) {
   var _a;
   return (_a = el.closest("[data-source]")) == null ? void 0 : _a.dataset.source;
@@ -118,7 +126,7 @@ async function render(request, ids, el, events = true) {
       if (response.ok) {
         return renderElement(target, target.cloneNode(false));
       }
-      return window.location.href = response.url;
+      throw new FailedResponseError(el);
     }
     renderElement(target, template);
     let freshEl = document.getElementById(id);
@@ -191,13 +199,22 @@ function focusOn(el) {
 
 // src/link.js
 function listenForNavigate(el) {
-  let handler = (event) => {
+  let handler = async (event) => {
     let link = event.target;
     if (!isLocalLink(link) || isIgnored(link))
       return;
     event.preventDefault();
     event.stopPropagation();
-    render(navigateRequest(link), targets(link, true), link);
+    try {
+      return await render(navigateRequest(link), targets(link, true), link);
+    } catch (error) {
+      if (error instanceof FailedResponseError) {
+        console.warn(error.message);
+        window.location.href = link.href;
+        return;
+      }
+      throw error;
+    }
   };
   el.addEventListener("click", handler);
   return () => el.removeEventListener("click", handler);
@@ -216,15 +233,25 @@ function isLocalLink(el) {
 
 // src/form.js
 function listenForSubmit(el) {
-  let handler = (event) => {
+  let handler = async (event) => {
     let form = event.target;
     if (isIgnored(form))
       return;
     event.preventDefault();
     event.stopPropagation();
-    return withSubmitter(event.submitter, () => {
-      return render(formRequest(form, event.submitter), targets(form, true), form);
-    });
+    try {
+      return await withSubmitter(event.submitter, () => {
+        return render(formRequest(form, event.submitter), targets(form, true), form);
+      });
+    } catch (error) {
+      if (error instanceof FailedResponseError) {
+        console.warn(error.message);
+        form.setAttribute("x-noajax", "true");
+        form.requestSubmit(event.submitter);
+        return;
+      }
+      throw error;
+    }
   };
   el.addEventListener("submit", handler);
   return () => el.removeEventListener("submit", handler);
@@ -249,7 +276,6 @@ async function withSubmitter(submitter, callback) {
   let disableEvent = (e) => e.preventDefault();
   submitter.setAttribute("aria-disabled", "true");
   submitter.addEventListener("click", disableEvent);
-  let focus = submitter === document.activeElement;
   let result = await callback();
   submitter.removeAttribute("aria-disabled");
   submitter.removeEventListener("click", disableEvent);

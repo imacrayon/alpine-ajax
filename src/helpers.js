@@ -44,6 +44,14 @@ export class MissingIdError extends Error {
   }
 }
 
+export class FailedResponseError extends Error {
+  constructor(el) {
+    let description = (el.outerHTML.match(/<[^>]+>/) ?? [])[0] ?? '[Element]'
+    super(`${description} received a failed response.`)
+    this.name = 'Failed Response'
+  }
+}
+
 export function source(el) {
   return el.closest('[data-source]')?.dataset.source
 }

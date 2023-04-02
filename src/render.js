@@ -1,4 +1,4 @@
-import { Alpine } from './helpers'
+import { Alpine, FailedResponseError } from './helpers'
 
 let queue = {}
 
@@ -62,7 +62,7 @@ export async function render(request, ids, el, events = true) {
         return renderElement(target, target.cloneNode(false))
       }
 
-      return window.location.href = response.url
+      throw new FailedResponseError(el)
     }
 
     renderElement(target, template)
