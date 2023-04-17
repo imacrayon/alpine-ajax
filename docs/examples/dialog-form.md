@@ -78,7 +78,7 @@ Finally, the `contact:updated` event causes the `<tbody>` to refresh with the up
     let data = [
       { id: 1, name: "Finn Mertins", email: "fmertins@candykingdom.gov", status: "Active" },
       { id: 2, name: "Jake the Dog", email: "jake@candykingdom.gov", status: "Active" },
-      { id: 3, name: "BMO", email: "bmo@moco.com", status: "Active" },
+      { id: 3, name: "BMO", email: "bmo@mo.co", status: "Active" },
       { id: 4, name: "Marceline", email: "marceline@vampirequeen.me", status: "Inactive" }
     ];
     return {

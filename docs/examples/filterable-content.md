@@ -76,7 +76,7 @@ The `<form>` and `<table>` should be wrapped an AJAX component with `id="contact
     let data = [
       { id: 1, name: "Finn", email: "fmertins@candykingdom.gov", status: "Active" },
       { id: 2, name: "Jake", email: "jake@candykingdom.gov", status: "Inactive" },
-      { id: 3, name: "BMO", email: "bmo@moco.com", status: "Active" },
+      { id: 3, name: "BMO", email: "bmo@mo.co", status: "Active" },
       { id: 4, name: "Marceline", email: "marceline@vampirequeen.me", status: "Inactive" }
     ];
     return {

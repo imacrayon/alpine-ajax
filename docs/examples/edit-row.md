@@ -54,7 +54,7 @@ Finally, here is the edit state that will replace a row, note the matching `id="
     let data = [
       { id: 1, name: "Finn Mertins", email: "fmertins@candykingdom.gov", status: "Active" },
       { id: 2, name: "Jake the Dog", email: "jake@candykingdom.gov", status: "Active" },
-      { id: 3, name: "BMO", email: "bmo@moco.com", status: "Active" },
+      { id: 3, name: "BMO", email: "bmo@mo.co", status: "Active" },
       { id: 4, name: "Marceline", email: "marceline@vampirequeen.me", status: "Inactive" }
     ];
     return {
