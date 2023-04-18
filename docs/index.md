@@ -26,7 +26,7 @@ Now let's enhance this form with Alpine AJAX:
 <form x-ajax id="star_repo" method="post" action="/repos/1/star">
 ```
 
-Adding `x-ajax` and `id` changes this form's behavior: Now, when this form is submitted, a `POST` request is issued to `/repos/1/star` and the form is replace with the element that has the `id` `star_repo` in the response's content. The browser window doesn't refresh, and UI state (like keyboard focus) is preserved when the content changes.
+Adding `x-ajax` and `id` changes this form's behavior: Now, when this form is submitted, a `POST` request is issued to `/repos/1/star` and the form is replaced with the element that has `id="star_repo"` in the response. The browser window doesn't refresh, and UI state (like keyboard focus) is preserved when the content changes.
 
 This simple pattern of updating a piece of your frontend instead of the entire page can be expanded to create rich user experiences.
 
