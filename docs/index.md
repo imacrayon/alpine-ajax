@@ -4,11 +4,20 @@ layout: layout.webc
 
 # Alpine AJAX
 
-The missing [Alpine.js](https://alpinejs.dev) attributes for interacting with your server. It's `jQuery.ajax()` for the modern web.
+Alpine AJAX seamlessly integrates your client and server using [Alpine.js](https://alpinejs.dev).
 
-Alpine AJAX empowers you to progressively enhanced multi-page websites to create fast, responsive web experiences with very little JavaScript.
+With Alpine AJAX your can ditch your bulky virtual DOM, your complex state management solution, your over-engineered synthetic event bus, your colossal build pipeline, and have fun building websites again.
 
-## An Introduction
+Alpine AJAX helps you build straight-forward, robust, interactive websites.
+
+- **Alpine AJAX is small**: Under 4kB (gzipped), combined with Alpine.js you can build [almost anything you want](/examples) with only 18kB of total JavaScript.
+- **Alpine AJAX is flexible**: It has zero server-side dependencies, you can use it with _any_ server-side stack.
+- **Alpine AJAX is progressive**: It provides patterns for building progressively enhanced websites that function with or without JavaScript.
+- **Alpine AJAX is accessible**: It uses JavaScript to _enhance_ [the power of HTML](https://developer.mozilla.org/en-US/docs/Learn/Accessibility/HTML) rather than replace it with inaccessible workarounds.
+- **Alpine AJAX is performant**: It batches AJAX requests and prevents duplicate requests to save you network bandwidth.
+- **Alpine AJAX is easy to learn**: You can probably pick it up in an afternoon.
+
+## How it works
 
 Consider this simple form:
 
@@ -18,16 +27,21 @@ Consider this simple form:
 </form>
 ```
 
-When this form is submitted a `POST` request is issued to `/repos/1/star` and the content from the response is loaded into the browser window.
+It's just ordinary HTML. When this form is submitted a `POST` request is issued to `/repos/1/star` and the content from the response is loaded into the browser window.
 
 Now let's enhance this form with Alpine AJAX:
 
 ```html
-<form x-ajax id="star_repo" method="post" action="/repos/1/star">
+<form x-ajax id="star_repo" x-arrange="morph" method="post" action="/repos/1/star">
 ```
+These three new attributes change this form's behavior when it is submitted in three ways:
 
-Adding `x-ajax` and `id` changes this form's behavior: Now, when this form is submitted, a `POST` request is issued to `/repos/1/star` and the form is replaced with the element that has `id="star_repo"` in the response. The browser window doesn't refresh, and UI state (like keyboard focus) is preserved when the content changes.
+1. `x-ajax` instructs the form to issue an AJAX request instead of a standard form request so that the browser window doesn't perform a refresh.
+2. `id` instructs the form to replace itself with the element that has `id="star_repo` in the AJAX request's response.
+3. `x-arrange` instructs the incoming `#star_repo` element to "morph" itself into the existing DOM so that keyboard focus and DOM state are preserved when the HTML changes.
 
-This simple pattern of updating a piece of your frontend instead of the entire page can be expanded to create rich user experiences.
+This simple pattern of updating a piece of your frontend instead of the entire page can be expanded to create rich user experiences, and because we're building these patterns on top of semantic HTML we get to leverage the resilience and accessibility of HTML without complex workarounds.
 
-Visit the [Reference](/reference) page to learn how Alpine AJAX works, and then check the [Examples](/examples) page to learn how to apply it.
+## Next steps
+
+Visit the [Reference](/reference) page to learn about all the library features, then check the [Examples](/examples) page to learn how you can implement them.

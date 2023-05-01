@@ -1,11 +1,8 @@
-export let Alpine
-
-export function setAlpine(alpine) {
-  Alpine = alpine
+export function targetRoot(el) {
+  return el.closest('[x-target],[x-ajax]')
 }
 
 export function targets(el, sync = false) {
-  el = el.closest('[x-target],[x-ajax]') ?? el
   let ids = el.hasAttribute('x-target')
     ? el.getAttribute('x-target').split(' ')
     : [el.id]

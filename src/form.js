@@ -1,4 +1,4 @@
-import { targets, isIgnored, source, FailedResponseError } from './helpers'
+import { targetRoot, targets, isIgnored, source, FailedResponseError } from './helpers'
 import { render } from './render'
 
 export function listenForSubmit(el) {
@@ -9,7 +9,11 @@ export function listenForSubmit(el) {
     event.stopPropagation()
     try {
       return await withSubmitter(event.submitter, () => {
-        return render(formRequest(form, event.submitter), targets(form, true), form)
+        return render(
+          formRequest(form, event.submitter),
+          targets(targetRoot(form), true),
+          form
+        )
       })
     } catch (error) {
       if (error instanceof FailedResponseError) {

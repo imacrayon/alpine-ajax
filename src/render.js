@@ -1,14 +1,49 @@
-import { Alpine, FailedResponseError } from './helpers'
+import { FailedResponseError } from './helpers'
+import { morph as AlpineMorph } from '@alpinejs/morph'
 
 let queue = {}
 
-let renderElement
+let arrange = {
+  before(from, to) {
+    from.before(...to.childNodes)
 
-export function setRenderer(renderer) {
-  renderElement = renderer || (from => {
-    console.warn(`You can't use Alpine AJAX without first installing the "morph" plugin here: https://alpinejs.dev/plugins/morph`)
     return from
-  })
+  },
+  replace(from, to) {
+    from.replaceWith(to)
+
+    return to
+  },
+  update(from, to) {
+    from.replaceChildren(...to.childNodes)
+
+    return from
+  },
+  prepend(from, to) {
+    from.prepend(...to.childNodes)
+
+    return from
+  },
+  append(from, to) {
+    from.append(...to.childNodes)
+
+    return from
+  },
+  after(from, to) {
+    from.after(...to.childNodes)
+
+    return from
+  },
+  remove(from) {
+    from.remove()
+
+    return null
+  },
+  morph(from, to) {
+    AlpineMorph(from, to)
+
+    return document.getElementById(to.id)
+  }
 }
 
 export async function render(request, ids, el, events = true) {
@@ -49,6 +84,7 @@ export async function render(request, ids, el, events = true) {
   let targets = ids.map(id => {
     let template = fragment.getElementById(id)
     let target = document.getElementById(id)
+    let strategy = target.getAttribute('x-arrange') || 'replace'
     if (!template) {
       if (!dispatch('ajax:missing', response)) {
         return
@@ -59,30 +95,31 @@ export async function render(request, ids, el, events = true) {
       }
 
       if (response.ok) {
-        return renderElement(target, target.cloneNode(false))
+        return renderElement(strategy, target, target.cloneNode(false))
       }
 
       throw new FailedResponseError(el)
     }
 
-    renderElement(target, template)
+    let freshEl = renderElement(strategy, target, template)
 
-    let freshEl = document.getElementById(id);
-    freshEl.dataset.source = response.url
+    if (freshEl) {
+      freshEl.dataset.source = response.url
+    }
 
     return freshEl
   })
 
-  let focus = Alpine.bound(el, 'focus')
-  if (focus !== undefined) {
-    if (targets.length && typeof focus === 'string') {
-      focusOn(targets[0].querySelector(Alpine.bound(el, 'focus')))
-    } else {
-      focusOn(focus)
-    }
+  let focus = el.getAttribute('x-focus')
+  if (focus) {
+    focusOn(document.getElementById(focus))
   }
 
   return targets
+}
+
+function renderElement(strategy, from, to) {
+  return arrange[strategy](from, to)
 }
 
 async function send({ method, action, body, referrer }) {

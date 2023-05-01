@@ -382,6 +382,7 @@ table caption {
 textarea {
   /* Don't let the <textarea> extend off the screen naturally or when dragged by the user */
   max-width: 100%;
+  display: block;
 }
 
 ul[role="list"],

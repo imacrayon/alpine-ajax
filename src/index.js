@@ -1,13 +1,10 @@
-import { setAlpine, targets, source } from './helpers'
-import { setRenderer, render } from './render'
+import { targets, source } from './helpers'
+import { render } from './render'
 import { listenForNavigate } from './link'
 import { listenForSubmit } from './form'
 import './polyfills'
 
 export default function (Alpine) {
-  setAlpine(Alpine)
-  setRenderer(Alpine.morph)
-
   Alpine.addInitSelector(() => `[${Alpine.prefixed('ajax')}]`)
 
   Alpine.directive('ajax', (el, { }, { cleanup }) => {
@@ -41,7 +38,12 @@ export default function (Alpine) {
         referrer: source(el),
       }
 
-      return render(request, targets(el, options?.sync), el, Boolean(options?.events))
+      return render(
+        request,
+        targets(el, options?.sync),
+        el,
+        Boolean(options?.events)
+      )
     }
   })
 

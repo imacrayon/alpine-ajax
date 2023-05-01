@@ -20,7 +20,7 @@ Both HTMX and Alpine AJAX are server-agnostic, they'll integrate nicely with alm
 
 HTMX favors flexibility where as Alpine AJAX prefers [convention over configuration](https://en.wikipedia.org/wiki/Convention_over_configuration). Beyond the low-level tooling that HTMX provides, the library isn't very prescriptive about how it should be used. The [HTMX documentation for updating content](https://htmx.org/examples/update-other-content/) is one example of the library's lack of opinion: It presents you with four different solutions and leaves it up to you to consider the trade-offs for each. In contrast, Alpine AJAX tries to provide you with more guidance so you can become productive faster without stumbling into common accessibility and progressive enhancement pitfalls.
 
-HTMX weighs in at 14kB of JavaScript compared to only 5kB for Alpine AJAX + Alpine Morph.
+HTMX weighs in at 14kB of JavaScript compared to only 4kB for Alpine AJAX.
 
 ## Hotwired Turbo
 
@@ -36,7 +36,7 @@ Turbo communicates updates from the server to the client via Turbo Streams. Turb
 
 One notable advantage to using the Hotwire framework is that it provides a workflow for transforming your web application into a native mobile application, so if you intend to launch your website on Android and iOS platforms, Hotwired Turbo might be worth considering.
 
-Turbo weighs in at 22kB of JavaScript compared to only 5kB for Alpine AJAX + Alpine Morph.
+Turbo weighs in at 22kB of JavaScript compared to only 4kB for Alpine AJAX.
 
 ## Unpoly
 
@@ -46,7 +46,7 @@ Like Alpine AJAX, Unpoly is server-agnostic, but it also offers an optional serv
 
 Unpoly is a very comprehensive frontend framework; it has strong conventions and also comes with a few elements like loaders, modals, and popovers baked-in. Because Unpoly has such broad concerns, it requires more upfront commitment to get familiar with it's novel concepts like fragments and layers. It feels more akin to frameworks like Laravel Livewire and Phoenix LiveView than "drop-in" libraries like Alpine AJAX, HTMX. Unpoly has it's own APIs for event delegation and animations so you can make due without using a frontend library like Alpine.js, however [Unpoly's imperative API](https://unpoly.com/up.element) is arguably not as expressive as Alpine.js's terse, declarative syntax.
 
-The core Unpoly library weighs in at ~43kB of JavaScript plus ~1kB of required CSS compared to only ~19kB for Alpine.js, Alpine AJAX, and Alpine Morph combined.
+The core Unpoly library weighs in at 43kB of JavaScript plus 1kB of required CSS compared to only 18kB for Alpine.js and Alpine AJAX combined.
 
 ## Laravel Livewire
 
@@ -58,4 +58,4 @@ The lack of progressive enhancement in Livewire is another reason you might choo
 
 Alpine.js was originally created as a companion to Laravel Livewire, so of course Alpine.js and Livewire pair flawlessly together for handling client-side interactions.
 
-Livewire's JavaScript bundle weighs in at ~43kB compared to only ~5kB for Alpine AJAX + Alpine Morph.
+Livewire's JavaScript bundle weighs in at 43kB compared to only 4kB for Alpine AJAX.

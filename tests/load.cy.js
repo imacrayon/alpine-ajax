@@ -19,7 +19,7 @@ test('content is lazily loaded with x-init',
   }
 )
 
-test('content is lazily loaded x-load',
+test('content is lazily loaded with [x-load]',
   html``,
   ({ get }) => {
     cy.intercept('GET', '/tests', {
@@ -48,6 +48,35 @@ test('replaced content gets a source',
     cy.get('a').click()
     cy.wait('@response').then(() => {
       cy.get('#replace').should('have.attr', 'data-source')
+    })
+  }
+)
+
+test('referer header is set when [data-source] exists',
+  html`<form x-ajax id="replace" method="post" action="/tests" data-source="/tests/other.html"><button></button></form>`,
+  ({ get }) => {
+    cy.intercept('POST', '/tests', {
+      statusCode: 200,
+      body: '<form x-ajax id="replace" method="post"><button></button></form>'
+    }).as('response')
+    get('button').click()
+    cy.wait('@response').then(network => {
+      expect(network.request.headers.referer).to.contain('/tests/other.html')
+    })
+  }
+)
+
+test('action is set to referrer for naked form when [data-source] exists',
+  html`<form x-ajax id="replace" data-source="/tests/other.html"><button></button></form>`,
+  ({ get }) => {
+    cy.intercept('GET', '/tests/other.html', {
+      statusCode: 200,
+      body: '<h1 id="title">Success</h1><div id="replace">Replaced</div>'
+    }).as('response')
+    get('button').click()
+    cy.wait('@response').then(() => {
+      cy.get('#title').should('not.exist')
+      cy.get('#replace').should('have.text', 'Replaced')
     })
   }
 )

@@ -5,10 +5,10 @@ title: Filterable Content
 
 This example filters down a table of contacts based on the user's selection.
 
-We start with some filter buttons and a table inside an AJAX component with `id="contacts"`.
+We start with some filter buttons and a table inside an AJAX Component with `id="contacts"`. It's important to note the `x-arrange="morph"` attribute on the AJAX Component. The `morph` option ensures that the keyboard focus state of our filter buttons will be preserved as the HTML on our Component changes between AJAX requests.
 
 ```html
-<div x-ajax id="contacts">
+<div x-ajax x-arrange="morph" id="contacts">
   <form action="/contacts" aria-label="Filter contacts">
     <button name="status" value="Active" aria-pressed="false">Active</button>
     <button name="status" value="Inactive" aria-pressed="false">Inactive</button>
@@ -40,7 +40,19 @@ We start with some filter buttons and a table inside an AJAX component with `id=
 
 Clicking a filter button issues a `GET` request to `/contacts?status=` which returns a response with updated content.
 
-First, the table in the response will include only content related to the active filter:
+First, the response should include the modified state of the filter form:
+
+```html
+<form action="/contacts" aria-label="Filter contacts">
+  <button name="status" value="Active" aria-pressed="true">Active</button>
+  <button name="status" value="Inactive" aria-pressed="false">Inactive</button>
+  <button name="status" value="" aria-pressed="false">Reset</button>
+</form>
+```
+
+The "Active" button has `aria-pressed="true"` to indicate that it has been selected and the form includes a new button to reset the filter settings.
+
+Second, the response should also include the markup for our table with only content related to the active filter:
 
 ```html
 <tbody>
@@ -52,24 +64,7 @@ First, the table in the response will include only content related to the active
 </tbody>
 ```
 
-Second, the response will include the modified state of the filter form. Notice that the "Active" button has `aria-pressed="true"` to indicate that it has been selected and that the form includes a new button to reset the filter settings:
-
-```html
-<form action="/contacts" aria-label="Filter contacts">
-  <button name="status" value="Active" aria-pressed="true">Active</button>
-  <button name="status" value="Inactive" aria-pressed="false">Inactive</button>
-  <button name="status" value="" aria-pressed="false">Reset</button>
-</form>
-```
-
-The `<form>` and `<table>` should be wrapped an AJAX component with `id="contacts"` to indicate that both elements should be updated when a request is issued.
-
-```html
-<div x-ajax id="contacts">
-  <form>...</form>
-  <table>...</table>
-</div>
-```
+Let's see our filterable table in action. Try activating a filter button using the keyboard, notice that the keyboard focus stays consistent even as the content on the page changes:
 
 <script>
   let database = function () {
@@ -100,7 +95,7 @@ The `<form>` and `<table>` should be wrapped an AJAX component with `id="contact
 
     let reset = filter ? `<button name="status" value="">Reset</button>` : ``
 
-    return `<div x-ajax id="contacts">
+    return `<div x-ajax x-arrange="morph" id="contacts">
 <form action="/contacts" aria-label="Filter contacts">
   <button name="status" value="Active" aria-pressed="${String(filter === 'Active')}">Active</button>
   <button name="status" value="Inactive" aria-pressed="${String(filter === 'Inactive')}">Inactive</button>

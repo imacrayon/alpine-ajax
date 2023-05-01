@@ -24,6 +24,7 @@ Fortunately, Alpine AJAX adds `aria-busy="true"` to targets while a request is p
   --loading-size: 64px;
   --loading-stroke: 6px;
   --loading-duration: 1s;
+  position: relative;
   opacity: .75
 }
 [aria-busy]:before {
@@ -82,7 +83,7 @@ Fortunately, Alpine AJAX adds `aria-busy="true"` to targets while a request is p
 
   #table {
     margin-bottom: 0;
-    min-height: 164px
+    min-height: 164px;
   }
 
 </style>
@@ -97,7 +98,7 @@ Fortunately, Alpine AJAX adds `aria-busy="true"` to targets while a request is p
   example('/dashboard')
 
   function dashboard() {
-    return `<div id="card" x-data>
+    return `<div id="card">
   <div id="table" x-ajax>
     <a href="/contacts">Load Contacts</a>
   </div>
@@ -126,7 +127,7 @@ Fortunately, Alpine AJAX adds `aria-busy="true"` to targets while a request is p
     </tr>
     <tr>
       <td>BMO</td>
-      <td>bmo@moco.com</td>
+      <td>bmo@mo.co</td>
       <td>Inactive</td>
     </tr>
     <tr>

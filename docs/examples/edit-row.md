@@ -26,28 +26,31 @@ Here is the HTML for a table row:
   <td>Finn Mertins</td>
   <td>fmertins@candykingdom.gov</td>
   <td>
-    <a href="/contacts/1/edit" x-target="contact_1">Edit</a>
+    <a href="/contacts/1/edit" x-target="contact_1" id="contact_1_edit" x-focus="contact_1_name">Edit</a>
   </td>
 </tr>
 ```
 
-Notice the "Edit" link in the table row is targeting its own row, this will tell the request triggered by the "Edit" link to replace the entire table row.
+Notice the "Edit" link in the table row is targeting its own row, this will tell the request triggered by the "Edit" link to replace the entire table row. Additionally, we've added an `id` and `x-focus` attribute to the "Edit" link so that we can control keyboard focus and we switch between "view" and "edit" modes for this table row.
 
-Finally, here is the edit state that will replace a row, note the matching `id="contact_1"` which is used to match the table row being replaced:
+Finally, here is the "edit mode" state that will replace a row:
 
 ```html
 <tr id="contact_1">
-  <td><input aria-label="Name" form="contact_1_form" name="name" value="Finn Mertins"></td>
-  <td><input aria-label="Email" form="contact_1_form" name="email" type="email" value="fmertins@candykingdom.gov">
+  <td><input aria-label="Name" form="contact_1_form" name="name" id="contact_1_name" value="Finn Mertins"></td>
+  <td><input aria-label="Email" form="contact_1_form" name="email" type="email" id="contact_1_email" value="fmertins@candykingdom.gov">
   </td>
   <td>
-    <a x-target="contact_1" href="/contacts">Cancel</a>
-    <form x-target="contact_1" id="contact_1_form" method="put" action="/contacts/1">
+    <a x-target="contact_1" href="/contacts" x-focus="contact_1_edit">Cancel</a>
+    <form x-target="contact_1" id="contact_1_form" method="put" action="/contacts/1" x-focus="contact_1_edit>
       <button>Save</button>
     </form>
   </td>
 </tr>
 ```
+Note the matching `id="contact_1"` which is used to match the table row being replaced. We've also added `x-focus` to the "Cancel" link and edit form so that keyboard focus is returned to the "Edit" button in "view mode" when we cancel or submit changes.
+
+Try using the keyboard in the following demo and notice how keyboard focus is maintained as your navigate between "view mode" and "edit mode" in each row.
 
 <script>
   let database = function () {
@@ -85,18 +88,18 @@ Finally, here is the edit state that will replace a row, note the matching `id="
     let rows = contacts.map(contact => `<tr id="contact_${contact.id}">
   <td>${contact.name}</td>
   <td>${contact.email}</td>
-  <td><a href="/contacts/${contact.id}/edit" x-target="contact_${contact.id}">Edit</a></td>
+  <td><a href="/contacts/${contact.id}/edit" x-target="contact_${contact.id}" id="contact_${contact.id}_edit" x-focus="contact_${contact.id}_name">Edit</a></td>
 </tr>`).join('\n')
     return table(rows)
   }
 
   function edit(contacts) {
     let rows = contacts.map(contact => `<tr id="contact_${contact.id}">
-  <td><input aria-label="Name" form="contact_${contact.id}_form" name="name" value="${contact.name}"></td>
-  <td><input aria-label="Email" form="contact_${contact.id}_form" name="email" value="${contact.email}"></td>
+  <td><input aria-label="Name" form="contact_${contact.id}_form" name="name" id="contact_${contact.id}_name" value="${contact.name}"></td>
+  <td><input aria-label="Email" form="contact_${contact.id}_form" name="email" id="contact_${contact.id}_email" value="${contact.email}"></td>
   <td>
-      <a x-target="contact_${contact.id}" href="/contacts">Cancel</a>
-      <form x-target="contact_${contact.id}" id="contact_${contact.id}_form" method="put" action="/contacts/${contact.id}" style="margin:0;display:inline-flex;">
+      <a x-target="contact_${contact.id}" href="/contacts" x-focus="contact_${contact.id}_edit">Cancel</a>
+      <form x-target="contact_${contact.id}" id="contact_${contact.id}_form" method="put" action="/contacts/${contact.id}" x-focus="contact_${contact.id}_edit" style="margin:0;display:inline-flex;">
         <button>Save</button>
       </form>
   </td>

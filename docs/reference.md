@@ -7,35 +7,32 @@ title: Reference
 
 ## Installation
 
-You can use Alpine AJAX by either including it from a `<script>` tag or installing it via NPM. You _must_ also include the [Alpine Morph](https://alpinejs.dev/plugins/morph) plugin for Alpine AJAX to work.
+You can use Alpine AJAX by either including it from a `<script>` tag or installing it via NPM.
 
 ### Via CDN
 
-Include the CDN build of Alpine AJAX & Morph as a `<script>` tag, just make sure to include it **before** Alpine's core JS file.
+Include the CDN build of Alpine AJAX as a `<script>` tag, just make sure to include it **before** Alpine's core JS file.
 
 ```html
-<script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/morph@3.11.1/dist/cdn.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/@imacrayon/alpine-ajax@{{ APLINE_AJAX_VERSION }}/dist/cdn.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.11.1/dist/cdn.min.js"></script>
 ```
 
 ### Via NPM
 
-Install Alpine AJAX & Morph from NPM for use inside your bundle like so:
+Install Alpine AJAX from NPM for use inside your bundle like so:
 
 ```bash
-npm i @imacrayon/alpine-ajax @alpinejs/morph
+npm i @imacrayon/alpine-ajax
 ```
 
 Then initialize it from your bundle:
 
 ```js
 import Alpine from 'alpinejs'
-import morph from '@alpinejs/morph'
 import ajax from '@imacrayon/alpine-ajax'
 
 window.Alpine = Alpine
-Alpine.plugin(morph)
 Alpine.plugin(ajax)
 ```
 
@@ -47,7 +44,7 @@ Alpine AJAX is designed to make it easy to build resilient, accessible user inte
 
 This directive defines an AJAX Component. All link clicks and form submissions inside an AJAX Component are captured, and the component is automatically updated after receiving a response. Regardless of whether the server provides a full document, or just a HTML fragment, only the AJAX Component that triggered the request will be extracted from the response and updated on the page.
 
-AJAX Components must have a unique `id`. The `id` is used to find the AJAX Component in the  HTML response sent from the server. You'll see a helpful error in the console if you forget to include an `id` on any AJAX Component.
+AJAX Components must have a unique `id`. The `id` is used to find a matching element in the  HTML response sent from the server. You'll see a helpful error in the console if you forget to include an `id` on any AJAX Component.
 
 Consider this editable email address:
 
@@ -73,9 +70,13 @@ When the "Edit" link is clicked, the server should return a page containing a fo
 
 Since the `<form>` in this response has `id="contact_1"`. The original contact details will be replaced with the edit form. Notice that the page's `<h1>` isn't inside the `<form>`. This means it'll be ignored when the form replaces the contact details.
 
-### x-target
+### A note on client-side routing
 
-Add the `x-target` attribute to target another element `id` on the page to be replaced instead of the default `x-ajax` component.
+Since `x-ajax` causes all child links to make AJAX requests you might be tempted to slap an `x-ajax` attribute on the `<body>` element of your page to create a client-side router. While this _is possible_ it will break the accessibility of your website it critical ways. Instead we recommend using a prefetching library such as [instant.page](https://instant.page/) or Google's [Quicklink](https://getquick.link/). These libraries will speed up your website's navigation without the accessibility drawbacks.
+
+## x-target
+
+Use the `x-target` attribute to target another element that will be replaced on the page when AJAX requests are issued. `x-target` should be set to the `id` of element on the page.
 
 Take a look at this comment list, notice the `x-target="comments"` attribute on the `<form>`:
 
@@ -92,7 +93,7 @@ Take a look at this comment list, notice the `x-target="comments"` attribute on 
 
 When the "Post a Comment" form is submitted the `comments` list will be updated with the response instead of the form.
 
-#### Multiple targets
+### Multiple targets
 
 You can even replace multiple elements from the same server response by separating `id`s with a space.
 
@@ -112,7 +113,73 @@ Here's an expanded comment list example:
 
 Now, when the form is submitted, both the `comments` list, and the `comments_count` indicator will be updated.
 
-### x-noajax
+## x-arrange
+
+Use `x-arrange` to control how targeted elements will handle incoming AJAX elements. By default, all elements will `replace` the target element, instead you can choose one of the 7 other options for arranging content:
+
+<div class="table">
+<table>
+  <thead>
+    <th scope="col" width="60">Option</th>
+    <th scope="col">Description</th>
+  </thead>
+  <tbody>
+  <tr>
+    <td><code>before</code></td>
+    <td>Inserts the content of the incoming element before the target element.</td>
+  </tr>
+  <tr>
+    <td><code>replace</code></td>
+    <td><strong>(Default)</strong> Replaces the target element with the incoming element.</td>
+  </tr>
+  <tr>
+    <td><code>update</code></td>
+    <td>Updates the target element's content with the incoming element's content.</td>
+  </tr>
+  <tr>
+    <td><code>prepend</code></td>
+    <td>Prepends the target element's content with the incoming element's content.</td>
+  </tr>
+  <tr>
+    <td><code>append</code></td>
+    <td>Appends the target element's content with the incoming element's content.</td>
+  </tr>
+  <tr>
+    <td><code>after</code></td>
+    <td>Inserts the content of the incoming element after the target element.</td>
+  </tr>
+  <tr>
+    <td><code>remove</code></td>
+    <td>Removes the target element from the DOM.</td>
+  </tr>
+  <tr>
+    <td><code>morph</code></td>
+    <td>Morphs the incoming element into the target element using the <a href="https://alpinejs.dev/plugins/morph">Alpine Morph Plugin</a>. Requires that the Morph Plugin is installed.</td>
+  </tr>
+  </tbody>
+</table>
+</div>
+
+The `morph` option uses a DOM diffing algorithm to update HTML, it's a bit more computationally intensive, but it works great in situations where you need to preserve your Alpine component's state and keyboard focus. In contrast, the `replace`, `update`, and `remove` options will each wipe away DOM state with fresh HTML.
+
+## x-focus
+
+Add `x-focus` to a form or link to control keyboard focus after an AJAX request has completed. The `x-focus` attribute accepts an element ID that will be focused. Consider this editable email address, we'll assume that clicking the "Edit" link will load a form to change the email:
+
+```html
+<div x-ajax id="contact_1">
+  <p>fmertens@candykingdom.gov</p>
+  <a href="/contacts/1/edit" x-focus="email_field">Edit</a>
+</div>
+```
+
+The `x-focus` attribute on the "Edit" link ensures that when the edit form is loaded, the element with `id="email_field"` will be focused.
+
+Controlling focus is important for providing [meaningful sequencing](https://www.w3.org/TR/WCAG21/#meaningful-sequence) and [focus order](https://www.w3.org/TR/WCAG21/#focus-order) for keyboard users, however, take care not to overuse focus control. This attribute should mostly be used to prevent the keyboard focus from disappearing when content changes.
+
+It's worth noting that using `x-arrange="morph"` is another way to preserve keyboard focus between content changes. Use `x-focus` in cases where content on the page is transformed so much that the morph algorithm is unable to reliably preserve focus state.
+
+## x-noajax
 
 You can stop AJAX behavior on any element by adding the `x-noajax` attribute. Just like `x-ajax`, `x-noajax` is inherited by child elements.
 
@@ -129,51 +196,6 @@ Review this navigation that demonstrates `x-noajax` at work:
 ```
 
  The first two links will behave like regular links, causing a full page reload when clicked. Only the third link will issue an AJAX request.
-
-### x-ajax events
-
-You can listen for AJAX events to perform additional actions during an AJAX request:
-
-<div class="table">
-<table>
-  <thead>
-    <th scope="col" width="117">Name</th>
-    <th scope="col">Description</th>
-  </thead>
-  <tbody>
-  <tr>
-    <td><code>ajax:before</code></td>
-    <td>Fired before a network request is made. If this event is canceled using <code>$event.preventDefault()</code> the request will be aborted.</td>
-  </tr>
-  <tr>
-    <td><code>ajax:success</code></td>
-    <td>Fired when a network request completes. <code>detail</code> contains the server response data.</td>
-  </tr>
-  <tr>
-    <td><code>ajax:error</code></td>
-    <td>Fired when a request responds with a `400` or `500` status code. <code>detail</code> contains the server response data.</td>
-  </tr>
-  <tr>
-    <td><code>ajax:after</code></td>
-    <td>Fired after every successful or unsuccessful request.</td>
-  </tr>
-  <tr>
-    <td><code>ajax:missing</code></td>
-    <td>Fired if a matching target is not found in the response body. <code>detail</code> contains the server response data. You may cancel this event using <code>$event.preventDefault()</code> to override the default behavior.</td>
-  </tr>
-  </tbody>
-</table>
-</div>
-
-Here's an example of aborting a form request when the user cancels a dialog prompt:
-
-```html
-<form x-ajax id="delete_user" @ajax:before="confirm('Are you sure?') || $event.preventDefault()">
-  <button>Delete User</button>
-</form>
-```
-
-**Note:** The `ajax:success` and `ajax:error` events only convey the status code of a request. You'll often find that using the [Server Events](#server-events) pattern is what you need to build more robust applications.
 
 ## x-sync
 
@@ -192,6 +214,21 @@ Consider this list of notifications:
 ```
 
 Every server response that includes a `notifications` element will get inserted into this `aria-live` region. Take a look at the [Notifications example](/examples/notifications) for a demonstration.
+
+## x-load
+
+The `x-load` directive works just like Alpine's `x-init`, the only difference being that `x-load` will run each time a component is reloaded by an AJAX response. In contrast, `x-init` will only run the first time the component is initialized on the page.
+
+Here we're using `x-load` to continuously poll for new data every second:
+
+```html
+<div x-load="setTimeout(() => $ajax('/progress'), 1000)">
+  <label for="file">File progress:</label>
+  <progress id="file" max="100" value="70">70%</progress>
+</div>
+```
+
+Note that if we were to replace `x-load` with `x-init` in this markup, the polling request would only be issued once. See the [Progress Bar example](/examples/progress-bar) for a more complete demonstration.
 
 ## $ajax
 
@@ -245,105 +282,50 @@ In this example we make a `POST` request with the `email` value to the `/validat
 </table>
 </div>
 
-### Server events
+## AJAX Events
 
-Using `$ajax` to issuing AJAX requests in response to custom events is where the real magic happens, check out this markup for a list of comments:
+You can listen for AJAX events to perform additional actions during an AJAX request:
 
-```html
-<ul x-init @comment_added.window="$ajax('/comments')" id="comments">
-```
-
-This comment list will listen for an event named `comment_added` to trigger on the root `window` object. When the `comment_added` event is triggered a `GET` request is issued to `/comments` and the comments list is reloaded with a fresh list of comments.
-
-Alpine makes it easy to dispatch custom events (like `comment_added`) from any component using the `$dispatch` magic helper. You can trigger the `comment_added` event after a successful form submission by including markup like this in your server response:
-
-```html
-<script x-init="$dispatch('comment_added')"></script>
-```
-
-Combining `$ajax` with events rendered from the server provides a powerful pattern you can use to share your server's state between desperate parts of your interface. Let's break this pattern down with an example:
-
-Imagine a basic comment thread, after a comment is created, you would like to perform the following:
-1. Display a notification message
-2. Increment a comment count
-3. Add the new comment to a listing of all comments
-4. Close an open dialog somewhere in your UI
-5. Load details related to the comment's author
-
-You might be inclined to create a form that updates a big, ugly, list of targets like this:
-
-```html
-<form x-ajax method="post" action="/comments" x-target="notifications comment_counter comments_list comment_dialog comment_author">
-```
-
-Instead, wire up each of your UI elements to respond to a single `comment_added` event:
-
-```html
-// With a single dispatched event you can...
-<script x-init="$dispatch('comment_added', { comment_id: 3 })"></script>
-
-// ...reveal a notification...
-<div role="alert" x-data="{ show: false }" x-show="show" @comment_added.window="this.show = true">
-
-// ...increment a counter...
-<span x-data="{ commentCount: 2 }" @comment_added.window="commentCount++" x-text="commentCount">
-
-// ...refresh a listing...
-<ul x-data @comment_added.window="$ajax('/comments')" id="comments_list">
-
-// ...close an open dialog window...
-<dialog x-data @comment_added.window="$el.close()">
-
-// ...load related details...
-<div x-data @comment_added.window="$ajax(`/comments/${$event.detail.comment_id}/author`)">
-
-// ...any UI actions you can dream up, all triggered from a single event.
-```
-
-An `x-sync` container in your base layout serves as a convenient place to dispatch events from your server without having to target specific element IDs in every AJAX request:
-
-```html
-<div x-sync id="server_events" role="alert">
-  <div x-init="$dispatch('comment_added')">New comment created!</div>
+<div class="table">
+<table>
+  <thead>
+    <th scope="col" width="117">Name</th>
+    <th scope="col">Description</th>
+  </thead>
+  <tbody>
+  <tr>
+    <td><code>ajax:before</code></td>
+    <td>Fired before a network request is made. If this event is canceled using <code>$event.preventDefault()</code> the request will be aborted.</td>
+  </tr>
+  <tr>
+    <td><code>ajax:success</code></td>
+    <td>Fired when a network request completes. <code>detail</code> contains the server response data.</td>
+  </tr>
+  <tr>
+    <td><code>ajax:error</code></td>
+    <td>Fired when a request responds with a `400` or `500` status code. <code>detail</code> contains the server response data.</td>
+  </tr>
+  <tr>
+    <td><code>ajax:after</code></td>
+    <td>Fired after every successful or unsuccessful request.</td>
+  </tr>
+  <tr>
+    <td><code>ajax:missing</code></td>
+    <td>Fired if a matching target is not found in the response body. <code>detail</code> contains the server response data. You may cancel this event using <code>$event.preventDefault()</code> to override the default behavior.</td>
+  </tr>
+  </tbody>
+</table>
 </div>
-```
 
-Here's sudo code for how this could be designed to work on the server:
-
-```js
-// Server-side code
-
-Session.server_events = new Array()
-comment = new Comment({ body: Request.comment_body })
-comment.saveToDatabase()
-Session.server_events.push(new Event({ name: "comment_added", detail: comment, message: "New comment created!" }))
-
-return new View("comments.template") with Session
-```
-```html
-<!-- comments.template -->
-
-<div x-sync id="server_events" role="alert">
-  [ for event in Session.server_events ]
-    <div x-init="$dispatch([ event.name ], [ event.detail ])">[ event.message ]</div>
-  [ /for ]
-</div>
-```
-
-## x-load
-
-The `x-load` directive works just like Alpine's `x-init`, the only difference being that `x-load` will run each time a component is reloaded by an AJAX response. In contrast, `x-init` will only run the first time the component is initialized on the page.
-
-Here we're using `x-load` to continuously poll for new data every second:
+Here's an example of aborting a form request when the user cancels a dialog prompt:
 
 ```html
-<div x-load="setTimeout(() => $ajax('/progress'), 1000)">
-  <label for="file">File progress:</label>
-  <progress id="file" max="100" value="70">70%</progress>
-</div>
+<form x-ajax id="delete_user" @ajax:before="confirm('Are you sure?') || $event.preventDefault()">
+  <button>Delete User</button>
+</form>
 ```
 
-Note that if we were to replace `x-load` with `x-init` in this markup, the polling request would only be issued once. See the [Progress Bar example](/examples/progress-bar) for a more complete demonstration.
+**Note:** The `ajax:success` and `ajax:error` events only convey the status code of an AJAX request. You'll probably find that [Server Events](#server-events) are better for triggering actions based on your server's response.
 
 ## Loading states
 
@@ -359,7 +341,6 @@ Use the mock server script included with Alpine AJAX when you need to build a qu
 ```html
 <!--
 Include the typical required scripts before the mock server:
-<script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/morph@3.11.1/dist/cdn.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/@imacrayon/alpine-ajax@{{ APLINE_AJAX_VERSION }}/dist/cdn.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.11.1/dist/cdn.min.js"></script>
 -->
@@ -394,4 +375,4 @@ Now, instead of issuing a real `POST` request to `/update-quantity`, Alpine AJAX
   </div>
 </details>
 
-Mocked routes should only be used in demos and testing, this utility is not designed for production environments.
+**Important**: The mock server should only be used for demos and testing, this utility is not designed for production environments.

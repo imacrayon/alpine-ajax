@@ -15,6 +15,10 @@ You can copy and paste them and then adjust them for your needs.
     <dd>The classic "Like" toggle button.</dd>
   </div>
   <div>
+    <dt><a href="/examples/loading">Loading Indicator</a></dt>
+    <dd>Indicate when AJAX requests are processing.</dd>
+  </div>
+  <div>
     <dt><a href="/examples/inline-edit">Inline Edit</a></dt>
     <dd>Edit data inline.</dd>
   </div>
@@ -43,20 +47,24 @@ You can copy and paste them and then adjust them for your needs.
     <dd>Validate an input field before it is submitted.</dd>
   </div>
   <div>
-    <dt><a href="/examples/notifications">Notifications</a></dt>
-    <dd>Display notification "toasts".</dd>
-  </div>
-  <div>
-    <dt><a href="/examples/loading">Loading Indicator</a></dt>
-    <dd>Indicate when AJAX requests are processing.</dd>
+    <dt><a href="/examples/lazy-load">Lazy Load</a></dt>
+    <dd>Lazy load remote content.</dd>
   </div>
   <div>
     <dt><a href="/examples/progress-bar">Progress Bar</a></dt>
     <dd>A job-runner like progress bar.</dd>
   </div>
   <div>
-    <dt><a href="/examples/lazy-load">Lazy Load</a></dt>
-    <dd>Lazy load remote content.</dd>
+    <dt><a href="/examples/infinite-scroll">Infinite Scroll</a></dt>
+    <dd>Load additional content as the user scrolls.</dd>
+  </div>
+  <div>
+    <dt><a href="/examples/notifications">Notifications</a></dt>
+    <dd>Display notification "toasts".</dd>
+  </div>
+  <div>
+    <dt><a href="/examples/server-events">Server Events</a></dt>
+    <dd>Build a commenting experience using server initiated events.</dd>
   </div>
   <div>
     <dt><a href="/examples/dialog">Dialog (Modal)</a></dt>
@@ -66,8 +74,4 @@ You can copy and paste them and then adjust them for your needs.
     <dt><a href="/examples/dialog-form">Dialog (Modal) Form</a></dt>
     <dd>Handle forms withing a dialog window.</dd>
   </div>
-  <!-- <div>
-    <dt><a href="/examples/inline-validation">Inline Validation</a></dt>
-    <dd>Inline validation when a form field changes.</dd>
-  </div> -->
 </dl>

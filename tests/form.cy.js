@@ -105,7 +105,7 @@ test('request URL is determined by action attribute',
   }
 )
 
-test('x-target changes the updated target',
+test('[x-target] changes the updated target',
   html`<div id="replace"></div><div x-ajax><form x-target="replace" method="post" action="/tests"><button></button></form><div>`,
   ({ get }) => {
     cy.intercept('POST', '/tests', {
@@ -121,7 +121,7 @@ test('x-target changes the updated target',
   }
 )
 
-test('x-target can be inherited',
+test('[x-target] can be inherited',
   html`<div id="replace"></div><div x-ajax x-target="replace"><form method="post" action="/tests"><button></button></form><div></div>`,
   ({ get }) => {
     cy.intercept('POST', '/tests', {
@@ -148,20 +148,6 @@ test('AJAX behavior is inherited',
     cy.wait('@response').then(() => {
       cy.get('#title').should('not.exist')
       cy.get('#replace').should('have.text', 'Replaced')
-    })
-  }
-)
-
-test('focus is maintained after elements are replaced',
-  html`<form x-ajax id="replace" method="post"><button aria-pressed="false">Like</button></form>`,
-  ({ get }) => {
-    cy.intercept('POST', '/tests', {
-      statusCode: 200,
-      body: '<form x-ajax id="replace" method="post"><button aria-pressed="true">Unlike</button></form>'
-    }).as('response')
-    get('button').focus().click()
-    cy.wait('@response').then(() => {
-      cy.get('button').should('have.focus')
     })
   }
 )
@@ -208,35 +194,6 @@ test('ajax:before can cancel AJAX requests',
       requestTimeout: 500,
     }).then(() => {
       cy.get('#title').should('have.text', 'Replace me')
-    })
-  }
-)
-
-test('referer header is set when `data-source` exists',
-  html`<form x-ajax id="replace" method="post" action="/tests" data-source="/tests/other.html"><button></button></form>`,
-  ({ get }) => {
-    cy.intercept('POST', '/tests', {
-      statusCode: 200,
-      body: '<form x-ajax id="replace" method="post"><button></button></form>'
-    }).as('response')
-    get('button').click()
-    cy.wait('@response').then(network => {
-      expect(network.request.headers.referer).to.contain('/tests/other.html')
-    })
-  }
-)
-
-test('action is set to referrer for naked form when `data-source` exists',
-  html`<form x-ajax id="replace" data-source="/tests/other.html"><button></button></form>`,
-  ({ get }) => {
-    cy.intercept('GET', '/tests/other.html', {
-      statusCode: 200,
-      body: '<h1 id="title">Success</h1><div id="replace">Replaced</div>'
-    }).as('response')
-    get('button').click()
-    cy.wait('@response').then(() => {
-      cy.get('#title').should('not.exist')
-      cy.get('#replace').should('have.text', 'Replaced')
     })
   }
 )

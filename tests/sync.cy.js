@@ -1,6 +1,6 @@
 import { test, html } from './utils'
 
-test('x-sync content is synced with the response',
+test('[x-sync] creates a passive target',
   html`<div id="sync" x-sync></div><a href="/tests" x-ajax id="replace">Link</a>`,
   ({ get }) => {
     cy.intercept('GET', '/tests', {

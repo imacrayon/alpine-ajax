@@ -6,7 +6,7 @@
     "HTML",
     "AlpineJS"
   ],
-  "version": "0.1.9",
+  "version": "0.2.0",
   "license": "MIT",
   "author": "Christian Taylor",
   "homepage": "https://imacrayon.github.io/alpine-ajax/",
@@ -33,12 +33,14 @@
   "devDependencies": {
     "@11ty/eleventy": "^2.0.0-canary.15",
     "@11ty/eleventy-plugin-syntaxhighlight": "^4.2.0",
-    "@11ty/eleventy-plugin-webc": "^0.8.1",
-    "@alpinejs/morph": "^3.11.1",
+    "@11ty/eleventy-plugin-webc": "^0.11.0",
     "alpinejs": "^3.11.1",
     "cypress": "^12.6.0",
     "esbuild": "^0.17.8",
     "markdown-it": "^13.0.1",
     "markdown-it-anchor": "^8.6.6"
+  },
+  "dependencies": {
+    "@alpinejs/morph": "^3.12.0"
   }
 }

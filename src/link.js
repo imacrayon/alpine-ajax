@@ -1,4 +1,4 @@
-import { targets, isIgnored, source, FailedResponseError } from './helpers'
+import { targetRoot, targets, isIgnored, source, FailedResponseError } from './helpers'
 import { render } from './render'
 
 export function listenForNavigate(el) {
@@ -8,7 +8,11 @@ export function listenForNavigate(el) {
     event.preventDefault()
     event.stopPropagation()
     try {
-      return await render(navigateRequest(link), targets(link, true), link)
+      return await render(
+        navigateRequest(link),
+        targets(targetRoot(link), true),
+        link
+      )
     } catch (error) {
       if (error instanceof FailedResponseError) {
         console.warn(error.message)
