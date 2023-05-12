@@ -19,27 +19,8 @@ test('content is lazily loaded with x-init',
   }
 )
 
-test('content is lazily loaded with [x-load]',
-  html``,
-  ({ get }) => {
-    cy.intercept('GET', '/tests', {
-      statusCode: 200,
-      body: '<h1 id="title">Success</h1><div id="replace">Loaded</div>'
-    }).as('response')
-    // Injecting the component code after the intercept has been setup
-    // because this request fires immediately
-    cy.get('#root').then(([el]) => {
-      el.innerHTML = `<div x-load="$ajax('/tests')" id="replace"></div>`
-    })
-    cy.wait('@response').then(() => {
-      cy.get('#title').should('not.exist')
-      cy.get('#replace').should('have.text', 'Loaded')
-    })
-  }
-)
-
 test('replaced content gets a source',
-  html`<a href="/tests" x-ajax id="replace">Link</a>`,
+  html`<a href="/tests" x-target id="replace">Link</a>`,
   ({ get }) => {
     cy.intercept('GET', '/tests', {
       statusCode: 200,
@@ -53,11 +34,11 @@ test('replaced content gets a source',
 )
 
 test('referer header is set when [data-source] exists',
-  html`<form x-ajax id="replace" method="post" action="/tests" data-source="/tests/other.html"><button></button></form>`,
+  html`<form x-target id="replace" method="post" action="/tests" data-source="/tests/other.html"><button></button></form>`,
   ({ get }) => {
     cy.intercept('POST', '/tests', {
       statusCode: 200,
-      body: '<form x-ajax id="replace" method="post"><button></button></form>'
+      body: '<form x-target id="replace" method="post"><button></button></form>'
     }).as('response')
     get('button').click()
     cy.wait('@response').then(network => {
@@ -67,7 +48,7 @@ test('referer header is set when [data-source] exists',
 )
 
 test('action is set to referrer for naked form when [data-source] exists',
-  html`<form x-ajax id="replace" data-source="/tests/other.html"><button></button></form>`,
+  html`<form x-target id="replace" data-source="/tests/other.html"><button></button></form>`,
   ({ get }) => {
     cy.intercept('GET', '/tests/other.html', {
       statusCode: 200,

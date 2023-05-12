@@ -1,7 +1,7 @@
 import { test, html } from './utils'
 
 test('content is arranged before',
-  html`<form x-ajax id="target" method="post" x-arrange="before"><button></button></form>`,
+  html`<form x-target id="target" method="post" x-arrange="before"><button></button></form>`,
   ({ get }) => {
     cy.intercept('POST', '/tests', {
       statusCode: 200,
@@ -16,7 +16,7 @@ test('content is arranged before',
 )
 
 test('arranged content is prepended',
-  html`<form x-ajax id="target" method="post" x-arrange="prepend"><button></button></form>`,
+  html`<form x-target id="target" method="post" x-arrange="prepend"><button></button></form>`,
   ({ get }) => {
     cy.intercept('POST', '/tests', {
       statusCode: 200,
@@ -31,7 +31,7 @@ test('arranged content is prepended',
 )
 
 test('arranged content is updated',
-  html`<form x-ajax id="target" method="post" x-arrange="update"><button></button></form>`,
+  html`<form x-target id="target" method="post" x-arrange="update"><button></button></form>`,
   ({ get }) => {
     cy.intercept('POST', '/tests', {
       statusCode: 200,
@@ -46,7 +46,7 @@ test('arranged content is updated',
 )
 
 test('arranged content is appended',
-  html`<form x-ajax id="target" method="post" x-arrange="append"><button></button></form>`,
+  html`<form x-target id="target" method="post" x-arrange="append"><button></button></form>`,
   ({ get }) => {
     cy.intercept('POST', '/tests', {
       statusCode: 200,
@@ -61,7 +61,7 @@ test('arranged content is appended',
 )
 
 test('content is arranged after',
-  html`<form x-ajax id="target" method="post" x-arrange="after"><button></button></form>`,
+  html`<form x-target id="target" method="post" x-arrange="after"><button></button></form>`,
   ({ get }) => {
     cy.intercept('POST', '/tests', {
       statusCode: 200,
@@ -76,7 +76,7 @@ test('content is arranged after',
 )
 
 test('arranged content is removed',
-  html`<form x-ajax id="target" method="post" x-arrange="remove"><button></button></form>`,
+  html`<form x-target id="target" method="post" x-arrange="remove"><button></button></form>`,
   ({ get }) => {
     cy.intercept('POST', '/tests', {
       statusCode: 200,
@@ -91,11 +91,11 @@ test('arranged content is removed',
 )
 
 test('focus is maintained when arranged content is morphed',
-  html`<form x-ajax id="replace" method="post" x-arrange="morph"><button aria-pressed="false">Like</button></form>`,
+  html`<form x-target id="replace" method="post" x-arrange="morph"><button aria-pressed="false">Like</button></form>`,
   ({ get }) => {
     cy.intercept('POST', '/tests', {
       statusCode: 200,
-      body: '<form x-ajax id="replace" method="post"><button aria-pressed="true">Unlike</button></form>'
+      body: '<form x-target id="replace" method="post"><button aria-pressed="true">Unlike</button></form>'
     }).as('response')
     get('button').focus().click()
     cy.wait('@response').then(() => {
