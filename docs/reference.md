@@ -153,7 +153,7 @@ The `x-focus` attribute on the "Edit" link ensures that when the edit form is lo
 
 Controlling focus is important for providing [meaningful sequencing](https://www.w3.org/TR/WCAG21/#meaningful-sequence) and [focus order](https://www.w3.org/TR/WCAG21/#focus-order) for keyboard users, however, take care not to overuse focus control. This attribute should mostly be used to prevent the keyboard focus from disappearing when content changes.
 
-It's worth noting that using `x-arrange="morph"` is another way to preserve keyboard focus between content changes. However, there are cases when the DOM is transformed so much that the Morph algorithm is unable to reliably preserve focus state. In theses situations `x-focus` can correct any focus discrepancies.
+It's worth noting that `x-arrange="morph"` is another way to preserve keyboard focus between content changes. However, there are cases when the DOM is transformed so much that the Morph algorithm is unable to reliably preserve focus state. In theses situations `x-focus` can correct any focus discrepancies.
 
 ## x-sync
 
