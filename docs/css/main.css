@@ -91,7 +91,7 @@ table,
 textarea,
 ul,
 video {
-  margin-bottom: 1rem;
+  margin-block-end: 1rem;
 }
 
 html,
@@ -104,6 +104,7 @@ button {
 html {
   position: relative;
   height: 100%;
+  scroll-behavior: smooth;
 }
 
 body {
@@ -126,7 +127,7 @@ h5,
 h6 {
   line-height: 1.13;
   color: var(--nc-tx-1);
-  margin-top: 1em;
+  margin-block-start: 1em;
 }
 
 h1:first-child,
@@ -135,23 +136,23 @@ h3:first-child,
 h4:first-child,
 h5:first-child,
 h6:first-child {
-  margin-top: 0;
+  margin-block-start: 0;
 }
 
 h1,
 h2,
 h3 {
   color: var(--nc-tx-1);
-  padding-bottom: 2px;
-  margin-bottom: .414em;
-  border-bottom: 1px solid var(--bg-accent);
+  padding-block-end: 2px;
+  margin-block-end: .414em;
+  border-block-end: 1px solid var(--bg-accent);
 }
 
 h4,
 h5,
 h6 {
-  margin-bottom: .414rem;
-  padding-bottom: .125rem;
+  margin-block-end: .414rem;
+  padding-block-end: .125rem;
 }
 
 h1 {
@@ -201,8 +202,8 @@ abbr {
 }
 
 blockquote *:last-child {
-  padding-bottom: 0;
-  margin-bottom: 0;
+  padding-block-end: 0;
+  margin-block-end: 0;
 }
 
 header {
@@ -279,7 +280,7 @@ pre {
 }
 
 kbd {
-  border-bottom: 3px solid var(--bg-border-code);
+  border-block-end: 3px solid var(--bg-border-code);
 }
 
 pre {
@@ -335,12 +336,12 @@ dd::before {
 hr {
   /* Reset the border of the <hr> separator, then set a better line */
   border: 0;
-  border-bottom: 1px solid var(--bg-border);
+  border-block-end: 1px solid var(--bg-border);
   margin: 1rem auto;
 }
 
 fieldset {
-  margin-top: 1rem;
+  margin-block-start: 1rem;
   padding: 2rem;
   border: 1px solid var(--bg-border);
   border-radius: 4px;
@@ -364,8 +365,8 @@ table {
 td,
 th {
   font-size: .88rem;
-  border-top: 1px solid var(--bg-border);
-  border-bottom: 1px solid var(--bg-border);
+  border-block-start: 1px solid var(--bg-border);
+  border-block-end: 1px solid var(--bg-border);
   text-align: left;
   padding: .5rem;
 }
@@ -376,7 +377,7 @@ th {
 
 table caption {
   font-weight: bold;
-  margin-bottom: .5rem;
+  margin-block-end: .5rem;
 }
 
 textarea {
@@ -388,30 +389,30 @@ textarea {
 ul[role="list"],
 ol[role="list"] {
   list-style: none;
-  padding-left: 0;
-  margin-bottom: 0;
+  padding-inline-start: 0;
+  margin-block-end: 0;
 }
 
 ol,
 ul {
   /* Replace the browser default padding */
-  padding-left: 2rem;
+  padding-inline-start: 2rem;
 }
 
 li {
-  margin-top: .414rem;
+  margin-block-start: .414rem;
 }
 
 li:first-child {
-  margin-top: 0;
+  margin-block-start: 0;
 }
 
 ul ul,
 ol ul,
 ul ol,
 ol ol {
-  margin-top: .414rem;
-  margin-bottom: 0;
+  margin-block-start: .414rem;
+  margin-block-end: 0;
 }
 
 mark {
@@ -425,7 +426,7 @@ select,
 input {
   font-size: 1rem;
   padding: .375rem .75rem;
-  margin-bottom: .5rem;
+  margin-block-end: .5rem;
   background: var(--bg-accent);
   color: var(--nc-tx-2);
   border: 1px solid var(--bg-border);
@@ -451,7 +452,7 @@ img {
 }
 
 dl>div+div {
-  margin-top: .414rem;
+  margin-block-start: .414rem;
 }
 
 header>nav {
@@ -460,12 +461,33 @@ header>nav {
   top: 0;
 }
 
+header>nav details {
+  --details-force-closed: (max-width: 835px);
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  margin: 0;
+}
+
+header>nav details>summary {
+  font-weight: 400;
+  font-size: 1rem;
+  margin-block-start: .414em;
+  color: var(--nc-lk-3);
+}
+
+@media (min-width: 836px) {
+  header>nav details>summary {
+    display: none;
+  }
+}
+
 header>nav>ul>:first-child {
   font-weight: 700;
 }
 
 header>nav ul ol {
-  padding-left: 1.44rem;
+  padding-inline-start: 1.44rem;
 }
 
 header>nav ol {
@@ -555,7 +577,7 @@ dialog {
 
 td>input,
 td>select {
-  margin-bottom: 0;
+  margin-block-end: 0;
   max-width: 22ch;
 }
 
@@ -565,11 +587,11 @@ dialog>form:first-child {
 }
 
 dialog>form:last-child {
-  margin-bottom: 0;
+  margin-block-end: 0;
 }
 
 .with-sidebar {
-  max-width: calc(65ch + 10rem + 8rem);
+  max-inline-size: calc(260px + 65ch);
   margin-inline: auto;
   min-height: 100%;
   display: flex;
@@ -578,13 +600,14 @@ dialog>form:last-child {
 }
 
 .with-sidebar> :first-child {
+  flex-basis: 260px;
   flex-grow: 1;
 }
 
 .with-sidebar> :last-child {
   flex-basis: 0;
   flex-grow: 999;
-  min-inline-size: 68%;
+  min-inline-size: 61%;
 }
 
 .with-sidebar::before {

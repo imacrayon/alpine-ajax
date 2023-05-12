@@ -12,7 +12,7 @@ This example demonstrates how you can configure AJAX Components to respond to ev
 
 <div x-sync id="server_events"></div>
 
-<form x-ajax id="comment_form" method="post" action="/comments">
+<form id="comment_form" x-target method="post" action="/comments">
   <label for="comment_body">
   <textarea id="comment_body" name="comment_body"></textarea>
   <button>Submit</button>
@@ -32,7 +32,7 @@ Next, when our comment form is submitted the server will respond with a new serv
   <div x-init="$dispatch('comment:created')"></div>
 </div>
 
-<form x-ajax id="comment_form" method="post" action="/comments">
+<form id="comment_form" x-target method="post" action="/comments">
   <label for="comment_body">
   <textarea id="comment_body" name="comment_body"></textarea>
   <button>Submit</button>
@@ -63,7 +63,7 @@ To address the first issue, we'll include a message in our new server event and 
 Next, we'll add an `x-focus` attribute to our form, so that we can return focus back to the comment `<textarea>` after a comment is posted:
 
 ```html
-<form x-ajax id="comment_form" x-focus="comment_body" method="post" action="/comments">
+<form id="comment_form" x-target x-focus="comment_body" method="post" action="/comments">
 ```
 
 <script>
@@ -98,7 +98,7 @@ Next, we'll add an `x-focus` attribute to our form, so that we can return focus 
 
     return `<ul x-data @comment:created.window="$ajax('/comments')" id="comments">${items}</ul>
 ${serverEvent()}
-<form x-ajax id="comment_form" x-focus="comment_body" method="post" action="/comments">
+<form id="comment_form" x-target x-focus="comment_body" method="post" action="/comments">
   <label for="comment_body">Comment</label>
   <textarea id="comment_body" name="comment_body"></textarea>
   <button>Submit</button>
@@ -106,7 +106,7 @@ ${serverEvent()}
   }
   function create(event) {
     return `${serverEvent(event)}
-<form x-ajax id="comment_form" x-focus="comment_body" method="post" action="/comments">
+<form id="comment_form" x-target x-focus="comment_body" method="post" action="/comments">
   <label for="comment_body">Comment</label>
   <textarea id="comment_body" name="comment_body"></textarea>
   <button>Submit</button>

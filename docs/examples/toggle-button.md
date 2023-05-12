@@ -8,7 +8,7 @@ This demo shows how to implement a toggle button that alters server state.
 This pattern starts with an AJAX form assigned `id="like"`:
 
 ```html
-<form x-ajax x-arrange="morph" id="like" method="post" action="/comments/1/like">
+<form id="like" x-target x-arrange="morph" method="post" action="/comments/1/like">
   <button name="user_id" value="1">Like</button>
 </form>
 ```
@@ -16,7 +16,7 @@ This pattern starts with an AJAX form assigned `id="like"`:
 When the form is submitted, a `POST` request is issued to the server, and the server will return a new form state:
 
 ```html
-<form x-ajax x-arrange="morph" id="like" method="delete" action="/comments/1/like">
+<form id="like" x-target x-arrange="morph" method="delete" action="/comments/1/like">
   <button name="user_id" value="1">Unlike</button>
 </form>
 ```
@@ -31,7 +31,7 @@ The `x-arrange="morph"` attribute ensures that the new form HTML is "morphed" in
   example('/comments')
 
   function view(liked) {
-    return `<form x-ajax x-arrange="morph" id="like" method="${liked ? 'delete' : 'post'}" action="/comments/1/like">
+    return `<form id="like" x-target x-arrange="morph" method="${liked ? 'delete' : 'post'}" action="/comments/1/like">
   <button name="user_id" value="1">${liked ? 'Unlike' : 'Like'}</button>
 </form>`
   }

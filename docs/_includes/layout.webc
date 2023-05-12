@@ -20,33 +20,7 @@
   <a href="#main">Skip to content</a>
   <div class="with-sidebar">
     <header>
-      <nav aria-label="Site">
-        <ul role="list">
-          <li><a href="/" :aria-current="page.url == '/' ? 'page' : ''">Alpine AJAX</a></li>
-          <li>
-            <a href="/reference" :aria-current="page.url == '/reference/' ? 'page' : ''">Reference</a>
-            <ol>
-              <li><a href="/reference/#installation" :aria-current="page.url == '/installation/' ? 'page' : ''">Installation</a></li>
-              <li><a href="/reference/#usage" :aria-current="page.url == '/usage/' ? 'page' : ''">Usage</a></li>
-              <li><a href="/reference/#x-ajax" :aria-current="page.url == '/x-ajax/' ? 'page' : ''">x-ajax</a></li>
-              <li><a href="/reference/#x-target" :aria-current="page.url == '/x-target/' ? 'page' : ''">x-target</a></li>
-              <li><a href="/reference/#x-arrange" :aria-current="page.url == '/x-arrange/' ? 'page' : ''">x-arrange</a></li>
-              <li><a href="/reference/#x-focus" :aria-current="page.url == '/x-focus/' ? 'page' : ''">x-focus</a></li>
-              <li><a href="/reference/#x-noajax" :aria-current="page.url == '/x-noajax/' ? 'page' : ''">x-noajax</a></li>
-              <li><a href="/reference/#x-sync" :aria-current="page.url == '/x-sync/' ? 'page' : ''">x-sync</a></li>
-              <li><a href="/reference/#x-load" :aria-current="page.url == '/x-load/' ? 'page' : ''">x-load</a></li>
-              <li><a href="/reference/#ajax" :aria-current="page.url == '/ajax/' ? 'page' : ''">$ajax</a></li>
-              <li><a href="/reference/#ajax-events" :aria-current="page.url == '/ajax-events/' ? 'page' : ''">AJAX Events</a></li>
-              <li><a href="/reference/#loading-states" :aria-current="page.url == '/loading-states/' ? 'page' : ''">Loading States</a></li>
-              <li><a href="/reference/#creating-demos" :aria-current="page.url == '/creating-demos/' ? 'page' : ''">Creating Demos</a></li>
-            </ol>
-          </li>
-          <li><a href="/examples" :aria-current="page.url == '/examples/' ? 'page' : ''">Examples</a></li>
-          <li><a href="/comparisons" :aria-current="page.url == '/comparisons/' ? 'page' : ''">Comparisons</a></li>
-          <li><a href="https://github.com/imacrayon/alpine-ajax/releases">Changelog</a></li>
-          <li><a href="https://github.com/imacrayon/alpine-ajax">GitHub</a></li>
-        </ul>
-      </nav>
+      <navigation :@current="page.url"></navigation>
     </header>
     <main id="main" @raw="content"></main>
   </div>

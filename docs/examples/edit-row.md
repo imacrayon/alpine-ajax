@@ -14,7 +14,7 @@ This example shows how to implement editable table rows. First let's look at the
       <th scope="col">Actions</th>
     </tr>
   </thead>
-  <tbody x-ajax>
+  <tbody>
     ...
   </tbody>
 </table>
@@ -26,7 +26,7 @@ Here is the HTML for a table row:
   <td>Finn Mertins</td>
   <td>fmertins@candykingdom.gov</td>
   <td>
-    <a href="/contacts/1/edit" x-target="contact_1" id="contact_1_edit" x-focus="contact_1_name">Edit</a>
+    <a id="contact_1_edit" href="/contacts/1/edit" x-target="contact_1" x-focus="contact_1_name">Edit</a>
   </td>
 </tr>
 ```
@@ -42,7 +42,7 @@ Finally, here is the "edit mode" state that will replace a row:
   </td>
   <td>
     <a x-target="contact_1" href="/contacts" x-focus="contact_1_edit">Cancel</a>
-    <form x-target="contact_1" id="contact_1_form" method="put" action="/contacts/1" x-focus="contact_1_edit>
+    <form x-target="contact_1" id="contact_1_form" method="put" action="/contacts/1" x-focus="contact_1_edit">
       <button>Save</button>
     </form>
   </td>
@@ -116,7 +116,7 @@ Try using the keyboard in the following demo and notice how keyboard focus is ma
       <th scope="col" width="130">Action</th>
     </tr>
   </thead>
-  <tbody x-ajax>
+  <tbody>
     ${rows}
   </tbody>
 </table>`

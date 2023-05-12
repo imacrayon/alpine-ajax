@@ -14,9 +14,8 @@ We start with this form:
     body: { email },
   })">
     <label for="email">Email</label>
-    ${message}
     <input type="email" name="email" id="email" x-model="email">
-  </div
+  </div>
   <div>
     <label for="name">Name</label>
     <input name="name" id="name">

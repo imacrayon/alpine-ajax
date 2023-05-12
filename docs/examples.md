@@ -51,6 +51,10 @@ You can copy and paste them and then adjust them for your needs.
     <dd>Lazy load remote content.</dd>
   </div>
   <div>
+    <dt><a href="/examples/dialog">Dialog (Modal)</a></dt>
+    <dd>Load remote content in a dialog window.</dd>
+  </div>
+  <div>
     <dt><a href="/examples/progress-bar">Progress Bar</a></dt>
     <dd>A job-runner like progress bar.</dd>
   </div>
@@ -65,10 +69,6 @@ You can copy and paste them and then adjust them for your needs.
   <div>
     <dt><a href="/examples/server-events">Server Events</a></dt>
     <dd>Build a commenting experience using server initiated events.</dd>
-  </div>
-  <div>
-    <dt><a href="/examples/dialog">Dialog (Modal)</a></dt>
-    <dd>Load remote content in a dialog window.</dd>
   </div>
   <div>
     <dt><a href="/examples/dialog-form">Dialog (Modal) Form</a></dt>

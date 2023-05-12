@@ -8,8 +8,8 @@ This example filters down a table of contacts based on the user's selection.
 We start with some filter buttons and a table inside an AJAX Component with `id="contacts"`. It's important to note the `x-arrange="morph"` attribute on the AJAX Component. The `morph` option ensures that the keyboard focus state of our filter buttons will be preserved as the HTML on our Component changes between AJAX requests.
 
 ```html
-<div x-ajax x-arrange="morph" id="contacts">
-  <form action="/contacts" aria-label="Filter contacts">
+<div id="contacts" x-arrange="morph">
+  <form action="/contacts" aria-label="Filter contacts" x-target="contacts">
     <button name="status" value="Active" aria-pressed="false">Active</button>
     <button name="status" value="Inactive" aria-pressed="false">Inactive</button>
   </form>
@@ -43,7 +43,7 @@ Clicking a filter button issues a `GET` request to `/contacts?status=` which ret
 First, the response should include the modified state of the filter form:
 
 ```html
-<form action="/contacts" aria-label="Filter contacts">
+<form action="/contacts" aria-label="Filter contacts" x-target="contacts">
   <button name="status" value="Active" aria-pressed="true">Active</button>
   <button name="status" value="Inactive" aria-pressed="false">Inactive</button>
   <button name="status" value="" aria-pressed="false">Reset</button>
@@ -95,8 +95,8 @@ Let's see our filterable table in action. Try activating a filter button using t
 
     let reset = filter ? `<button name="status" value="">Reset</button>` : ``
 
-    return `<div x-ajax x-arrange="morph" id="contacts">
-<form action="/contacts" aria-label="Filter contacts">
+    return `<div x-arrange="morph" id="contacts">
+<form action="/contacts" aria-label="Filter contacts" x-target="contacts">
   <button name="status" value="Active" aria-pressed="${String(filter === 'Active')}">Active</button>
   <button name="status" value="Inactive" aria-pressed="${String(filter === 'Inactive')}">Inactive</button>
   ${reset}

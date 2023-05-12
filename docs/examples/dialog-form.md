@@ -17,12 +17,12 @@ We start with an empty `<dialog>` and a `<table>` of contact data.
       <th scope="col">Action</th>
     </tr>
   </thead>
-  <tbody x-ajax id="contacts" @ajax:before="$dispatch('dialog:open')" @contact:updated="$ajax('/contacts')">
+  <tbody id="contacts" x-init @ajax:before="$dispatch('dialog:open')" @contact:updated="$ajax('/contacts')">
     ...
   </tbody>
 </table>
 
-<dialog x-data @dialog:open.window="$el.showModal()">
+<dialog x-init @dialog:open.window="$el.showModal()">
   <div id="contact"></div>
 </dialog>
 ```
@@ -47,7 +47,7 @@ In each table row we have an "Edit" link targeting the empty `#contact` `<div>` 
 Clicking the "Edit" link issues a `GET` request to `/contacts/1/edit` which returns the corresponding `<form>` for the contact inside the `<dialog>`:
 
 ```html
-<form id="contact" x-ajax @ajax:success="$dispatch('contact:updated')" method="put" action="/contacts/1" aria-label="Contact Information">
+<form id="contact" x-target method="put" action="/contacts/1" aria-label="Contact Information">
   <div>
     <label for="name">Name</label>
     <input id="name" name="name" value="Finn">
@@ -67,9 +67,9 @@ Clicking the "Edit" link issues a `GET` request to `/contacts/1/edit` which retu
 </form>
 ```
 
-Notice the `<form>` has the `x-ajax` attribute so that both success and error responses are rendered within the `<dialog>`.
+Notice the `<form>` has the `x-target` attribute so that both success and error responses are rendered within the `<dialog>`.
 
-When the `<form>` is submitted a `PUT` request is issued to `/contacts/1` and the `contact:updated` event is fired upon a successful response.
+When the `<form>` is submitted, a `PUT` request is issued to `/contacts/1` and the `contact:updated` event is fired upon a successful response.
 
 Finally, the `contact:updated` event causes the `<tbody>` to refresh with the updated contact data.
 
@@ -95,7 +95,6 @@ Finally, the `contact:updated` event causes the `<tbody>` to refresh with the up
 
   window.route('GET', '/contacts', () => index(database.all()))
   database.all().forEach(contact => {
-    window.route('GET', `/contacts/${contact.id}`, () => show(database.find(contact.id)))
     window.route('GET', `/contacts/${contact.id}/edit`, () => edit(database.find(contact.id)))
     window.route('PUT', `/contacts/${contact.id}`, (input) => {
       database.update(contact.id, input)
@@ -124,7 +123,7 @@ Finally, the `contact:updated` event causes the `<tbody>` to refresh with the up
   }
 
   function edit(contact) {
-    return `<form id="contact" x-ajax @ajax:success="$dispatch('contact:updated')" method="put" action="/contacts/${contact.id}" aria-label="Contact Information">
+    return `<form id="contact" x-target @ajax:success="$dispatch('contact:updated')" method="put" action="/contacts/${contact.id}" aria-label="Contact Information">
     <div>
       <label for="name">Name</label>
       <input id="name" name="name" value="${contact.name}">
@@ -154,7 +153,7 @@ Finally, the `contact:updated` event causes the `<tbody>` to refresh with the up
       <th scope="col" width="53">Action</th>
     </tr>
   </thead>
-  <tbody id="contacts" x-ajax @ajax:before="$dispatch('dialog:open')" @contact:updated.window="$ajax('/contacts')">
+  <tbody id="contacts" x-init @ajax:before="$dispatch('dialog:open')" @contact:updated.window="$ajax('/contacts')">
     ${rows}
   </tbody>
 </table>

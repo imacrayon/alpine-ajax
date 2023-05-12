@@ -16,7 +16,7 @@ table markup:
       <th scope="col"></th>
     </tr>
   </thead>
-  <tbody x-ajax id="contacts" @ajax:before="confirm('Are you sure?') || $event.preventDefault()">
+  <tbody id="contacts" x-init @ajax:before="confirm('Are you sure?') || $event.preventDefault()">
     ...
   </tbody>
 </table>
@@ -33,7 +33,7 @@ with a table that is lacking the row which was just deleted.
   <td>fmertins@candykingdom.gov</td>
   <td>Active</td>
   <td>
-    <form method="delete" action="/contacts/1">
+    <form method="delete" action="/contacts/1" x-target="contacts">
       <button>Delete</button>
     </form>
   </td>
@@ -77,7 +77,7 @@ with a table that is lacking the row which was just deleted.
   <td>${contact.email}</td>
   <td>${contact.status}</td>
   <td>
-    <form method="delete" action="/contacts/${contact.id}" style="margin:0;">
+    <form method="delete" action="/contacts/${contact.id}" x-target="contacts" style="margin:0;">
       <button>Delete</button>
     </form>
   </td>
@@ -92,7 +92,7 @@ with a table that is lacking the row which was just deleted.
       <th scope="col" width="66">Action</th>
     </tr>
   </thead>
-  <tbody x-ajax id="contacts" @ajax:before="confirm('Are you sure?') || $event.preventDefault()">
+  <tbody id="contacts" x-init @ajax:before="confirm('Are you sure?') || $event.preventDefault()">
     ${rows}
   </tbody>
 </table>`

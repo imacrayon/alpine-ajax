@@ -8,12 +8,12 @@ This example shows how to load remote content into a dialog window.
 We start an empty `<dialog>` and a list of links that target the `<dialog>`.
 
 ```html
-<ul x-ajax x-target="contact" @ajax:before="$dispatch('dialog:open')">
-  <li><a href="/contacts/1">Finn Mertins</a></li>
+<ul x-init @ajax:before="$dispatch('dialog:open')">
+  <li><a href="/contacts/1" x-target="contact">Finn Mertins</a></li>
   ...
 <ul>
 
-<dialog x-data @dialog:open.window="$el.showModal()">
+<dialog x-init @dialog:open.window="$el.showModal()">
   <div id="contact"></div>
 </dialog>
 ```
@@ -70,11 +70,11 @@ Finally, the server responds with the modal content:
   example('/contacts')
 
   function index(contacts) {
-    let items = contacts.map(contact => `<li><a href="/contacts/${contact.id}">${contact.name}</a>`).join('\n')
-    return `<ul x-ajax x-target="contact" @ajax:before="$dispatch('dialog:open')">
+    let items = contacts.map(contact => `<li><a href="/contacts/${contact.id}" x-target="contact">${contact.name}</a>`).join('\n')
+    return `<ul x-init @ajax:before="$dispatch('dialog:open')">
   ${items}
 </ul>
-<dialog @dialog:open.window="$el.showModal()">
+<dialog x-init @dialog:open.window="$el.showModal()">
   <div id="contact"></div>
   <form method="dialog" novalidate><button>Close</button></form>
 </dialog>`

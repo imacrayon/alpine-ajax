@@ -27,17 +27,16 @@ Consider this simple form:
 </form>
 ```
 
-It's just ordinary HTML. When this form is submitted a `POST` request is issued to `/repos/1/star` and the content from the response is loaded into the browser window.
+It's ordinary HTML – when this form is submitted a `POST` request is issued to `/repos/1/star` and the content from the response is loaded into the browser window.
 
 Now let's enhance this form with Alpine AJAX:
 
 ```html
-<form x-ajax id="star_repo" x-arrange="morph" method="post" action="/repos/1/star">
+<form x-target="star_repo" id="star_repo" x-arrange="morph" method="post" action="/repos/1/star">
 ```
-These three new attributes change this form's behavior when it is submitted in three ways:
+These three new attributes change this form's behavior:
 
-1. `x-ajax` instructs the form to issue an AJAX request instead of a standard form request so that the browser window doesn't perform a refresh.
-2. `id` instructs the form to replace itself with the element that has `id="star_repo` in the AJAX request's response.
+1. `x-target` instructs the form to target the element on the page assigned `id="star_repo"` (itself in this example). When the form is submitted it will issue an AJAX request instead of a standard browser request. The `#star_repo` form will then be replaced with the element that has `id="star_repo` in the AJAX request's response.
 3. `x-arrange` instructs the incoming `#star_repo` element to "morph" itself into the existing DOM so that keyboard focus and DOM state are preserved when the HTML changes.
 
 This simple pattern of updating a piece of your frontend instead of the entire page can be expanded to create rich user experiences, and because we're building these patterns on top of semantic HTML we get to leverage the resilience and accessibility of HTML without complex workarounds.
