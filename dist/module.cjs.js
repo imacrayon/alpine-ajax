@@ -60,8 +60,8 @@ var require_module_cjs = __commonJS({
       template.innerHTML = html;
       return template.content.firstElementChild;
     }
-    function textOrComment(el) {
-      return el.nodeType === 3 || el.nodeType === 8;
+    function textOrComment(el2) {
+      return el2.nodeType === 3 || el2.nodeType === 8;
     }
     var dom = {
       replace(children, old, replacement) {
@@ -102,19 +102,19 @@ var require_module_cjs = __commonJS({
           return;
         return this.teleportTo(this.teleportBack(children[index + 1]));
       },
-      teleportTo(el) {
-        if (!el)
-          return el;
-        if (el._x_teleport)
-          return el._x_teleport;
-        return el;
+      teleportTo(el2) {
+        if (!el2)
+          return el2;
+        if (el2._x_teleport)
+          return el2._x_teleport;
+        return el2;
       },
-      teleportBack(el) {
-        if (!el)
-          return el;
-        if (el._x_teleportBack)
-          return el._x_teleportBack;
-        return el;
+      teleportBack(el2) {
+        if (!el2)
+          return el2;
+        if (el2._x_teleportBack)
+          return el2._x_teleportBack;
+        return el2;
       }
     };
     var resolveStep = () => {
@@ -126,7 +126,7 @@ var require_module_cjs = __commonJS({
       let toEl;
       let key, lookahead, updating, updated, removing, removed, adding, added;
       function assignOptions(options2 = {}) {
-        let defaultGetKey = (el) => el.getAttribute("key");
+        let defaultGetKey = (el2) => el2.getAttribute("key");
         let noop = () => {
         };
         updating = options2.updating || noop;
@@ -322,15 +322,15 @@ var require_module_cjs = __commonJS({
           removed(domForRemoval);
         }
       }
-      function getKey(el) {
-        return el && el.nodeType === 1 && key(el);
+      function getKey(el2) {
+        return el2 && el2.nodeType === 1 && key(el2);
       }
       function keyToMap(els) {
         let map = {};
-        els.forEach((el) => {
-          let theKey = getKey(el);
+        els.forEach((el2) => {
+          let theKey = getKey(el2);
           if (theKey) {
-            map[theKey] = el;
+            map[theKey] = el2;
           }
         });
         return map;
@@ -387,50 +387,50 @@ __export(module_exports, {
 module.exports = __toCommonJS(module_exports);
 
 // src/helpers.js
-function targetRoot(el) {
-  return el.closest("[x-target],[x-ajax]");
+function targetIds(el2) {
+  let target = el2.getAttribute("x-target");
+  return target ? target.split(" ") : [el2.id];
 }
-function targets(el, sync = false) {
-  let ids = el.hasAttribute("x-target") ? el.getAttribute("x-target").split(" ") : [el.id];
+function validateIds(ids = []) {
   ids = ids.filter((id) => id);
   if (ids.length === 0) {
     throw new MissingIdError(el);
   }
-  if (sync) {
-    document.querySelectorAll("[x-sync]").forEach((el2) => {
-      if (!el2.id) {
-        throw new MissingIdError(el2);
-      }
-      if (!ids.includes(el2.id)) {
-        ids.push(el2.id);
-      }
-    });
-  }
   return ids;
 }
-function isIgnored(el) {
-  let root = el.closest("[x-ajax],[x-noajax]");
-  return root.hasAttribute("x-noajax");
+function syncIds(ids = []) {
+  document.querySelectorAll("[x-sync]").forEach((el2) => {
+    if (!el2.id) {
+      throw new MissingIdError(el2);
+    }
+    if (!ids.includes(el2.id)) {
+      ids.push(el2.id);
+    }
+  });
+  return ids;
+}
+function hasTarget(el2) {
+  return el2.hasAttribute("x-target");
 }
 var MissingIdError = class extends Error {
-  constructor(el) {
+  constructor(el2) {
     var _a, _b;
-    let description = (_b = ((_a = el.outerHTML.match(/<[^>]+>/)) != null ? _a : [])[0]) != null ? _b : "[Element]";
+    let description = (_b = ((_a = el2.outerHTML.match(/<[^>]+>/)) != null ? _a : [])[0]) != null ? _b : "[Element]";
     super(`${description} is missing an ID to target.`);
     this.name = "Target Missing ID";
   }
 };
 var FailedResponseError = class extends Error {
-  constructor(el) {
+  constructor(el2) {
     var _a, _b;
-    let description = (_b = ((_a = el.outerHTML.match(/<[^>]+>/)) != null ? _a : [])[0]) != null ? _b : "[Element]";
+    let description = (_b = ((_a = el2.outerHTML.match(/<[^>]+>/)) != null ? _a : [])[0]) != null ? _b : "[Element]";
     super(`${description} received a failed response.`);
     this.name = "Failed Response";
   }
 };
-function source(el) {
+function source(el2) {
   var _a;
-  return (_a = el.closest("[data-source]")) == null ? void 0 : _a.dataset.source;
+  return (_a = el2.closest("[data-source]")) == null ? void 0 : _a.dataset.source;
 }
 
 // src/render.js
@@ -470,9 +470,9 @@ var arrange = {
     return document.getElementById(to.id);
   }
 };
-async function render(request, ids, el, events = true) {
+async function render(request, ids, el2, events = true) {
   let dispatch = (name, detail = {}) => {
-    return el.dispatchEvent(
+    return el2.dispatchEvent(
       new CustomEvent(name, {
         detail,
         bubbles: true,
@@ -501,7 +501,7 @@ async function render(request, ids, el, events = true) {
   if (!response.html)
     return;
   let fragment = document.createRange().createContextualFragment(response.html);
-  let targets2 = ids.map((id) => {
+  let targets = ids.map((id) => {
     let template = fragment.getElementById(id);
     let target = document.getElementById(id);
     let strategy = target.getAttribute("x-arrange") || "replace";
@@ -515,7 +515,7 @@ async function render(request, ids, el, events = true) {
       if (response.ok) {
         return renderElement(strategy, target, target.cloneNode(false));
       }
-      throw new FailedResponseError(el);
+      throw new FailedResponseError(el2);
     }
     let freshEl = renderElement(strategy, target, template);
     if (freshEl) {
@@ -523,11 +523,11 @@ async function render(request, ids, el, events = true) {
     }
     return freshEl;
   });
-  let focus = el.getAttribute("x-focus");
+  let focus = el2.getAttribute("x-focus");
   if (focus) {
     focusOn(document.getElementById(focus));
   }
-  return targets2;
+  return targets;
 }
 function renderElement(strategy, from, to) {
   return arrange[strategy](from, to);
@@ -578,28 +578,26 @@ function readHtml(response) {
     return response;
   });
 }
-function focusOn(el) {
+function focusOn(el2) {
   setTimeout(() => {
-    if (!el.hasAttribute("tabindex"))
-      el.setAttribute("tabindex", "0");
-    el.focus();
+    if (!el2.hasAttribute("tabindex"))
+      el2.setAttribute("tabindex", "0");
+    el2.focus();
   }, 0);
 }
 
 // src/link.js
-function listenForNavigate(el) {
+function listenForNavigate(el2) {
   let handler = async (event) => {
     let link = event.target;
-    if (!isLocalLink(link) || isIgnored(link))
+    if (!isLocalLink(link) || !hasTarget(link))
       return;
     event.preventDefault();
     event.stopPropagation();
+    let ids = syncIds(validateIds(targetIds(link)));
+    let request = navigateRequest(link);
     try {
-      return await render(
-        navigateRequest(link),
-        targets(targetRoot(link), true),
-        link
-      );
+      return await render(request, ids, link);
     } catch (error) {
       if (error instanceof FailedResponseError) {
         console.warn(error.message);
@@ -609,8 +607,8 @@ function listenForNavigate(el) {
       throw error;
     }
   };
-  el.addEventListener("click", handler);
-  return () => el.removeEventListener("click", handler);
+  el2.addEventListener("click", handler);
+  return () => el2.removeEventListener("click", handler);
 }
 function navigateRequest(link) {
   return {
@@ -620,38 +618,36 @@ function navigateRequest(link) {
     body: null
   };
 }
-function isLocalLink(el) {
-  return el.href && !el.hash && el.origin == location.origin;
+function isLocalLink(el2) {
+  return el2.href && !el2.hash && el2.origin == location.origin;
 }
 
 // src/form.js
-function listenForSubmit(el) {
+function listenForSubmit(el2) {
   let handler = async (event) => {
     let form = event.target;
-    if (isIgnored(form))
+    if (!hasTarget(form))
       return;
     event.preventDefault();
     event.stopPropagation();
+    let ids = syncIds(validateIds(targetIds(form)));
+    let request = formRequest(form, event.submitter);
     try {
       return await withSubmitter(event.submitter, () => {
-        return render(
-          formRequest(form, event.submitter),
-          targets(targetRoot(form), true),
-          form
-        );
+        return render(request, ids, form);
       });
     } catch (error) {
       if (error instanceof FailedResponseError) {
         console.warn(error.message);
-        form.setAttribute("x-noajax", "true");
+        form.removeAttribute("x-target");
         form.requestSubmit(event.submitter);
         return;
       }
       throw error;
     }
   };
-  el.addEventListener("submit", handler);
-  return () => el.removeEventListener("submit", handler);
+  el2.addEventListener("submit", handler);
+  return () => el2.removeEventListener("submit", handler);
 }
 function formRequest(form, submitter = null) {
   let method = (form.getAttribute("method") || "GET").toUpperCase();
@@ -758,21 +754,17 @@ function clickCaptured(event) {
 
 // src/index.js
 function src_default(Alpine) {
-  Alpine.addInitSelector(() => `[${Alpine.prefixed("ajax")}]`);
-  Alpine.directive("ajax", (el, {}, { cleanup }) => {
-    let stopListeningForSubmit = listenForSubmit(el);
-    let stopListeningForNavigate = listenForNavigate(el);
-    cleanup(() => {
-      stopListeningForSubmit();
-      stopListeningForNavigate();
-    });
-  });
-  Alpine.magic("ajax", (el) => {
-    return (action, options) => {
+  listenForSubmit(window);
+  listenForNavigate(window);
+  Alpine.magic("ajax", (el2) => {
+    return (action, options = {}) => {
+      let ids = options.target ? options.target.split(" ") : targetIds(el2);
+      ids = validateIds(ids);
+      ids = options.sync ? syncIds(ids) : ids;
       let body = null;
-      if (options && options.body) {
+      if (options.body) {
         if (options.body instanceof HTMLFormElement) {
-          body = options.body;
+          body = new FormData(options.body);
         } else {
           body = new FormData();
           for (let key in options.body) {
@@ -782,20 +774,15 @@ function src_default(Alpine) {
       }
       let request = {
         action,
-        method: (options == null ? void 0 : options.method) ? options.method.toUpperCase() : "GET",
+        method: options.method ? options.method.toUpperCase() : "GET",
         body,
-        referrer: source(el)
+        referrer: source(el2)
       };
-      return render(
-        request,
-        targets(el, options == null ? void 0 : options.sync),
-        el,
-        Boolean(options == null ? void 0 : options.events)
-      );
+      return render(request, ids, el2, Boolean(options.events));
     };
   });
   Alpine.addInitSelector(() => `[${Alpine.prefixed("load")}]`);
-  Alpine.directive("load", (el, { expression }, { evaluate }) => {
+  Alpine.directive("load", (el2, { expression }, { evaluate }) => {
     if (typeof expression === "string") {
       return !!expression.trim() && evaluate(expression);
     }

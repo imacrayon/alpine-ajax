@@ -1,36 +1,35 @@
-export function targetRoot(el) {
-  return el.closest('[x-target],[x-ajax]')
+export function targetIds(el) {
+  let target = el.getAttribute('x-target')
+
+  return target ? target.split(' ') : [el.id]
 }
 
-export function targets(el, sync = false) {
-  let ids = el.hasAttribute('x-target')
-    ? el.getAttribute('x-target').split(' ')
-    : [el.id]
-
+export function validateIds(ids = []) {
   ids = ids.filter(id => id)
 
   if (ids.length === 0) {
     throw new MissingIdError(el)
   }
 
-  if (sync) {
-    document.querySelectorAll('[x-sync]').forEach(el => {
-      if (!el.id) {
-        throw new MissingIdError(el)
-      }
+  return ids
+}
 
-      if (!ids.includes(el.id)) {
-        ids.push(el.id)
-      }
-    })
-  }
+export function syncIds(ids = []) {
+  document.querySelectorAll('[x-sync]').forEach(el => {
+    if (!el.id) {
+      throw new MissingIdError(el)
+    }
+
+    if (!ids.includes(el.id)) {
+      ids.push(el.id)
+    }
+  })
 
   return ids
 }
 
-export function isIgnored(el) {
-  let root = el.closest('[x-ajax],[x-noajax]')
-  return root.hasAttribute('x-noajax')
+export function hasTarget(el) {
+  return el.hasAttribute('x-target')
 }
 
 export class MissingIdError extends Error {

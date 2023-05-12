@@ -1,28 +1,23 @@
-import { targets, source } from './helpers'
+import { targetIds, validateIds, syncIds, source } from './helpers'
 import { render } from './render'
 import { listenForNavigate } from './link'
 import { listenForSubmit } from './form'
 import './polyfills'
 
 export default function (Alpine) {
-  Alpine.addInitSelector(() => `[${Alpine.prefixed('ajax')}]`)
-
-  Alpine.directive('ajax', (el, { }, { cleanup }) => {
-    let stopListeningForSubmit = listenForSubmit(el)
-    let stopListeningForNavigate = listenForNavigate(el)
-
-    cleanup(() => {
-      stopListeningForSubmit()
-      stopListeningForNavigate()
-    })
-  })
+  listenForSubmit(window)
+  listenForNavigate(window)
 
   Alpine.magic('ajax', (el) => {
-    return (action, options) => {
+    return (action, options = {}) => {
+      let ids = options.target ? options.target.split(' ') : targetIds(el)
+      ids = validateIds(ids)
+      ids = options.sync ? syncIds(ids) : ids
+
       let body = null
-      if (options && options.body) {
+      if (options.body) {
         if (options.body instanceof HTMLFormElement) {
-          body = options.body
+          body = new FormData(options.body)
         } else {
           body = new FormData
           for (let key in options.body) {
@@ -33,17 +28,12 @@ export default function (Alpine) {
 
       let request = {
         action,
-        method: options?.method ? options.method.toUpperCase() : 'GET',
+        method: options.method ? options.method.toUpperCase() : 'GET',
         body,
         referrer: source(el),
       }
 
-      return render(
-        request,
-        targets(el, options?.sync),
-        el,
-        Boolean(options?.events)
-      )
+      return render(request, ids, el, Boolean(options.events))
     }
   })
 

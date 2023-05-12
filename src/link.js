@@ -1,18 +1,16 @@
-import { targetRoot, targets, isIgnored, source, FailedResponseError } from './helpers'
+import { hasTarget, targetIds, validateIds, syncIds, source, FailedResponseError } from './helpers'
 import { render } from './render'
 
 export function listenForNavigate(el) {
   let handler = async (event) => {
     let link = event.target
-    if (!isLocalLink(link) || isIgnored(link)) return
+    if (!isLocalLink(link) || !hasTarget(link)) return
     event.preventDefault()
     event.stopPropagation()
+    let ids = syncIds(validateIds(targetIds(link)))
+    let request = navigateRequest(link)
     try {
-      return await render(
-        navigateRequest(link),
-        targets(targetRoot(link), true),
-        link
-      )
+      return await render(request, ids, link)
     } catch (error) {
       if (error instanceof FailedResponseError) {
         console.warn(error.message)

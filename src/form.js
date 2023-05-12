@@ -1,24 +1,22 @@
-import { targetRoot, targets, isIgnored, source, FailedResponseError } from './helpers'
+import { hasTarget, targetIds, validateIds, syncIds, source, FailedResponseError } from './helpers'
 import { render } from './render'
 
 export function listenForSubmit(el) {
   let handler = async (event) => {
     let form = event.target
-    if (isIgnored(form)) return
+    if (!hasTarget(form)) return
     event.preventDefault()
     event.stopPropagation()
+    let ids = syncIds(validateIds(targetIds(form)))
+    let request = formRequest(form, event.submitter)
     try {
       return await withSubmitter(event.submitter, () => {
-        return render(
-          formRequest(form, event.submitter),
-          targets(targetRoot(form), true),
-          form
-        )
+        return render(request, ids, form)
       })
     } catch (error) {
       if (error instanceof FailedResponseError) {
         console.warn(error.message)
-        form.setAttribute('x-noajax', 'true')
+        form.removeAttribute('x-target')
         form.requestSubmit(event.submitter)
         return
       }
