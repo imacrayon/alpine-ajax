@@ -27,3 +27,4 @@ jobs:
         with:
           publish_dir: ./docs/_site
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          cname: alpine-ajax.js.org
