@@ -130,7 +130,7 @@ Use `x-arrange` to control how targeted elements will handle incoming AJAX eleme
   </tr>
   <tr>
     <td><code>morph</code></td>
-    <td>Morphs the incoming element into the target element using the <a href="https://alpinejs.dev/plugins/morph">Alpine Morph Plugin</a>. Requires that the Morph Plugin is installed.</td>
+    <td>Morphs the incoming element into the target element using the <a href="https://alpinejs.dev/plugins/morph">Alpine Morph Plugin</a>.</td>
   </tr>
   </tbody>
 </table>
