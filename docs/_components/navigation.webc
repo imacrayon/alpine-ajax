@@ -88,8 +88,6 @@
 
       let forceOpen = window.getComputedStyle(details).getPropertyValue("--details-force-closed");
 
-      console.log(forceOpen)
-
       function forceState(isOpen) {
         if (isOpen) {
           details.setAttribute("open", "open");
