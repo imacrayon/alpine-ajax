@@ -275,7 +275,7 @@ Here's an example of aborting a form request when the user cancels a dialog prom
 </form>
 ```
 
-**Note:** The `ajax:success` and `ajax:error` events only convey the status code of an AJAX request. You'll probably find that [Server Events](#server-events) are better for triggering actions based on your server's response.
+**Note:** The `ajax:success` and `ajax:error` events only convey the status code of an AJAX request. You'll probably find that [Server Events](/examples/server-events/) are better for triggering actions based on your server's response.
 
 ## Loading states
 
