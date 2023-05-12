@@ -5,13 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Notifications | Alpine AJAX</title>
   <meta name="description" content="Alpine AJAX">
-  <meta name="generator" content="Eleventy v2.0.0">
-  <meta name="google-site-verification" content="KhOCyk8VyxCmepwpHn1DYq6uIPae0czI_8Z1atrRwJM">
+  <meta name="generator" content="Eleventy v2.0.1">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prism-themes@1.9.0/themes/prism-a11y-dark.min.css">
   <link rel="stylesheet" href="/alpine-ajax/css/main.css?id=3">
-  <script defer="" src="/alpine-ajax/js/main.js"></script>
-  <style>
-  #example {
+  <style>#example {
     overflow-x: auto;
     padding: 1rem;
     margin: -1rem;
@@ -82,11 +79,10 @@
   #server_timeline button:hover,
   #server_timeline button:focus {
     color: var(--nc-lk-2);
-  }
-
-</style>
-  <script>
-  function example(action) {
+  }</style>
+  
+  <script defer="" src="/alpine-ajax/js/main.js"></script>
+  <script>function example(action) {
     let requestCount = 1
     document.addEventListener('DOMContentLoaded', () => {
       window.fetch(action)
@@ -134,53 +130,119 @@
     pre.appendChild(text);
     return pre.innerHTML;
   }
-</script>
+class DetailsForceState extends HTMLElement {
+    constructor() {
+      super();
+      this._observer = new MutationObserver(this._init.bind(this));
+    }
+
+    connectedCallback() {
+      if (this.children.length) {
+        this._init();
+      }
+      this._observer.observe(this, { childList: true });
+    }
+
+    _init() {
+      let details = this.querySelector(":scope details");
+      if (!details) {
+        return;
+      }
+
+      let forceOpen = window.getComputedStyle(details).getPropertyValue("--details-force-closed");
+
+      function forceState(isOpen) {
+        if (isOpen) {
+          details.setAttribute("open", "open");
+        } else {
+          details.removeAttribute("open");
+        }
+      }
+
+      if (forceOpen && "matchMedia" in window) {
+        let mm1 = window.matchMedia(forceOpen);
+        forceState(!mm1.matches);
+        mm1.addListener(function (e) {
+          forceState(!e.matches);
+        });
+      }
+    }
+  }
+
+  if ("customElements" in window) {
+    customElements.define("details-force-state", DetailsForceState);
+  }</script>
 </head>
+
 
 <body>
   <a href="#main">Skip to content</a>
   <div class="with-sidebar">
     <header>
       <nav aria-label="Site">
-        <ul role="list">
-          <li><a href="/alpine-ajax/" aria-current="">Alpine AJAX</a></li>
-          <li>
-            <a href="/alpine-ajax/reference" aria-current="">Reference</a>
-            <ol>
-              <li><a href="/alpine-ajax/reference/#installation" aria-current="">Installation</a></li>
-              <li><a href="/alpine-ajax/reference/#usage" aria-current="">Usage</a></li>
-              <li><a href="/alpine-ajax/reference/#x-ajax" aria-current="">x-ajax</a></li>
-              <li><a href="/alpine-ajax/reference/#ajax" aria-current="">$ajax</a></li>
-              <li><a href="/alpine-ajax/reference/#x-sync" aria-current="">x-sync</a></li>
-              <li><a href="/alpine-ajax/reference/#x-load" aria-current="">x-load</a></li>
-              <li><a href="/alpine-ajax/reference/#loading-states" aria-current="">Loading States</a></li>
-              <li><a href="/alpine-ajax/reference/#creating-demos" aria-current="">Creating Demos</a></li>
-            </ol>
-          </li>
-          <li><a href="/alpine-ajax/examples" aria-current="">Examples</a></li>
-          <li><a href="/alpine-ajax/comparisons" aria-current="">Comparisons</a></li>
-          <li><a href="https://github.com/imacrayon/alpine-ajax/releases">Changelog</a></li>
-          <li><a href="https://github.com/imacrayon/alpine-ajax">GitHub</a></li>
-        </ul>
-      </nav>
-    </header>
-    <main id="main"><script src="/alpine-ajax/js/server.js"></script>
-<h1 id="notifications" tabindex="-1">Notifications <a class="direct-link" href="#notifications" aria-hidden="true">#</a></h1>
+  <ul role="list">
+    <li><a href="/alpine-ajax/" aria-current="">Alpine AJAX</a></li>
+    <li>
+      <a href="/alpine-ajax/reference" aria-current="">Reference</a>
+      
+    </li>
+    <li>
+      <a href="/alpine-ajax/examples" aria-current="">Examples</a>
+      <details-force-state>
+        <details>
+          <summary>Jump to...</summary>
+          <ol>
+            <li><a href="/alpine-ajax/examples/toggle-button" aria-current="">Toggle Button</a></li>
+            <li><a href="/alpine-ajax/examples/loading" aria-current="">Loading Indicator</a></li>
+            <li><a href="/alpine-ajax/examples/inline-edit" aria-current="">Inline Edit</a></li>
+            <li><a href="/alpine-ajax/examples/delete-row" aria-current="">Delete Row</a></li>
+            <li><a href="/alpine-ajax/examples/edit-row" aria-current="">Edit Row</a></li>
+            <li><a href="/alpine-ajax/examples/bulk-update" aria-current="">Bulk Update</a></li>
+            <li><a href="/alpine-ajax/examples/instant-search" aria-current="">Instant Search</a></li>
+            <li><a href="/alpine-ajax/examples/filterable-content" aria-current="">Filterable Content</a></li>
+            <li><a href="/alpine-ajax/examples/inline-validation" aria-current="">Inline Validation</a></li>
+            <li><a href="/alpine-ajax/examples/lazy-load" aria-current="">Lazy Load</a></li>
+            <li><a href="/alpine-ajax/examples/dialog" aria-current="">Dialog (Modal)</a></li>
+            <li><a href="/alpine-ajax/examples/progress-bar" aria-current="">Progress Bar</a></li>
+            <li><a href="/alpine-ajax/examples/infinite-scroll" aria-current="">Infinite Scroll</a></li>
+            <li><a href="/alpine-ajax/examples/notifications" aria-current="page">Notifications</a></li>
+            <li><a href="/alpine-ajax/examples/server-events" aria-current="">Server Events</a></li>
+            <li><a href="/alpine-ajax/examples/dialog-form" aria-current="">Dialog (Modal) Form</a></li>
+          </ol>
+        </details>
+      </details-force-state>
+    </li>
+    <li>
+      <a href="/alpine-ajax/comparisons" aria-current="">Comparisons</a>
+      
+    </li>
+    <li><a href="https://github.com/imacrayon/alpine-ajax/releases">Changelog</a></li>
+    <li><a href="https://github.com/imacrayon/alpine-ajax">GitHub</a></li>
+  </ul>
+</nav>
 
+
+
+    </header>
+    <main id="main"><h1 id="notifications" tabindex="-1">Notifications <a href="#notifications" aria-hidden="true" class="direct-link">#</a></h1>
+
+<script src="/alpine-ajax/js/server.js"></script>
 <p>This demo shows how to implement notification &quot;toasts&quot;.</p>
 <p>This pattern starts with an empty list for our notifications, the list needs an <code>id</code> and <code>x-sync</code>. We've added <code>aria-live</code> to the list so that screen readers will read out new notifications when the are added to the list.</p>
 <pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>ul</span> <span class="token attr-name">x-sync</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>notification_list<span class="token punctuation">"</span></span> <span class="token attr-name">role</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>status<span class="token punctuation">"</span></span> <span class="token attr-name">aria-live</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>polite<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>ul</span><span class="token punctuation">></span></span></code></pre>
 <p>We'll also add an AJAX form to this demo so that we can issue requests to the server that will trigger new notifications.</p>
-<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>form</span> <span class="token attr-name">x-ajax</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>action<span class="token punctuation">"</span></span> <span class="token attr-name">method</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>post<span class="token punctuation">"</span></span> <span class="token attr-name">action</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>/action<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>button</span><span class="token punctuation">></span></span>Click Me<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>button</span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>form</span><span class="token punctuation">></span></span></code></pre>
+<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>form</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>action<span class="token punctuation">"</span></span> <span class="token attr-name">x-target</span> <span class="token attr-name">method</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>post<span class="token punctuation">"</span></span> <span class="token attr-name">action</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>/action<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>button</span><span class="token punctuation">></span></span>Click Me<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>button</span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>form</span><span class="token punctuation">></span></span></code></pre>
 <p>When the AJAX form is submitted the server will respond with a new notification in the list:</p>
-<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>ul</span> <span class="token attr-name">x-sync</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>notification_list<span class="token punctuation">"</span></span> <span class="token attr-name">role</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>status<span class="token punctuation">"</span></span> <span class="token attr-name">aria-live</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>polite<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>li</span><span class="token punctuation">></span></span><br>    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>span</span><span class="token punctuation">></span></span>The button was pressed 1 time.<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>span</span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>li</span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>ul</span><span class="token punctuation">></span></span></code></pre>
+<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>ul</span> <span class="token attr-name">x-sync</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>notification_list<span class="token punctuation">"</span></span> <span class="token attr-name">role</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>status<span class="token punctuation">"</span></span> <span class="token attr-name">aria-live</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>polite<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>li</span><span class="token punctuation">></span></span><br>    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>span</span><span class="token punctuation">></span></span>The button was clicked 1 time.<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>span</span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>li</span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>ul</span><span class="token punctuation">></span></span></code></pre>
 <p>Notice that our AJAX form <strong>does not</strong> target the <code>notification_list</code> element, however since our list has the <code>x-sync</code> attribute, it will automatically update any time the server responds with an element assigned <code>id=&quot;notification_list&quot;</code>.</p>
-<p>We can sprinkle in some additional Alpine code to animate our notifications:</p>
-<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>li</span> <span class="token attr-name">key</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>1<span class="token punctuation">"</span></span> <span class="token attr-name">x-data</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>{<br>    show: false,<br>    init() {<br>      this.$nextTick(() => this.show = true)<br>    }<br>  }<span class="token punctuation">"</span></span><br>  <span class="token attr-name">x-show</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>show<span class="token punctuation">"</span></span><br>  <span class="token attr-name">x-transition.duration.500ms</span><br><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>span</span><span class="token punctuation">></span></span>The button was pressed 1 time.<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>span</span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>li</span><span class="token punctuation">></span></span></code></pre>
-<p>Additionally, we can add a &quot;Dismiss&quot; button to each notification:</p>
-<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>li</span> <span class="token attr-name">key</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>1<span class="token punctuation">"</span></span> <span class="token attr-name">x-data</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>{<br>    show: false,<br>    init() {<br>      this.$nextTick(() => this.show = true)<br>    },<br>    dismiss() {<br>      this.show = false<br>      setTimeout(() => this.$el.remove(), 500)<br>    }<br>  }<span class="token punctuation">"</span></span><br>  <span class="token attr-name">x-show</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>show<span class="token punctuation">"</span></span><br>  <span class="token attr-name">x-transition.duration.500ms</span><br><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>span</span><span class="token punctuation">></span></span>The button was pressed 1 time.<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>span</span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>button</span> <span class="token attr-name">@click</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>dismiss()<span class="token punctuation">"</span></span> <span class="token attr-name">type</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>button<span class="token punctuation">"</span></span> <span class="token attr-name">aria-label</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>Dismiss<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token entity named-entity" title="&times;">&amp;times;</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>button</span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>li</span><span class="token punctuation">></span></span></code></pre>
+<p>Our notifications should now be appearing with each form submission, however, every time the form is submitted the new incoming notification will replace the existing notification in our list of notifications; Essentially, our UI can only display a single notification at a time. Instead, we should prepend incoming notifications to our list so that older notifications aren't clobbered with each AJAX request. We can control how new content is added to our list using the <code>x-arrange</code> attribute:</p>
+<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>ul</span> <span class="token attr-name">x-sync</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>notification_list<span class="token punctuation">"</span></span> <span class="token attr-name">x-arrange</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>prepend<span class="token punctuation">"</span></span> <span class="token attr-name">role</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>status<span class="token punctuation">"</span></span> <span class="token attr-name">aria-live</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>polite<span class="token punctuation">"</span></span><span class="token punctuation">></span></span></code></pre>
+<p>The basic functionality of our notifications is complete, next there are a few refinements we can make to the notification messages to further improve the user experience. First, let's sprinkle in some additional Alpine code to animate our notifications:</p>
+<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>li</span> <span class="token attr-name">x-data</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>{<br>    show: false,<br>    init() {<br>      this.$nextTick(() => this.show = true)<br>    }<br>  }<span class="token punctuation">"</span></span><br>  <span class="token attr-name">x-show</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>show<span class="token punctuation">"</span></span><br>  <span class="token attr-name">x-transition.duration.500ms</span><br><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>span</span><span class="token punctuation">></span></span>The button was clicked 1 time.<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>span</span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>li</span><span class="token punctuation">></span></span></code></pre>
+<p>Now our messages will smoothly transition in and out as they are added and removed from the notification list. Next, we can add a &quot;Dismiss&quot; button to each notification:</p>
+<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>li</span> <span class="token attr-name">x-data</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>{<br>    show: false,<br>    init() {<br>      this.$nextTick(() => this.show = true)<br>    },<br>    dismiss() {<br>      this.show = false<br>      setTimeout(() => this.$el.remove(), 500)<br>    }<br>  }<span class="token punctuation">"</span></span><br>  <span class="token attr-name">x-show</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>show<span class="token punctuation">"</span></span><br>  <span class="token attr-name">x-transition.duration.500ms</span><br><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>span</span><span class="token punctuation">></span></span>The button was clicked 1 time.<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>span</span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>button</span> <span class="token attr-name">@click</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>dismiss()<span class="token punctuation">"</span></span> <span class="token attr-name">type</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>button<span class="token punctuation">"</span></span> <span class="token attr-name">aria-label</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>Dismiss<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token entity named-entity" title="&times;">&amp;times;</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>button</span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>li</span><span class="token punctuation">></span></span></code></pre>
 <p>And finally, we can make our notifications automatically dismiss after 6 seconds, by adding a <code>setTimeout</code> in the <code>init</code> method:</p>
-<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>li</span> <span class="token attr-name">key</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>1<span class="token punctuation">"</span></span> <span class="token attr-name">x-data</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>{<br>    show: false,<br>    init() {<br>      this.$nextTick(() => this.show = true)<br>      setTimeout(() => this.dismiss(), 6000)<br>    },<br>    dismiss() {<br>      this.show = false<br>      setTimeout(() => this.$el.remove(), 500)<br>    }<br>  }<span class="token punctuation">"</span></span><br>  <span class="token attr-name">x-show</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>show<span class="token punctuation">"</span></span><br>  <span class="token attr-name">x-transition.duration.500ms</span><br><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>span</span><span class="token punctuation">></span></span>The button was pressed 1 time.<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>span</span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>button</span> <span class="token attr-name">@click</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>dismiss()<span class="token punctuation">"</span></span> <span class="token attr-name">type</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>button<span class="token punctuation">"</span></span> <span class="token attr-name">aria-label</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>Dismiss<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token entity named-entity" title="&times;">&amp;times;</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>button</span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>li</span><span class="token punctuation">></span></span></code></pre>
+<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>li</span> <span class="token attr-name">x-data</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>{<br>    show: false,<br>    init() {<br>      this.$nextTick(() => this.show = true)<br>      setTimeout(() => this.dismiss(), 6000)<br>    },<br>    dismiss() {<br>      this.show = false<br>      setTimeout(() => this.$el.remove(), 500)<br>    }<br>  }<span class="token punctuation">"</span></span><br>  <span class="token attr-name">x-show</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>show<span class="token punctuation">"</span></span><br>  <span class="token attr-name">x-transition.duration.500ms</span><br><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>span</span><span class="token punctuation">></span></span>The button was clicked 1 time.<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>span</span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>button</span> <span class="token attr-name">@click</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>dismiss()<span class="token punctuation">"</span></span> <span class="token attr-name">type</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>button<span class="token punctuation">"</span></span> <span class="token attr-name">aria-label</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>Dismiss<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token entity named-entity" title="&times;">&amp;times;</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>button</span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>li</span><span class="token punctuation">></span></span></code></pre>
 <style>
   #notification_list {
     position: absolute;
@@ -217,16 +279,16 @@
   example('/action')
 
   function view() {
-    return `<form x-ajax id="action" method="post" action="/action">
+    return `<form id="action" x-target method="post" action="/action">
   <button>Click Me</button>
 </form>
-<ul x-sync id="notification_list" role="status" aria-live="polite">
+<ul x-sync id="notification_list" x-arrange="prepend" role="status" aria-live="polite">
   ${count > 0 ? notification() : ''}
 </ul>`
   }
 
   function notification() {
-    return `<li key="${count}" x-data="{
+    return `<li x-data="{
       show: false,
       init() {
         this.$nextTick(() => this.show = true)
@@ -240,14 +302,14 @@
     x-show="show"
     x-transition.duration.500ms
   >
-    <span>The button was pressed ${count} ${count > 1 ? 'times' : 'time'}.</span>
+    <span>The button was clicked ${count} ${count > 1 ? 'times' : 'time'}.</span>
     <button @click="dismiss()" type="button" aria-label="Dismiss">&times;</button>
   </li>`
   }
 
 </script>
 
-<h2 id="demo" tabindex="-1">Demo <a class="direct-link" href="#demo" aria-hidden="true">#</a></h2>
+<h2 id="demo" tabindex="-1">Demo <a href="#demo" aria-hidden="true" class="direct-link">#</a></h2>
 
 <noscript>
   <strong>This demo would normally function without JavaScript enabled</strong>. However, this website is static and

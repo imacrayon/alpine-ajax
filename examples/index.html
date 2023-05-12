@@ -5,41 +5,105 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Examples | Alpine AJAX</title>
   <meta name="description" content="Alpine AJAX">
-  <meta name="generator" content="Eleventy v2.0.0">
-  <meta name="google-site-verification" content="KhOCyk8VyxCmepwpHn1DYq6uIPae0czI_8Z1atrRwJM">
+  <meta name="generator" content="Eleventy v2.0.1">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prism-themes@1.9.0/themes/prism-a11y-dark.min.css">
   <link rel="stylesheet" href="/alpine-ajax/css/main.css?id=3">
-  <script defer="" src="/alpine-ajax/js/main.js"></script>
   <style></style>
-  <script></script>
+  
+  <script defer="" src="/alpine-ajax/js/main.js"></script>
+  <script>class DetailsForceState extends HTMLElement {
+    constructor() {
+      super();
+      this._observer = new MutationObserver(this._init.bind(this));
+    }
+
+    connectedCallback() {
+      if (this.children.length) {
+        this._init();
+      }
+      this._observer.observe(this, { childList: true });
+    }
+
+    _init() {
+      let details = this.querySelector(":scope details");
+      if (!details) {
+        return;
+      }
+
+      let forceOpen = window.getComputedStyle(details).getPropertyValue("--details-force-closed");
+
+      function forceState(isOpen) {
+        if (isOpen) {
+          details.setAttribute("open", "open");
+        } else {
+          details.removeAttribute("open");
+        }
+      }
+
+      if (forceOpen && "matchMedia" in window) {
+        let mm1 = window.matchMedia(forceOpen);
+        forceState(!mm1.matches);
+        mm1.addListener(function (e) {
+          forceState(!e.matches);
+        });
+      }
+    }
+  }
+
+  if ("customElements" in window) {
+    customElements.define("details-force-state", DetailsForceState);
+  }</script>
 </head>
+
 
 <body>
   <a href="#main">Skip to content</a>
   <div class="with-sidebar">
     <header>
       <nav aria-label="Site">
-        <ul role="list">
-          <li><a href="/alpine-ajax/" aria-current="">Alpine AJAX</a></li>
-          <li>
-            <a href="/alpine-ajax/reference" aria-current="">Reference</a>
-            <ol>
-              <li><a href="/alpine-ajax/reference/#installation" aria-current="">Installation</a></li>
-              <li><a href="/alpine-ajax/reference/#usage" aria-current="">Usage</a></li>
-              <li><a href="/alpine-ajax/reference/#x-ajax" aria-current="">x-ajax</a></li>
-              <li><a href="/alpine-ajax/reference/#ajax" aria-current="">$ajax</a></li>
-              <li><a href="/alpine-ajax/reference/#x-sync" aria-current="">x-sync</a></li>
-              <li><a href="/alpine-ajax/reference/#x-load" aria-current="">x-load</a></li>
-              <li><a href="/alpine-ajax/reference/#loading-states" aria-current="">Loading States</a></li>
-              <li><a href="/alpine-ajax/reference/#creating-demos" aria-current="">Creating Demos</a></li>
-            </ol>
-          </li>
-          <li><a href="/alpine-ajax/examples" aria-current="page">Examples</a></li>
-          <li><a href="/alpine-ajax/comparisons" aria-current="">Comparisons</a></li>
-          <li><a href="https://github.com/imacrayon/alpine-ajax/releases">Changelog</a></li>
-          <li><a href="https://github.com/imacrayon/alpine-ajax">GitHub</a></li>
-        </ul>
-      </nav>
+  <ul role="list">
+    <li><a href="/alpine-ajax/" aria-current="">Alpine AJAX</a></li>
+    <li>
+      <a href="/alpine-ajax/reference" aria-current="">Reference</a>
+      
+    </li>
+    <li>
+      <a href="/alpine-ajax/examples" aria-current="page">Examples</a>
+      <details-force-state>
+        <details>
+          <summary>Jump to...</summary>
+          <ol>
+            <li><a href="/alpine-ajax/examples/toggle-button" aria-current="">Toggle Button</a></li>
+            <li><a href="/alpine-ajax/examples/loading" aria-current="">Loading Indicator</a></li>
+            <li><a href="/alpine-ajax/examples/inline-edit" aria-current="">Inline Edit</a></li>
+            <li><a href="/alpine-ajax/examples/delete-row" aria-current="">Delete Row</a></li>
+            <li><a href="/alpine-ajax/examples/edit-row" aria-current="">Edit Row</a></li>
+            <li><a href="/alpine-ajax/examples/bulk-update" aria-current="">Bulk Update</a></li>
+            <li><a href="/alpine-ajax/examples/instant-search" aria-current="">Instant Search</a></li>
+            <li><a href="/alpine-ajax/examples/filterable-content" aria-current="">Filterable Content</a></li>
+            <li><a href="/alpine-ajax/examples/inline-validation" aria-current="">Inline Validation</a></li>
+            <li><a href="/alpine-ajax/examples/lazy-load" aria-current="">Lazy Load</a></li>
+            <li><a href="/alpine-ajax/examples/dialog" aria-current="">Dialog (Modal)</a></li>
+            <li><a href="/alpine-ajax/examples/progress-bar" aria-current="">Progress Bar</a></li>
+            <li><a href="/alpine-ajax/examples/infinite-scroll" aria-current="">Infinite Scroll</a></li>
+            <li><a href="/alpine-ajax/examples/notifications" aria-current="">Notifications</a></li>
+            <li><a href="/alpine-ajax/examples/server-events" aria-current="">Server Events</a></li>
+            <li><a href="/alpine-ajax/examples/dialog-form" aria-current="">Dialog (Modal) Form</a></li>
+          </ol>
+        </details>
+      </details-force-state>
+    </li>
+    <li>
+      <a href="/alpine-ajax/comparisons" aria-current="">Comparisons</a>
+      
+    </li>
+    <li><a href="https://github.com/imacrayon/alpine-ajax/releases">Changelog</a></li>
+    <li><a href="https://github.com/imacrayon/alpine-ajax">GitHub</a></li>
+  </ul>
+</nav>
+
+
+
     </header>
     <main id="main"><h1 id="examples" tabindex="-1">Examples <a class="direct-link" href="#examples" aria-hidden="true">#</a></h1>
 <p>Below are a set of UX patterns implemented using Alpine AJAX with minimal HTML and styling.</p>
@@ -48,6 +112,10 @@
   <div>
     <dt><a href="/alpine-ajax/examples/toggle-button">Toggle Button</a></dt>
     <dd>The classic "Like" toggle button.</dd>
+  </div>
+  <div>
+    <dt><a href="/alpine-ajax/examples/loading">Loading Indicator</a></dt>
+    <dd>Indicate when AJAX requests are processing.</dd>
   </div>
   <div>
     <dt><a href="/alpine-ajax/examples/inline-edit">Inline Edit</a></dt>
@@ -78,18 +146,6 @@
     <dd>Validate an input field before it is submitted.</dd>
   </div>
   <div>
-    <dt><a href="/alpine-ajax/examples/notifications">Notifications</a></dt>
-    <dd>Display notification "toasts".</dd>
-  </div>
-  <div>
-    <dt><a href="/alpine-ajax/examples/loading">Loading Indicator</a></dt>
-    <dd>Indicate when AJAX requests are processing.</dd>
-  </div>
-  <div>
-    <dt><a href="/alpine-ajax/examples/progress-bar">Progress Bar</a></dt>
-    <dd>A job-runner like progress bar.</dd>
-  </div>
-  <div>
     <dt><a href="/alpine-ajax/examples/lazy-load">Lazy Load</a></dt>
     <dd>Lazy load remote content.</dd>
   </div>
@@ -98,13 +154,25 @@
     <dd>Load remote content in a dialog window.</dd>
   </div>
   <div>
+    <dt><a href="/alpine-ajax/examples/progress-bar">Progress Bar</a></dt>
+    <dd>A job-runner like progress bar.</dd>
+  </div>
+  <div>
+    <dt><a href="/alpine-ajax/examples/infinite-scroll">Infinite Scroll</a></dt>
+    <dd>Load additional content as the user scrolls.</dd>
+  </div>
+  <div>
+    <dt><a href="/alpine-ajax/examples/notifications">Notifications</a></dt>
+    <dd>Display notification "toasts".</dd>
+  </div>
+  <div>
+    <dt><a href="/alpine-ajax/examples/server-events">Server Events</a></dt>
+    <dd>Build a commenting experience using server initiated events.</dd>
+  </div>
+  <div>
     <dt><a href="/alpine-ajax/examples/dialog-form">Dialog (Modal) Form</a></dt>
     <dd>Handle forms withing a dialog window.</dd>
   </div>
-  <!-- <div>
-    <dt><a href="/examples/inline-validation">Inline Validation</a></dt>
-    <dd>Inline validation when a form field changes.</dd>
-  </div> -->
 </dl>
 </main>
   </div>

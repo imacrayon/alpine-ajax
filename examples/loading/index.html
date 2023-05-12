@@ -5,13 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Loading Indicator | Alpine AJAX</title>
   <meta name="description" content="Alpine AJAX">
-  <meta name="generator" content="Eleventy v2.0.0">
-  <meta name="google-site-verification" content="KhOCyk8VyxCmepwpHn1DYq6uIPae0czI_8Z1atrRwJM">
+  <meta name="generator" content="Eleventy v2.0.1">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prism-themes@1.9.0/themes/prism-a11y-dark.min.css">
   <link rel="stylesheet" href="/alpine-ajax/css/main.css?id=3">
-  <script defer="" src="/alpine-ajax/js/main.js"></script>
-  <style>
-  #example {
+  <style>#example {
     overflow-x: auto;
     padding: 1rem;
     margin: -1rem;
@@ -82,11 +79,10 @@
   #server_timeline button:hover,
   #server_timeline button:focus {
     color: var(--nc-lk-2);
-  }
-
-</style>
-  <script>
-  function example(action) {
+  }</style>
+  
+  <script defer="" src="/alpine-ajax/js/main.js"></script>
+  <script>function example(action) {
     let requestCount = 1
     document.addEventListener('DOMContentLoaded', () => {
       window.fetch(action)
@@ -134,45 +130,109 @@
     pre.appendChild(text);
     return pre.innerHTML;
   }
-</script>
+class DetailsForceState extends HTMLElement {
+    constructor() {
+      super();
+      this._observer = new MutationObserver(this._init.bind(this));
+    }
+
+    connectedCallback() {
+      if (this.children.length) {
+        this._init();
+      }
+      this._observer.observe(this, { childList: true });
+    }
+
+    _init() {
+      let details = this.querySelector(":scope details");
+      if (!details) {
+        return;
+      }
+
+      let forceOpen = window.getComputedStyle(details).getPropertyValue("--details-force-closed");
+
+      function forceState(isOpen) {
+        if (isOpen) {
+          details.setAttribute("open", "open");
+        } else {
+          details.removeAttribute("open");
+        }
+      }
+
+      if (forceOpen && "matchMedia" in window) {
+        let mm1 = window.matchMedia(forceOpen);
+        forceState(!mm1.matches);
+        mm1.addListener(function (e) {
+          forceState(!e.matches);
+        });
+      }
+    }
+  }
+
+  if ("customElements" in window) {
+    customElements.define("details-force-state", DetailsForceState);
+  }</script>
 </head>
+
 
 <body>
   <a href="#main">Skip to content</a>
   <div class="with-sidebar">
     <header>
       <nav aria-label="Site">
-        <ul role="list">
-          <li><a href="/alpine-ajax/" aria-current="">Alpine AJAX</a></li>
-          <li>
-            <a href="/alpine-ajax/reference" aria-current="">Reference</a>
-            <ol>
-              <li><a href="/alpine-ajax/reference/#installation" aria-current="">Installation</a></li>
-              <li><a href="/alpine-ajax/reference/#usage" aria-current="">Usage</a></li>
-              <li><a href="/alpine-ajax/reference/#x-ajax" aria-current="">x-ajax</a></li>
-              <li><a href="/alpine-ajax/reference/#ajax" aria-current="">$ajax</a></li>
-              <li><a href="/alpine-ajax/reference/#x-sync" aria-current="">x-sync</a></li>
-              <li><a href="/alpine-ajax/reference/#x-load" aria-current="">x-load</a></li>
-              <li><a href="/alpine-ajax/reference/#loading-states" aria-current="">Loading States</a></li>
-              <li><a href="/alpine-ajax/reference/#creating-demos" aria-current="">Creating Demos</a></li>
-            </ol>
-          </li>
-          <li><a href="/alpine-ajax/examples" aria-current="">Examples</a></li>
-          <li><a href="/alpine-ajax/comparisons" aria-current="">Comparisons</a></li>
-          <li><a href="https://github.com/imacrayon/alpine-ajax/releases">Changelog</a></li>
-          <li><a href="https://github.com/imacrayon/alpine-ajax">GitHub</a></li>
-        </ul>
-      </nav>
-    </header>
-    <main id="main"><script src="/alpine-ajax/js/server.js"></script>
-<h1 id="loading-indicator" tabindex="-1">Loading Indicator <a class="direct-link" href="#loading-indicator" aria-hidden="true">#</a></h1>
+  <ul role="list">
+    <li><a href="/alpine-ajax/" aria-current="">Alpine AJAX</a></li>
+    <li>
+      <a href="/alpine-ajax/reference" aria-current="">Reference</a>
+      
+    </li>
+    <li>
+      <a href="/alpine-ajax/examples" aria-current="">Examples</a>
+      <details-force-state>
+        <details>
+          <summary>Jump to...</summary>
+          <ol>
+            <li><a href="/alpine-ajax/examples/toggle-button" aria-current="">Toggle Button</a></li>
+            <li><a href="/alpine-ajax/examples/loading" aria-current="page">Loading Indicator</a></li>
+            <li><a href="/alpine-ajax/examples/inline-edit" aria-current="">Inline Edit</a></li>
+            <li><a href="/alpine-ajax/examples/delete-row" aria-current="">Delete Row</a></li>
+            <li><a href="/alpine-ajax/examples/edit-row" aria-current="">Edit Row</a></li>
+            <li><a href="/alpine-ajax/examples/bulk-update" aria-current="">Bulk Update</a></li>
+            <li><a href="/alpine-ajax/examples/instant-search" aria-current="">Instant Search</a></li>
+            <li><a href="/alpine-ajax/examples/filterable-content" aria-current="">Filterable Content</a></li>
+            <li><a href="/alpine-ajax/examples/inline-validation" aria-current="">Inline Validation</a></li>
+            <li><a href="/alpine-ajax/examples/lazy-load" aria-current="">Lazy Load</a></li>
+            <li><a href="/alpine-ajax/examples/dialog" aria-current="">Dialog (Modal)</a></li>
+            <li><a href="/alpine-ajax/examples/progress-bar" aria-current="">Progress Bar</a></li>
+            <li><a href="/alpine-ajax/examples/infinite-scroll" aria-current="">Infinite Scroll</a></li>
+            <li><a href="/alpine-ajax/examples/notifications" aria-current="">Notifications</a></li>
+            <li><a href="/alpine-ajax/examples/server-events" aria-current="">Server Events</a></li>
+            <li><a href="/alpine-ajax/examples/dialog-form" aria-current="">Dialog (Modal) Form</a></li>
+          </ol>
+        </details>
+      </details-force-state>
+    </li>
+    <li>
+      <a href="/alpine-ajax/comparisons" aria-current="">Comparisons</a>
+      
+    </li>
+    <li><a href="https://github.com/imacrayon/alpine-ajax/releases">Changelog</a></li>
+    <li><a href="https://github.com/imacrayon/alpine-ajax">GitHub</a></li>
+  </ul>
+</nav>
 
+
+
+    </header>
+    <main id="main"><h1 id="loading-indicator" tabindex="-1">Loading Indicator <a href="#loading-indicator" aria-hidden="true" class="direct-link">#</a></h1>
+
+<script src="/alpine-ajax/js/server.js"></script>
 <p>This example shows how you can use a little CSS to create a nice looking loading indicator that will appear while AJAX requests are in progress.</p>
 <p>We start with a card that contains a link. When the link is clicked, a <code>GET</code> request is issued to retrieve a table of contact information.</p>
-<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>card<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">x-ajax</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>table<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br>    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>a</span> <span class="token attr-name">href</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>/contacts<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>Load Contacts<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>a</span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span></code></pre>
+<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>card<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>table<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br>    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>a</span> <span class="token attr-name">href</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>/contacts<span class="token punctuation">"</span></span> <span class="token attr-name">x-target</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>table<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>Load Contacts<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>a</span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span></code></pre>
 <p>The contact table could take a long time to load if it is large, so it would be helpful to indicate to our users that the app is processing their request.</p>
 <p>Fortunately, Alpine AJAX adds <code>aria-busy=&quot;true&quot;</code> to targets while a request is processing. We can use this attribute in our CSS to automatically show and hide a loading indicator:</p>
-<pre class="language-css"><code class="language-css"><span class="token selector">[aria-busy]</span> <span class="token punctuation">{</span><br>  <span class="token property">--loading-size</span><span class="token punctuation">:</span> 64px<span class="token punctuation">;</span><br>  <span class="token property">--loading-stroke</span><span class="token punctuation">:</span> 6px<span class="token punctuation">;</span><br>  <span class="token property">--loading-duration</span><span class="token punctuation">:</span> 1s<span class="token punctuation">;</span><br>  <span class="token property">opacity</span><span class="token punctuation">:</span> .75<br><span class="token punctuation">}</span><br><span class="token selector">[aria-busy]:before</span> <span class="token punctuation">{</span><br>  <span class="token property">content</span><span class="token punctuation">:</span> <span class="token string">''</span><span class="token punctuation">;</span><br>  <span class="token property">position</span><span class="token punctuation">:</span> absolute<span class="token punctuation">;</span><br>  <span class="token property">top</span><span class="token punctuation">:</span> 50%<span class="token punctuation">;</span><br>  <span class="token property">left</span><span class="token punctuation">:</span> 50%<span class="token punctuation">;</span><br>  <span class="token property">width</span><span class="token punctuation">:</span> <span class="token function">var</span><span class="token punctuation">(</span>--loading-size<span class="token punctuation">)</span><span class="token punctuation">;</span><br>  <span class="token property">height</span><span class="token punctuation">:</span> <span class="token function">var</span><span class="token punctuation">(</span>--loading-size<span class="token punctuation">)</span><span class="token punctuation">;</span><br>  <span class="token property">margin-top</span><span class="token punctuation">:</span> <span class="token function">calc</span><span class="token punctuation">(</span><span class="token function">var</span><span class="token punctuation">(</span>--loading-size<span class="token punctuation">)</span> / 2 * -1<span class="token punctuation">)</span><span class="token punctuation">;</span><br>  <span class="token property">margin-left</span><span class="token punctuation">:</span> <span class="token function">calc</span><span class="token punctuation">(</span><span class="token function">var</span><span class="token punctuation">(</span>--loading-size<span class="token punctuation">)</span> / 2 * -1<span class="token punctuation">)</span><span class="token punctuation">;</span><br>  <span class="token property">border</span><span class="token punctuation">:</span> <span class="token function">var</span><span class="token punctuation">(</span>--loading-stroke<span class="token punctuation">)</span> solid <span class="token function">rgba</span><span class="token punctuation">(</span>0<span class="token punctuation">,</span> 0<span class="token punctuation">,</span> 0<span class="token punctuation">,</span> 0.15<span class="token punctuation">)</span><span class="token punctuation">;</span><br>  <span class="token property">border-radius</span><span class="token punctuation">:</span> 50%<span class="token punctuation">;</span><br>  <span class="token property">border-top-color</span><span class="token punctuation">:</span> <span class="token function">rgba</span><span class="token punctuation">(</span>0<span class="token punctuation">,</span> 0<span class="token punctuation">,</span> 0<span class="token punctuation">,</span> 0.5<span class="token punctuation">)</span><span class="token punctuation">;</span><br>  <span class="token property">animation</span><span class="token punctuation">:</span> rotate <span class="token function">calc</span><span class="token punctuation">(</span><span class="token function">var</span><span class="token punctuation">(</span>--loading-duration<span class="token punctuation">)</span><span class="token punctuation">)</span> linear infinite<span class="token punctuation">;</span><br><span class="token punctuation">}</span><br><span class="token atrule"><span class="token rule">@keyframes</span> rotate</span> <span class="token punctuation">{</span><br>  <span class="token selector">100%</span> <span class="token punctuation">{</span> <span class="token property">transform</span><span class="token punctuation">:</span> <span class="token function">rotate</span><span class="token punctuation">(</span>360deg<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token punctuation">}</span><br><span class="token punctuation">}</span></code></pre>
+<pre class="language-css"><code class="language-css"><span class="token selector">[aria-busy]</span> <span class="token punctuation">{</span><br>  <span class="token property">--loading-size</span><span class="token punctuation">:</span> 64px<span class="token punctuation">;</span><br>  <span class="token property">--loading-stroke</span><span class="token punctuation">:</span> 6px<span class="token punctuation">;</span><br>  <span class="token property">--loading-duration</span><span class="token punctuation">:</span> 1s<span class="token punctuation">;</span><br>  <span class="token property">position</span><span class="token punctuation">:</span> relative<span class="token punctuation">;</span><br>  <span class="token property">opacity</span><span class="token punctuation">:</span> .75<br><span class="token punctuation">}</span><br><span class="token selector">[aria-busy]:before</span> <span class="token punctuation">{</span><br>  <span class="token property">content</span><span class="token punctuation">:</span> <span class="token string">''</span><span class="token punctuation">;</span><br>  <span class="token property">position</span><span class="token punctuation">:</span> absolute<span class="token punctuation">;</span><br>  <span class="token property">top</span><span class="token punctuation">:</span> 50%<span class="token punctuation">;</span><br>  <span class="token property">left</span><span class="token punctuation">:</span> 50%<span class="token punctuation">;</span><br>  <span class="token property">width</span><span class="token punctuation">:</span> <span class="token function">var</span><span class="token punctuation">(</span>--loading-size<span class="token punctuation">)</span><span class="token punctuation">;</span><br>  <span class="token property">height</span><span class="token punctuation">:</span> <span class="token function">var</span><span class="token punctuation">(</span>--loading-size<span class="token punctuation">)</span><span class="token punctuation">;</span><br>  <span class="token property">margin-top</span><span class="token punctuation">:</span> <span class="token function">calc</span><span class="token punctuation">(</span><span class="token function">var</span><span class="token punctuation">(</span>--loading-size<span class="token punctuation">)</span> / 2 * -1<span class="token punctuation">)</span><span class="token punctuation">;</span><br>  <span class="token property">margin-left</span><span class="token punctuation">:</span> <span class="token function">calc</span><span class="token punctuation">(</span><span class="token function">var</span><span class="token punctuation">(</span>--loading-size<span class="token punctuation">)</span> / 2 * -1<span class="token punctuation">)</span><span class="token punctuation">;</span><br>  <span class="token property">border</span><span class="token punctuation">:</span> <span class="token function">var</span><span class="token punctuation">(</span>--loading-stroke<span class="token punctuation">)</span> solid <span class="token function">rgba</span><span class="token punctuation">(</span>0<span class="token punctuation">,</span> 0<span class="token punctuation">,</span> 0<span class="token punctuation">,</span> 0.15<span class="token punctuation">)</span><span class="token punctuation">;</span><br>  <span class="token property">border-radius</span><span class="token punctuation">:</span> 50%<span class="token punctuation">;</span><br>  <span class="token property">border-top-color</span><span class="token punctuation">:</span> <span class="token function">rgba</span><span class="token punctuation">(</span>0<span class="token punctuation">,</span> 0<span class="token punctuation">,</span> 0<span class="token punctuation">,</span> 0.5<span class="token punctuation">)</span><span class="token punctuation">;</span><br>  <span class="token property">animation</span><span class="token punctuation">:</span> rotate <span class="token function">calc</span><span class="token punctuation">(</span><span class="token function">var</span><span class="token punctuation">(</span>--loading-duration<span class="token punctuation">)</span><span class="token punctuation">)</span> linear infinite<span class="token punctuation">;</span><br><span class="token punctuation">}</span><br><span class="token atrule"><span class="token rule">@keyframes</span> rotate</span> <span class="token punctuation">{</span><br>  <span class="token selector">100%</span> <span class="token punctuation">{</span> <span class="token property">transform</span><span class="token punctuation">:</span> <span class="token function">rotate</span><span class="token punctuation">(</span>360deg<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token punctuation">}</span><br><span class="token punctuation">}</span></code></pre>
 <style>
   [aria-busy] {
     --loading-size: 64px;
@@ -210,7 +270,7 @@
 
   #table {
     margin-bottom: 0;
-    min-height: 164px
+    min-height: 164px;
   }
 
 </style>
@@ -223,9 +283,9 @@
   example('/dashboard')
 
   function dashboard() {
-    return `<div id="card" x-data>
-  <div id="table" x-ajax>
-    <a href="/contacts">Load Contacts</a>
+    return `<div id="card">
+  <div id="table">
+    <a href="/contacts" x-target="table">Load Contacts</a>
   </div>
 </div>`
   }
@@ -252,7 +312,7 @@
     </tr>
     <tr>
       <td>BMO</td>
-      <td>bmo@moco.com</td>
+      <td>bmo@mo.co</td>
       <td>Inactive</td>
     </tr>
     <tr>
@@ -265,7 +325,7 @@
   }
 </script>
 
-<h2 id="demo" tabindex="-1">Demo <a class="direct-link" href="#demo" aria-hidden="true">#</a></h2>
+<h2 id="demo" tabindex="-1">Demo <a href="#demo" aria-hidden="true" class="direct-link">#</a></h2>
 
 <noscript>
   <strong>This demo would normally function without JavaScript enabled</strong>. However, this website is static and

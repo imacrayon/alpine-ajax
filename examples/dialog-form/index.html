@@ -5,13 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dialog (Modal) Form | Alpine AJAX</title>
   <meta name="description" content="Alpine AJAX">
-  <meta name="generator" content="Eleventy v2.0.0">
-  <meta name="google-site-verification" content="KhOCyk8VyxCmepwpHn1DYq6uIPae0czI_8Z1atrRwJM">
+  <meta name="generator" content="Eleventy v2.0.1">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prism-themes@1.9.0/themes/prism-a11y-dark.min.css">
   <link rel="stylesheet" href="/alpine-ajax/css/main.css?id=3">
-  <script defer="" src="/alpine-ajax/js/main.js"></script>
-  <style>
-  #example {
+  <style>#example {
     overflow-x: auto;
     padding: 1rem;
     margin: -1rem;
@@ -82,11 +79,10 @@
   #server_timeline button:hover,
   #server_timeline button:focus {
     color: var(--nc-lk-2);
-  }
-
-</style>
-  <script>
-  function example(action) {
+  }</style>
+  
+  <script defer="" src="/alpine-ajax/js/main.js"></script>
+  <script>function example(action) {
     let requestCount = 1
     document.addEventListener('DOMContentLoaded', () => {
       window.fetch(action)
@@ -134,42 +130,106 @@
     pre.appendChild(text);
     return pre.innerHTML;
   }
-</script>
+class DetailsForceState extends HTMLElement {
+    constructor() {
+      super();
+      this._observer = new MutationObserver(this._init.bind(this));
+    }
+
+    connectedCallback() {
+      if (this.children.length) {
+        this._init();
+      }
+      this._observer.observe(this, { childList: true });
+    }
+
+    _init() {
+      let details = this.querySelector(":scope details");
+      if (!details) {
+        return;
+      }
+
+      let forceOpen = window.getComputedStyle(details).getPropertyValue("--details-force-closed");
+
+      function forceState(isOpen) {
+        if (isOpen) {
+          details.setAttribute("open", "open");
+        } else {
+          details.removeAttribute("open");
+        }
+      }
+
+      if (forceOpen && "matchMedia" in window) {
+        let mm1 = window.matchMedia(forceOpen);
+        forceState(!mm1.matches);
+        mm1.addListener(function (e) {
+          forceState(!e.matches);
+        });
+      }
+    }
+  }
+
+  if ("customElements" in window) {
+    customElements.define("details-force-state", DetailsForceState);
+  }</script>
 </head>
+
 
 <body>
   <a href="#main">Skip to content</a>
   <div class="with-sidebar">
     <header>
       <nav aria-label="Site">
-        <ul role="list">
-          <li><a href="/alpine-ajax/" aria-current="">Alpine AJAX</a></li>
-          <li>
-            <a href="/alpine-ajax/reference" aria-current="">Reference</a>
-            <ol>
-              <li><a href="/alpine-ajax/reference/#installation" aria-current="">Installation</a></li>
-              <li><a href="/alpine-ajax/reference/#usage" aria-current="">Usage</a></li>
-              <li><a href="/alpine-ajax/reference/#x-ajax" aria-current="">x-ajax</a></li>
-              <li><a href="/alpine-ajax/reference/#ajax" aria-current="">$ajax</a></li>
-              <li><a href="/alpine-ajax/reference/#x-sync" aria-current="">x-sync</a></li>
-              <li><a href="/alpine-ajax/reference/#x-load" aria-current="">x-load</a></li>
-              <li><a href="/alpine-ajax/reference/#loading-states" aria-current="">Loading States</a></li>
-              <li><a href="/alpine-ajax/reference/#creating-demos" aria-current="">Creating Demos</a></li>
-            </ol>
-          </li>
-          <li><a href="/alpine-ajax/examples" aria-current="">Examples</a></li>
-          <li><a href="/alpine-ajax/comparisons" aria-current="">Comparisons</a></li>
-          <li><a href="https://github.com/imacrayon/alpine-ajax/releases">Changelog</a></li>
-          <li><a href="https://github.com/imacrayon/alpine-ajax">GitHub</a></li>
-        </ul>
-      </nav>
-    </header>
-    <main id="main"><script src="/alpine-ajax/js/server.js"></script>
-<h1 id="dialog-modal-form" tabindex="-1">Dialog (Modal) Form <a class="direct-link" href="#dialog-modal-form" aria-hidden="true">#</a></h1>
+  <ul role="list">
+    <li><a href="/alpine-ajax/" aria-current="">Alpine AJAX</a></li>
+    <li>
+      <a href="/alpine-ajax/reference" aria-current="">Reference</a>
+      
+    </li>
+    <li>
+      <a href="/alpine-ajax/examples" aria-current="">Examples</a>
+      <details-force-state>
+        <details>
+          <summary>Jump to...</summary>
+          <ol>
+            <li><a href="/alpine-ajax/examples/toggle-button" aria-current="">Toggle Button</a></li>
+            <li><a href="/alpine-ajax/examples/loading" aria-current="">Loading Indicator</a></li>
+            <li><a href="/alpine-ajax/examples/inline-edit" aria-current="">Inline Edit</a></li>
+            <li><a href="/alpine-ajax/examples/delete-row" aria-current="">Delete Row</a></li>
+            <li><a href="/alpine-ajax/examples/edit-row" aria-current="">Edit Row</a></li>
+            <li><a href="/alpine-ajax/examples/bulk-update" aria-current="">Bulk Update</a></li>
+            <li><a href="/alpine-ajax/examples/instant-search" aria-current="">Instant Search</a></li>
+            <li><a href="/alpine-ajax/examples/filterable-content" aria-current="">Filterable Content</a></li>
+            <li><a href="/alpine-ajax/examples/inline-validation" aria-current="">Inline Validation</a></li>
+            <li><a href="/alpine-ajax/examples/lazy-load" aria-current="">Lazy Load</a></li>
+            <li><a href="/alpine-ajax/examples/dialog" aria-current="">Dialog (Modal)</a></li>
+            <li><a href="/alpine-ajax/examples/progress-bar" aria-current="">Progress Bar</a></li>
+            <li><a href="/alpine-ajax/examples/infinite-scroll" aria-current="">Infinite Scroll</a></li>
+            <li><a href="/alpine-ajax/examples/notifications" aria-current="">Notifications</a></li>
+            <li><a href="/alpine-ajax/examples/server-events" aria-current="">Server Events</a></li>
+            <li><a href="/alpine-ajax/examples/dialog-form" aria-current="page">Dialog (Modal) Form</a></li>
+          </ol>
+        </details>
+      </details-force-state>
+    </li>
+    <li>
+      <a href="/alpine-ajax/comparisons" aria-current="">Comparisons</a>
+      
+    </li>
+    <li><a href="https://github.com/imacrayon/alpine-ajax/releases">Changelog</a></li>
+    <li><a href="https://github.com/imacrayon/alpine-ajax">GitHub</a></li>
+  </ul>
+</nav>
 
+
+
+    </header>
+    <main id="main"><h1 id="dialog-modal-form" tabindex="-1">Dialog (Modal) Form <a href="#dialog-modal-form" aria-hidden="true" class="direct-link">#</a></h1>
+
+<script src="/alpine-ajax/js/server.js"></script>
 <p>This example shows how to handle forms within a dialog window.</p>
 <p>We start with an empty <code>&lt;dialog&gt;</code> and a <code>&lt;table&gt;</code> of contact data.</p>
-<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>table</span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>thead</span><span class="token punctuation">></span></span><br>    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>tr</span><span class="token punctuation">></span></span><br>      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>th</span> <span class="token attr-name">scope</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>col<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>Name<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>th</span><span class="token punctuation">></span></span><br>      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>th</span> <span class="token attr-name">scope</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>col<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>Email<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>th</span><span class="token punctuation">></span></span><br>      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>th</span> <span class="token attr-name">scope</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>col<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>Status<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>th</span><span class="token punctuation">></span></span><br>      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>th</span> <span class="token attr-name">scope</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>col<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>Action<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>th</span><span class="token punctuation">></span></span><br>    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>tr</span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>thead</span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>tbody</span> <span class="token attr-name">x-ajax</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>contacts<span class="token punctuation">"</span></span> <span class="token attr-name"><span class="token namespace">@ajax:</span>before</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>$dispatch('dialog:open')<span class="token punctuation">"</span></span> <span class="token attr-name"><span class="token namespace">@contact:</span>updated</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>$ajax('/contacts')<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br>    ...<br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>tbody</span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>table</span><span class="token punctuation">></span></span><br><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dialog</span> <span class="token attr-name">x-data</span> <span class="token attr-name"><span class="token namespace">@dialog:</span>open.window</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>$el.showModal()<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>contact<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dialog</span><span class="token punctuation">></span></span></code></pre>
+<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>table</span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>thead</span><span class="token punctuation">></span></span><br>    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>tr</span><span class="token punctuation">></span></span><br>      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>th</span> <span class="token attr-name">scope</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>col<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>Name<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>th</span><span class="token punctuation">></span></span><br>      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>th</span> <span class="token attr-name">scope</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>col<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>Email<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>th</span><span class="token punctuation">></span></span><br>      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>th</span> <span class="token attr-name">scope</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>col<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>Status<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>th</span><span class="token punctuation">></span></span><br>      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>th</span> <span class="token attr-name">scope</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>col<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>Action<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>th</span><span class="token punctuation">></span></span><br>    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>tr</span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>thead</span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>tbody</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>contacts<span class="token punctuation">"</span></span> <span class="token attr-name">x-init</span> <span class="token attr-name"><span class="token namespace">@ajax:</span>before</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>$dispatch('dialog:open')<span class="token punctuation">"</span></span> <span class="token attr-name"><span class="token namespace">@contact:</span>updated</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>$ajax('/contacts')<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br>    ...<br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>tbody</span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>table</span><span class="token punctuation">></span></span><br><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dialog</span> <span class="token attr-name">x-init</span> <span class="token attr-name"><span class="token namespace">@dialog:</span>open.window</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>$el.showModal()<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>contact<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dialog</span><span class="token punctuation">></span></span></code></pre>
 <p>Notice that the <code>&lt;tbody&gt;</code> has an <code>id</code> and is listening to two events:</p>
 <ol>
 <li>When the <code>ajax:before</code> event is triggered we dispatch a <code>dialog:open</code> event.</li>
@@ -179,9 +239,9 @@
 <pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>tr</span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>td</span><span class="token punctuation">></span></span>Finn Mertins<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>td</span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>td</span><span class="token punctuation">></span></span>fmertins@candykingdom.gov<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>td</span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>td</span><span class="token punctuation">></span></span>Active<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>td</span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>td</span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>a</span> <span class="token attr-name">href</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>/contacts/1/edit<span class="token punctuation">"</span></span> <span class="token attr-name">x-target</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>contact<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>Edit<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>a</span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>td</span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>tr</span><span class="token punctuation">></span></span></code></pre>
 <p>In each table row we have an &quot;Edit&quot; link targeting the empty <code>#contact</code> <code>&lt;div&gt;</code> inside our <code>&lt;dialog&gt;</code>.</p>
 <p>Clicking the &quot;Edit&quot; link issues a <code>GET</code> request to <code>/contacts/1/edit</code> which returns the corresponding <code>&lt;form&gt;</code> for the contact inside the <code>&lt;dialog&gt;</code>:</p>
-<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>form</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>contact<span class="token punctuation">"</span></span> <span class="token attr-name">x-ajax</span> <span class="token attr-name"><span class="token namespace">@ajax:</span>success</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>$dispatch('contact:updated')<span class="token punctuation">"</span></span> <span class="token attr-name">method</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>put<span class="token punctuation">"</span></span> <span class="token attr-name">action</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>/contacts/1<span class="token punctuation">"</span></span> <span class="token attr-name">aria-label</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>Contact Information<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span><span class="token punctuation">></span></span><br>    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>label</span> <span class="token attr-name">for</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>name<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>Name<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>label</span><span class="token punctuation">></span></span><br>    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>input</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>name<span class="token punctuation">"</span></span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>name<span class="token punctuation">"</span></span> <span class="token attr-name">value</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>Finn<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span><span class="token punctuation">></span></span><br>    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>label</span> <span class="token attr-name">for</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>email<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>Email<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>label</span><span class="token punctuation">></span></span><br>    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>input</span> <span class="token attr-name">type</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>email<span class="token punctuation">"</span></span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>email<span class="token punctuation">"</span></span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>email<span class="token punctuation">"</span></span> <span class="token attr-name">value</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>fmertins@candykingdom.gov<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span><span class="token punctuation">></span></span><br>    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>label</span> <span class="token attr-name">for</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>status<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>Status<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>label</span><span class="token punctuation">></span></span><br>    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>select</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>status<span class="token punctuation">"</span></span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>status<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br>      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>option</span> <span class="token attr-name">value</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>Active<span class="token punctuation">"</span></span> <span class="token attr-name">selected</span><span class="token punctuation">></span></span>Active<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>option</span><span class="token punctuation">></span></span><br>      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>option</span> <span class="token attr-name">value</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>Inactive<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>Inactive<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>option</span><span class="token punctuation">></span></span><br>    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>select</span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>button</span><span class="token punctuation">></span></span>Update<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>button</span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>form</span><span class="token punctuation">></span></span></code></pre>
-<p>Notice the <code>&lt;form&gt;</code> has the <code>x-ajax</code> attribute so that both success and error responses are rendered within the <code>&lt;dialog&gt;</code>.</p>
-<p>When the <code>&lt;form&gt;</code> is submitted a <code>PUT</code> request is issued to <code>/contacts/1</code> and the <code>contact:updated</code> event is fired upon a successful response.</p>
+<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>form</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>contact<span class="token punctuation">"</span></span> <span class="token attr-name">x-target</span> <span class="token attr-name">method</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>put<span class="token punctuation">"</span></span> <span class="token attr-name">action</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>/contacts/1<span class="token punctuation">"</span></span> <span class="token attr-name">aria-label</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>Contact Information<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span><span class="token punctuation">></span></span><br>    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>label</span> <span class="token attr-name">for</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>name<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>Name<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>label</span><span class="token punctuation">></span></span><br>    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>input</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>name<span class="token punctuation">"</span></span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>name<span class="token punctuation">"</span></span> <span class="token attr-name">value</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>Finn<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span><span class="token punctuation">></span></span><br>    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>label</span> <span class="token attr-name">for</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>email<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>Email<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>label</span><span class="token punctuation">></span></span><br>    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>input</span> <span class="token attr-name">type</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>email<span class="token punctuation">"</span></span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>email<span class="token punctuation">"</span></span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>email<span class="token punctuation">"</span></span> <span class="token attr-name">value</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>fmertins@candykingdom.gov<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span><span class="token punctuation">></span></span><br>    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>label</span> <span class="token attr-name">for</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>status<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>Status<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>label</span><span class="token punctuation">></span></span><br>    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>select</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>status<span class="token punctuation">"</span></span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>status<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br>      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>option</span> <span class="token attr-name">value</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>Active<span class="token punctuation">"</span></span> <span class="token attr-name">selected</span><span class="token punctuation">></span></span>Active<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>option</span><span class="token punctuation">></span></span><br>      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>option</span> <span class="token attr-name">value</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>Inactive<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>Inactive<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>option</span><span class="token punctuation">></span></span><br>    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>select</span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>button</span><span class="token punctuation">></span></span>Update<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>button</span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>form</span><span class="token punctuation">></span></span></code></pre>
+<p>Notice the <code>&lt;form&gt;</code> has the <code>x-target</code> attribute so that both success and error responses are rendered within the <code>&lt;dialog&gt;</code>.</p>
+<p>When the <code>&lt;form&gt;</code> is submitted, a <code>PUT</code> request is issued to <code>/contacts/1</code> and the <code>contact:updated</code> event is fired upon a successful response.</p>
 <p>Finally, the <code>contact:updated</code> event causes the <code>&lt;tbody&gt;</code> to refresh with the updated contact data.</p>
 <script>
   var database = function () {
@@ -205,7 +265,6 @@
 
   window.route('GET', '/contacts', () => index(database.all()))
   database.all().forEach(contact => {
-    window.route('GET', `/contacts/${contact.id}`, () => show(database.find(contact.id)))
     window.route('GET', `/contacts/${contact.id}/edit`, () => edit(database.find(contact.id)))
     window.route('PUT', `/contacts/${contact.id}`, (input) => {
       database.update(contact.id, input)
@@ -234,7 +293,7 @@
   }
 
   function edit(contact) {
-    return `<form id="contact" x-ajax @ajax:success="$dispatch('contact:updated')" method="put" action="/contacts/${contact.id}" aria-label="Contact Information">
+    return `<form id="contact" x-target @ajax:success="$dispatch('contact:updated')" method="put" action="/contacts/${contact.id}" aria-label="Contact Information">
     <div>
       <label for="name">Name</label>
       <input id="name" name="name" value="${contact.name}">
@@ -264,7 +323,7 @@
       <th scope="col" width="53">Action</th>
     </tr>
   </thead>
-  <tbody id="contacts" x-ajax @ajax:before="$dispatch('dialog:open')" @contact:updated.window="$ajax('/contacts')">
+  <tbody id="contacts" x-init @ajax:before="$dispatch('dialog:open')" @contact:updated.window="$ajax('/contacts')">
     ${rows}
   </tbody>
 </table>
@@ -275,7 +334,7 @@
   }
 </script>
 
-<h2 id="demo" tabindex="-1">Demo <a class="direct-link" href="#demo" aria-hidden="true">#</a></h2>
+<h2 id="demo" tabindex="-1">Demo <a href="#demo" aria-hidden="true" class="direct-link">#</a></h2>
 
 <noscript>
   <strong>This demo would normally function without JavaScript enabled</strong>. However, this website is static and

@@ -5,54 +5,110 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Alpine AJAX</title>
   <meta name="description" content="Alpine AJAX">
-  <meta name="generator" content="Eleventy v2.0.0">
-  <meta name="google-site-verification" content="KhOCyk8VyxCmepwpHn1DYq6uIPae0czI_8Z1atrRwJM">
+  <meta name="generator" content="Eleventy v2.0.1">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prism-themes@1.9.0/themes/prism-a11y-dark.min.css">
   <link rel="stylesheet" href="/alpine-ajax/css/main.css?id=3">
-  <script defer="" src="/alpine-ajax/js/main.js"></script>
   <style></style>
-  <script></script>
+  
+  <script defer="" src="/alpine-ajax/js/main.js"></script>
+  <script>class DetailsForceState extends HTMLElement {
+    constructor() {
+      super();
+      this._observer = new MutationObserver(this._init.bind(this));
+    }
+
+    connectedCallback() {
+      if (this.children.length) {
+        this._init();
+      }
+      this._observer.observe(this, { childList: true });
+    }
+
+    _init() {
+      let details = this.querySelector(":scope details");
+      if (!details) {
+        return;
+      }
+
+      let forceOpen = window.getComputedStyle(details).getPropertyValue("--details-force-closed");
+
+      function forceState(isOpen) {
+        if (isOpen) {
+          details.setAttribute("open", "open");
+        } else {
+          details.removeAttribute("open");
+        }
+      }
+
+      if (forceOpen && "matchMedia" in window) {
+        let mm1 = window.matchMedia(forceOpen);
+        forceState(!mm1.matches);
+        mm1.addListener(function (e) {
+          forceState(!e.matches);
+        });
+      }
+    }
+  }
+
+  if ("customElements" in window) {
+    customElements.define("details-force-state", DetailsForceState);
+  }</script>
 </head>
+
 
 <body>
   <a href="#main">Skip to content</a>
   <div class="with-sidebar">
     <header>
       <nav aria-label="Site">
-        <ul role="list">
-          <li><a href="/alpine-ajax/" aria-current="page">Alpine AJAX</a></li>
-          <li>
-            <a href="/alpine-ajax/reference" aria-current="">Reference</a>
-            <ol>
-              <li><a href="/alpine-ajax/reference/#installation" aria-current="">Installation</a></li>
-              <li><a href="/alpine-ajax/reference/#usage" aria-current="">Usage</a></li>
-              <li><a href="/alpine-ajax/reference/#x-ajax" aria-current="">x-ajax</a></li>
-              <li><a href="/alpine-ajax/reference/#ajax" aria-current="">$ajax</a></li>
-              <li><a href="/alpine-ajax/reference/#x-sync" aria-current="">x-sync</a></li>
-              <li><a href="/alpine-ajax/reference/#x-load" aria-current="">x-load</a></li>
-              <li><a href="/alpine-ajax/reference/#loading-states" aria-current="">Loading States</a></li>
-              <li><a href="/alpine-ajax/reference/#creating-demos" aria-current="">Creating Demos</a></li>
-            </ol>
-          </li>
-          <li><a href="/alpine-ajax/examples" aria-current="">Examples</a></li>
-          <li><a href="/alpine-ajax/comparisons" aria-current="">Comparisons</a></li>
-          <li><a href="https://github.com/imacrayon/alpine-ajax/releases">Changelog</a></li>
-          <li><a href="https://github.com/imacrayon/alpine-ajax">GitHub</a></li>
-        </ul>
-      </nav>
+  <ul role="list">
+    <li><a href="/alpine-ajax/" aria-current="page">Alpine AJAX</a></li>
+    <li>
+      <a href="/alpine-ajax/reference" aria-current="">Reference</a>
+      
+    </li>
+    <li>
+      <a href="/alpine-ajax/examples" aria-current="">Examples</a>
+      
+    </li>
+    <li>
+      <a href="/alpine-ajax/comparisons" aria-current="">Comparisons</a>
+      
+    </li>
+    <li><a href="https://github.com/imacrayon/alpine-ajax/releases">Changelog</a></li>
+    <li><a href="https://github.com/imacrayon/alpine-ajax">GitHub</a></li>
+  </ul>
+</nav>
+
+
+
     </header>
     <main id="main"><h1 id="alpine-ajax" tabindex="-1">Alpine AJAX <a class="direct-link" href="#alpine-ajax" aria-hidden="true">#</a></h1>
-<p>The missing <a href="https://alpinejs.dev">Alpine.js</a> attributes for interacting with your server. It's <code>jQuery.ajax()</code> for the modern web.</p>
-<p>Alpine AJAX empowers you to progressively enhanced multi-page websites to create fast, responsive web experiences with very little JavaScript.</p>
-<h2 id="an-introduction" tabindex="-1">An Introduction <a class="direct-link" href="#an-introduction" aria-hidden="true">#</a></h2>
+<p>Alpine AJAX seamlessly integrates your client and server using <a href="https://alpinejs.dev">Alpine.js</a>.</p>
+<p>With Alpine AJAX your can ditch your bulky virtual DOM, your complex state management solution, your over-engineered synthetic event bus, your colossal build pipeline, and have fun building websites again.</p>
+<p>Alpine AJAX helps you build straight-forward, robust, interactive websites.</p>
+<ul>
+<li><strong>Alpine AJAX is small</strong>: Under 4kB (gzipped), combined with Alpine.js you can build <a href="/alpine-ajax/examples">almost anything you want</a> with only 18kB of total JavaScript.</li>
+<li><strong>Alpine AJAX is flexible</strong>: It has zero server-side dependencies, you can use it with <em>any</em> server-side stack.</li>
+<li><strong>Alpine AJAX is progressive</strong>: It provides patterns for building progressively enhanced websites that function with or without JavaScript.</li>
+<li><strong>Alpine AJAX is accessible</strong>: It uses JavaScript to <em>enhance</em> <a href="https://developer.mozilla.org/en-US/docs/Learn/Accessibility/HTML">the power of HTML</a> rather than replace it with inaccessible workarounds.</li>
+<li><strong>Alpine AJAX is performant</strong>: It batches AJAX requests and prevents duplicate requests to save you network bandwidth.</li>
+<li><strong>Alpine AJAX is easy to learn</strong>: You can probably pick it up in an afternoon.</li>
+</ul>
+<h2 id="how-it-works" tabindex="-1">How it works <a class="direct-link" href="#how-it-works" aria-hidden="true">#</a></h2>
 <p>Consider this simple form:</p>
 <pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>form</span> <span class="token attr-name">method</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>post<span class="token punctuation">"</span></span> <span class="token attr-name">action</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>/repos/1/star<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>button</span><span class="token punctuation">></span></span>Star Repository<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>button</span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>form</span><span class="token punctuation">></span></span></code></pre>
-<p>When this form is submitted a <code>POST</code> request is issued to <code>/repos/1/star</code> and the content from the response is loaded into the browser window.</p>
+<p>It's ordinary HTML – when this form is submitted a <code>POST</code> request is issued to <code>/repos/1/star</code> and the content from the response is loaded into the browser window.</p>
 <p>Now let's enhance this form with Alpine AJAX:</p>
-<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>form</span> <span class="token attr-name">x-ajax</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>star_repo<span class="token punctuation">"</span></span> <span class="token attr-name">method</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>post<span class="token punctuation">"</span></span> <span class="token attr-name">action</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>/repos/1/star<span class="token punctuation">"</span></span><span class="token punctuation">></span></span></code></pre>
-<p>Adding <code>x-ajax</code> and <code>id</code> changes this form's behavior: Now, when this form is submitted, a <code>POST</code> request is issued to <code>/repos/1/star</code> and the form is replaced with the element that has <code>id=&quot;star_repo&quot;</code> in the response. The browser window doesn't refresh, and UI state (like keyboard focus) is preserved when the content changes.</p>
-<p>This simple pattern of updating a piece of your frontend instead of the entire page can be expanded to create rich user experiences.</p>
-<p>Visit the <a href="/alpine-ajax/reference">Reference</a> page to learn how Alpine AJAX works, and then check the <a href="/alpine-ajax/examples">Examples</a> page to learn how to apply it.</p>
+<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>form</span> <span class="token attr-name">x-target</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>star_repo<span class="token punctuation">"</span></span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>star_repo<span class="token punctuation">"</span></span> <span class="token attr-name">x-arrange</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>morph<span class="token punctuation">"</span></span> <span class="token attr-name">method</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>post<span class="token punctuation">"</span></span> <span class="token attr-name">action</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>/repos/1/star<span class="token punctuation">"</span></span><span class="token punctuation">></span></span></code></pre>
+<p>These three new attributes change this form's behavior:</p>
+<ol>
+<li><code>x-target</code> instructs the form to target the element on the page assigned <code>id=&quot;star_repo&quot;</code> (itself in this example). When the form is submitted it will issue an AJAX request instead of a standard browser request. The <code>#star_repo</code> form will then be replaced with the element that has <code>id=&quot;star_repo</code> in the AJAX request's response.</li>
+<li><code>x-arrange</code> instructs the incoming <code>#star_repo</code> element to &quot;morph&quot; itself into the existing DOM so that keyboard focus and DOM state are preserved when the HTML changes.</li>
+</ol>
+<p>This simple pattern of updating a piece of your frontend instead of the entire page can be expanded to create rich user experiences, and because we're building these patterns on top of semantic HTML we get to leverage the resilience and accessibility of HTML without complex workarounds.</p>
+<h2 id="next-steps" tabindex="-1">Next steps <a class="direct-link" href="#next-steps" aria-hidden="true">#</a></h2>
+<p>Visit the <a href="/alpine-ajax/reference">Reference</a> page to learn about all the library features, then check the <a href="/alpine-ajax/examples">Examples</a> page to learn how you can implement them.</p>
 </main>
   </div>
 

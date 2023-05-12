@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Infinite Scroll | Alpine AJAX</title>
+  <meta name="description" content="Alpine AJAX">
+  <meta name="generator" content="Eleventy v2.0.1">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prism-themes@1.9.0/themes/prism-a11y-dark.min.css">
+  <link rel="stylesheet" href="/alpine-ajax/css/main.css?id=3">
+  <style>#example {
+    overflow-x: auto;
+    padding: 1rem;
+    margin: -1rem;
+    margin-bottom: calc(40vh + 4rem);
+    max-width: 100%;
+  }
+
+  #server_info {
+    position: fixed;
+    bottom: 0;
+    right: .5rem;
+    left: .5rem;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+    box-shadow: 0 10px 15px -3px var(--shadow), 0 4px 6px -4px var(--shadow);
+    padding: .88rem 1rem;
+    margin: 0;
+  }
+
+  #server_activity {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    height: 40vh;
+    overflow: scroll;
+  }
+
+  #server_activity> :first-child {
+    flex-grow: 1;
+    position: relative;
+  }
+
+  #server_activity> :last-child {
+    flex-basis: 0;
+    flex-grow: 999;
+    min-inline-size: 50%;
+    margin-top: .4rem;
+  }
+
+  #server_activity [aria-current="step"] button {
+    font-weight: 700;
+  }
+
+  #server_activity dl>div:not(:first-child) dd::before {
+    content: '';
+  }
+
+  #server_activity dl>div:first-child {
+    display: flex;
+    gap: .4rem;
+    align-items: center;
+    margin-bottom: .4rem;
+  }
+
+  #server_timeline {
+    position: sticky;
+    top: 0;
+  }
+
+  #server_timeline button {
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: var(--nc-lk-1);
+    text-decoration: underline;
+  }
+
+  #server_timeline button:hover,
+  #server_timeline button:focus {
+    color: var(--nc-lk-2);
+  }</style>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/@alpinejs/intersect@3.x.x/dist/cdn.min.js"></script>
+  <script defer="" src="/alpine-ajax/js/main.js"></script>
+  <script>function example(action) {
+    let requestCount = 1
+    document.addEventListener('DOMContentLoaded', () => {
+      window.fetch(action)
+        .then(response => response.text())
+        .then(html => document.getElementById('example').innerHTML = html)
+    })
+    document.body.addEventListener('server:response', (event) => {
+      logActivity(requestCount++, event.detail.method, event.detail.url, event.detail.data, event.detail.body)
+    })
+  }
+
+  function showTimelineEntry(id) {
+    Array.from(document.getElementById("server_view").children).forEach(child => {
+      if (child.id == id) {
+        child.removeAttribute('hidden');
+      } else {
+        child.setAttribute('hidden', true);
+      }
+    })
+    Array.from(document.getElementById("server_timeline").children).forEach(child => {
+      if (child.id == id + "-link") {
+        child.setAttribute('aria-current', 'step');
+      } else {
+        child.removeAttribute('aria-current');
+      }
+    })
+  }
+
+  function logActivity(id, method, url, params, body) {
+    document.getElementById("server_request_count").innerHTML = id
+    document.getElementById("server_timeline").insertAdjacentHTML("afterbegin", `<li id="${id}-link"><button onclick="showTimelineEntry('${id}')" style="cursor: pointer">${method} ${url}</a></li>`);
+    let bodyDiv = `<dl id="${id}">
+    <div><dt>Request</dt><dd>${method} ${url}</dd></div>
+    <div><dt>Parameters</dt><dd><pre class="language-json"><code class="language-json">${JSON.stringify(params, null, 2)}</code></pre></dd></div>
+    <div><dt>Response</dt><dd><pre class="language-html"><code class="language-html">${escapeHtml(body)}</code></pre></dd></div>
+  </dl>`;
+    document.getElementById("server_view").insertAdjacentHTML("afterbegin", bodyDiv);
+    showTimelineEntry(id);
+    // Prism.highlightAll();
+  }
+
+  function escapeHtml(string) {
+    let pre = document.createElement('pre');
+    let text = document.createTextNode(string);
+    pre.appendChild(text);
+    return pre.innerHTML;
+  }
+class DetailsForceState extends HTMLElement {
+    constructor() {
+      super();
+      this._observer = new MutationObserver(this._init.bind(this));
+    }
+
+    connectedCallback() {
+      if (this.children.length) {
+        this._init();
+      }
+      this._observer.observe(this, { childList: true });
+    }
+
+    _init() {
+      let details = this.querySelector(":scope details");
+      if (!details) {
+        return;
+      }
+
+      let forceOpen = window.getComputedStyle(details).getPropertyValue("--details-force-closed");
+
+      function forceState(isOpen) {
+        if (isOpen) {
+          details.setAttribute("open", "open");
+        } else {
+          details.removeAttribute("open");
+        }
+      }
+
+      if (forceOpen && "matchMedia" in window) {
+        let mm1 = window.matchMedia(forceOpen);
+        forceState(!mm1.matches);
+        mm1.addListener(function (e) {
+          forceState(!e.matches);
+        });
+      }
+    }
+  }
+
+  if ("customElements" in window) {
+    customElements.define("details-force-state", DetailsForceState);
+  }</script>
+</head>
+
+
+<body>
+  <a href="#main">Skip to content</a>
+  <div class="with-sidebar">
+    <header>
+      <nav aria-label="Site">
+  <ul role="list">
+    <li><a href="/alpine-ajax/" aria-current="">Alpine AJAX</a></li>
+    <li>
+      <a href="/alpine-ajax/reference" aria-current="">Reference</a>
+      
+    </li>
+    <li>
+      <a href="/alpine-ajax/examples" aria-current="">Examples</a>
+      <details-force-state>
+        <details>
+          <summary>Jump to...</summary>
+          <ol>
+            <li><a href="/alpine-ajax/examples/toggle-button" aria-current="">Toggle Button</a></li>
+            <li><a href="/alpine-ajax/examples/loading" aria-current="">Loading Indicator</a></li>
+            <li><a href="/alpine-ajax/examples/inline-edit" aria-current="">Inline Edit</a></li>
+            <li><a href="/alpine-ajax/examples/delete-row" aria-current="">Delete Row</a></li>
+            <li><a href="/alpine-ajax/examples/edit-row" aria-current="">Edit Row</a></li>
+            <li><a href="/alpine-ajax/examples/bulk-update" aria-current="">Bulk Update</a></li>
+            <li><a href="/alpine-ajax/examples/instant-search" aria-current="">Instant Search</a></li>
+            <li><a href="/alpine-ajax/examples/filterable-content" aria-current="">Filterable Content</a></li>
+            <li><a href="/alpine-ajax/examples/inline-validation" aria-current="">Inline Validation</a></li>
+            <li><a href="/alpine-ajax/examples/lazy-load" aria-current="">Lazy Load</a></li>
+            <li><a href="/alpine-ajax/examples/dialog" aria-current="">Dialog (Modal)</a></li>
+            <li><a href="/alpine-ajax/examples/progress-bar" aria-current="">Progress Bar</a></li>
+            <li><a href="/alpine-ajax/examples/infinite-scroll" aria-current="page">Infinite Scroll</a></li>
+            <li><a href="/alpine-ajax/examples/notifications" aria-current="">Notifications</a></li>
+            <li><a href="/alpine-ajax/examples/server-events" aria-current="">Server Events</a></li>
+            <li><a href="/alpine-ajax/examples/dialog-form" aria-current="">Dialog (Modal) Form</a></li>
+          </ol>
+        </details>
+      </details-force-state>
+    </li>
+    <li>
+      <a href="/alpine-ajax/comparisons" aria-current="">Comparisons</a>
+      
+    </li>
+    <li><a href="https://github.com/imacrayon/alpine-ajax/releases">Changelog</a></li>
+    <li><a href="https://github.com/imacrayon/alpine-ajax">GitHub</a></li>
+  </ul>
+</nav>
+
+
+
+    </header>
+    <main id="main"><h1 id="infinite-scroll" tabindex="-1">Infinite Scroll <a href="#infinite-scroll" aria-hidden="true" class="direct-link">#</a></h1>
+
+<script src="/alpine-ajax/js/server.js"></script>
+<p>This example demonstrates how to load content automatically when the user scrolls to the end of the page. We'll start by building basic pagination and then we'll enhance it with Alpine AJAX to automatically fetch the next page. Here's our table followed by simple page navigation:</p>
+<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>table</span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>thead</span><span class="token punctuation">></span></span><br>    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>tr</span><span class="token punctuation">></span></span><br>      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>th</span> <span class="token attr-name">scope</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>col<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>Name<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>th</span><span class="token punctuation">></span></span><br>      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>th</span> <span class="token attr-name">scope</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>col<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>Email<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>th</span><span class="token punctuation">></span></span><br>      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>th</span> <span class="token attr-name">scope</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>col<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>Status<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>th</span><span class="token punctuation">></span></span><br>    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>tr</span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>thead</span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>tbody</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>records<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br>    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>tr</span><span class="token punctuation">></span></span><br>      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>td</span><span class="token punctuation">></span></span>AMO<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>td</span><span class="token punctuation">></span></span><br>      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>td</span><span class="token punctuation">></span></span>amo@mo.co<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>td</span><span class="token punctuation">></span></span><br>      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>td</span><span class="token punctuation">></span></span>Active<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>td</span><span class="token punctuation">></span></span><br>    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>tr</span><span class="token punctuation">></span></span><br>    ...<br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>tbody</span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>pagination<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br>    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span><span class="token punctuation">></span></span>Page 1 of 5<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span><br>    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span><span class="token punctuation">></span></span><br>      <span class="token comment">&lt;!-- Page 2 and up would have a "Previous" link like this --></span><br>      <span class="token comment">&lt;!-- &lt;a href="/contacts?page=1">&lt;span aria-hidden="true">← &lt;/span> Previous&lt;/a> --></span><br>      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>a</span> <span class="token attr-name">href</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>/contacts?page=2<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>Next<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>span</span> <span class="token attr-name">aria-hidden</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>true<span class="token punctuation">"</span></span><span class="token punctuation">></span></span> →<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>span</span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>a</span><span class="token punctuation">></span></span><br>    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>table</span><span class="token punctuation">></span></span></code></pre>
+<p>Alpine already provides a great way to a users's scroll: We can use the first-party <a href="https://alpinejs.dev/plugins/intersect">Intercept Plugin</a>, so let's load that onto the page:</p>
+<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span> <span class="token attr-name">defer</span> <span class="token attr-name">src</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>https://cdn.jsdelivr.net/npm/@alpinejs/intersect@3.x.x/dist/cdn.min.js<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token script"></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">></span></span></code></pre>
+<p>If you'd rather bundle your JavaScript the <a href="https://alpinejs.dev/plugins/intersect#installation">Intercept installation instructions</a> explain how to do this too.</p>
+<p>With the Intercept Plugin installed, when we can update our pagination markup to issue an AJAX request when it is scrolled into view:</p>
+<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>pagination<span class="token punctuation">"</span></span> <span class="token attr-name">x-init</span> <span class="token attr-name">x-intersect</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>$ajax('/contacts?page=2')<span class="token punctuation">"</span></span> <span class="token attr-name">x-target</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>records pagination<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span></code></pre>
+<p>Note that the <code>x-target</code> attribute includes both the table <strong>and</strong> pagination. This ensures that the table is updated with fresh records and the pagination is updated with a fresh page URL after each AJAX request. This also means that when the final page of records is loaded we can not include the pagination in our server response and the pagination will subsequently disappear from the UI.</p>
+<p>Last, but not least, we need to ensure that the new table rows from subsequent pages are appended to the end of the table. The default behavior is for Alpine AJAX to replace the existing table rows with the incoming rows. To change this behavior we need to add <code>x-arrange=&quot;append&quot;</code> to the table's <code>tbody</code>:</p>
+<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>tbody</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>records<span class="token punctuation">"</span></span> <span class="token attr-name">x-arrange</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>append<span class="token punctuation">"</span></span><span class="token punctuation">></span></span></code></pre>
+<script>
+  window.route('GET', '/contacts', (input) => {
+    if (input.page) {
+      return new Promise(resolve => {
+        setTimeout(() => resolve(view(parseInt(input.page))), 1000)
+      })
+    }
+
+    return view(1)
+  })
+
+  example('/contacts')
+
+  function view(page) {
+    let max = 5
+    let end = page * 10
+    let cursor = end - 9
+    let rows = []
+    let prefix = ''
+    let status = ''
+    while (cursor <= end) {
+      prefix = getPrefix(cursor)
+      status = Math.random() < 0.5 ? 'Active' : 'Inactive'
+      rows.push(`<tr>
+        <td>${prefix}MO</td>
+        <td>${prefix.toLowerCase()}mo@mo.co</td>
+        <td>${status}</td>
+      </tr>`)
+      cursor++;
+    }
+    rows = rows.join('\n')
+    prev = ''
+    next = ''
+    if (page > 1) {
+      prev = `<a href="/contacts?page=${page - 1}" x-show="false"><span aria-hidden="true">← </span> Prev</a>`
+    }
+    if (page < 5) {
+      next = `<a href="/contacts?page=${page + 1}" x-show="false">Next<span aria-hidden="true"> →</span></a>`
+    }
+
+    intersect = next ? `x-intersect="$ajax('/contacts?page=${page + 1}')" x-target="records pagination"` : ''
+
+    return `<table id="contacts">
+  <thead>
+    <tr>
+      <th scope="col">Name</th>
+      <th scope="col">Email</th>
+      <th scope="col">Status</th>
+    </tr>
+  </thead>
+  <tbody id="records" x-arrange="append">
+    ${rows}
+  </tbody>
+</table>
+<div id="pagination">
+  <div>Page ${page} of ${max}</div>
+  <div x-init ${intersect}>
+    ${prev}
+    ${next}
+  </div>
+</div>`
+  }
+
+
+let alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+function getPrefix(number, result = ''){
+  let index = number % alphabet.length
+  let quotient = number / alphabet.length
+  if (index - 1 == -1) {
+      index = alphabet.length
+      quotient = quotient - 1
+  }
+  result = alphabet.charAt(index - 1) + result
+
+  return quotient >= 1
+    ? getPrefix(parseInt(quotient), result)
+    : result
+}
+</script>
+<style>
+#pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+#pagination[aria-busy] div:first-child:after {
+  content: '';
+  margin-left: .5em;
+  display: inline-block;
+  width: .875em;
+  height: .875em;
+  vertical-align: -.25em;
+  border: .1875em solid rgba(0, 0, 0, 0.15);
+  border-radius: 50%;
+  border-top-color: rgba(0, 0, 0, 0.5);
+  animation: rotate 1s linear infinite;
+}
+@keyframes rotate {
+  100% { transform: rotate(360deg); }
+}
+</style>
+
+<h2 id="demo" tabindex="-1">Demo <a href="#demo" aria-hidden="true" class="direct-link">#</a></h2>
+
+<noscript>
+  <strong>This demo would normally function without JavaScript enabled</strong>. However, this website is static and
+  mocks HTTP responses using JavaScript instead of interacting with a real server, so you will need to enable
+  JavaScript to view this demo.
+</noscript>
+<div id="example"></div>
+<details id="server_info">
+  <summary>Server Requests (<span id="server_request_count"></span>)</summary>
+  <div id="server_activity">
+    <div>
+      <ol id="server_timeline" reversed="">
+      </ol>
+    </div>
+    <div id="server_view">
+    </div>
+  </div>
+</details>
+
+
+
+
+</main>
+  </div>
+
+
+
+</body>
+</html>

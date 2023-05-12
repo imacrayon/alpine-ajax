@@ -5,41 +5,93 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Comparisons | Alpine AJAX</title>
   <meta name="description" content="Alpine AJAX">
-  <meta name="generator" content="Eleventy v2.0.0">
-  <meta name="google-site-verification" content="KhOCyk8VyxCmepwpHn1DYq6uIPae0czI_8Z1atrRwJM">
+  <meta name="generator" content="Eleventy v2.0.1">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prism-themes@1.9.0/themes/prism-a11y-dark.min.css">
   <link rel="stylesheet" href="/alpine-ajax/css/main.css?id=3">
-  <script defer="" src="/alpine-ajax/js/main.js"></script>
   <style></style>
-  <script></script>
+  
+  <script defer="" src="/alpine-ajax/js/main.js"></script>
+  <script>class DetailsForceState extends HTMLElement {
+    constructor() {
+      super();
+      this._observer = new MutationObserver(this._init.bind(this));
+    }
+
+    connectedCallback() {
+      if (this.children.length) {
+        this._init();
+      }
+      this._observer.observe(this, { childList: true });
+    }
+
+    _init() {
+      let details = this.querySelector(":scope details");
+      if (!details) {
+        return;
+      }
+
+      let forceOpen = window.getComputedStyle(details).getPropertyValue("--details-force-closed");
+
+      function forceState(isOpen) {
+        if (isOpen) {
+          details.setAttribute("open", "open");
+        } else {
+          details.removeAttribute("open");
+        }
+      }
+
+      if (forceOpen && "matchMedia" in window) {
+        let mm1 = window.matchMedia(forceOpen);
+        forceState(!mm1.matches);
+        mm1.addListener(function (e) {
+          forceState(!e.matches);
+        });
+      }
+    }
+  }
+
+  if ("customElements" in window) {
+    customElements.define("details-force-state", DetailsForceState);
+  }</script>
 </head>
+
 
 <body>
   <a href="#main">Skip to content</a>
   <div class="with-sidebar">
     <header>
       <nav aria-label="Site">
-        <ul role="list">
-          <li><a href="/alpine-ajax/" aria-current="">Alpine AJAX</a></li>
-          <li>
-            <a href="/alpine-ajax/reference" aria-current="">Reference</a>
-            <ol>
-              <li><a href="/alpine-ajax/reference/#installation" aria-current="">Installation</a></li>
-              <li><a href="/alpine-ajax/reference/#usage" aria-current="">Usage</a></li>
-              <li><a href="/alpine-ajax/reference/#x-ajax" aria-current="">x-ajax</a></li>
-              <li><a href="/alpine-ajax/reference/#ajax" aria-current="">$ajax</a></li>
-              <li><a href="/alpine-ajax/reference/#x-sync" aria-current="">x-sync</a></li>
-              <li><a href="/alpine-ajax/reference/#x-load" aria-current="">x-load</a></li>
-              <li><a href="/alpine-ajax/reference/#loading-states" aria-current="">Loading States</a></li>
-              <li><a href="/alpine-ajax/reference/#creating-demos" aria-current="">Creating Demos</a></li>
-            </ol>
-          </li>
-          <li><a href="/alpine-ajax/examples" aria-current="">Examples</a></li>
-          <li><a href="/alpine-ajax/comparisons" aria-current="page">Comparisons</a></li>
-          <li><a href="https://github.com/imacrayon/alpine-ajax/releases">Changelog</a></li>
-          <li><a href="https://github.com/imacrayon/alpine-ajax">GitHub</a></li>
-        </ul>
-      </nav>
+  <ul role="list">
+    <li><a href="/alpine-ajax/" aria-current="">Alpine AJAX</a></li>
+    <li>
+      <a href="/alpine-ajax/reference" aria-current="">Reference</a>
+      
+    </li>
+    <li>
+      <a href="/alpine-ajax/examples" aria-current="">Examples</a>
+      
+    </li>
+    <li>
+      <a href="/alpine-ajax/comparisons" aria-current="page">Comparisons</a>
+      <details-force-state>
+        <details>
+          <summary>Jump to...</summary>
+          <ol>
+            <li><a href="/alpine-ajax/comparisons/#htmx">HTMX</a></li>
+            <li><a href="/alpine-ajax/comparisons/#hotwired-turbo">Hotwired Turbo</a></li>
+            <li><a href="/alpine-ajax/comparisons/#unpoly">Unpoly</a></li>
+            <li><a href="/alpine-ajax/comparisons/#laravel-livewire">Laravel Livewire</a></li>
+          </ol>
+        </details>
+      </details-force-state>
+    </li>
+    <li><a href="https://github.com/imacrayon/alpine-ajax/releases">Changelog</a></li>
+    <li><a href="https://github.com/imacrayon/alpine-ajax">GitHub</a></li>
+  </ul>
+</nav>
+
+
+
     </header>
     <main id="main"><h1 id="comparisons" tabindex="-1">Comparisons <a class="direct-link" href="#comparisons" aria-hidden="true">#</a></h1>
 <p>What follows is a general guide that lays out some comparisons between Alpine AJAX and other similar libraries. The intention here is to give you some context around how Alpine AJAX sets itself apart and when it may or may not makes sense to use it. All of the following libraries are awesome in their own right, and each one served as inspiration for Alpine AJAX.</p>
@@ -53,26 +105,26 @@
 <p><a href="https://htmx.org">https://htmx.org</a></p>
 <p>Both HTMX and Alpine AJAX are server-agnostic, they'll integrate nicely with almost any server-side language and architecture. Even more, both Alpine AJAX and HTMX work with Alpine.js. In general the HTMX community encourages developers to use <a href="https://hyperscript.org/">_hyperscript</a> in place of Alpine.js, but Alpine.js is still considered a good option for adding client-side interaction. Since Alpine AJAX is designed as an Alpine.js plugin, it follows Alpine.js conventions; so if you're already building apps with Alpine.js, Alpine AJAX will feel more familiar.</p>
 <p>HTMX favors flexibility where as Alpine AJAX prefers <a href="https://en.wikipedia.org/wiki/Convention_over_configuration">convention over configuration</a>. Beyond the low-level tooling that HTMX provides, the library isn't very prescriptive about how it should be used. The <a href="https://htmx.org/examples/update-other-content/">HTMX documentation for updating content</a> is one example of the library's lack of opinion: It presents you with four different solutions and leaves it up to you to consider the trade-offs for each. In contrast, Alpine AJAX tries to provide you with more guidance so you can become productive faster without stumbling into common accessibility and progressive enhancement pitfalls.</p>
-<p>HTMX weighs in at 14kB of JavaScript compared to only 5kB for Alpine AJAX + Alpine Morph.</p>
+<p>HTMX weighs in at 14kB of JavaScript compared to only 4kB for Alpine AJAX.</p>
 <h2 id="hotwired-turbo" tabindex="-1">Hotwired Turbo <a class="direct-link" href="#hotwired-turbo" aria-hidden="true">#</a></h2>
 <p><a href="https://turbo.hotwired.dev">https://turbo.hotwired.dev</a></p>
 <p>Turbo can be paired with almost any server-side language, however it holds strict opinions around response status codes, headers, and content; so it does require some back-end configuration to get started. In contrast, Alpine AJAX only requires that the server respond with HTML so you can be up and running more quickly. It's worth noting that Turbo is designed to work with the <a href="https://rubyonrails.org/">Ruby on Rails</a> framework out of the box, so installation should be easy if you're building a Rails app.</p>
 <p>For client-side interactions, Turbo works well with Alpine.js, however the Turbo community generally encourages developers to use <a href="https://stimulus.hotwired.dev/">Stimulus</a>.</p>
-<p>AJAX Components in Alpine AJAX follow the same conventions as Turbo's <code>&lt;turbo-frame&gt;</code> Custom Element. The way Turbo uses Custom Elements creates some serious incompatibilities with HTML: <a href="https://github.com/hotwired/turbo/issues/48">Updating table content is broken</a>, so broken in fact that the Rails team <a href="https://github.com/hotwired/turbo/issues/48#issuecomment-1014695187">removed tables</a> <a href="https://discuss.rubyonrails.org/t/back-again-after-a-long-time-rails-7-scaffolds-table-view/80967/2">from their templates</a>. The lack of table support is especially unfortunate because many CRUD-based apps make significant use of tables. Besides tables, Turbo Frames can make <a href="https://github.com/hotwired/turbo/pull/131#discussion_r731924782">other common integrations cumbersome as well</a>. Turbo's integration problems are a non-issue in Alpine AJAX because AJAX Components are defined using HTML attributes instead of Custom Elements, these attributes can be safely applied to any HTML element.</p>
-<p>Turbo communicates updates from the server to the client via Turbo Streams. Turbo streams require that your server responds with different HTML content based on whether the client is making a &quot;Turbo Request&quot; or a regular HTTP request, this means you end up having to maintain two different sets of HTML templates for these two types of requests. The Rails community recommends using template partials to ease the burden of juggling multiple variants of the same page, but even with partials, using Turbo Streams can still feel like you're maintaining two versions of the same app. In comparison, Alpine AJAX requires no distinction between an AJAX Component request and regular HTTP request, and state changes are communicated to the frontend via <a href="/alpine-ajax/reference/#server-events">custom JavaScript events</a> that can be mixed in with any standard HTML response.</p>
+<p>Alpine AJAX enables functionality very similar to Turbo's <code>&lt;turbo-frame&gt;</code> Custom Element. However, the fact that Turbo uses Custom Elements creates some serious incompatibilities with HTML: <a href="https://github.com/hotwired/turbo/issues/48">Updating table content is broken</a>, so broken in fact that the Rails team <a href="https://github.com/hotwired/turbo/issues/48#issuecomment-1014695187">removed tables</a> <a href="https://discuss.rubyonrails.org/t/back-again-after-a-long-time-rails-7-scaffolds-table-view/80967/2">from their templates</a>. The lack of table support is especially unfortunate because many CRUD-based apps make significant use of tables. Besides tables, Turbo Frames can make <a href="https://github.com/hotwired/turbo/pull/131#discussion_r731924782">other common integrations cumbersome as well</a>. Turbo's integration problems are a non-issue in Alpine AJAX because AJAX behavior is defined using HTML attributes instead of Custom Elements, these attributes can be safely applied to any HTML element.</p>
+<p>Turbo communicates updates from the server to the client via Turbo Streams. Turbo streams require that your server responds with different HTML content based on whether the client is making a &quot;Turbo Request&quot; or a regular HTTP request, this means you end up having to maintain two different sets of HTML templates for these two types of requests. The Rails community recommends using template partials to ease the burden of juggling multiple variants of the same page, but even with partials, using Turbo Streams can still feel like you're maintaining two versions of the same app. In comparison, Alpine AJAX requires no distinction between an AJAX request and regular HTTP request, and state changes are communicated to the frontend via <a href="/alpine-ajax/reference/#server-events">custom JavaScript events</a> that can be mixed in with any standard HTML response.</p>
 <p>One notable advantage to using the Hotwire framework is that it provides a workflow for transforming your web application into a native mobile application, so if you intend to launch your website on Android and iOS platforms, Hotwired Turbo might be worth considering.</p>
-<p>Turbo weighs in at 22kB of JavaScript compared to only 5kB for Alpine AJAX + Alpine Morph.</p>
+<p>Turbo weighs in at 22kB of JavaScript compared to only 4kB for Alpine AJAX.</p>
 <h2 id="unpoly" tabindex="-1">Unpoly <a class="direct-link" href="#unpoly" aria-hidden="true">#</a></h2>
 <p><a href="https://unpoly.com">https://unpoly.com</a></p>
 <p>Like Alpine AJAX, Unpoly is server-agnostic, but it also offers an optional server protocol for developers that want more server-side direction. Similarly, Unpoly encourages UI patterns which support progressive enhancement and accessibility.</p>
 <p>Unpoly is a very comprehensive frontend framework; it has strong conventions and also comes with a few elements like loaders, modals, and popovers baked-in. Because Unpoly has such broad concerns, it requires more upfront commitment to get familiar with it's novel concepts like fragments and layers. It feels more akin to frameworks like Laravel Livewire and Phoenix LiveView than &quot;drop-in&quot; libraries like Alpine AJAX, HTMX. Unpoly has it's own APIs for event delegation and animations so you can make due without using a frontend library like Alpine.js, however <a href="https://unpoly.com/up.element">Unpoly's imperative API</a> is arguably not as expressive as Alpine.js's terse, declarative syntax.</p>
-<p>The core Unpoly library weighs in at ~43kB of JavaScript plus ~1kB of required CSS compared to only ~19kB for Alpine.js, Alpine AJAX, and Alpine Morph combined.</p>
+<p>The core Unpoly library weighs in at 43kB of JavaScript plus 1kB of required CSS compared to only 18kB for Alpine.js and Alpine AJAX combined.</p>
 <h2 id="laravel-livewire" tabindex="-1">Laravel Livewire <a class="direct-link" href="#laravel-livewire" aria-hidden="true">#</a></h2>
 <p><a href="https://laravel-livewire.com">https://laravel-livewire.com</a></p>
 <p>If you're building a Laravel app, Livewire provides a lot of convenience and a great developer experience. Livewire has invested a lot of work into making the experience feel first class, it's easy to get up and running, however its component-based architecture is a departure from standard Laravel conventions and will probably require some getting used to. In comparison, Alpine AJAX is server-agnostic, so you can start using it without any changes to your Laravel app; in fact you're encouraged to build your Laravel app first <strong>without</strong> Alpine AJAX, then sprinkle in Alpine AJAX at the end to enhance the user experience.</p>
 <p>The lack of progressive enhancement in Livewire is another reason you might choose Alpine AJAX over Livewire. <a href="https://www.kryogenix.org/code/browser/everyonehasjs.html">When JavaScript is not available</a> a Livewire app becomes completely unresponsive. In contrast, Alpine AJAX gracefully degrades, so your links and forms can continue to function just like any other server-rendered application.</p>
 <p>Alpine.js was originally created as a companion to Laravel Livewire, so of course Alpine.js and Livewire pair flawlessly together for handling client-side interactions.</p>
-<p>Livewire's JavaScript bundle weighs in at ~43kB compared to only ~5kB for Alpine AJAX + Alpine Morph.</p>
+<p>Livewire's JavaScript bundle weighs in at 43kB compared to only 4kB for Alpine AJAX.</p>
 </main>
   </div>
 
