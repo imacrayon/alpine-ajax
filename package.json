@@ -24,7 +24,7 @@
   "unpkg": "dist/cdn.min.js",
   "scripts": {
     "build": "node ./scripts/build.js",
-    "build:docs": "cd docs && env NODE_ENV=production npx eleventy --pathprefix 'alpine-ajax'",
+    "build:docs": "cd docs && env NODE_ENV=production npx eleventy",
     "test": "cypress run",
     "cypress": "cypress open",
     "start": "cd docs && npx @11ty/eleventy --serve",
