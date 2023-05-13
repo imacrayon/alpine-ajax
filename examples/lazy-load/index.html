@@ -7,7 +7,7 @@
   <meta name="description" content="Alpine AJAX">
   <meta name="generator" content="Eleventy v2.0.1">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prism-themes@1.9.0/themes/prism-a11y-dark.min.css">
-  <link rel="stylesheet" href="/alpine-ajax/css/main.css?id=3">
+  <link rel="stylesheet" href="/css/main.css?id=3">
   <style>#example {
     overflow-x: auto;
     padding: 1rem;
@@ -81,7 +81,7 @@
     color: var(--nc-lk-2);
   }</style>
   
-  <script defer="" src="/alpine-ajax/js/main.js"></script>
+  <script defer src="/js/main.js"></script>
   <script>function example(action) {
     let requestCount = 1
     document.addEventListener('DOMContentLoaded', () => {
@@ -181,39 +181,39 @@ class DetailsForceState extends HTMLElement {
     <header>
       <nav aria-label="Site">
   <ul role="list">
-    <li><a href="/alpine-ajax/" aria-current="">Alpine AJAX</a></li>
+    <li><a href="/" aria-current>Alpine AJAX</a></li>
     <li>
-      <a href="/alpine-ajax/reference" aria-current="">Reference</a>
+      <a href="/reference" aria-current>Reference</a>
       
     </li>
     <li>
-      <a href="/alpine-ajax/examples" aria-current="">Examples</a>
+      <a href="/examples" aria-current>Examples</a>
       <details-force-state>
         <details>
           <summary>Jump to...</summary>
           <ol>
-            <li><a href="/alpine-ajax/examples/toggle-button" aria-current="">Toggle Button</a></li>
-            <li><a href="/alpine-ajax/examples/loading" aria-current="">Loading Indicator</a></li>
-            <li><a href="/alpine-ajax/examples/inline-edit" aria-current="">Inline Edit</a></li>
-            <li><a href="/alpine-ajax/examples/delete-row" aria-current="">Delete Row</a></li>
-            <li><a href="/alpine-ajax/examples/edit-row" aria-current="">Edit Row</a></li>
-            <li><a href="/alpine-ajax/examples/bulk-update" aria-current="">Bulk Update</a></li>
-            <li><a href="/alpine-ajax/examples/instant-search" aria-current="">Instant Search</a></li>
-            <li><a href="/alpine-ajax/examples/filterable-content" aria-current="">Filterable Content</a></li>
-            <li><a href="/alpine-ajax/examples/inline-validation" aria-current="">Inline Validation</a></li>
-            <li><a href="/alpine-ajax/examples/lazy-load" aria-current="page">Lazy Load</a></li>
-            <li><a href="/alpine-ajax/examples/dialog" aria-current="">Dialog (Modal)</a></li>
-            <li><a href="/alpine-ajax/examples/progress-bar" aria-current="">Progress Bar</a></li>
-            <li><a href="/alpine-ajax/examples/infinite-scroll" aria-current="">Infinite Scroll</a></li>
-            <li><a href="/alpine-ajax/examples/notifications" aria-current="">Notifications</a></li>
-            <li><a href="/alpine-ajax/examples/server-events" aria-current="">Server Events</a></li>
-            <li><a href="/alpine-ajax/examples/dialog-form" aria-current="">Dialog (Modal) Form</a></li>
+            <li><a href="/examples/toggle-button" aria-current>Toggle Button</a></li>
+            <li><a href="/examples/loading" aria-current>Loading Indicator</a></li>
+            <li><a href="/examples/inline-edit" aria-current>Inline Edit</a></li>
+            <li><a href="/examples/delete-row" aria-current>Delete Row</a></li>
+            <li><a href="/examples/edit-row" aria-current>Edit Row</a></li>
+            <li><a href="/examples/bulk-update" aria-current>Bulk Update</a></li>
+            <li><a href="/examples/instant-search" aria-current>Instant Search</a></li>
+            <li><a href="/examples/filterable-content" aria-current>Filterable Content</a></li>
+            <li><a href="/examples/inline-validation" aria-current>Inline Validation</a></li>
+            <li><a href="/examples/lazy-load" aria-current="page">Lazy Load</a></li>
+            <li><a href="/examples/dialog" aria-current>Dialog (Modal)</a></li>
+            <li><a href="/examples/progress-bar" aria-current>Progress Bar</a></li>
+            <li><a href="/examples/infinite-scroll" aria-current>Infinite Scroll</a></li>
+            <li><a href="/examples/notifications" aria-current>Notifications</a></li>
+            <li><a href="/examples/server-events" aria-current>Server Events</a></li>
+            <li><a href="/examples/dialog-form" aria-current>Dialog (Modal) Form</a></li>
           </ol>
         </details>
       </details-force-state>
     </li>
     <li>
-      <a href="/alpine-ajax/comparisons" aria-current="">Comparisons</a>
+      <a href="/comparisons" aria-current>Comparisons</a>
       
     </li>
     <li><a href="https://github.com/imacrayon/alpine-ajax/releases">Changelog</a></li>
@@ -226,7 +226,7 @@ class DetailsForceState extends HTMLElement {
     </header>
     <main id="main"><h1 id="lazy-loading" tabindex="-1">Lazy Loading <a href="#lazy-loading" aria-hidden="true" class="direct-link">#</a></h1>
 
-<script src="/alpine-ajax/js/server.js"></script>
+<script src="/js/server.js"></script>
 <p>This example shows how to lazily load an element on a page.</p>
 <p>We start with a loading indicator inside an <code>&lt;article&gt;</code>. Note that the article is assigned <code>id=&quot;post&quot;</code> :</p>
 <pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>article</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>post<span class="token punctuation">"</span></span> <span class="token attr-name">x-init</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>$ajax('/posts/1')<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>svg</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>loader<span class="token punctuation">"</span></span> <span class="token attr-name">aria-label</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>Loading content<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>...<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>svg</span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>article</span><span class="token punctuation">></span></span></code></pre>
@@ -330,7 +330,7 @@ class DetailsForceState extends HTMLElement {
   <summary>Server Requests (<span id="server_request_count"></span>)</summary>
   <div id="server_activity">
     <div>
-      <ol id="server_timeline" reversed="">
+      <ol id="server_timeline" reversed>
       </ol>
     </div>
     <div id="server_view">

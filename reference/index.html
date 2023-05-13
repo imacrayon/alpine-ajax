@@ -7,10 +7,10 @@
   <meta name="description" content="Alpine AJAX">
   <meta name="generator" content="Eleventy v2.0.1">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prism-themes@1.9.0/themes/prism-a11y-dark.min.css">
-  <link rel="stylesheet" href="/alpine-ajax/css/main.css?id=3">
+  <link rel="stylesheet" href="/css/main.css?id=3">
   <style></style>
   
-  <script defer="" src="/alpine-ajax/js/main.js"></script>
+  <script defer src="/js/main.js"></script>
   <script>class DetailsForceState extends HTMLElement {
     constructor() {
       super();
@@ -62,33 +62,33 @@
     <header>
       <nav aria-label="Site">
   <ul role="list">
-    <li><a href="/alpine-ajax/" aria-current="">Alpine AJAX</a></li>
+    <li><a href="/" aria-current>Alpine AJAX</a></li>
     <li>
-      <a href="/alpine-ajax/reference" aria-current="page">Reference</a>
+      <a href="/reference" aria-current="page">Reference</a>
       <details-force-state>
         <details>
           <summary>Jump to...</summary>
           <ol>
-            <li><a href="/alpine-ajax/reference/#installation">Installation</a></li>
-            <li><a href="/alpine-ajax/reference/#usage">Usage</a></li>
-            <li><a href="/alpine-ajax/reference/#x-target">x-target</a></li>
-            <li><a href="/alpine-ajax/reference/#x-arrange">x-arrange</a></li>
-            <li><a href="/alpine-ajax/reference/#x-focus">x-focus</a></li>
-            <li><a href="/alpine-ajax/reference/#x-sync">x-sync</a></li>
-            <li><a href="/alpine-ajax/reference/#ajax">$ajax</a></li>
-            <li><a href="/alpine-ajax/reference/#ajax-events">AJAX Events</a></li>
-            <li><a href="/alpine-ajax/reference/#loading-states">Loading States</a></li>
-            <li><a href="/alpine-ajax/reference/#creating-demos">Creating Demos</a></li>
+            <li><a href="/reference/#installation">Installation</a></li>
+            <li><a href="/reference/#usage">Usage</a></li>
+            <li><a href="/reference/#x-target">x-target</a></li>
+            <li><a href="/reference/#x-arrange">x-arrange</a></li>
+            <li><a href="/reference/#x-focus">x-focus</a></li>
+            <li><a href="/reference/#x-sync">x-sync</a></li>
+            <li><a href="/reference/#ajax">$ajax</a></li>
+            <li><a href="/reference/#ajax-events">AJAX Events</a></li>
+            <li><a href="/reference/#loading-states">Loading States</a></li>
+            <li><a href="/reference/#creating-demos">Creating Demos</a></li>
           </ol>
         </details>
       </details-force-state>
     </li>
     <li>
-      <a href="/alpine-ajax/examples" aria-current="">Examples</a>
+      <a href="/examples" aria-current>Examples</a>
       
     </li>
     <li>
-      <a href="/alpine-ajax/comparisons" aria-current="">Comparisons</a>
+      <a href="/comparisons" aria-current>Comparisons</a>
       
     </li>
     <li><a href="https://github.com/imacrayon/alpine-ajax/releases">Changelog</a></li>
@@ -182,11 +182,11 @@
 <p>Use cases for this are unread message counters or notification flashes. These elements often live in the base layout, outside of the content area that is being replaced.</p>
 <p>Consider this list of notifications:</p>
 <pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">aria-live</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>polite<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>ul</span> <span class="token attr-name">x-sync</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>notifications<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>ul</span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span></code></pre>
-<p>Every server response that includes a <code>notifications</code> element will get inserted into this <code>aria-live</code> region. Take a look at the <a href="/alpine-ajax/examples/notifications">Notifications example</a> for a demonstration.</p>
+<p>Every server response that includes a <code>notifications</code> element will get inserted into this <code>aria-live</code> region. Take a look at the <a href="/examples/notifications">Notifications example</a> for a demonstration.</p>
 <h2 id="ajax" tabindex="-1">$ajax <a class="direct-link" href="#ajax" aria-hidden="true">#</a></h2>
 <p>The <code>$ajax</code> magic helper is for finer-grained AJAX control. Use it to programmatically issue AJAX requests in response to events. Here we've wired it up to an input's <code>change</code> event to perform some server-side validation for an email:</p>
 <pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>email_field<span class="token punctuation">"</span></span> <span class="token attr-name">x-data</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>{email : ''}<span class="token punctuation">"</span></span> <span class="token attr-name">@change</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>$ajax('/validate-email', {<br>  method: 'post',<br>  body: { email },<br>})<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>label</span> <span class="token attr-name">for</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>email<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>Email<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>label</span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>input</span> <span class="token attr-name">type</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>email<span class="token punctuation">"</span></span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>email<span class="token punctuation">"</span></span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>email<span class="token punctuation">"</span></span> <span class="token attr-name">x-model</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>email<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span></code></pre>
-<p>In this example we make a <code>POST</code> request with the <code>email</code> value to the <code>/validate-email</code> endpoint. See the <a href="/alpine-ajax/examples/inline-validation">Inline Validation example</a> for a complete demonstration.</p>
+<p>In this example we make a <code>POST</code> request with the <code>email</code> value to the <code>/validate-email</code> endpoint. See the <a href="/examples/inline-validation">Inline Validation example</a> for a complete demonstration.</p>
 <p><strong>Note:</strong> Since <code>$ajax</code> is intended to be used in side effects it doesn't emit any events or target <code>x-sync</code> elements like <code>x-target</code>. However, you can change these defaults using the <code>$ajax</code> options.</p>
 <h3 id="ajax-options" tabindex="-1">$ajax options <a class="direct-link" href="#ajax-options" aria-hidden="true">#</a></h3>
 <div class="table">
@@ -259,12 +259,12 @@
 </div>
 <p>Here's an example of aborting a form request when the user cancels a dialog prompt:</p>
 <pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>form</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>delete_user<span class="token punctuation">"</span></span> <span class="token attr-name">x-init</span> <span class="token attr-name">x-target</span> <span class="token attr-name"><span class="token namespace">@ajax:</span>before</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>confirm('Are you sure?') || $event.preventDefault()<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>button</span><span class="token punctuation">></span></span>Delete User<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>button</span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>form</span><span class="token punctuation">></span></span></code></pre>
-<p><strong>Note:</strong> The <code>ajax:success</code> and <code>ajax:error</code> events only convey the status code of an AJAX request. You'll probably find that <a href="/alpine-ajax/examples/server-events/">Server Events</a> are better for triggering actions based on your server's response.</p>
+<p><strong>Note:</strong> The <code>ajax:success</code> and <code>ajax:error</code> events only convey the status code of an AJAX request. You'll probably find that <a href="/examples/server-events/">Server Events</a> are better for triggering actions based on your server's response.</p>
 <h2 id="loading-states" tabindex="-1">Loading states <a class="direct-link" href="#loading-states" aria-hidden="true">#</a></h2>
 <p>While an AJAX request is in progress there are a few loading states to be aware of:</p>
 <ul>
 <li>If a form submission triggered the request, the form's submit button is automatically disabled, this prevents users from triggering additional network requests by accidentally double clicking the submit button.</li>
-<li>During an AJAX request, <code>aria-busy=&quot;true&quot;</code> is set on all targets of the request. This attribute can be used in CSS to provide a loading indicator, check out the <a href="/alpine-ajax/examples/loading">Loading Indicator example</a> for more details.</li>
+<li>During an AJAX request, <code>aria-busy=&quot;true&quot;</code> is set on all targets of the request. This attribute can be used in CSS to provide a loading indicator, check out the <a href="/examples/loading">Loading Indicator example</a> for more details.</li>
 </ul>
 <h2 id="creating-demos" tabindex="-1">Creating Demos <a class="direct-link" href="#creating-demos" aria-hidden="true">#</a></h2>
 <p>Use the mock server script included with Alpine AJAX when you need to build a quick prototype or demonstrate a bug, without a server. The mock server script adds a global <code>route</code> helper function for mocking server endpoints on the frontend:</p>
@@ -278,7 +278,7 @@
       Alpine AJAX Demo</a> by Christian Taylor (<a href="https://codepen.io/imacrayon">@imacrayon</a>)
       on <a href="https://codepen.io">CodePen</a>.</span>
     </p>
-    <script async="" src="https://cpwebassets.codepen.io/assets/embed/ei.js"></script>
+    <script async src="https://cpwebassets.codepen.io/assets/embed/ei.js"></script>
   </div>
 </details>
 <p><strong>Important</strong>: The mock server should only be used for demos and testing, this utility is not designed for production environments.</p>
