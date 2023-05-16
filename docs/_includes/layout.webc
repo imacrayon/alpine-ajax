@@ -8,7 +8,7 @@
   <meta name="description" :content="description || `Alpine AJAX`">
   <meta name="generator" :content="eleventy.generator">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prism-themes@1.9.0/themes/prism-a11y-dark.min.css" webc:keep>
-  <link rel="stylesheet" href="/css/main.css?id=3" webc:keep>
+  <link rel="stylesheet" href="/css/main.css?id=4" webc:keep>
   <style @raw="getBundle('css')" webc:keep></style>
   <script defer webc:for="src of (dependencies || [])" :src="src" webc:keep></script>
   <script defer src="/js/main.js" webc:keep></script>
