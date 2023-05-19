@@ -12,7 +12,7 @@ Alpine AJAX helps you build straight-forward, robust, interactive websites.
 
 - **Alpine AJAX is small**: Under 4kB (gzipped), combined with Alpine.js you can build [almost anything you want](/examples) with only 18kB of total JavaScript.
 - **Alpine AJAX is flexible**: It has zero server-side dependencies, you can use it with _any_ server-side stack.
-- **Alpine AJAX is progressive**: It provides patterns for building progressively enhanced websites that function with or without JavaScript.
+- **Alpine AJAX is progressive**: It provides patterns for building progressively enhanced websites that function even [when JavaScript is not available](https://www.kryogenix.org/code/browser/everyonehasjs.html).
 - **Alpine AJAX is accessible**: It uses JavaScript to _enhance_ [the power of HTML](https://developer.mozilla.org/en-US/docs/Learn/Accessibility/HTML) rather than replace it with inaccessible workarounds.
 - **Alpine AJAX is performant**: It batches AJAX requests and prevents duplicate requests to save you network bandwidth.
 - **Alpine AJAX is easy to learn**: You can probably pick it up in an afternoon.
