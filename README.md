@@ -2,7 +2,7 @@
 
 A set of AlpineJS directives that enable forms and links to make asynchronous HTTP requests and render the response to the page.
 
-Learn more at [https://imacrayon.github.io/alpine-ajax/](https://imacrayon.github.io/alpine-ajax/).
+Learn more at [alpine-ajax.js.org](https://alpine-ajax.js.org).
 
 ## Contributing
 
