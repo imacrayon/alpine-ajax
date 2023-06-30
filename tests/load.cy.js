@@ -76,3 +76,34 @@ test('content is lazily loaded with a custom event trigger',
     })
   }
 )
+
+test('aria-busy is added to busy targets',
+  html`<a href="/tests" x-target id="replace">Link</a>`,
+  ({ intercept, get, wait }) => {
+    intercept('GET', '/tests', {
+      delay: 1000,
+      statusCode: 200,
+      body: '<h1 id="title">Success</h1><a href="/tests" x-target id="replace">Replaced</a>',
+    }).as('response')
+    get('a').click().should('have.attr', 'aria-busy')
+    wait('@response').then(() => {
+      get('a').should('not.have.attr', 'aria-busy')
+    })
+  }
+)
+
+test('aria-busy is removed from targets that are not replaced',
+  html`<div id="append" x-arrange="append"><a href="/tests" x-target="append">Link</a><div>`,
+  ({ intercept, get, wait }) => {
+    intercept('GET', '/tests', {
+      delay: 1000,
+      statusCode: 200,
+      body: '<h1 id="title">Success</h1><div id="append"><a href="/tests">Appended</a></div>',
+    }).as('response')
+    get('a').click()
+    get('#append').should('have.attr', 'aria-busy')
+    wait('@response').then(() => {
+      get('#append').should('not.have.attr', 'aria-busy')
+    })
+  }
+)

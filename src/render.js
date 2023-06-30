@@ -102,6 +102,7 @@ export async function render(request, targets, el, events = true) {
     let freshEl = renderElement(strategy, target, template)
 
     if (freshEl) {
+      freshEl.removeAttribute('aria-busy')
       freshEl.dataset.source = response.url
     }
 

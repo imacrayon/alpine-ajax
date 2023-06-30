@@ -456,6 +456,7 @@
       }
       let freshEl = renderElement(strategy, target, template);
       if (freshEl) {
+        freshEl.removeAttribute("aria-busy");
         freshEl.dataset.source = response.url;
       }
       return freshEl;
