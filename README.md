@@ -14,7 +14,7 @@ Clone this repo and run `npm install` to get started.
 
 ## Documentation
 
-The documentation site is hosted at [https://imacrayon.github.io/alpine-ajax/](https://imacrayon.github.io/alpine-ajax/), the source files are located in `/docs`.
+The documentation site is hosted at [https://alpine-ajax.js.org](https://alpine-ajax.js.org), the source files are located in `/docs`.
 
 `npm run start` will locally server the documentation site built with [Eleventy](https://www.11ty.dev/). The site automatically bundles the latest Alpine AJAX build in `/docs/js/main.js`.
 
