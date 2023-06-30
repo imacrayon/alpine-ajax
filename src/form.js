@@ -1,4 +1,4 @@
-import { hasTarget, targetIds, validateIds, syncIds, source, FailedResponseError } from './helpers'
+import { hasTarget, parseIds, getTargets, addSyncTargets, source, FailedResponseError } from './helpers'
 import { render } from './render'
 
 export function listenForSubmit(el) {
@@ -7,7 +7,7 @@ export function listenForSubmit(el) {
     if (!hasTarget(form)) return
     event.preventDefault()
     event.stopPropagation()
-    let ids = syncIds(validateIds(targetIds(form)))
+    let ids = addSyncTargets(getTargets(parseIds(form)))
     let request = formRequest(form, event.submitter)
     try {
       return await withSubmitter(event.submitter, () => {

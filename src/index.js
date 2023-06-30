@@ -1,4 +1,4 @@
-import { targetIds, validateIds, syncIds, source } from './helpers'
+import { parseIds, getTargets, addSyncTargets, source } from './helpers'
 import { render } from './render'
 import { listenForNavigate } from './link'
 import { listenForSubmit } from './form'
@@ -10,9 +10,9 @@ export default function (Alpine) {
 
   Alpine.magic('ajax', (el) => {
     return (action, options = {}) => {
-      let ids = options.target ? options.target.split(' ') : targetIds(el)
-      ids = validateIds(ids)
-      ids = options.sync ? syncIds(ids) : ids
+      let ids = options.target ? options.target.split(' ') : parseIds(el)
+      let targets = getTargets(ids)
+      targets = options.sync ? addSyncTargets(targets) : targets
 
       let body = null
       if (options.body) {
@@ -33,7 +33,7 @@ export default function (Alpine) {
         referrer: source(el),
       }
 
-      return render(request, ids, el, Boolean(options.events))
+      return render(request, targets, el, Boolean(options.events))
     }
   })
 

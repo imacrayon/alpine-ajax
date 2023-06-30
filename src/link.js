@@ -1,4 +1,4 @@
-import { hasTarget, targetIds, validateIds, syncIds, source, FailedResponseError } from './helpers'
+import { hasTarget, parseIds, getTargets, addSyncTargets, source, FailedResponseError } from './helpers'
 import { render } from './render'
 
 export function listenForNavigate(el) {
@@ -7,10 +7,10 @@ export function listenForNavigate(el) {
     if (!isLocalLink(link) || !hasTarget(link)) return
     event.preventDefault()
     event.stopPropagation()
-    let ids = syncIds(validateIds(targetIds(link)))
+    let targets = addSyncTargets(getTargets(parseIds(link)))
     let request = navigateRequest(link)
     try {
-      return await render(request, ids, link)
+      return await render(request, targets, link)
     } catch (error) {
       if (error instanceof FailedResponseError) {
         console.warn(error.message)

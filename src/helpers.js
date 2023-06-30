@@ -1,31 +1,38 @@
-export function targetIds(el) {
+export function parseIds(el) {
   let target = el.getAttribute('x-target')
 
   return target ? target.split(' ') : [el.id]
 }
 
-export function validateIds(ids = []) {
+export function getTargets(ids = []) {
   ids = ids.filter(id => id)
 
   if (ids.length === 0) {
     throw new MissingIdError(el)
   }
 
-  return ids
+  return ids.map(id => {
+    let target = document.getElementById(id)
+    if (!target) {
+      throw new MissingTargetError(id)
+    }
+
+    return target
+  })
 }
 
-export function syncIds(ids = []) {
+export function addSyncTargets(targets) {
   document.querySelectorAll('[x-sync]').forEach(el => {
     if (!el.id) {
       throw new MissingIdError(el)
     }
 
-    if (!ids.includes(el.id)) {
-      ids.push(el.id)
+    if (!targets.some(target => target.id === el.id)) {
+      targets.push(el)
     }
   })
 
-  return ids
+  return targets
 }
 
 export function hasTarget(el) {
@@ -37,6 +44,13 @@ export class MissingIdError extends Error {
     let description = (el.outerHTML.match(/<[^>]+>/) ?? [])[0] ?? '[Element]'
     super(`${description} is missing an ID to target.`)
     this.name = 'Target Missing ID'
+  }
+}
+
+export class MissingTargetError extends Error {
+  constructor(id) {
+    super(`#${id} was not found in the current document.`)
+    this.name = 'Missing Target'
   }
 }
 

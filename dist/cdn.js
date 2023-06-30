@@ -1,26 +1,32 @@
 (() => {
   // src/helpers.js
-  function targetIds(el2) {
+  function parseIds(el2) {
     let target = el2.getAttribute("x-target");
     return target ? target.split(" ") : [el2.id];
   }
-  function validateIds(ids = []) {
+  function getTargets(ids = []) {
     ids = ids.filter((id) => id);
     if (ids.length === 0) {
       throw new MissingIdError(el);
     }
-    return ids;
+    return ids.map((id) => {
+      let target = document.getElementById(id);
+      if (!target) {
+        throw new MissingTargetError(id);
+      }
+      return target;
+    });
   }
-  function syncIds(ids = []) {
+  function addSyncTargets(targets) {
     document.querySelectorAll("[x-sync]").forEach((el2) => {
       if (!el2.id) {
         throw new MissingIdError(el2);
       }
-      if (!ids.includes(el2.id)) {
-        ids.push(el2.id);
+      if (!targets.some((target) => target.id === el2.id)) {
+        targets.push(el2);
       }
     });
-    return ids;
+    return targets;
   }
   function hasTarget(el2) {
     return el2.hasAttribute("x-target");
@@ -30,6 +36,12 @@
       let description = (el2.outerHTML.match(/<[^>]+>/) ?? [])[0] ?? "[Element]";
       super(`${description} is missing an ID to target.`);
       this.name = "Target Missing ID";
+    }
+  };
+  var MissingTargetError = class extends Error {
+    constructor(id) {
+      super(`#${id} was not found in the current document.`);
+      this.name = "Missing Target";
     }
   };
   var FailedResponseError = class extends Error {
@@ -398,7 +410,7 @@
       return document.getElementById(to.id);
     }
   };
-  async function render(request, ids, el2, events = true) {
+  async function render(request, targets, el2, events = true) {
     let dispatch = (name, detail = {}) => {
       return el2.dispatchEvent(
         new CustomEvent(name, {
@@ -414,10 +426,8 @@
     }
     if (!dispatch("ajax:before"))
       return;
-    ids.forEach((id) => {
-      let busy = document.getElementById(id);
-      if (busy)
-        busy.setAttribute("aria-busy", "true");
+    targets.forEach((target) => {
+      target.setAttribute("aria-busy", "true");
     });
     let response = await send(request);
     if (response.ok) {
@@ -429,16 +439,15 @@
     if (!response.html)
       return;
     let fragment = document.createRange().createContextualFragment(response.html);
-    let targets = ids.map((id) => {
-      let template = fragment.getElementById(id);
-      let target = document.getElementById(id);
+    targets = targets.map((target) => {
+      let template = fragment.getElementById(target.id);
       let strategy = target.getAttribute("x-arrange") || "replace";
       if (!template) {
         if (!dispatch("ajax:missing", response)) {
           return;
         }
         if (!target.hasAttribute("x-sync")) {
-          console.warn(`Target #${id} not found in AJAX response.`);
+          console.warn(`Target #${target.id} not found in AJAX response.`);
         }
         if (response.ok) {
           return renderElement(strategy, target, target.cloneNode(false));
@@ -522,10 +531,10 @@
         return;
       event.preventDefault();
       event.stopPropagation();
-      let ids = syncIds(validateIds(targetIds(link)));
+      let targets = addSyncTargets(getTargets(parseIds(link)));
       let request = navigateRequest(link);
       try {
-        return await render(request, ids, link);
+        return await render(request, targets, link);
       } catch (error) {
         if (error instanceof FailedResponseError) {
           console.warn(error.message);
@@ -558,7 +567,7 @@
         return;
       event.preventDefault();
       event.stopPropagation();
-      let ids = syncIds(validateIds(targetIds(form)));
+      let ids = addSyncTargets(getTargets(parseIds(form)));
       let request = formRequest(form, event.submitter);
       try {
         return await withSubmitter(event.submitter, () => {
@@ -686,9 +695,9 @@
     listenForNavigate(window);
     Alpine.magic("ajax", (el2) => {
       return (action, options = {}) => {
-        let ids = options.target ? options.target.split(" ") : targetIds(el2);
-        ids = validateIds(ids);
-        ids = options.sync ? syncIds(ids) : ids;
+        let ids = options.target ? options.target.split(" ") : parseIds(el2);
+        let targets = getTargets(ids);
+        targets = options.sync ? addSyncTargets(targets) : targets;
         let body = null;
         if (options.body) {
           if (options.body instanceof HTMLFormElement) {
@@ -706,7 +715,7 @@
           body,
           referrer: source(el2)
         };
-        return render(request, ids, el2, Boolean(options.events));
+        return render(request, targets, el2, Boolean(options.events));
       };
     });
     Alpine.addInitSelector(() => `[${Alpine.prefixed("load")}]`);

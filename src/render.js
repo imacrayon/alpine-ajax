@@ -1,4 +1,4 @@
-import { FailedResponseError } from './helpers'
+import { FailedResponseError, MissingTargetError } from './helpers'
 import { morph as AlpineMorph } from '@alpinejs/morph'
 
 let queue = {}
@@ -46,7 +46,7 @@ let arrange = {
   }
 }
 
-export async function render(request, ids, el, events = true) {
+export async function render(request, targets, el, events = true) {
   let dispatch = (name, detail = {}) => {
     return el.dispatchEvent(
       new CustomEvent(name, {
@@ -64,9 +64,8 @@ export async function render(request, ids, el, events = true) {
 
   if (!dispatch('ajax:before')) return
 
-  ids.forEach(id => {
-    let busy = document.getElementById(id)
-    if (busy) busy.setAttribute('aria-busy', 'true')
+  targets.forEach(target => {
+    target.setAttribute('aria-busy', 'true')
   })
 
   let response = await send(request)
@@ -81,9 +80,8 @@ export async function render(request, ids, el, events = true) {
   if (!response.html) return
 
   let fragment = document.createRange().createContextualFragment(response.html)
-  let targets = ids.map(id => {
-    let template = fragment.getElementById(id)
-    let target = document.getElementById(id)
+  targets = targets.map(target => {
+    let template = fragment.getElementById(target.id)
     let strategy = target.getAttribute('x-arrange') || 'replace'
     if (!template) {
       if (!dispatch('ajax:missing', response)) {
@@ -91,7 +89,7 @@ export async function render(request, ids, el, events = true) {
       }
 
       if (!target.hasAttribute('x-sync')) {
-        console.warn(`Target #${id} not found in AJAX response.`)
+        console.warn(`Target #${target.id} not found in AJAX response.`)
       }
 
       if (response.ok) {
