@@ -2,7 +2,7 @@ const { defineConfig } = require("cypress");
 
 module.exports = defineConfig({
   e2e: {
-    retries: 1, // This is a workaround for flaky network tests
+    retries: 2, // This is a workaround for flaky network tests
     specPattern: 'tests/*.cy.js',
     supportFile: false,
   },
