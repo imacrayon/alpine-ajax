@@ -34,7 +34,7 @@ Alpine AJAX enables functionality very similar to Turbo's `<turbo-frame>` Custom
 
 Turbo communicates updates from the server to the client via Turbo Streams. Turbo streams require that your server responds with different HTML content based on whether the client is making a "Turbo Request" or a regular HTTP request, this means you end up having to maintain two different sets of HTML templates for these two types of requests. The Rails community recommends using template partials to ease the burden of juggling multiple variants of the same page, but even with partials, using Turbo Streams can still feel like you're maintaining two versions of the same app. In comparison, Alpine AJAX requires no distinction between an AJAX request and regular HTTP request, and state changes are communicated to the frontend via [custom JavaScript events](/reference/#server-events) that can be mixed in with any standard HTML response.
 
-One notable advantage to using the Hotwire framework is that it provides a workflow for transforming your web application into a native mobile application, so if you intend to launch your website on Android and iOS platforms, Hotwired Turbo might be worth considering.
+One notable advantage to using the Hotwire framework is that it provides a workflow for transforming your website into a native mobile application, so if you intend to launch your website on Android and iOS platforms, Hotwired Turbo might be worth considering.
 
 Turbo weighs in at 22kB of JavaScript compared to only 4kB for Alpine AJAX.
 
@@ -54,7 +54,7 @@ The core Unpoly library weighs in at 43kB of JavaScript plus 1kB of required CSS
 
 If you're building a Laravel app, Livewire provides a lot of convenience and a great developer experience. Livewire has invested a lot of work into making the experience feel first class, it's easy to get up and running, however its component-based architecture is a departure from standard Laravel conventions and will probably require some getting used to. In comparison, Alpine AJAX is server-agnostic, so you can start using it without any changes to your Laravel app; in fact you're encouraged to build your Laravel app first **without** Alpine AJAX, then sprinkle in Alpine AJAX at the end to enhance the user experience.
 
-The lack of progressive enhancement in Livewire is another reason you might choose Alpine AJAX over Livewire. [When JavaScript is not available](https://www.kryogenix.org/code/browser/everyonehasjs.html) a Livewire app becomes completely unresponsive. In contrast, Alpine AJAX gracefully degrades, so your links and forms can continue to function just like any other server-rendered application.
+The lack of progressive enhancement in Livewire is another reason you might choose Alpine AJAX over Livewire. [When JavaScript is not available](https://www.kryogenix.org/code/browser/everyonehasjs.html) a Livewire app becomes completely unresponsive. In contrast, Alpine AJAX gracefully degrades, so your links and forms can continue to function just like any other server-rendered website.
 
 Alpine.js was originally created as a companion to Laravel Livewire, so of course Alpine.js and Livewire pair flawlessly together for handling client-side interactions.
 
