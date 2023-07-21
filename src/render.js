@@ -1,4 +1,4 @@
-import { FailedResponseError, MissingTargetError } from './helpers'
+import { FailedResponseError } from './helpers'
 import { morph as AlpineMorph } from '@alpinejs/morph'
 
 let queue = {}
