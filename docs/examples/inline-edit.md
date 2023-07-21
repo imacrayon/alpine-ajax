@@ -69,6 +69,37 @@ Lastly, we'll update the edit form and the "Cancel" link so that focus is return
 
 Try using the keyboard in the following demo and notice how keyboard focus is maintained as your navigate between modes.
 
+<style>
+@keyframes fade-in {
+  from { opacity: 0; }
+}
+
+@keyframes fade-out {
+  to { opacity: 0; }
+}
+
+@keyframes slide-from-right {
+  from { transform: translateX(25%); }
+}
+
+@keyframes slide-to-left {
+  to { transform: translateX(25%); }
+}
+
+/* define animations for the old and new content */
+::view-transition-old(slide-fade) {
+  animation: 200ms ease 150ms both fade-out, 200ms ease 150ms both slide-to-left;
+}
+::view-transition-new(slide-fade) {
+  animation: 300ms ease 50ms both fade-in, 300ms ease 50ms both slide-from-right;
+}
+
+form {
+  background: #fff;
+  view-transition-name: slide-fade;
+}
+</style>
+
 
 <script type="module">
   let contact = {
