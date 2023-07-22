@@ -42,7 +42,7 @@ Alpine AJAX is designed to make it easy to build resilient, accessible user inte
 
 ## x-target
 
-Add the `x-target` attribute to forms or links to enable AJAX behavior. The value of the `x-target` attribute indicates the `id` of element on the page the form or link should target.
+Add the `x-target` attribute to forms or links to enable AJAX behavior. The value of `x-target` should equal the `id` of an element on the page that the form or link should target.
 
 Take a look at this comment list, notice the `x-target="comments"` attribute on the `<form>`:
 
@@ -57,7 +57,7 @@ Take a look at this comment list, notice the `x-target="comments"` attribute on 
 </form>
 ```
 
-When the "Post a Comment" form is submitted the `#comments` list will be updated with the response instead of the form.
+When the form is submitted a `POST` request is issued to `/comment` and the `#comments` list will be replaced with the content in the response.
 
 ### Multiple targets
 
@@ -91,7 +91,7 @@ In cases when a form or link targets itself, you may leave the value of `x-targe
 
 ## x-arrange
 
-Use `x-arrange` to control how targeted elements will handle incoming AJAX elements. By default, incoming elements will `replace` the target element, instead you can choose one of the 7 other options for arranging content:
+Use `x-arrange` to control how targeted elements will handle incoming AJAX content. By default, incoming content will `replace` a targeted element, instead you can choose one of the 7 other options for arranging content:
 
 <div class="table">
 <table>
