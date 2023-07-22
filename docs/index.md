@@ -39,4 +39,4 @@ This simple pattern of updating a piece of your frontend instead of the entire p
 
 ## Next steps
 
-Visit the [Reference](/reference) page to learn about all the library features, then check the [Examples](/examples) page to learn how you can implement them.
+Jump to the [Reference](/reference) to get started, then check the [Examples](/examples) for more details on implementing specific patterns.
