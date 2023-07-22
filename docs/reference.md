@@ -50,8 +50,7 @@ Take a look at this comment list, notice the `x-target="comments"` attribute on 
 <ul id="comments">
   <li>Comment #1</li>
 </ul>
-<h2 id="comment_form_title">Post a Comment</h2>
-<form x-target="comments" method="post" action="/comment" aria-labelledby="comment_form_title">
+<form x-target="comments" method="post" action="/comment">
   <input aria-label="Comment text" name="text" required />
   <button>Submit</button>
 </form>
@@ -70,8 +69,7 @@ Here's an expanded comment list example:
 <ul id="comments">
   <li>Comment #1</li>
 </ul>
-<h2 id="comment_form_title">Post a Comment</h2>
-<form x-target="comments comments_count" method="post" action="/comment" aria-labelledby="comment_form_title">
+<form x-target="comments comments_count" method="post" action="/comment">
   <input name="comment" required />
   <button>Submit</button>
 </form>
