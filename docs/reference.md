@@ -38,13 +38,13 @@ Alpine.plugin(ajax)
 
 ## Usage
 
-It’s good practice to start building your UI **without** Alpine AJAX. Make your entire website work as it would if Alpine AJAX were not available, then sprinkle in AJAX functionality at the end. Working in this way will ensure that your AJAX interactions degrade gracefully [when JavaScript is not available](https://www.kryogenix.org/code/browser/everyonehasjs.html): Links and forms will continue to work as normal, they simply won't fire AJAX requests. This is known as [Progressive Enhancement](https://developer.mozilla.org/en-US/docs/Glossary/Progressive_Enhancement), and it allows a wider audience to use your website’s functionality.
+It’s good practice to start building your UI **without** Alpine AJAX. Make your entire website work as it would if Alpine AJAX were not available, then sprinkle in AJAX functionality at the end. Working in this way will ensure that your AJAX interactions degrade gracefully [when JavaScript is not available](https://www.kryogenix.org/code/browser/everyonehasjs.html): Links and forms will continue to work as normal, they simply won't fire AJAX requests. This is known as [Progressive Enhancement](https://developer.mozilla.org/en-US/docs/Glossary/Progressive_Enhancement), and it allows a wider audience to use your website.
 
 ## x-target
 
 Add the `x-target` attribute to forms or links to enable AJAX behavior. The value of `x-target` should equal the `id` of an element on the page that the form or link should target.
 
-Take a look at this comment list, notice the `x-target="comments"` attribute on the `<form>`:
+Take a look at the following comment list markup, notice the `x-target="comments"` attribute on the `<form>`:
 
 ```html
 <ul id="comments">
@@ -138,7 +138,7 @@ The `morph` option uses a DOM diffing algorithm to update HTML, it's a bit more 
 
 ## x-focus
 
-Add `x-focus` to a form or link to control keyboard focus after an AJAX request has completed. The `x-focus` attribute accepts an element ID that will be focused. Consider this editable email address, we'll assume that clicking the "Edit" link will load a form to change the email:
+Add `x-focus` to a form or link to control keyboard focus after an AJAX request has completed. The `x-focus` attribute accepts an element `id` that will be focused. Consider the following markup, we'll assume that clicking the "Edit" link will load a form to change the listed email address:
 
 ```html
 <div x-target id="contact_1">
@@ -147,9 +147,9 @@ Add `x-focus` to a form or link to control keyboard focus after an AJAX request 
 </div>
 ```
 
-The `x-focus` attribute on the "Edit" link ensures that when the edit form is loaded, the element with `id="email_field"` will be focused.
+The `x-focus` attribute on the "Edit" link ensures that the element with `id="email_field"` will be focused after the requested edit form is injected onto the page.
 
-Controlling focus is important for providing [meaningful sequencing](https://www.w3.org/TR/WCAG21/#meaningful-sequence) and [focus order](https://www.w3.org/TR/WCAG21/#focus-order) for keyboard users, however, take care not to overuse focus control. This attribute should mostly be used to prevent the keyboard focus from disappearing when content changes.
+Controlling focus is important for providing [meaningful sequencing](https://www.w3.org/TR/WCAG21/#meaningful-sequence) and [focus order](https://www.w3.org/TR/WCAG21/#focus-order) for keyboard users, however, take care not to overuse focus control. This attribute should primarily be used to prevent the keyboard focus from disappearing when page content changes.
 
 It's worth noting that `x-arrange="morph"` is another way to preserve keyboard focus between content changes. However, there are cases when the DOM is transformed so much that the Morph algorithm is unable to reliably preserve focus state. In theses situations `x-focus` can correct any focus discrepancies.
 
@@ -157,9 +157,9 @@ It's worth noting that `x-arrange="morph"` is another way to preserve keyboard f
 
 Elements with the `x-sync` attribute are updated whenever the server sends a matching element, even if the element isn't targeted with `x-target`.
 
-`x-sync` elements must have a unique `id`. The `id` is used to match the content being replaced when requesting content from the server.
+`x-sync` elements must have a unique `id`. Any element sent from the server with a matching `id` will replace the existing `x-sync` element.
 
-Use cases for this are unread message counters or notification flashes. These elements often live in the base layout, outside of the content area that is being replaced.
+Use cases for this attribute are unread message counters or notification flashes. These elements often live in the base layout, outside of the content area that is being replaced.
 
 Consider this list of notifications:
 
@@ -169,7 +169,7 @@ Consider this list of notifications:
 </div>
 ```
 
-Every server response that includes a `notifications` element will get inserted into this `aria-live` region. Take a look at the [Notifications example](/examples/notifications) for a demonstration.
+Every server response that includes an element with `id="notifications"` will replace the existing list of notifications inside the `aria-live` region. Take a look at the [Notifications example](/examples/notifications) for a complete demonstration of this UI pattern.
 
 ## $ajax
 
