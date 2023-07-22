@@ -36,14 +36,4 @@ export default function (Alpine) {
       return render(request, targets, el, Boolean(options.events))
     }
   })
-
-  Alpine.addInitSelector(() => `[${Alpine.prefixed('load')}]`)
-
-  Alpine.directive('load', (el, { expression }, { evaluate }) => {
-    if (typeof expression === 'string') {
-      return !!expression.trim() && evaluate(expression)
-    }
-
-    return evaluate(expression)
-  })
 }
