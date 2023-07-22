@@ -59,7 +59,7 @@ Take a look at this comment list, notice the `x-target="comments"` attribute on 
 
 When the form is submitted a `POST` request is issued to `/comment` and the `#comments` list will be replaced with the element that has `id="comments"` in the AJAX request's response.
 
-### Multiple targets
+### Multiple Targets
 
 You can replace multiple elements from a single server response by separating `id`s with a space.
 
@@ -79,7 +79,7 @@ Here's an expanded comment list example:
 
 Now, when the form is submitted, both the `#comments` list, and the `#comments_count` indicator will be updated.
 
-### Target shorthand
+### Target Shorthand
 
 In cases when a form or link targets itself, you may leave the value of `x-target` blank, however the form or link must still have an `id`:
 
@@ -277,7 +277,7 @@ Here's an example of aborting a form request when the user cancels a dialog prom
 
 **Note:** The `ajax:success` and `ajax:error` events only convey the status code of an AJAX request. You'll probably find that [Server Events](/examples/server-events/) are better for triggering actions based on your server's response.
 
-## Loading states
+## Loading States
 
 While an AJAX request is in progress there are a few loading states to be aware of:
 
