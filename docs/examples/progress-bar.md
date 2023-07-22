@@ -14,7 +14,7 @@ We start with an AJAX form that issues a `POST` request to `/jobs` to begin a jo
 </form>
 ```
 
-Note that the form is assigned `id="jobs"`. When the form is submitted, it is then replaced with a new `<div>` that reloads itself every 600ms:
+Note that the form is assigned `id="jobs"`. When the form is submitted, it is replaced with a new `<div>` that reloads itself every 600ms:
 
 ```html
 <div id="jobs" x-init="setTimeout(() => $ajax('/jobs/1'), 600)">
@@ -27,10 +27,9 @@ Note that the form is assigned `id="jobs"`. When the form is submitted, it is th
 </div>
 ```
 
-This HTML is rerendered every 600 milliseconds, with the `width` style attribute on the progress bar being updated.
-Here we've also added a `transition` rule, to make the visual transition continuous rather than jumpy.
+On each reload the `aria-valuenow` attribute should change to indicate the server's progress. The `width` of the SVG element should also change to visually indicate progress.
 
-Finally, when the job is complete, the `x-init` directive is removed and a restart `<form>` is added to the UI:
+Finally, when the job is complete, the `x-init` directive is removed and a `<form>` to restart the job is added to the UI:
 
 ```html
 <div id="jobs" x-init>
