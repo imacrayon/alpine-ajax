@@ -4,7 +4,7 @@ layout: layout.webc
 
 # Alpine AJAX
 
-Alpine AJAX seamlessly integrates your client and server using [Alpine.js](https://alpinejs.dev). Use it to build straight-forward, robust, interactive websites.
+An [Alpine.js](https://alpinejs.dev) plugin that seamlessly integrates your client and server. Use it to build straight-forward, robust, interactive websites.
 
 - **Alpine AJAX is small**: Under 4kB (gzipped), combined with Alpine.js you can build [almost anything you want](/examples) with only 18kB of total JavaScript.
 - **Alpine AJAX is flexible**: It has zero server-side dependencies, you can use it with _any_ server-side stack.
