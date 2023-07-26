@@ -67,8 +67,8 @@ You can copy and paste them and then adjust them for your needs.
     <dd>Display notification "toasts".</dd>
   </div>
   <div>
-    <dt><a href="/examples/server-events">Server Events</a></dt>
-    <dd>Build a commenting experience using server initiated events.</dd>
+    <dt><a href="/examples/server-events">Server Events (Comment Form)</a></dt>
+    <dd>Build a comment form experience using server initiated events.</dd>
   </div>
   <div>
     <dt><a href="/examples/dialog-form">Dialog (Modal) Form</a></dt>
