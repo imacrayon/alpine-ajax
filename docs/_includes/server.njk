@@ -1,0 +1,55 @@
+<noscript>
+  <strong>This demo would normally function without JavaScript enabled</strong>. However, this website is static and
+  mocks HTTP responses using JavaScript instead of interacting with a real server, so you will need to enable
+  JavaScript to view this demo.
+</noscript>
+<div id="demo"></div>
+<div x-data="{
+  init() {
+    document.addEventListener('server:response', (event) => {
+      this.requests.unshift({ id: this.requests.length, ...event.detail })
+    })
+  },
+  open: false,
+  active: 0,
+  requests: [],
+  select(request) {
+    this.active = request.id
+  },
+  selected(request) {
+    return this.active === request.id
+  }
+}" class="not-prose text-base z-40 fixed bottom-0 left-0 right-0 rounded-t-md bg-almond-200">
+  <button role="button" id="server_inspector_button" x-bind:aria-expanded="open.toString()" x-on:click="open = !open" aria-controls="server_inspector" class="block w-full bg-almond-300 text-almond-800 font-mono font-bold px-4 py-3 border-t border-almond-800 cursor-pointer">Server Requests (<span x-text="requests.length.toString()"></span>)</button>
+  <div x-show="open" id="server_inspector" class="overflow-scroll h-[40vh] border-t border-almond-800 sm:flex">
+    <div class="relative sm:overflow-scroll sm:h-full">
+      <ol reversed class="list-decimal list-inside border-b border-almond-800 divide-y divide-almond-800">
+        <template x-for="request in requests" x-bind:key="request.id" hidden>
+          <li x-bind:aria-current="selected(request) ? 'step' : ''" class="relative font-mono px-4 py-3 aria-[current=step]:bg-teal-200 cursor-pointer" x-on:click="select(request)">
+            <button type="button" x-bind:aria-pressed="selected(request).toString()" x-text="`${request.method} ${request.url}`" class="underline"></button>
+          </li>
+        </template>
+      </ol>
+    </div>
+    <div class="flex-1 min-w-[40ch] border-almond-800 h-full sm:overflow-scroll sm:border-l">
+      <template x-for="request in requests" x-bind:key="request.id">
+        <dl x-show="active === request.id" class="divide-y divide-almond-800" x-ref="view" tabindex="-1">
+          <div class="py-3 px-4"><dt class="sr-only">Request</dt><dd class="font-mono" x-text="`${request.method} ${request.url}`"></dd></div>
+          <div class="py-3 px-4"><dt class="text-xs font-mono uppercase tracking-wide">Parameters</dt><dd><pre class="language-json"><code class="language-json" x-text="JSON.stringify(request.data, null, 2)"></code></pre></dd></div>
+          <div class="py-3 px-4"><dt class="text-xs font-mono uppercase tracking-wide">Response</dt><dd><pre class="language-html"><code class="language-html" x-html="window.escapeHtml(request.body)"></code></pre></dd></div>
+        </dl>
+      </template>
+    </div>
+  </div>
+</div>
+
+{% css %}
+  #footer {
+    padding-bottom: calc(40vh + 4rem);
+  }
+  @media (min-width: 1024px) {
+    #main {
+      padding-bottom: calc(40vh + 4rem);
+    }
+  }
+{% endcss %}

@@ -1,6 +1,9 @@
 ---
-layout: example.webc
 title: Dialog (Modal)
+eleventyNavigation:
+  key: Dialog (Modal)
+  excerpt: Load remote content in a dialog window.
+  order: 11
 ---
 
 This example shows how to load remote content into a dialog window.
@@ -33,22 +36,7 @@ Finally, the server responds with the modal content:
 </div>
 ```
 
-<style>
-  dialog {
-    border: none;
-    border-radius: .5rem;
-    box-shadow: 0 10px 15px -3px var(--shadow), 0 4px 6px -4px var(--shadow);
-    padding: 1rem;
-    max-width: 56ch;
-    position: fixed;
-    top: 50vh;
-    margin-left: auto;
-    margin-right: auto;
-    transform: translate(0, -50%);
-  }
-</style>
-
-<script>
+{% js %}
   var database = function () {
     let data = [
       { id: 1, name: "Finn Mertins", email: "fmertins@candykingdom.gov", status: "Active" },
@@ -67,7 +55,7 @@ Finally, the server responds with the modal content:
     window.route('GET', `/contacts/${contact.id}`, () => show(database.find(contact.id)))
   })
 
-  example('/contacts')
+  window.example('/contacts')
 
   function index(contacts) {
     let items = contacts.map(contact => `<li><a href="/contacts/${contact.id}" x-target="contact">${contact.name}</a>`).join('\n')
@@ -87,4 +75,4 @@ Finally, the server responds with the modal content:
   <p><strong>Status</strong>: ${contact.status}</p>
 </div>`
   }
-</script>
+{% endjs %}

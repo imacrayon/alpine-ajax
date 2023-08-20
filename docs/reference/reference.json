@@ -1,0 +1,6 @@
+{
+  "eleventyNavigation": {
+    "parent": "Reference",
+    "permalink": false
+  }
+}

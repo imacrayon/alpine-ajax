@@ -1,6 +1,9 @@
 ---
-layout: example.webc
 title: Progress Bar
+eleventyNavigation:
+  key: Progress Bar
+  excerpt: Indicate the progress of a long running process.
+  order: 12
 ---
 
 This example shows how to implement a smoothly scrolling progress bar.
@@ -45,7 +48,7 @@ Finally, when the job is complete, the `x-init` directive is removed and a `<for
 </div>
 ```
 
-<script>
+{% js %}
   window.route('GET', '/jobs/create', () => create())
   window.route('POST', '/jobs', () => {
     let job = jobManager.start()
@@ -56,7 +59,7 @@ Finally, when the job is complete, the `x-init` directive is removed and a `<for
     return show(job)
   })
 
-  example('/jobs/create')
+  window.example('/jobs/create')
 
   function create() {
     return `<form id="jobs" x-target method="post" action="/jobs">
@@ -72,10 +75,10 @@ Finally, when the job is complete, the `x-init` directive is removed and a `<for
     }
 
     return `<div ${directive}id="jobs">
-  <h3 id="progress_label">Job Progress</label>
+  <h3 id="progress_label">Job Progress</h3>
   <div role="progressbar" aria-valuenow="${job.progress}" aria-valuemin="0" aria-valuemax="100" aria-labelledby="progress_label" style="overflow:hidden;">
     <svg style="width:${job.progress}%;transition: width .3s " width="24" height="24" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
-      <rect x="0" y="0" width="100%" height="100%" fill="var(--nc-lk-2)"></rect>
+      <rect x="0" y="0" width="100%" height="100%" fill="#144490"></rect>
     </svg>
   <div>
   ${restart(job)}
@@ -106,4 +109,4 @@ Finally, when the job is complete, the `x-init` directive is removed and a `<for
       }
     }
   })()
-</script>
+{% endjs %}

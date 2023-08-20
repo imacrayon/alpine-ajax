@@ -1,6 +1,9 @@
 ---
-layout: example.webc
 title: Notifications
+eleventyNavigation:
+  key: Notifications
+  excerpt: Display notification “toasts”.
+  order: 14
 ---
 
 This demo shows how to implement notification "toasts".
@@ -99,7 +102,6 @@ And finally, we can make our notifications automatically dismiss after 6 seconds
 
 <style>
   #notification_list {
-    position: absolute;
     display: flex;
     flex-direction: column;
     gap: .5rem;
@@ -110,11 +112,9 @@ And finally, we can make our notifications automatically dismiss after 6 seconds
     display: flex;
     align-items: center;
     font-size: .875rem;
-    background: var(--bg-light);
+    background: #fff;
     padding: 1rem;
-    box-shadow: 0 10px 15px -3px var(--shadow), 0 4px 6px -4px var(--shadow);
-    border-radius: .5rem;
-    border: 1px solid var(--bg-border);
+    border: 1px solid #000;
   }
   #notification_list > li :first-child {
     flex: 1;
@@ -122,7 +122,7 @@ And finally, we can make our notifications automatically dismiss after 6 seconds
   }
 </style>
 
-<script>
+{% js %}
   var count = 0;
 
   window.route('GET', '/action', () => view())
@@ -131,7 +131,7 @@ And finally, we can make our notifications automatically dismiss after 6 seconds
     return view()
   })
 
-  example('/action')
+  window.example('/action')
 
   function view() {
     return `<form id="action" x-target method="post" action="/action">
@@ -161,5 +161,4 @@ And finally, we can make our notifications automatically dismiss after 6 seconds
     <button @click="dismiss()" type="button" aria-label="Dismiss">&times;</button>
   </li>`
   }
-
-</script>
+{% endjs %}

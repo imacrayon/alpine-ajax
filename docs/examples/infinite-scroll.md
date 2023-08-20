@@ -1,6 +1,9 @@
 ---
-layout: example.webc
 title: Infinite Scroll
+eleventyNavigation:
+  key: Infinite Scroll
+  excerpt: Load additional content as the user scrolls.
+  order: 13
 dependencies:
   - https://cdn.jsdelivr.net/npm/@alpinejs/intersect@3.x.x/dist/cdn.min.js
 ---
@@ -57,86 +60,6 @@ Last, but not least, we need to ensure that the new table rows from subsequent p
 <tbody id="records" x-arrange="append">
 ```
 
-<script>
-  window.route('GET', '/contacts', (input) => {
-    if (input.page) {
-      return new Promise(resolve => {
-        setTimeout(() => resolve(view(parseInt(input.page))), 1000)
-      })
-    }
-
-    return view(1)
-  })
-
-  example('/contacts')
-
-  function view(page) {
-    let max = 5
-    let end = page * 10
-    let cursor = end - 9
-    let rows = []
-    let prefix = ''
-    let status = ''
-    while (cursor <= end) {
-      prefix = getPrefix(cursor)
-      status = Math.random() < 0.5 ? 'Active' : 'Inactive'
-      rows.push(`<tr>
-        <td>${prefix}MO</td>
-        <td>${prefix.toLowerCase()}mo@mo.co</td>
-        <td>${status}</td>
-      </tr>`)
-      cursor++;
-    }
-    rows = rows.join('\n')
-    prev = ''
-    next = ''
-    if (page > 1) {
-      prev = `<a href="/contacts?page=${page - 1}" x-show="false"><span aria-hidden="true">← </span> Prev</a>`
-    }
-    if (page < 5) {
-      next = `<a href="/contacts?page=${page + 1}" x-show="false">Next<span aria-hidden="true"> →</span></a>`
-    }
-
-    intersect = next ? `x-intersect="$ajax('/contacts?page=${page + 1}')" x-target="records pagination"` : ''
-
-    return `<table id="contacts">
-  <thead>
-    <tr>
-      <th scope="col">Name</th>
-      <th scope="col">Email</th>
-      <th scope="col">Status</th>
-    </tr>
-  </thead>
-  <tbody id="records" x-arrange="append">
-    ${rows}
-  </tbody>
-</table>
-<div id="pagination">
-  <div>Page ${page} of ${max}</div>
-  <div x-init ${intersect}>
-    ${prev}
-    ${next}
-  </div>
-</div>`
-  }
-
-
-let alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-function getPrefix(number, result = ''){
-  let index = number % alphabet.length
-  let quotient = number / alphabet.length
-  if (index - 1 == -1) {
-      index = alphabet.length
-      quotient = quotient - 1
-  }
-  result = alphabet.charAt(index - 1) + result
-
-  return quotient >= 1
-    ? getPrefix(parseInt(quotient), result)
-    : result
-}
-</script>
-
 <style>
 #pagination {
   display: flex;
@@ -159,3 +82,82 @@ function getPrefix(number, result = ''){
   100% { transform: rotate(360deg); }
 }
 </style>
+
+{% js %}
+  window.route('GET', '/contacts', (input) => {
+    if (input.page) {
+      return new Promise(resolve => {
+        setTimeout(() => resolve(view(parseInt(input.page))), 1000)
+      })
+    }
+
+    return view(1)
+  })
+
+  window.example('/contacts')
+
+  function view(page) {
+    let max = 5
+    let end = page * 10
+    let cursor = end - 9
+    let rows = []
+    let prefix = ''
+    let status = ''
+    while (cursor <= end) {
+      prefix = getPrefix(cursor)
+      status = Math.random() < 0.5 ? 'Active' : 'Inactive'
+      rows.push(`<tr>
+        <td>${prefix}MO</td>
+        <td>${prefix.toLowerCase()}mo@mo.co</td>
+        <td>${status}</td>
+      </tr>`)
+      cursor++;
+    }
+    rows = rows.join('\n')
+    let prev = ''
+    let next = ''
+    if (page > 1) {
+      prev = `<a href="/contacts?page=${page - 1}" x-show="false"><span aria-hidden="true">← </span> Prev</a>`
+    }
+    if (page < 5) {
+      next = `<a href="/contacts?page=${page + 1}" x-show="false">Next<span aria-hidden="true"> →</span></a>`
+    }
+
+    let intersect = next ? `x-intersect="$ajax('/contacts?page=${page + 1}')" x-target="records pagination"` : ''
+
+    return `<table id="contacts">
+  <thead>
+    <tr>
+      <th scope="col">Name</th>
+      <th scope="col">Email</th>
+      <th scope="col">Status</th>
+    </tr>
+  </thead>
+  <tbody id="records" x-arrange="append">
+    ${rows}
+  </tbody>
+</table>
+<div id="pagination">
+  <div>Page ${page} of ${max}</div>
+  <div x-init ${intersect}>
+    ${prev}
+    ${next}
+  </div>
+</div>`
+  }
+
+let alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+function getPrefix(number, result = ''){
+  let index = number % alphabet.length
+  let quotient = number / alphabet.length
+  if (index - 1 == -1) {
+      index = alphabet.length
+      quotient = quotient - 1
+  }
+  result = alphabet.charAt(index - 1) + result
+
+  return quotient >= 1
+    ? getPrefix(parseInt(quotient), result)
+    : result
+}
+{% endjs %}

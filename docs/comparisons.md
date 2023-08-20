@@ -1,6 +1,10 @@
 ---
-layout: layout.webc
+layout: page.njk
 title: Comparisons
+description: Compare Alpine AJAX to similar frameworks
+eleventyNavigation:
+  key: Comparisons
+  order: 3
 ---
 
 # Comparisons

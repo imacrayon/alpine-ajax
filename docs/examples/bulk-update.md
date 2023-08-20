@@ -1,6 +1,9 @@
 ---
-layout: example.webc
 title: Bulk Update
+eleventyNavigation:
+  key: Bulk Update
+  excerpt: Change multiple items in a collection at once.
+  order: 6
 ---
 
 This demo shows how to implement a common pattern where rows are selected and then bulk updated. This is
@@ -12,7 +15,6 @@ accomplished by putting an AJAX form below a table, with associated checkboxes i
     <tr>
       <th scope="col">Edit</th>
       <th scope="col">Name</th>
-      <th scope="col">Email</th>
       <th scope="col">Status</th>
     </tr>
   </thead>
@@ -20,7 +22,6 @@ accomplished by putting an AJAX form below a table, with associated checkboxes i
     <tr>
       <td><input type="checkbox" form="contacts_form" aria-label="Change Status" name="ids" value="0"></td>
       <td>Finn Mertins</td>
-      <td>fmertins@candykingdom.gov</td>
       <td>Active</td>
     </tr>
     ...
@@ -35,7 +36,7 @@ accomplished by putting an AJAX form below a table, with associated checkboxes i
 Notice the AJAX form is targeting the `contacts` table. The server will either activate or deactivate the checked users and then rerender the `contacts` table with
 updated rows.
 
-<script>
+{% js %}
   let database = function () {
     let data = [
       { id: 1, name: "Finn", email: "fmertins@candykingdom.gov", status: "Active" },
@@ -59,13 +60,12 @@ updated rows.
     return view(database.all());
   })
 
-  example('/contacts')
+  window.example('/contacts')
 
   function view(contacts) {
     let rows = contacts.map(contact => `<tr>
   <td><input type="checkbox" form="contacts_form" aria-label="Change Status" name="ids" value="${contact.id}"></td>
   <td>${contact.name}</td>
-  <td>${contact.email}</td>
   <td>${contact.status}</td>
 </tr>`).join('\n')
 
@@ -74,7 +74,6 @@ updated rows.
     <tr>
       <th scope="col">Edit</th>
       <th scope="col">Name</th>
-      <th scope="col">Email</th>
       <th scope="col">Status</th>
     </tr>
   </thead>
@@ -87,4 +86,4 @@ updated rows.
   <button name="status" value="Inactive">Deactivate</button>
 </form>`
   }
-</script>
+{% endjs %}

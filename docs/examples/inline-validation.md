@@ -1,6 +1,9 @@
 ---
-layout: example.webc
 title: Inline Validation
+eleventyNavigation:
+  key: Inline Validation
+  excerpt: Validate an input field before it is submitted.
+  order: 9
 ---
 
 This example shows how to do inline field validation. In this example we'll create an email field that can issue requests to our server with an email to be validated, the server will then render validation messages that will be inserted into the DOM.
@@ -49,8 +52,8 @@ Below is a working demo of this example. Any email input without an "@" is consi
     display: block;
   }
 </style>
-<script>
 
+{% js %}
   window.route('GET', '/register', () => view())
   window.route('POST', '/validate-email', (input) => {
     if (input.email === 'test@example.com') {
@@ -62,7 +65,7 @@ Below is a working demo of this example. Any email input without an "@" is consi
     return view('The email field is invalid.')
   })
 
-  example('/register')
+  window.example('/register')
 
   function view(message = '') {
     message = message ? `<div id="email_error" style="color:#cc0000">${message}</div>` : ''
@@ -82,4 +85,4 @@ Below is a working demo of this example. Any email input without an "@" is consi
   <button>Submit</button>
 </form>`
   }
-</script>
+{% endjs %}

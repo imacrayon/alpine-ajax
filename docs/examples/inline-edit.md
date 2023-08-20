@@ -1,6 +1,9 @@
 ---
-layout: example.webc
 title: Inline Edit
+eleventyNavigation:
+  key: Inline Edit
+  excerpt: Edit details inline.
+  order: 3
 ---
 
 The inline edit pattern provides a way to edit parts of a record by toggling between a "view mode" and "edit mode" without a page refresh .
@@ -67,7 +70,7 @@ Lastly, we'll update the edit form and the "Cancel" link so that focus is return
 Try using the keyboard in the following demo and notice how keyboard focus is maintained as your navigate between modes.
 
 
-<script>
+<script type="module">
   let contact = {
     "first_name": "Finn",
     "last_name": "Mertens",
@@ -83,7 +86,7 @@ Try using the keyboard in the following demo and notice how keyboard focus is ma
     return show(contact)
   })
 
-  example('/contacts/1')
+  window.example('/contacts/1')
 
   function edit(contact) {
     return `<form id="contact_1" x-target method="put" action="/contacts/1" x-focus="contact_1_edit" aria-label="Contact Information">

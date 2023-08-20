@@ -1,6 +1,10 @@
 ---
-layout: layout.webc
+layout: page.njk
 title: Reference
+description: The documentation for Alpine AJAX
+eleventyNavigation:
+  key: Reference
+  order: 1
 ---
 
 # Reference

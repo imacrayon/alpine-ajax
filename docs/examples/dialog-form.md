@@ -1,6 +1,9 @@
 ---
-layout: example.webc
 title: Dialog (Modal) Form
+eleventyNavigation:
+  key: Dialog (Modal) Form
+  excerpt: Handle forms inside a dialog window.
+  order: 16
 ---
 
 This example shows how to handle forms within a dialog window.
@@ -12,8 +15,8 @@ We start with an empty `<dialog>` and a `<table>` of contact data.
   <thead>
     <tr>
       <th scope="col">Name</th>
-      <th scope="col">Email</th>
       <th scope="col">Status</th>
+      <th scope="col">Email</th>
       <th scope="col">Action</th>
     </tr>
   </thead>
@@ -36,8 +39,8 @@ Here is the HTML for a table row:
 ```html
 <tr>
   <td>Finn Mertins</td>
-  <td>fmertins@candykingdom.gov</td>
   <td>Active</td>
+  <td>fmertins@candykingdom.gov</td>
   <td><a href="/contacts/1/edit" x-target="contact">Edit</a></td>
 </tr>
 ```
@@ -53,15 +56,15 @@ Clicking the "Edit" link issues a `GET` request to `/contacts/1/edit` which retu
     <input id="name" name="name" value="Finn">
   </div>
   <div>
-    <label for="email">Email</label>
-    <input type="email" id="email" name="email" value="fmertins@candykingdom.gov">
-  </div>
-  <div>
     <label for="status">Status</label>
     <select id="status" name="status">
       <option value="Active" selected>Active</option>
       <option value="Inactive">Inactive</option>
     </select>
+  </div>
+  <div>
+    <label for="email">Email</label>
+    <input type="email" id="email" name="email" value="fmertins@candykingdom.gov">
   </div>
   <button>Update</button>
 </form>
@@ -73,7 +76,7 @@ When the `<form>` is submitted, a `PUT` request is issued to `/contacts/1` and t
 
 Finally, the `contact:updated` event causes the `<tbody>` to refresh with the updated contact data.
 
-<script>
+{% js %}
   var database = function () {
     let data = [
       { id: 1, name: "Finn Mertins", email: "fmertins@candykingdom.gov", status: "Active" },
@@ -102,13 +105,13 @@ Finally, the `contact:updated` event causes the `<tbody>` to refresh with the up
     })
   })
 
-  example('/contacts')
+  window.example('/contacts')
 
   function index(contacts) {
     let rows = contacts.map(contact => `<tr id="contact_${contact.id}">
   <td>${contact.name}</td>
-  <td>${contact.email}</td>
   <td>${contact.status}</td>
+  <td>${contact.email}</td>
   <td><a href="/contacts/${contact.id}/edit" x-target="contact">Edit</a></td>
 </tr>`).join('\n')
     return table(rows)
@@ -117,8 +120,8 @@ Finally, the `contact:updated` event causes the `<tbody>` to refresh with the up
   function show(contact) {
     return `<div id="contact">
   <p><strong>Name</strong>: ${contact.name}</p>
-  <p><strong>Email</strong>: ${contact.email}</p>
   <p><strong>Status</strong>: ${contact.status}</p>
+  <p><strong>Email</strong>: ${contact.email}</p>
 </div>`
   }
 
@@ -129,15 +132,15 @@ Finally, the `contact:updated` event causes the `<tbody>` to refresh with the up
       <input id="name" name="name" value="${contact.name}">
     </div>
     <div>
-      <label for="email">Email</label>
-      <input type="email" id="email" name="email" value="${contact.email}">
-    </div>
-    <div>
       <label for="status">Status</label>
       <select id="status" name="status">
         <option value="Active" ${contact.status == 'Active' ? 'selected' : ''}>Active</option>
         <option value="Inactive" ${contact.status == 'Inactive' ? 'selected' : ''}>Inactive</option>
       </select>
+    </div>
+    <div>
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" value="${contact.email}">
     </div>
     <button>Update</button>
   </form>`
@@ -148,8 +151,8 @@ Finally, the `contact:updated` event causes the `<tbody>` to refresh with the up
   <thead>
     <tr>
       <th scope="col">Name</th>
-      <th scope="col">Email</th>
       <th scope="col">Status</th>
+      <th scope="col">Email</th>
       <th scope="col" width="53">Action</th>
     </tr>
   </thead>
@@ -162,4 +165,4 @@ Finally, the `contact:updated` event causes the `<tbody>` to refresh with the up
   <div id="contact"></div>
 </dialog>`
   }
-</script>
+{% endjs %}

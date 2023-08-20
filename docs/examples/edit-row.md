@@ -1,6 +1,9 @@
 ---
-layout: example.webc
 title: Edit Row
+eleventyNavigation:
+  key: Edit Row
+  excerpt: Edit a table row inline.
+  order: 5
 ---
 
 This example shows how to implement editable table rows. First let's look at the table:
@@ -52,7 +55,15 @@ Note the matching `id="contact_1"` which is used to match the table row being re
 
 Try using the keyboard in the following demo and notice how keyboard focus is maintained as your navigate between "view mode" and "edit mode" in each row.
 
-<script>
+<style>
+  td > div {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+  }
+</style>
+
+{% js %}
   let database = function () {
     let data = [
       { id: 1, name: "Finn Mertins", email: "fmertins@candykingdom.gov", status: "Active" },
@@ -82,7 +93,7 @@ Try using the keyboard in the following demo and notice how keyboard focus is ma
     })
   })
 
-  example('/contacts')
+  window.example('/contacts')
 
   function view(contacts) {
     let rows = contacts.map(contact => `<tr id="contact_${contact.id}">
@@ -98,10 +109,12 @@ Try using the keyboard in the following demo and notice how keyboard focus is ma
   <td><input aria-label="Name" form="contact_${contact.id}_form" name="name" id="contact_${contact.id}_name" value="${contact.name}"></td>
   <td><input aria-label="Email" form="contact_${contact.id}_form" name="email" id="contact_${contact.id}_email" value="${contact.email}"></td>
   <td>
+    <div>
       <a x-target="contact_${contact.id}" href="/contacts" x-focus="contact_${contact.id}_edit">Cancel</a>
       <form x-target="contact_${contact.id}" id="contact_${contact.id}_form" method="put" action="/contacts/${contact.id}" x-focus="contact_${contact.id}_edit" style="margin:0;display:inline-flex;">
         <button>Save</button>
       </form>
+    </div>
   </td>
 </tr>`).join('\n')
     return table(rows)
@@ -121,4 +134,4 @@ Try using the keyboard in the following demo and notice how keyboard focus is ma
   </tbody>
 </table>`
   }
-</script>
+{% endjs %}

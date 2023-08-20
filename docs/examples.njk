@@ -1,0 +1,23 @@
+---
+layout: page.njk
+title: Examples
+description: Examples and UX patterns built with Alpine AJAX
+eleventyNavigation:
+  key: Examples
+  order: 2
+---
+
+<h1>Examples</h1>
+
+<p>Below are a set of UX patterns implemented using Alpine AJAX with minimal HTML and styling.</p>
+
+<p>You can copy and paste them and then adjust them for your needs.</p>
+
+<dl class="space-y-4">
+  {% for entry in collections.all | eleventyNavigation('Examples') %}
+    <div>
+      <dt class="font-sans font-bold text-blue-800"><a href="{{ entry.url }}">{{ entry.title }}</a></dt>
+      <dd class="font-serif text-sm sm:text-base">{{ entry.excerpt }}</dd>
+    </div>
+  {% endfor %}
+</dl>

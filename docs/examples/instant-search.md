@@ -1,6 +1,9 @@
 ---
-layout: example.webc
 title: Instant Search
+eleventyNavigation:
+  key: Instant Search
+  excerpt: Search or filter a data collection while you type.
+  order: 7
 ---
 
 This example actively searches a contacts database as the user enters text.
@@ -8,7 +11,7 @@ This example actively searches a contacts database as the user enters text.
 We start with a search form and a table:
 
 ```html
-<form x-init x-target="contacts" action="/contacts" role="search" aria-label="Contacts">
+<form x-init x-target="contacts" action="/contacts" role="search" aria-label="Contacts" autocomplete="off">
   <input type="search" name="search" aria-label="Search Term" placeholder="Type to filter contacts..." @input.debounce="$el.form.requestSubmit()" @search="$el.form.requestSubmit()">
   <button x-show="false">Search</button>
 </form>
@@ -41,7 +44,7 @@ Since we use a `search` type input we will get an "x" in the input field to clea
 
 We use `x-show="false"` on the form's submit button so that it is hidden when JavaScript is loaded. This ensures that the search form is still functional if JavaScript fails to load or is disabled.
 
-<script>
+{% js %}
   let database = function () {
     let data = [
       { id: 1, name: "Finn", email: "fmertins@candykingdom.gov", status: "Active" },
@@ -68,7 +71,7 @@ We use `x-show="false"` on the form's submit button so that it is hidden when Ja
       return view(contacts)
     })
 
-    example('/contacts')
+    window.example('/contacts')
 
   function view(contacts) {
     let rows = contacts.map(contact => `<tr>
@@ -77,7 +80,7 @@ We use `x-show="false"` on the form's submit button so that it is hidden when Ja
   <td>${contact.status}</td>
 </tr>`).join('\n')
 
-    return `<form x-init x-target="contacts" action="/contacts" role="search" aria-label="Contacts">
+    return `<form x-init x-target="contacts" action="/contacts" role="search" aria-label="Contacts" autocomplete="off">
   <input type="search" name="search" placeholder="Type to filter contacts..."
       @input.debounce="$el.form.requestSubmit()" @search="$el.form.requestSubmit()">
       <button x-show="false">Search</button>
@@ -95,4 +98,4 @@ We use `x-show="false"` on the form's submit button so that it is hidden when Ja
   </tbody>
 </table>`
   }
-</script>
+{% endjs %}

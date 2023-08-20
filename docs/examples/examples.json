@@ -1,0 +1,9 @@
+{
+  "layout": "example.njk",
+  "tags": [
+    "examples"
+  ],
+  "eleventyNavigation": {
+    "parent": "Examples"
+  }
+}

@@ -1,6 +1,9 @@
 ---
-layout: example.webc
-title: Delete Table Row
+title: Delete Row
+eleventyNavigation:
+  key: Delete Row
+  excerpt: Delete a row from a table.
+  order: 4
 ---
 
 This example shows how to implement a delete button that removes a table row when clicked. First let's look at the
@@ -12,7 +15,6 @@ table markup:
     <tr>
       <th scope="col">Name</th>
       <th scope="col">Email</th>
-      <th scope="col">Status</th>
       <th scope="col"></th>
     </tr>
   </thead>
@@ -40,7 +42,7 @@ with a table that is lacking the row which was just deleted.
 </tr>
 ```
 
-<script>
+{% js %}
   let database = function () {
     let data = [
       { id: 1, name: "Finn", email: "fmertins@candykingdom.gov", status: "Active" },
@@ -69,13 +71,12 @@ with a table that is lacking the row which was just deleted.
     })
   })
 
-  example('/contacts')
+  window.example('/contacts')
 
   function view(contacts) {
     let rows = contacts.map(contact => `<tr>
   <td>${contact.name}</td>
   <td>${contact.email}</td>
-  <td>${contact.status}</td>
   <td>
     <form method="delete" action="/contacts/${contact.id}" x-target="contacts" style="margin:0;">
       <button>Delete</button>
@@ -88,7 +89,6 @@ with a table that is lacking the row which was just deleted.
     <tr>
       <th scope="col">Name</th>
       <th scope="col">Email</th>
-      <th scope="col">Status</th>
       <th scope="col" width="66">Action</th>
     </tr>
   </thead>
@@ -97,4 +97,4 @@ with a table that is lacking the row which was just deleted.
   </tbody>
 </table>`
   }
-</script>
+{% endjs %}

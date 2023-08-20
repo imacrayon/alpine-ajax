@@ -1,6 +1,9 @@
 ---
-layout: example.webc
 title: Lazy Loading
+eleventyNavigation:
+  key: Lazy Loading
+  excerpt: Lazily load remote content.
+  order: 10
 ---
 
 This example shows how to lazily load an element on a page.
@@ -27,7 +30,7 @@ The loaded content is then inserted into the UI once the request has succeeded:
 <style>
   .loader {
     animation: loading 1s linear infinite;
-    background-image: linear-gradient(90deg, var(--bg-base), var(--bg-accent), var(--bg-border), var(--bg-base), var(--bg-accent));
+    background-image: linear-gradient(90deg, #777, #aaa, #777, #aaa);
     background-size: 600% 100%;
   }
 
@@ -45,14 +48,13 @@ The loaded content is then inserted into the UI once the request has succeeded:
     }
   }
 
-  article {
-    box-shadow: 0 10px 15px -3px var(--shadow), 0 4px 6px -4px var(--shadow);
+  #post {
     padding: 1rem;
-    border-radius: .5rem;
+    background: #fff;
+    border: 1px solid #000;
   }
 
-  article header {
-    all: inherit;
+  #post header {
     box-shadow: none;
     padding: 0;
     display: flex;
@@ -60,36 +62,34 @@ The loaded content is then inserted into the UI once the request has succeeded:
     gap: 1rem;
   }
 
-  article header svg {
+  #post header svg {
     border-radius: 100px;
-    background: var(--bg-border);
-    color: var(--nc-lk-1);
+    background: #aaa;
+    color: #fff;
   }
 
-  article header p,
-  article header time {
+  #post header p,
+  #post header time {
     margin: 0;
   }
 
-  article header time {
+  #post header time {
     font-size: .875em;
   }
-
 </style>
 
-
-<script>
+{% js %}
   window.route('GET', '/posts', () => dashboard())
   window.route('GET', '/posts/1', () => new Promise(resolve => {
     setTimeout(() => resolve(post()), 2000)
   }))
 
-  example('/posts')
+  window.example('/posts')
 
   function dashboard() {
     return `<p>Refresh the page to watch this post lazy load into view:</p>
 <article id="post" x-init="$ajax('/posts/1')">
-  <svg class="loader" aria-label="Loading content" viewBox="0 0 442 107" fill="var(--bg-base)" xmlns="http://www.w3.org/2000/svg">
+  <svg class="loader" aria-label="Loading content" viewBox="0 0 442 107" fill="#fff" xmlns="http://www.w3.org/2000/svg">
     <path d="M442 79.1H0V65.5h412.4v-7.1H0V0h442v79.1Zm0 7.1V107H181.2v-7.1H0V86.2h442ZM50.1 24.6v7.2h53.3v-7.2H50.1Zm0-16.8v7.1h89.3V7.8H50.1ZM19.3 38.9c10.6 0 19.2-8.7 19.2-19.4C38.5 8.7 30 0 19.3 0A19.4 19.4 0 0 0 0 19.5c0 10.7 8.6 19.4 19.3 19.4Z" />
   </svg>
 </article>`
@@ -109,4 +109,4 @@ The loaded content is then inserted into the UI once the request has succeeded:
   <p>I'll fly the paper, as an airplane, down the bedroom ladder. It'll triple barrel-roll past the kitchen, open the fridge, and cook some eggs; then eat the eggs and unfold itself as it lays on the carpet in front of Marceline's door.</p>
 </article>`
   }
-</script>
+{% endjs %}

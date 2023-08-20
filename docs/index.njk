@@ -1,0 +1,225 @@
+---
+layout: layout.njk
+title: Alpine AJAX
+description: Radio-controlled HTML elements!
+---
+
+<div id="hero" class="pt-6 max-w-2xl mx-auto lg:max-w-5xl lg:pt-12">
+  <div class="z-20 max-w-sm relative bg-almond-200 rounded-xl border-4 border-blue-800 py-6 mx-8 -mb-16">
+    <div class="absolute top-full left-[160px]" style="border: 24px solid; border-color: #144490 transparent transparent #144490;"></div>
+    <div class="absolute top-full left-[164px]" style="border: 19px solid; border-color: #F0EADD transparent transparent #F0EADD;"></div>
+    <div class="relative text-center px-4">
+      <h1 class="uppercase block text-red-600">
+        <span class="inline-block font-display text-6xl px-6 relative">
+          <svg fill="none" xmlns="http://www.w3.org/2000/svg" class="absolute top-1/2 left-0 -translate-y-1/2 rotate-180" width="17" height="24" viewBox="0 0 17 24" aria-hidden="true"><path d="m.4 18.2-.1.1c-.4.9 1 1 1.5 1.2a35.7 35.7 0 0 1 5.5 2.3c.8.4 2.8.8 2.8.8s1 .3 1.4-.6c.5-1 .2-2.1-.4-2.2l-3.6-1-3.8-1c-.3 0-2.6-1-3.3.4ZM1.6 11l.3-.2c1.4-1.2 2.3-.7 3-.6a40.8 40.8 0 0 0 7.4-.2c1.6-.1 6.5.8 4 3-1.5 1.3-4.9 1-5.4.9L7 13.3l-4-.6c-.3 0-3.3 0-1.4-1.8Zm3.3-5.5 3.5-.7c.9-.1 2 0 2.4-.9.2-.4 1-1.4.2-2.3-.9-1-2.7-.7-3-.5L5 2.5 2 3.8c-.5.3-1.5.7-1.5 1.5 0 .4 0 .7.2.9.6.4 2 0 2.3-.1a25 25 0 0 1 2-.6Z" fill="#D92026"/></svg>
+          <svg fill="none" xmlns="http://www.w3.org/2000/svg" class="absolute top-1/2 right-0 -translate-y-1/2" width="17" height="24" viewBox="0 0 17 24" aria-hidden="true"><path d="m.4 18.2-.1.1c-.4.9 1 1 1.5 1.2a35.7 35.7 0 0 1 5.5 2.3c.8.4 2.8.8 2.8.8s1 .3 1.4-.6c.5-1 .2-2.1-.4-2.2l-3.6-1-3.8-1c-.3 0-2.6-1-3.3.4ZM1.6 11l.3-.2c1.4-1.2 2.3-.7 3-.6a40.8 40.8 0 0 0 7.4-.2c1.6-.1 6.5.8 4 3-1.5 1.3-4.9 1-5.4.9L7 13.3l-4-.6c-.3 0-3.3 0-1.4-1.8Zm3.3-5.5 3.5-.7c.9-.1 2 0 2.4-.9.2-.4 1-1.4.2-2.3-.9-1-2.7-.7-3-.5L5 2.5 2 3.8c-.5.3-1.5.7-1.5 1.5 0 .4 0 .7.2.9.6.4 2 0 2.3-.1a25 25 0 0 1 2-.6Z" fill="#D92026"/></svg>
+          Radio
+        </span>
+        <span class="block font-display text-4xl">Controlled</span>
+        <span class="font-mono font-bold text-base tracking-wide text-blue-800">HTML Elements</span>
+      </h1>
+    </div>
+  </div>
+  <div class="overflow-hidden pt-10 relative md:overflow-visible">
+    {% include 'remote.svg' %}
+    <div class="lg:flex lg:gap-6">
+      <div class="-mt-[140px]">
+        {% include 'server.njk' %}
+      </div>
+      <div class="min-w-0 relative space-y-4 pt-6 px-4 lg:pt-0 lg:px-0">
+        <p class="text-lg">Alpine AJAX is an <a href="https://alpinejs.dev" class="underline font-semibold text-blue-800 hover:text-red-600">Alpine.js</a> plugin that enables your HTML elements to request remote content from your server. Use it to build straight-forward, robust, interactive&nbsp;websites.</p>
+        {% include 'sample.njk' %}
+        <p><em>Check the <a class="underline" href="#server_inspector" onclick="event.preventDefault();window.server_inspector_button.click();window.server_inspector_button.focus();">Server Requests</a> to see our server in&nbsp;action!</em></p>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="overflow-hidden pt-64 pb-12 lg:pt-12">
+  <div class="max-w-2xl mx-auto px-4 lg:px-0 lg:max-w-5xl">
+    <div class="relative bg-teal-200 rounded-xl py-10 px-4 sm:px-12 lg:overflow-hidden">
+      <div class="relative py-2 grid grid-cols-1 gap-y-6 lg:gap-x-12 lg:items-center lg:grid-cols-4">
+        <div class="lg:relative lg:col-start-3 lg:col-end-5 lg:row-start-1 lg:row-end-3">
+          <div class="absolute right-0 bottom-full w-64 lg:relative lg:w-full">
+            <div class="absolute left-1/2 -translate-x-[60%] top-1/2 -translate-y-[140px] w-[200%] h-[256px] lg:hidden" style="background: repeating-conic-gradient(transparent 0 9deg, #DDD0B3 9deg 18deg);mask:radial-gradient(#000, transparent 80%);-webkit-mask:radial-gradient(#000, transparent 80%);"></div>
+            <div class="hidden absolute left-1/2 -translate-x-[300px] top-1/2 -translate-y-1/2 w-[480px] h-[480px] lg:block" style="background: repeating-conic-gradient(transparent 0 9deg, #A7C5C7 9deg 18deg);mask:radial-gradient(#000, transparent 80%);-webkit-mask:radial-gradient(#000, transparent 80%);"></div>
+            {% include 'server.svg' %}
+          </div>
+        </div>
+        <h2 class="relative uppercase block font-display text-blue-800 text-4xl sm:text-5xl row-start-1 col-start-1 col-end-4">
+          Serve <strong class="font-display text-red-600">vigorous</strong> & <strong class="font-display text-red-600">vital</strong> websites!
+        </h2>
+        <div class="relative lg:col-span-2 lg:row-start-2">
+          <dl class="space-y-4">
+            <div class="relative pl-9">
+              <dt class="inline font-bold text-gray-900 after:content-[':']">
+                <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-1 top-0.5 text-teal-600" width="20" height="20" aria-hidden="true" fill="currentColor" viewBox="0 0 256 256"><path d="M178.59,90.22,128,119.43,77.41,90.22a4,4,0,0,1,0-6.93l44.35-25.61a12.48,12.48,0,0,1,12.48,0l44.35,25.61A4,4,0,0,1,178.59,90.22ZM64,107.88v49.55a13,13,0,0,0,6.42,11.24L114,193.84a4,4,0,0,0,6-3.46V133.29L70,104.42A4,4,0,0,0,64,107.88Zm128,49.55V107.88a4,4,0,0,0-6-3.46l-50,28.87v57.09a4,4,0,0,0,6,3.46l43.57-25.17A13,13,0,0,0,192,157.43ZM224,40H184a8,8,0,0,0,0,16h32V88a8,8,0,0,0,16,0V48A8,8,0,0,0,224,40ZM72,200H40V168a8,8,0,0,0-16,0v40a8,8,0,0,0,8,8H72a8,8,0,0,0,0-16Zm152-40a8,8,0,0,0-8,8v32H184a8,8,0,0,0,0,16h40a8,8,0,0,0,8-8V168A8,8,0,0,0,224,160ZM32,96a8,8,0,0,0,8-8V56H72a8,8,0,0,0,0-16H32a8,8,0,0,0-8,8V88A8,8,0,0,0,32,96Z"></path></svg>
+                Compact</dt>
+              <dd class="inline">Alpine AJAX is under <span class="font-mono">4kB</span>; combined with Alpine.js you can build <a href="/examples" class="underline font-semibold text-blue-800">almost anything you want</a> with only <span class="font-mono">18kB</span> of total JavaScript.</dd>
+            </div>
+            <div class="relative pl-9">
+              <dt class="inline font-bold text-gray-900 after:content-[':']">
+                <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-1 top-0.5 text-teal-600" width="20" height="20" aria-hidden="true" fill="currentColor" viewBox="0 0 256 256"><path d="M128,48A120.13,120.13,0,0,0,8,168v16a8,8,0,0,0,8,8H240a8,8,0,0,0,8-8V168A120.13,120.13,0,0,0,128,48Zm32,128a8,8,0,0,1-8-8,24,24,0,0,0-48,0,8,8,0,0,1-16,0,40,40,0,0,1,80,0A8,8,0,0,1,160,176Zm32,0a8,8,0,0,1-8-8,56,56,0,0,0-112,0,8,8,0,0,1-16,0,72,72,0,0,1,144,0A8,8,0,0,1,192,176Zm32,0a8,8,0,0,1-8-8,88,88,0,0,0-176,0,8,8,0,0,1-16,0,104,104,0,0,1,208,0A8,8,0,0,1,224,176Z"></path></svg>
+                Flexible</dt>
+              <dd class="inline">There are zero server-side dependencies, you can use it with any server-side stack.</dd>
+            </div>
+            <div class="relative pl-9">
+              <dt class="inline font-bold text-gray-900 after:content-[':']">
+                <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-1 top-0.5 text-teal-600" width="20" height="20" aria-hidden="true" fill="currentColor" viewBox="0 0 256 256"><path d="M220,169.09l-92,53.65L36,169.09A8,8,0,0,0,28,182.91l96,56a8,8,0,0,0,8.06,0l96-56A8,8,0,1,0,220,169.09Z"></path><path d="M220,121.09l-92,53.65L36,121.09A8,8,0,0,0,28,134.91l96,56a8,8,0,0,0,8.06,0l96-56A8,8,0,1,0,220,121.09Z"></path><path d="M28,86.91l96,56a8,8,0,0,0,8.06,0l96-56a8,8,0,0,0,0-13.82l-96-56a8,8,0,0,0-8.06,0l-96,56a8,8,0,0,0,0,13.82Z"></path></svg>
+                Progressive</dt>
+              <dd class="inline">Follow patterns for building progressively enhanced websites that function even <a href="https://www.kryogenix.org/code/browser/everyonehasjs.html" class="underline font-semibold text-blue-800">when JavaScript is not available</a>.</dd>
+            </div>
+            <div class="relative pl-9">
+              <dt class="inline font-bold text-gray-900 after:content-[':']">
+                <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-1 top-0.5 text-teal-600" width="20" height="20" aria-hidden="true" fill="currentColor" viewBox="0 0 256 256"><path d="M100,36a28,28,0,1,1,28,28A28,28,0,0,1,100,36ZM227.6,92.57A15.7,15.7,0,0,0,212,80H44a16,16,0,0,0-6.7,30.53l.06,0,53.89,23.73-21.92,83.3a16,16,0,0,0,7.9,20.91A15.83,15.83,0,0,0,84,240a16,16,0,0,0,14.44-9.06L128,180l29.58,51a16,16,0,0,0,29.07-13.35l-21.92-83.3,54-23.76A15.7,15.7,0,0,0,227.6,92.57Z"></path></svg>
+                Accessible</dt>
+              <dd class="inline">Alpine AJAX uses JavaScript to enhance the <a href="https://developer.mozilla.org/en-US/docs/Learn/Accessibility/HTML" class="underline font-semibold text-blue-800">power of HTML</a> rather than replace it with inaccessible workarounds.</dd>
+            </div>
+            <div class="relative pl-9">
+              <dt class="inline font-bold text-gray-900 after:content-[':']">
+                <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-1 top-0.5 text-teal-600" width="20" height="20" aria-hidden="true" fill="currentColor" viewBox="0 0 256 256"><path d="M256,200.41A15.91,15.91,0,0,1,240,216H147.31a15.93,15.93,0,0,1-11.26-4.63L28.78,107.42l-.09-.09a16,16,0,0,1,0-22.62l64-64.12.15-.14a15.91,15.91,0,0,1,22.35.27L123.4,29a16,16,0,0,1,4.66,10.54h0c1.13,22.83,16.91,38.26,41.19,40.26A16.13,16.13,0,0,1,184,95.7V108a4,4,0,0,1-4,4H152a8,8,0,0,0-8,8.53,8.18,8.18,0,0,0,8.25,7.47h28a4,4,0,0,1,4,3.55,31.31,31.31,0,0,0,1.64,7.14,4,4,0,0,1-3.77,5.3H160a8,8,0,0,0-8,8.53,8.17,8.17,0,0,0,8.25,7.47H216A40,40,0,0,1,256,200.41ZM72,176a8,8,0,0,0-8-8H32a8,8,0,0,0,0,16H64A8,8,0,0,0,72,176Zm24,24H48a8,8,0,0,0,0,16H96a8,8,0,0,0,0-16Z"></path></svg>
+                Performant</dt>
+              <dd class="inline">AJAX requests are batched to prevent duplicate requests and save you network bandwidth.</dd>
+            </div>
+            <div class="relative pl-9">
+              <dt class="inline font-bold text-gray-900 after:content-[':']">
+                <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-1 top-0.5 text-teal-600" width="20" height="20" aria-hidden="true" fill="currentColor" viewBox="0 0 256 256"><path d="M40,84.11V72A40,40,0,0,1,80,32h96a40,40,0,0,1,40,40V84.11A3.92,3.92,0,0,1,212,88h0a44.07,44.07,0,0,0-43.26,36H87.26A44.07,44.07,0,0,0,44,88h0A3.92,3.92,0,0,1,40,84.11ZM212,104a28,28,0,0,0-28,28v36a8,8,0,0,1-16,0V140H88v28a8,8,0,0,1-16,0V132a28,28,0,1,0-32,27.71V200a16,16,0,0,0,16,16H200a16,16,0,0,0,16-16V159.71A28,28,0,0,0,212,104Z"></path></svg>
+                Easy</dt>
+              <dd class="inline">You can probably learn all of Alpine AJAX in an afternoon.</dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="py-12">
+  <div class="max-w-2xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-2  lg:max-w-5xl">
+    <div class="flex justify-center items-end">
+      {% include 'phone.svg' %}
+      <div class="max-w-sm relative bg-almond-200 rounded-xl border-4 border-blue-800 py-6 -ml-6">
+        <div class="absolute bottom-[88px] right-full" style="border: 15px solid; border-color:transparent #144490 #144490 transparent;"></div>
+        <div class="absolute bottom-[92px] right-full" style="border: 10px solid; border-color:transparent #F0EADD #F0EADD  transparent;"></div>
+        <div class="relative text-center px-4">
+          <h1 class="uppercase block text-red-600">
+            <span class="block font-display text-3xl sm:text-4xl">Sweet<br>Jesus!</span>
+            <span class="font-mono font-bold text-base tracking-wide text-blue-800">No JSON needed!</span>
+          </h1>
+        </div>
+      </div>
+    </div>
+    <div class="overflow-hidden relative flex items-center justify-center py-12">
+      <svg style="animation-delay: 3s;" class="absolute right-4 top-4 animate-twinkle rotate-0 text-almond-300" width="36" height="36" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36"><path d="m18 .3-1 16.8-5.1-11.2 3 11.2L.2 14.5 13 19.6l-9.6 1 11.6.5-8 14.2 9-11.6-1 10.6 3-11.1 11.2 11.1-7.6-10.6 8.6 3-8.6-6L35.2 14 22 17l7.1-7-9.6 6L18 .4Z" fill="currentColor"/></svg>
+      <svg style="animation-delay: 6s;" class="absolute right-6 top-16 animate-twinkle -rotate-12 text-almond-300" width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36"><path d="m18 .3-1 16.8-5.1-11.2 3 11.2L.2 14.5 13 19.6l-9.6 1 11.6.5-8 14.2 9-11.6-1 10.6 3-11.1 11.2 11.1-7.6-10.6 8.6 3-8.6-6L35.2 14 22 17l7.1-7-9.6 6L18 .4Z" fill="currentColor"/></svg>
+      <svg style="animation-delay: 16s;" class="absolute right-16 top-8 animate-twinkle rotate-180 text-almond-300" width="30" height="30" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36"><path d="m18 .3-1 16.8-5.1-11.2 3 11.2L.2 14.5 13 19.6l-9.6 1 11.6.5-8 14.2 9-11.6-1 10.6 3-11.1 11.2 11.1-7.6-10.6 8.6 3-8.6-6L35.2 14 22 17l7.1-7-9.6 6L18 .4Z" fill="currentColor"/></svg>
+      <svg style="animation-delay: 1s;" class="absolute right-10 top-32 animate-twinkle -rotate-45 text-almond-300" width="26" height="26" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36"><path d="m18 .3-1 16.8-5.1-11.2 3 11.2L.2 14.5 13 19.6l-9.6 1 11.6.5-8 14.2 9-11.6-1 10.6 3-11.1 11.2 11.1-7.6-10.6 8.6 3-8.6-6L35.2 14 22 17l7.1-7-9.6 6L18 .4Z" fill="currentColor"/></svg>
+      <svg style="animation-delay: 2s;" class="absolute left-4 bottom-4 animate-twinkle rotate-90 text-almond-300" width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36"><path d="m18 .3-1 16.8-5.1-11.2 3 11.2L.2 14.5 13 19.6l-9.6 1 11.6.5-8 14.2 9-11.6-1 10.6 3-11.1 11.2 11.1-7.6-10.6 8.6 3-8.6-6L35.2 14 22 17l7.1-7-9.6 6L18 .4Z" fill="currentColor"/></svg>
+      <svg style="animation-delay: 5s;" class="absolute left-6 bottom-16 animate-twinkle -rotate-45 text-almond-300" width="28" height="28" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36"><path d="m18 .3-1 16.8-5.1-11.2 3 11.2L.2 14.5 13 19.6l-9.6 1 11.6.5-8 14.2 9-11.6-1 10.6 3-11.1 11.2 11.1-7.6-10.6 8.6 3-8.6-6L35.2 14 22 17l7.1-7-9.6 6L18 .4Z" fill="currentColor"/></svg>
+      <svg style="animation-delay: 12s;" class="absolute left-16 bottom-8 animate-twinkle -rotate-6 text-almond-300" width="30" height="30" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36"><path d="m18 .3-1 16.8-5.1-11.2 3 11.2L.2 14.5 13 19.6l-9.6 1 11.6.5-8 14.2 9-11.6-1 10.6 3-11.1 11.2 11.1-7.6-10.6 8.6 3-8.6-6L35.2 14 22 17l7.1-7-9.6 6L18 .4Z" fill="currentColor"/></svg>
+      <svg style="animation-delay: 16s;" class="absolute left-32 bottom-14 animate-twinkle rotate-90 text-almond-300" width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36"><path d="m18 .3-1 16.8-5.1-11.2 3 11.2L.2 14.5 13 19.6l-9.6 1 11.6.5-8 14.2 9-11.6-1 10.6 3-11.1 11.2 11.1-7.6-10.6 8.6 3-8.6-6L35.2 14 22 17l7.1-7-9.6 6L18 .4Z" fill="currentColor"/></svg>
+      <svg style="animation-delay: 3s;" class="absolute left-24 bottom-24 animate-twinkle text-almond-300" width="34" height="34" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36"><path d="m18 .3-1 16.8-5.1-11.2 3 11.2L.2 14.5 13 19.6l-9.6 1 11.6.5-8 14.2 9-11.6-1 10.6 3-11.1 11.2 11.1-7.6-10.6 8.6 3-8.6-6L35.2 14 22 17l7.1-7-9.6 6L18 .4Z" fill="currentColor"/></svg>
+      <svg style="animation-delay: 6s;" class="absolute left-48 bottom-16 animate-twinkle -rotate-12 text-almond-300" width="26" height="26" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36"><path d="m18 .3-1 16.8-5.1-11.2 3 11.2L.2 14.5 13 19.6l-9.6 1 11.6.5-8 14.2 9-11.6-1 10.6 3-11.1 11.2 11.1-7.6-10.6 8.6 3-8.6-6L35.2 14 22 17l7.1-7-9.6 6L18 .4Z" fill="currentColor"/></svg>
+      <svg style="animation-delay: 16s;" class="absolute left-64 bottom-8 animate-twinkle rotate-180 text-almond-300" width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36"><path d="m18 .3-1 16.8-5.1-11.2 3 11.2L.2 14.5 13 19.6l-9.6 1 11.6.5-8 14.2 9-11.6-1 10.6 3-11.1 11.2 11.1-7.6-10.6 8.6 3-8.6-6L35.2 14 22 17l7.1-7-9.6 6L18 .4Z" fill="currentColor"/></svg>
+      <svg style="animation-delay: 1s;" class="absolute left-10 bottom-32 animate-twinkle -rotate-45 text-almond-300" width="28" height="28" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36"><path d="m18 .3-1 16.8-5.1-11.2 3 11.2L.2 14.5 13 19.6l-9.6 1 11.6.5-8 14.2 9-11.6-1 10.6 3-11.1 11.2 11.1-7.6-10.6 8.6 3-8.6-6L35.2 14 22 17l7.1-7-9.6 6L18 .4Z" fill="currentColor"/></svg>
+      <svg style="animation-delay: 2s;" class="absolute right-16 top-24 animate-twinkle rotate-90 text-almond-300" width="30" height="30" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36"><path d="m18 .3-1 16.8-5.1-11.2 3 11.2L.2 14.5 13 19.6l-9.6 1 11.6.5-8 14.2 9-11.6-1 10.6 3-11.1 11.2 11.1-7.6-10.6 8.6 3-8.6-6L35.2 14 22 17l7.1-7-9.6 6L18 .4Z" fill="currentColor"/></svg>
+      <svg style="animation-delay: 5s;" class="absolute right-48 top-12 animate-twinkle -rotate-45 text-almond-300" width="32" height="32" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36"><path d="m18 .3-1 16.8-5.1-11.2 3 11.2L.2 14.5 13 19.6l-9.6 1 11.6.5-8 14.2 9-11.6-1 10.6 3-11.1 11.2 11.1-7.6-10.6 8.6 3-8.6-6L35.2 14 22 17l7.1-7-9.6 6L18 .4Z" fill="currentColor"/></svg>
+      <svg style="animation-delay: 12s;" class="absolute right-64 top-8 animate-twinkle -rotate-6 text-almond-300" width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36"><path d="m18 .3-1 16.8-5.1-11.2 3 11.2L.2 14.5 13 19.6l-9.6 1 11.6.5-8 14.2 9-11.6-1 10.6 3-11.1 11.2 11.1-7.6-10.6 8.6 3-8.6-6L35.2 14 22 17l7.1-7-9.6 6L18 .4Z" fill="currentColor"/></svg>
+      <svg style="animation-delay: 16s;" class="absolute right-32 top-14 animate-twinkle rotate-90 text-almond-300" width="36" height="36" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36"><path d="m18 .3-1 16.8-5.1-11.2 3 11.2L.2 14.5 13 19.6l-9.6 1 11.6.5-8 14.2 9-11.6-1 10.6 3-11.1 11.2 11.1-7.6-10.6 8.6 3-8.6-6L35.2 14 22 17l7.1-7-9.6 6L18 .4Z" fill="currentColor"/></svg>
+
+      <a href="/reference" class="relative inline-flex items-center bg-red-600 font-mono font-bold text-white uppercase py-6 px-12 text-center text-xl hover:bg-red-500 focus:bg-red-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600 active:bg-red-800 after:absolute after:w-full after:h-full after:top-1 after:left-1 after:border after:border-blue-800">
+        Get Started
+        <svg xmlns="http://www.w3.org/2000/svg" class="ml-2 -mr-2 text-red-50" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M48,80v96a8,8,0,0,1-16,0V80a8,8,0,0,1,16,0Zm24-8a8,8,0,0,0-8,8v96a8,8,0,0,0,16,0V80A8,8,0,0,0,72,72Zm165.66,50.34-96-96A8,8,0,0,0,128,32V72H104a8,8,0,0,0-8,8v96a8,8,0,0,0,8,8h24v40a8,8,0,0,0,13.66,5.66l96-96A8,8,0,0,0,237.66,122.34Z"></path></svg>
+      </a>
+    </div>
+  </div>
+</div>
+
+{% js %}
+  let database = function () {
+    let data = [
+      { title: 'One Armed Scissor', artist: 'At the Drive-In', image: 'https://lastfm.freetls.fastly.net/i/u/64s/509a00756d5997721dc13f1578339f04.jpg' },
+      { title: 'Avant Gardener', artist: 'Courtney Barnett', image: 'https://lastfm.freetls.fastly.net/i/u/64s/727a0bb5287f334bce2a05e6cef1e430.jpg' },
+      { title: 'Every Time I See You', artist: 'Darryl Reeves', image: 'https://lastfm.freetls.fastly.net/i/u/64s/749ff821826243e78a6fac307b94de74.jpg' },
+      { title: 'Hard Times', artist: 'Paramore', image: 'https://lastfm.freetls.fastly.net/i/u/64s/fc4c4f4eb4fa6e9215ecb6705cbb72de.jpg' },
+      { title: 'The Modern Leper', artist: 'Frightened Rabbit', image: 'https://lastfm.freetls.fastly.net/i/u/64s/7f1d3e4691744ed4a93479be733781eb.jpg' },
+      { title: 'Just Stay For Once', artist: 'Imani Graham', image: 'https://lastfm.freetls.fastly.net/i/u/64s/032ef4264893a8e2469d32a1bc485827.jpg' },
+      { title: 'Dammit', artist: 'Blink-182', image: 'https://lastfm.freetls.fastly.net/i/u/64s/e0293fc9bd4a499197517a01e6a3e1e9.jpg' },
+      { title: 'Never Fight a Man with a Perm', artist: 'IDLES', image: 'https://lastfm.freetls.fastly.net/i/u/64s/5ff262bd41f9b81ae0835c17d95bef15.jpg' },
+      { title: 'I Don’t Wanna Die (Ging Nang Boyz Cover)', artist: 'Jeff Rosenstock', image: 'https://lastfm.freetls.fastly.net/i/u/64s/d026687ddb863b6c23c734505b87d462.jpg' },
+      { title: 'Both Ways', artist: 'Kevin Devine', image: 'https://lastfm.freetls.fastly.net/i/u/64s/80bb715e4d5b14dca07bbfe86e897ba9.jpg' },
+      { title: 'Bury Your Flame', artist: 'La Dispute', image: 'https://lastfm.freetls.fastly.net/i/u/64s/e25ad3a369e547d989100a66e378e669.jpg' },
+      { title: 'Ego', artist: 'Moaning', image: 'https://lastfm.freetls.fastly.net/i/u/64s/84dcf4fd2e0f228c5eb9e0e41d3ec1d1.jpg' },
+      { title: 'This Year', artist: 'The Mountain Goats', image: 'https://lastfm.freetls.fastly.net/i/u/64s/153955c4d6e20fd1ed6b45738676be42.jpg' },
+      { title: 'Dead of Night', artist: 'Orville Peck', image: 'https://lastfm.freetls.fastly.net/i/u/64s/45ec03d5436c670c42a5902a20685042.jpg' },
+      { title: 'Waiting', artist: 'PUP', image: 'https://lastfm.freetls.fastly.net/i/u/64s/9ac3b312813f150a8af9c06e664908f0.jpg' },
+      { title: 'Prom Queen', artist: 'Beach Bunny', image: 'https://lastfm.freetls.fastly.net/i/u/64s/406afa5fad8e9d789a745da5b55314f8.jpg' },
+      { title: 'radiator', artist: 'Sadurn', image: 'https://lastfm.freetls.fastly.net/i/u/64s/3b39f8f4d6f7b5479bcedc22f0528ff5.jpg' },
+      { title: 'Our Song', artist: 'Radiator Hospital', image: 'https://lastfm.freetls.fastly.net/i/u/64s/646a66dd39dd4a02ba86a3d43d3d499d.jpg' },
+      { title: 'New Friends', artist: 'Pinegrove', image: 'https://lastfm.freetls.fastly.net/i/u/64s/c6629582f276e80e1255fccfdafc734e.jpg' },
+      { title: 'Stay Useless', artist: 'Cloud Nothings', image: 'https://lastfm.freetls.fastly.net/i/u/64s/8c2b2bf23e814013a4b254e6a52a09b8.jpg' },
+      { title: 'Honest Sleep', artist: 'Touché Amoré', image: 'https://lastfm.freetls.fastly.net/i/u/64s/f0c688a90f5f49ada166c92117ad5e23.jpg' },
+      { title: 'Troglodyte', artist: 'Viagra Boys', image: 'https://lastfm.freetls.fastly.net/i/u/64s/200a9c16025ea953cd378aeb44b8d6f8.jpg' },
+      { title: 'Came Out Swinging', artist: 'The Wonder Years', image: 'https://lastfm.freetls.fastly.net/i/u/64s/23d98c781061499fb815ba6f80a1f11e.jpg' },
+      { title: 'Angels', artist: 'The xx', image: 'https://lastfm.freetls.fastly.net/i/u/64s/28583e99d38a4368c3d77e208f66e093.jpg' },
+      { title: 'Empire State of Mind', artist: 'Jay-Z', image: 'https://lastfm.freetls.fastly.net/i/u/64s/85917c40d744fbe5aad91f7bbbaa1193.jpg' },
+    ];
+    return {
+      find: (query) => {
+        query = query.toLowerCase()
+
+        return data.filter(track => ['title', 'artist'].some(key => track[key].toLowerCase().includes(query)))
+      },
+    }
+  }()
+
+  window.route('GET', '/songs', (input) => {
+    return input.search === undefined ? index() : list(database.find(input.search).slice(0, 4), input.search)
+  })
+
+  window.example('/songs')
+
+  function item(track) {
+    return `<div class="flex items-center p-2 space-x-2">
+    <img width="48" height="48" src="${track.image}" alt="" class="border border-almond-300">
+    <span class="text-sm block w-full truncate">
+      <span class="block truncate font-sans font-medium text-blue-800">${track.title}</span>
+      <span class="block truncate font-sans text-almond-700">${track.artist}</span>
+    </span>
+  </div>`
+  }
+
+  function list(songs, term) {
+    if (!term) {
+      return `<ul id="songs"></ul>`
+    }
+
+    if (songs.length) {
+      let items = `<li>\n ` + songs.map(track => item(track)).join(`\n</li>\n<li>\n `) + `\n</li>`
+
+      return `<ul id="songs" class="border border-blue-800 bg-almond-200 rounded-md divide-y divide-almond-400 empty:border-transparent">
+  ${items}
+  </ul>`
+    }
+
+    return `<p id="songs" class="font-sans px-1 py-4 text-center font-medium border border-blue-800 rounded-md text-blue-800">No songs found matching “<em>${window.escapeHtml(term)}</em>”</p>`
+  }
+
+  function index() {
+    return `<div class="relative flex sm:justify-center">
+      <div class="relative w-[460px]">
+        <div class="absolute left-1/2 -translate-x-1/2 top-[16%] -translate-y-1/2 w-[768px] h-[560px]" style="background: repeating-conic-gradient(transparent 0 9deg, #DDD0B3 9deg 18deg);mask:radial-gradient(#000, transparent 80%);-webkit-mask:radial-gradient(#000, transparent 80%);"></div>
+        <div class="overflow-hidden">
+          <div class="relative w-[460px]">
+            {% include 'jukebox.svg' %}
+          </div>
+          <div class="absolute top-[40%] bottom-[12%] left-[25%] right-[25%] flex flex-col space-y-1">
+            <form x-init x-target="songs" action="/songs" role="search" aria-label="Search jukebox music" class="relative" autocomplete="off">
+              <input type="search" name="search" placeholder="Search songs..." @input.debounce="$el.form.requestSubmit()" class="animate-glow relative font-sans w-full rounded-md border-blue-800 placeholder:text-almond-700 bg-almond-200 text-blue-800 focus:border-red-600">
+              <button x-show="false" class="sr-only">Search</button>
+            </form>
+            <ul id="songs"></ul>
+          </div>
+        </div>
+      </div>
+    </div>`
+  }
+{% endjs %}

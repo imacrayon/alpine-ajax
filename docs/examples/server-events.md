@@ -1,6 +1,9 @@
 ---
-layout: example.webc
 title: Server Events
+eleventyNavigation:
+  key: Server Events
+  excerpt: Build a comment form experience using server initiated events.
+  order: 15
 ---
 
 This example demonstrates how you can configure AJAX Components to respond to events that occur on your server. Alpine already provides a pattern for communicating between components using an [event listener on the `window` object](https://alpinejs.dev/essentials/events#listening-for-events-on-window). We can use this same pattern to also communicate from the server to any component on the page. Consider this list of comments followed by a comment form:
@@ -66,7 +69,13 @@ Next, we'll add an `x-focus` attribute to our form, so that we can return focus 
 <form id="comment_form" x-target x-focus="comment_body" method="post" action="/comments">
 ```
 
-<script>
+<style>
+#comment_form label, #comment_form button {
+  display: block;
+}
+</style>
+
+{% js %}
   let database = function () {
     let data = [];
     return {
@@ -82,7 +91,7 @@ Next, we'll add an `x-focus` attribute to our form, so that we can return focus 
     database.save(input.comment_body)
     return create('comment:created')
   })
-  example('/comments')
+  window.example('/comments')
 
   function serverEvent(name = '') {
     let event = name ? `<div x-init="$dispatch('${name}')" style="color:#008800">Your comment was added!</div>` : ''
@@ -93,7 +102,7 @@ Next, we'll add an `x-focus` attribute to our form, so that we can return focus 
   }
 
   function index(comments) {
-    let items = comments.map(comment => `<li key="${comment.id}">${comment.body}</li>`).join('')
+    let items = comments.map(comment => `<li key="${comment.id}">${window.escapeHtml(comment.body)}</li>`).join('')
     items = items || '<li>No comments</li>'
 
     return `<ul x-data @comment:created.window="$ajax('/comments')" id="comments">${items}</ul>
@@ -112,4 +121,4 @@ ${serverEvent()}
   <button>Submit</button>
 </form>`
   }
-</script>
+{% endjs %}

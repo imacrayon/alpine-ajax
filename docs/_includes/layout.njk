@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  {% if title != 'Alpine AJAX' %}
+    {% set title = title + ' | Alpine AJAX' %}
+  {% endif %}
+  <title>{{ title }}</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz@9..144&display=swap" rel="stylesheet">
+  <style>
+    @font-face {
+      font-family: 'Helsinki';
+      src: local('Helsinki'), url('/fonts/helsinki.woff2') format('woff2'), url('/fonts/helsinki.woff') format('woff');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'IBM Plex Mono';
+      src: url('/fonts/ibm-plex-mono-400.woff2') format('woff2'), url('/fonts/ibm-plex-mono-400.woff') format('woff');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+  </style>
+  {% css %}{% include "css/main.css" %}{% endcss %}
+  {% css %}{% include "css/prism-a11y-dark.css" %}{% endcss %}
+  <style>{% getBundle "css" %}</style>
+
+  {% for dependency in dependencies %}
+    <script type="module" src="{{ dependency }}"></script>
+  {% endfor %}
+  <script type="module" src="/js/main.js"></script>
+  <script type="module">{% getBundle "js" %}</script>
+
+  <link rel="icon" href="/img/favicon.svg">
+  <meta name="description" content="{{ description }}">
+  <meta name="generator" content="{{ eleventy.generator }}">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="{{ title }}">
+  <meta property="og:url" content="{{ 'https://alpine-ajax.js.org' + page.url }}">
+  <meta property="og:description" content="{{ description }}">
+  <meta property="og:image" content="https://alpine-ajax.js.org/img/share.png">
+  <meta property="twitter:card" content="summary_large_image">
+</head>
+
+<body class="bg-almond-200 font-serif">
+  <a href="#main" class="sr-only">Skip to content</a>
+  <header class="relative z-20 px-4 py-1 flex items-center justify-between md:px-6 lg:py-0">
+    <a href="/" class="block w-24 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600 lg:hidden">
+      {% set attrs = { width: 96, height: 85 } %}
+      {% include 'logo.svg' %}
+      <span class="sr-only">Alpine AJAX</span>
+    </a>
+    <a href="#footer" class="inline-block font-display text-blue-800 border-2 border-blue-800 py-1 px-4 leading-none hover:bg-red-600 focus:bg-red-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600 lg:sr-only">Menu</a>
+  </header>
+  <div class="max-w-7xl mx-auto lg:min-h-screen lg:flex lg:gap-[2%] lg:flex-row-reverse lg:pt-6">
+    <main id="main" class="lg:flex-1 lg:min-w-0">
+      {{ content | safe }}
+    </main>
+    <footer id="footer" class="relative px-4 pt-10 pb-24 bg-teal-200 min-h-screen lg:bg-transparent lg:shrink-0 lg:pt-0">
+      <div class="w-1.5 absolute top-16 bottom-0 left-1/2 -translate-x-1/2 bg-blue-800 lg:top-8"></div>
+      <div class="mx-auto w-48 h-full flex flex-col items-center">
+        {% include 'topper.svg' %}
+        <div class="sticky top-0 flex flex-col items-center">
+          <a href="/" class="relative block w-48 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600">
+            {% set attrs = { width: 192, height: 171 } %}
+            {% include 'logo.svg' %}
+            <span class="sr-only">Alpine AJAX</span>
+          </a>
+          <nav class="flex justify-center mt-4 font-sans">
+            <h2 class="sr-only">Main menu</h2>
+            <ul class="relative gap-2 flex flex-col items-center">
+              {% for entry in collections.all | eleventyNavigation %}
+                <li class="{% if loop.index % 2 %}-{% endif %}rotate-1">
+                  <a class="block bg-blue-800 text-center text-white font-semibold leading-none px-4 py-2 hover:bg-red-600 focus:bg-red-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600 aria-[current=page]:bg-red-600" href="{{ entry.url }}"{% if page.url.includes(entry.url) %} aria-current="page"{% endif %}>{{ entry.title }}</a>
+                  {% if entry.children.length and page.url.includes(entry.url) %}
+                    <ol class="relative bg-almond-200 border border-red-600 border-t-0 py-2">
+                      {% for child in entry.children %}
+                        <a class="block text-blue-800 leading-none text-center py-2 px-4 hover:text-red-600 focus:text-red-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600 aria-[current=page]:font-semibold aria-[current=page]:text-red-600" href="{{ child.url }}"{% if child.url === page.url %} aria-current="page"{% endif %}>{{ child.title }}</a>
+                      {% endfor %}
+                    </ol>
+                  {% endif %}
+                </li>
+              {% endfor %}
+            </ul>
+          </nav>
+        </div>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>

@@ -1,6 +1,9 @@
 ---
-layout: example.webc
 title: Loading Indicator
+eleventyNavigation:
+  key: Loading Indicator
+  excerpt: Indicate when AJAX requests are processing.
+  order: 2
 ---
 
 This example shows how you can use a little CSS to create a nice looking loading indicator that will appear while AJAX requests are in progress.
@@ -52,7 +55,7 @@ Fortunately, Alpine AJAX adds `aria-busy="true"` to targets while a request is p
     --loading-stroke: 6px;
     --loading-duration: 1s;
     position: relative;
-    opacity: .75
+    opacity: .75;
   }
   [aria-busy]:before {
     content: '';
@@ -72,30 +75,22 @@ Fortunately, Alpine AJAX adds `aria-busy="true"` to targets while a request is p
     100% { transform: rotate(360deg); }
   }
 
-  #card {
-    box-shadow: 0 10px 15px -3px var(--shadow), 0 4px 6px -4px var(--shadow);
-    padding: 1rem;
-    border-radius: .5rem;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-  }
-
   #table {
     margin-bottom: 0;
     min-height: 164px;
+    text-align: center;
   }
 
 </style>
 
 
-<script>
+{% js %}
   window.route('GET', '/dashboard', () => dashboard())
   window.route('GET', '/contacts', () => new Promise(resolve => {
     setTimeout(() => resolve(contacts()), 2000)
   }))
 
-  example('/dashboard')
+  window.example('/dashboard')
 
   function dashboard() {
     return `<div id="card">
@@ -138,4 +133,4 @@ Fortunately, Alpine AJAX adds `aria-busy="true"` to targets while a request is p
   </tbody>
 </table>`
   }
-</script>
+{% endjs %}

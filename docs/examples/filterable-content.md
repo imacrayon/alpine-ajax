@@ -1,6 +1,9 @@
 ---
-layout: example.webc
 title: Filterable Content
+eleventyNavigation:
+  key: Filterable Content
+  excerpt: Filter down a table or list of content.
+  order: 8
 ---
 
 This example filters down a table of contacts based on the user's selection.
@@ -66,7 +69,13 @@ Second, the response should also include the markup for our table with only cont
 
 Let's see our filterable table in action. Try activating a filter button using the keyboard, notice that the keyboard focus stays consistent even as the content on the page changes:
 
-<script>
+<style>
+  form {
+    margin-bottom: 1rem;
+  }
+</style>
+
+{% js %}
   let database = function () {
     let data = [
       { id: 1, name: "Finn", email: "fmertins@candykingdom.gov", status: "Active" },
@@ -83,7 +92,7 @@ Let's see our filterable table in action. Try activating a filter button using t
   }()
 
   window.route('GET', '/contacts', (input) => view(input.status))
-  example('/contacts')
+  window.example('/contacts')
 
   function view(filter = null) {
     let contacts = filter ? database.filter('status', filter) : database.all()
@@ -115,4 +124,4 @@ Let's see our filterable table in action. Try activating a filter button using t
 </table>
 </div>`
   }
-</script>
+{% endjs %}

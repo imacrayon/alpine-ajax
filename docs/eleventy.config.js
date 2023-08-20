@@ -1,20 +1,40 @@
 const markdownIt = require('markdown-it')
 const markdownItAnchor = require('markdown-it-anchor')
-const { EleventyHtmlBasePlugin } = require('@11ty/eleventy')
-const pluginWebc = require('@11ty/eleventy-plugin-webc')
+const { EleventyHtmlBasePlugin, EleventyRenderPlugin } = require('@11ty/eleventy')
 const pluginSyntaxHighlight = require('@11ty/eleventy-plugin-syntaxhighlight')
+const pluginBundle = require("@11ty/eleventy-plugin-bundle");
+const pluginNavigation = require("@11ty/eleventy-navigation");
 const esbuild = require('esbuild')
+const postcss = require('postcss')
 
 module.exports = function (eleventyConfig) {
   eleventyConfig.addPassthroughCopy('css')
+  eleventyConfig.addPassthroughCopy('fonts')
   eleventyConfig.addPassthroughCopy({
-    '../dist/server.js': 'js/server.js',
     '_includes/googlec8986a0731969a6e.html': 'googlec8986a0731969a6e.html'
   })
 
   eleventyConfig.addPlugin(EleventyHtmlBasePlugin)
-  eleventyConfig.addPlugin(pluginWebc)
+  eleventyConfig.addPlugin(pluginNavigation);
+  eleventyConfig.addPlugin(EleventyRenderPlugin)
   eleventyConfig.addPlugin(pluginSyntaxHighlight)
+  eleventyConfig.addPlugin(pluginBundle, {
+    transforms: [
+      async function (content) {
+        // this.type returns the bundle name.
+        if (this.type === 'css') {
+          // Same as Eleventy transforms, this.page is available here.
+          let result = await postcss([
+            require('autoprefixer'),
+            require('tailwindcss')
+          ]).process(content, { from: this.page.inputPath, to: null });
+          return result.css;
+        }
+
+        return content;
+      }
+    ]
+  });
 
   eleventyConfig.addGlobalData('APLINE_AJAX_VERSION', () => process.env.npm_package_version)
 
