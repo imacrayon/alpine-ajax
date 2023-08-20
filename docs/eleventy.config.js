@@ -10,6 +10,7 @@ const postcss = require('postcss')
 module.exports = function (eleventyConfig) {
   eleventyConfig.addPassthroughCopy('css')
   eleventyConfig.addPassthroughCopy('fonts')
+  eleventyConfig.addPassthroughCopy('img')
   eleventyConfig.addPassthroughCopy({
     '_includes/googlec8986a0731969a6e.html': 'googlec8986a0731969a6e.html'
   })
