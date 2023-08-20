@@ -1,302 +1,2277 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lazy Loading | Alpine AJAX</title>
-  <meta name="description" content="Alpine AJAX">
-  <meta name="generator" content="Eleventy v2.0.1">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prism-themes@1.9.0/themes/prism-a11y-dark.min.css">
-  <link rel="stylesheet" href="/css/main.css?id=4">
-  <style>#example {
-    overflow-x: auto;
-    padding: 1rem;
-    margin: -1rem;
-    margin-bottom: calc(40vh + 4rem);
-    max-width: 100%;
-  }
 
-  #server_info {
-    position: fixed;
-    bottom: 0;
-    right: .5rem;
-    left: .5rem;
-    border-bottom-right-radius: 0;
-    border-bottom-left-radius: 0;
-    box-shadow: 0 10px 15px -3px var(--shadow), 0 4px 6px -4px var(--shadow);
-    padding: .88rem 1rem;
-    margin: 0;
-  }
-
-  #server_activity {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 2rem;
-    height: 40vh;
-    overflow: scroll;
-  }
-
-  #server_activity> :first-child {
-    flex-grow: 1;
-    position: relative;
-  }
-
-  #server_activity> :last-child {
-    flex-basis: 0;
-    flex-grow: 999;
-    min-inline-size: 50%;
-    margin-top: .4rem;
-  }
-
-  #server_activity [aria-current="step"] button {
-    font-weight: 700;
-  }
-
-  #server_activity dl>div:not(:first-child) dd::before {
-    content: '';
-  }
-
-  #server_activity dl>div:first-child {
-    display: flex;
-    gap: .4rem;
-    align-items: center;
-    margin-bottom: .4rem;
-  }
-
-  #server_timeline {
-    position: sticky;
-    top: 0;
-  }
-
-  #server_timeline button {
-    padding: 0;
-    border: none;
-    background: transparent;
-    color: var(--nc-lk-1);
-    text-decoration: underline;
-  }
-
-  #server_timeline button:hover,
-  #server_timeline button:focus {
-    color: var(--nc-lk-2);
-  }</style>
   
-  <script defer src="/js/main.js"></script>
-  <script>function example(action) {
-    let requestCount = 1
-    document.addEventListener('DOMContentLoaded', () => {
-      window.fetch(action)
-        .then(response => response.text())
-        .then(html => document.getElementById('example').innerHTML = html)
-    })
-    document.body.addEventListener('server:response', (event) => {
-      logActivity(requestCount++, event.detail.method, event.detail.url, event.detail.data, event.detail.body)
-    })
-  }
+    
+  
+  <title>Lazy Loading | Alpine AJAX</title>
 
-  function showTimelineEntry(id) {
-    Array.from(document.getElementById("server_view").children).forEach(child => {
-      if (child.id == id) {
-        child.removeAttribute('hidden');
-      } else {
-        child.setAttribute('hidden', true);
-      }
-    })
-    Array.from(document.getElementById("server_timeline").children).forEach(child => {
-      if (child.id == id + "-link") {
-        child.setAttribute('aria-current', 'step');
-      } else {
-        child.removeAttribute('aria-current');
-      }
-    })
-  }
-
-  function logActivity(id, method, url, params, body) {
-    document.getElementById("server_request_count").innerHTML = id
-    document.getElementById("server_timeline").insertAdjacentHTML("afterbegin", `<li id="${id}-link"><button onclick="showTimelineEntry('${id}')" style="cursor: pointer">${method} ${url}</a></li>`);
-    let bodyDiv = `<dl id="${id}">
-    <div><dt>Request</dt><dd>${method} ${url}</dd></div>
-    <div><dt>Parameters</dt><dd><pre class="language-json"><code class="language-json">${JSON.stringify(params, null, 2)}</code></pre></dd></div>
-    <div><dt>Response</dt><dd><pre class="language-html"><code class="language-html">${escapeHtml(body)}</code></pre></dd></div>
-  </dl>`;
-    document.getElementById("server_view").insertAdjacentHTML("afterbegin", bodyDiv);
-    showTimelineEntry(id);
-    // Prism.highlightAll();
-  }
-
-  function escapeHtml(string) {
-    let pre = document.createElement('pre');
-    let text = document.createTextNode(string);
-    pre.appendChild(text);
-    return pre.innerHTML;
-  }
-class DetailsForceState extends HTMLElement {
-    constructor() {
-      super();
-      this._observer = new MutationObserver(this._init.bind(this));
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz@9..144&display=swap" rel="stylesheet">
+  <style>
+    @font-face {
+      font-family: 'Helsinki';
+      src: local('Helsinki'), url('/fonts/helsinki.woff2') format('woff2'), url('/fonts/helsinki.woff') format('woff');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
     }
-
-    connectedCallback() {
-      if (this.children.length) {
-        this._init();
-      }
-      this._observer.observe(this, { childList: true });
+    @font-face {
+      font-family: 'IBM Plex Mono';
+      src: url('/fonts/ibm-plex-mono-400.woff2') format('woff2'), url('/fonts/ibm-plex-mono-400.woff') format('woff');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
     }
-
-    _init() {
-      let details = this.querySelector(":scope details");
-      if (!details) {
-        return;
-      }
-
-      let forceOpen = window.getComputedStyle(details).getPropertyValue("--details-force-closed");
-
-      function forceState(isOpen) {
-        if (isOpen) {
-          details.setAttribute("open", "open");
-        } else {
-          details.removeAttribute("open");
-        }
-      }
-
-      if (forceOpen && "matchMedia" in window) {
-        let mm1 = window.matchMedia(forceOpen);
-        forceState(!mm1.matches);
-        mm1.addListener(function (e) {
-          forceState(!e.matches);
-        });
-      }
+  </style>
+  
+  
+  <style>#footer {
+    padding-bottom: calc(40vh + 4rem);
+  }
+  @media (min-width: 1024px) {
+    #main {
+      padding-bottom: calc(40vh + 4rem);
     }
   }
-
-  if ("customElements" in window) {
-    customElements.define("details-force-state", DetailsForceState);
-  }</script>
-</head>
-
-
-<body>
-  <a href="#main">Skip to content</a>
-  <div class="with-sidebar">
-    <header>
-      <nav aria-label="Site">
-  <ul role="list">
-    <li><a href="/" aria-current>Alpine AJAX</a></li>
-    <li>
-      <a href="/reference" aria-current>Reference</a>
-      
-    </li>
-    <li>
-      <a href="/examples" aria-current>Examples</a>
-      <details-force-state>
-        <details>
-          <summary>Jump to...</summary>
-          <ol>
-            <li><a href="/examples/toggle-button" aria-current>Toggle Button</a></li>
-            <li><a href="/examples/loading" aria-current>Loading Indicator</a></li>
-            <li><a href="/examples/inline-edit" aria-current>Inline Edit</a></li>
-            <li><a href="/examples/delete-row" aria-current>Delete Row</a></li>
-            <li><a href="/examples/edit-row" aria-current>Edit Row</a></li>
-            <li><a href="/examples/bulk-update" aria-current>Bulk Update</a></li>
-            <li><a href="/examples/instant-search" aria-current>Instant Search</a></li>
-            <li><a href="/examples/filterable-content" aria-current>Filterable Content</a></li>
-            <li><a href="/examples/inline-validation" aria-current>Inline Validation</a></li>
-            <li><a href="/examples/lazy-load" aria-current="page">Lazy Load</a></li>
-            <li><a href="/examples/dialog" aria-current>Dialog (Modal)</a></li>
-            <li><a href="/examples/progress-bar" aria-current>Progress Bar</a></li>
-            <li><a href="/examples/infinite-scroll" aria-current>Infinite Scroll</a></li>
-            <li><a href="/examples/notifications" aria-current>Notifications</a></li>
-            <li><a href="/examples/server-events" aria-current>Server Events</a></li>
-            <li><a href="/examples/dialog-form" aria-current>Dialog (Modal) Form</a></li>
-          </ol>
-        </details>
-      </details-force-state>
-    </li>
-    <li>
-      <a href="/comparisons" aria-current>Comparisons</a>
-      
-    </li>
-    <li><a href="https://github.com/imacrayon/alpine-ajax/releases">Changelog</a></li>
-    <li><a href="https://github.com/imacrayon/alpine-ajax">GitHub</a></li>
-  </ul>
-</nav>
-
-
-
-    </header>
-    <main id="main"><h1 id="lazy-loading" tabindex="-1">Lazy Loading <a href="#lazy-loading" aria-hidden="true" class="direct-link">#</a></h1>
-
-<script src="/js/server.js"></script>
-<p>This example shows how to lazily load an element on a page.</p>
-<p>We start with a loading indicator inside an <code>&lt;article&gt;</code>. Note that the article is assigned <code>id=&quot;post&quot;</code> :</p>
-<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>article</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>post<span class="token punctuation">"</span></span> <span class="token attr-name">x-init</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>$ajax('/posts/1')<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>svg</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>loader<span class="token punctuation">"</span></span> <span class="token attr-name">aria-label</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>Loading content<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>...<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>svg</span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>article</span><span class="token punctuation">></span></span></code></pre>
-<p>This loading indicator will exist on the page while we fetch the articles's content. You can use any CSS or SVG magic you'd like to create a fancy looking loading indicator.</p>
-<p>The loaded content is then inserted into the UI once the request has succeeded:</p>
-<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>article</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>post<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br>   <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>header</span><span class="token punctuation">></span></span>...<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>header</span><span class="token punctuation">></span></span><br>   <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>p</span><span class="token punctuation">></span></span>...<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>p</span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>article</span><span class="token punctuation">></span></span></code></pre>
-<style>
-  .loader {
-    animation: loading 1s linear infinite;
-    background-image: linear-gradient(90deg, var(--bg-base), var(--bg-accent), var(--bg-border), var(--bg-base), var(--bg-accent));
-    background-size: 600% 100%;
-  }
-
-  .loader svg {
-    display: block;
-  }
-
-  @keyframes loading {
-    0% {
-      background-position: 100% 0%;
-    }
-
-    100% {
-      background-position: 0% 0%;
-    }
-  }
-
-  article {
-    box-shadow: 0 10px 15px -3px var(--shadow), 0 4px 6px -4px var(--shadow);
-    padding: 1rem;
-    border-radius: .5rem;
-  }
-
-  article header {
-    all: inherit;
-    box-shadow: none;
+/*
+! tailwindcss v3.3.3 | MIT License | https://tailwindcss.com
+*/
+/*
+1. Prevent padding and border from affecting element width. (https://github.com/mozdevs/cssremedy/issues/4)
+2. Allow adding a border to an element by just adding a border-width. (https://github.com/tailwindcss/tailwindcss/pull/116)
+*/
+*,
+::before,
+::after {
+  box-sizing: border-box; /* 1 */
+  border-width: 0; /* 2 */
+  border-style: solid; /* 2 */
+  border-color: #e2e8f0; /* 2 */
+}
+::before,
+::after {
+  --tw-content: '';
+}
+/*
+1. Use a consistent sensible line-height in all browsers.
+2. Prevent adjustments of font size after orientation changes in iOS.
+3. Use a more readable tab size.
+4. Use the user's configured `sans` font-family by default.
+5. Use the user's configured `sans` font-feature-settings by default.
+6. Use the user's configured `sans` font-variation-settings by default.
+*/
+html {
+  line-height: 1.5; /* 1 */
+  -webkit-text-size-adjust: 100%; /* 2 */
+  -moz-tab-size: 4; /* 3 */
+  -o-tab-size: 4;
+     tab-size: 4; /* 3 */
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"; /* 4 */
+  font-feature-settings: normal; /* 5 */
+  font-variation-settings: normal; /* 6 */
+}
+/*
+1. Remove the margin in all browsers.
+2. Inherit line-height from `html` so users can set them as a class directly on the `html` element.
+*/
+body {
+  margin: 0; /* 1 */
+  line-height: inherit; /* 2 */
+}
+/*
+1. Add the correct height in Firefox.
+2. Correct the inheritance of border color in Firefox. (https://bugzilla.mozilla.org/show_bug.cgi?id=190655)
+3. Ensure horizontal rules are visible by default.
+*/
+hr {
+  height: 0; /* 1 */
+  color: inherit; /* 2 */
+  border-top-width: 1px; /* 3 */
+}
+/*
+Add the correct text decoration in Chrome, Edge, and Safari.
+*/
+abbr:where([title]) {
+  -webkit-text-decoration: underline dotted;
+          text-decoration: underline dotted;
+}
+/*
+Remove the default font size and weight for headings.
+*/
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-size: inherit;
+  font-weight: inherit;
+}
+/*
+Reset links to optimize for opt-in styling instead of opt-out.
+*/
+a {
+  color: inherit;
+  text-decoration: inherit;
+}
+/*
+Add the correct font weight in Edge and Safari.
+*/
+b,
+strong {
+  font-weight: bolder;
+}
+/*
+1. Use the user's configured `mono` font family by default.
+2. Correct the odd `em` font sizing in all browsers.
+*/
+code,
+kbd,
+samp,
+pre {
+  font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; /* 1 */
+  font-size: 1em; /* 2 */
+}
+/*
+Add the correct font size in all browsers.
+*/
+small {
+  font-size: 80%;
+}
+/*
+Prevent `sub` and `sup` elements from affecting the line height in all browsers.
+*/
+sub,
+sup {
+  font-size: 75%;
+  line-height: 0;
+  position: relative;
+  vertical-align: baseline;
+}
+sub {
+  bottom: -0.25em;
+}
+sup {
+  top: -0.5em;
+}
+/*
+1. Remove text indentation from table contents in Chrome and Safari. (https://bugs.chromium.org/p/chromium/issues/detail?id=999088, https://bugs.webkit.org/show_bug.cgi?id=201297)
+2. Correct table border color inheritance in all Chrome and Safari. (https://bugs.chromium.org/p/chromium/issues/detail?id=935729, https://bugs.webkit.org/show_bug.cgi?id=195016)
+3. Remove gaps between table borders by default.
+*/
+table {
+  text-indent: 0; /* 1 */
+  border-color: inherit; /* 2 */
+  border-collapse: collapse; /* 3 */
+}
+/*
+1. Change the font styles in all browsers.
+2. Remove the margin in Firefox and Safari.
+3. Remove default padding in all browsers.
+*/
+button,
+input,
+optgroup,
+select,
+textarea {
+  font-family: inherit; /* 1 */
+  font-feature-settings: inherit; /* 1 */
+  font-variation-settings: inherit; /* 1 */
+  font-size: 100%; /* 1 */
+  font-weight: inherit; /* 1 */
+  line-height: inherit; /* 1 */
+  color: inherit; /* 1 */
+  margin: 0; /* 2 */
+  padding: 0; /* 3 */
+}
+/*
+Remove the inheritance of text transform in Edge and Firefox.
+*/
+button,
+select {
+  text-transform: none;
+}
+/*
+1. Correct the inability to style clickable types in iOS and Safari.
+2. Remove default button styles.
+*/
+button,
+[type='button'],
+[type='reset'],
+[type='submit'] {
+  -webkit-appearance: button; /* 1 */
+  background-color: transparent; /* 2 */
+  background-image: none; /* 2 */
+}
+/*
+Use the modern Firefox focus style for all focusable elements.
+*/
+:-moz-focusring {
+  outline: auto;
+}
+/*
+Remove the additional `:invalid` styles in Firefox. (https://github.com/mozilla/gecko-dev/blob/2f9eacd9d3d995c937b4251a5557d95d494c9be1/layout/style/res/forms.css#L728-L737)
+*/
+:-moz-ui-invalid {
+  box-shadow: none;
+}
+/*
+Add the correct vertical alignment in Chrome and Firefox.
+*/
+progress {
+  vertical-align: baseline;
+}
+/*
+Correct the cursor style of increment and decrement buttons in Safari.
+*/
+::-webkit-inner-spin-button,
+::-webkit-outer-spin-button {
+  height: auto;
+}
+/*
+1. Correct the odd appearance in Chrome and Safari.
+2. Correct the outline style in Safari.
+*/
+[type='search'] {
+  -webkit-appearance: textfield; /* 1 */
+  outline-offset: -2px; /* 2 */
+}
+/*
+Remove the inner padding in Chrome and Safari on macOS.
+*/
+::-webkit-search-decoration {
+  -webkit-appearance: none;
+}
+/*
+1. Correct the inability to style clickable types in iOS and Safari.
+2. Change font properties to `inherit` in Safari.
+*/
+::-webkit-file-upload-button {
+  -webkit-appearance: button; /* 1 */
+  font: inherit; /* 2 */
+}
+/*
+Add the correct display in Chrome and Safari.
+*/
+summary {
+  display: list-item;
+}
+/*
+Removes the default spacing and border for appropriate elements.
+*/
+blockquote,
+dl,
+dd,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+hr,
+figure,
+p,
+pre {
+  margin: 0;
+}
+fieldset {
+  margin: 0;
+  padding: 0;
+}
+legend {
+  padding: 0;
+}
+ol,
+ul,
+menu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+/*
+Reset default styling for dialogs.
+*/
+dialog {
+  padding: 0;
+}
+/*
+Prevent resizing textareas horizontally by default.
+*/
+textarea {
+  resize: vertical;
+}
+/*
+1. Reset the default placeholder opacity in Firefox. (https://github.com/tailwindlabs/tailwindcss/issues/3300)
+2. Set the default placeholder color to the user's configured gray 400 color.
+*/
+input::-moz-placeholder, textarea::-moz-placeholder {
+  opacity: 1; /* 1 */
+  color: #94a3b8; /* 2 */
+}
+input::placeholder,
+textarea::placeholder {
+  opacity: 1; /* 1 */
+  color: #94a3b8; /* 2 */
+}
+/*
+Set the default cursor for buttons.
+*/
+button,
+[role="button"] {
+  cursor: pointer;
+}
+/*
+Make sure disabled buttons don't get the pointer cursor.
+*/
+:disabled {
+  cursor: default;
+}
+/*
+1. Make replaced elements `display: block` by default. (https://github.com/mozdevs/cssremedy/issues/14)
+2. Add `vertical-align: middle` to align replaced elements more sensibly by default. (https://github.com/jensimmons/cssremedy/issues/14#issuecomment-634934210)
+   This can trigger a poorly considered lint error in some tools but is included by design.
+*/
+img,
+svg,
+video,
+canvas,
+audio,
+iframe,
+embed,
+object {
+  display: block; /* 1 */
+  vertical-align: middle; /* 2 */
+}
+/*
+Constrain images and videos to the parent width and preserve their intrinsic aspect ratio. (https://github.com/mozdevs/cssremedy/issues/14)
+*/
+img,
+video {
+  max-width: 100%;
+  height: auto;
+}
+/* Make elements with the HTML hidden attribute stay hidden by default */
+[hidden] {
+  display: none;
+}
+[type='text'],input:where(:not([type])),[type='email'],[type='url'],[type='password'],[type='number'],[type='date'],[type='datetime-local'],[type='month'],[type='search'],[type='tel'],[type='time'],[type='week'],[multiple],textarea,select {
+    -webkit-appearance: none;
+       -moz-appearance: none;
+            appearance: none;
+    background-color: #fff;
+    border-color: #64748b;
+    border-width: 1px;
+    border-radius: 0px;
+    padding-top: 0.5rem;
+    padding-right: 0.75rem;
+    padding-bottom: 0.5rem;
+    padding-left: 0.75rem;
+    font-size: 1rem;
+    line-height: 1.5rem;
+    --tw-shadow: 0 0 #0000;
+}
+[type='text']:focus, input:where(:not([type])):focus, [type='email']:focus, [type='url']:focus, [type='password']:focus, [type='number']:focus, [type='date']:focus, [type='datetime-local']:focus, [type='month']:focus, [type='search']:focus, [type='tel']:focus, [type='time']:focus, [type='week']:focus, [multiple]:focus, textarea:focus, select:focus {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    --tw-ring-inset: var(--tw-empty,/*!*/ /*!*/);
+    --tw-ring-offset-width: 0px;
+    --tw-ring-offset-color: #fff;
+    --tw-ring-color: #1E66D8;
+    --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
+    --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(1px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+    box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
+    border-color: #1E66D8;
+}
+input::-moz-placeholder, textarea::-moz-placeholder {
+    color: #64748b;
+    opacity: 1;
+}
+input::placeholder,textarea::placeholder {
+    color: #64748b;
+    opacity: 1;
+}
+::-webkit-datetime-edit-fields-wrapper {
     padding: 0;
+}
+::-webkit-date-and-time-value {
+    min-height: 1.5em;
+}
+::-webkit-datetime-edit,::-webkit-datetime-edit-year-field,::-webkit-datetime-edit-month-field,::-webkit-datetime-edit-day-field,::-webkit-datetime-edit-hour-field,::-webkit-datetime-edit-minute-field,::-webkit-datetime-edit-second-field,::-webkit-datetime-edit-millisecond-field,::-webkit-datetime-edit-meridiem-field {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+select {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2364748b' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 0.5rem center;
+    background-repeat: no-repeat;
+    background-size: 1.5em 1.5em;
+    padding-right: 2.5rem;
+    -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+}
+[multiple],[size]:where(select:not([size="1"])) {
+    background-image: initial;
+    background-position: initial;
+    background-repeat: unset;
+    background-size: initial;
+    padding-right: 0.75rem;
+    -webkit-print-color-adjust: unset;
+            print-color-adjust: unset;
+}
+[type='checkbox'],[type='radio'] {
+    -webkit-appearance: none;
+       -moz-appearance: none;
+            appearance: none;
+    padding: 0;
+    -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+    display: inline-block;
+    vertical-align: middle;
+    background-origin: border-box;
+    -webkit-user-select: none;
+       -moz-user-select: none;
+            user-select: none;
+    flex-shrink: 0;
+    height: 1rem;
+    width: 1rem;
+    color: #1E66D8;
+    background-color: #fff;
+    border-color: #64748b;
+    border-width: 1px;
+    --tw-shadow: 0 0 #0000;
+}
+[type='checkbox'] {
+    border-radius: 0px;
+}
+[type='radio'] {
+    border-radius: 100%;
+}
+[type='checkbox']:focus,[type='radio']:focus {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    --tw-ring-inset: var(--tw-empty,/*!*/ /*!*/);
+    --tw-ring-offset-width: 2px;
+    --tw-ring-offset-color: #fff;
+    --tw-ring-color: #1E66D8;
+    --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
+    --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+    box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
+}
+[type='checkbox']:checked,[type='radio']:checked {
+    border-color: transparent;
+    background-color: currentColor;
+    background-size: 100% 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+[type='checkbox']:checked {
+    background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3e%3c/svg%3e");
+}
+[type='radio']:checked {
+    background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3ccircle cx='8' cy='8' r='3'/%3e%3c/svg%3e");
+}
+[type='checkbox']:checked:hover,[type='checkbox']:checked:focus,[type='radio']:checked:hover,[type='radio']:checked:focus {
+    border-color: transparent;
+    background-color: currentColor;
+}
+[type='checkbox']:indeterminate {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 16 16'%3e%3cpath stroke='white' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M4 8h8'/%3e%3c/svg%3e");
+    border-color: transparent;
+    background-color: currentColor;
+    background-size: 100% 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+[type='checkbox']:indeterminate:hover,[type='checkbox']:indeterminate:focus {
+    border-color: transparent;
+    background-color: currentColor;
+}
+[type='file'] {
+    background: unset;
+    border-color: inherit;
+    border-width: 0;
+    border-radius: 0;
+    padding: 0;
+    font-size: unset;
+    line-height: inherit;
+}
+[type='file']:focus {
+    outline: 1px solid ButtonText;
+    outline: 1px auto -webkit-focus-ring-color;
+}
+*, ::before, ::after {
+    --tw-border-spacing-x: 0;
+    --tw-border-spacing-y: 0;
+    --tw-translate-x: 0;
+    --tw-translate-y: 0;
+    --tw-rotate: 0;
+    --tw-skew-x: 0;
+    --tw-skew-y: 0;
+    --tw-scale-x: 1;
+    --tw-scale-y: 1;
+    --tw-pan-x:  ;
+    --tw-pan-y:  ;
+    --tw-pinch-zoom:  ;
+    --tw-scroll-snap-strictness: proximity;
+    --tw-gradient-from-position:  ;
+    --tw-gradient-via-position:  ;
+    --tw-gradient-to-position:  ;
+    --tw-ordinal:  ;
+    --tw-slashed-zero:  ;
+    --tw-numeric-figure:  ;
+    --tw-numeric-spacing:  ;
+    --tw-numeric-fraction:  ;
+    --tw-ring-inset:  ;
+    --tw-ring-offset-width: 0px;
+    --tw-ring-offset-color: #fff;
+    --tw-ring-color: rgb(59 124 228 / 0.5);
+    --tw-ring-offset-shadow: 0 0 #0000;
+    --tw-ring-shadow: 0 0 #0000;
+    --tw-shadow: 0 0 #0000;
+    --tw-shadow-colored: 0 0 #0000;
+    --tw-blur:  ;
+    --tw-brightness:  ;
+    --tw-contrast:  ;
+    --tw-grayscale:  ;
+    --tw-hue-rotate:  ;
+    --tw-invert:  ;
+    --tw-saturate:  ;
+    --tw-sepia:  ;
+    --tw-drop-shadow:  ;
+    --tw-backdrop-blur:  ;
+    --tw-backdrop-brightness:  ;
+    --tw-backdrop-contrast:  ;
+    --tw-backdrop-grayscale:  ;
+    --tw-backdrop-hue-rotate:  ;
+    --tw-backdrop-invert:  ;
+    --tw-backdrop-opacity:  ;
+    --tw-backdrop-saturate:  ;
+    --tw-backdrop-sepia:  ;
+}
+::backdrop {
+    --tw-border-spacing-x: 0;
+    --tw-border-spacing-y: 0;
+    --tw-translate-x: 0;
+    --tw-translate-y: 0;
+    --tw-rotate: 0;
+    --tw-skew-x: 0;
+    --tw-skew-y: 0;
+    --tw-scale-x: 1;
+    --tw-scale-y: 1;
+    --tw-pan-x:  ;
+    --tw-pan-y:  ;
+    --tw-pinch-zoom:  ;
+    --tw-scroll-snap-strictness: proximity;
+    --tw-gradient-from-position:  ;
+    --tw-gradient-via-position:  ;
+    --tw-gradient-to-position:  ;
+    --tw-ordinal:  ;
+    --tw-slashed-zero:  ;
+    --tw-numeric-figure:  ;
+    --tw-numeric-spacing:  ;
+    --tw-numeric-fraction:  ;
+    --tw-ring-inset:  ;
+    --tw-ring-offset-width: 0px;
+    --tw-ring-offset-color: #fff;
+    --tw-ring-color: rgb(59 124 228 / 0.5);
+    --tw-ring-offset-shadow: 0 0 #0000;
+    --tw-ring-shadow: 0 0 #0000;
+    --tw-shadow: 0 0 #0000;
+    --tw-shadow-colored: 0 0 #0000;
+    --tw-blur:  ;
+    --tw-brightness:  ;
+    --tw-contrast:  ;
+    --tw-grayscale:  ;
+    --tw-hue-rotate:  ;
+    --tw-invert:  ;
+    --tw-saturate:  ;
+    --tw-sepia:  ;
+    --tw-drop-shadow:  ;
+    --tw-backdrop-blur:  ;
+    --tw-backdrop-brightness:  ;
+    --tw-backdrop-contrast:  ;
+    --tw-backdrop-grayscale:  ;
+    --tw-backdrop-hue-rotate:  ;
+    --tw-backdrop-invert:  ;
+    --tw-backdrop-opacity:  ;
+    --tw-backdrop-saturate:  ;
+    --tw-backdrop-sepia:  ;
+}
+.prose-lg {
+    font-size: 1.125rem;
+    line-height: 1.7777778;
+}
+.prose-lg :where(p):not(:where([class~="not-prose"] *)) {
+    margin-top: 1.3333333em;
+    margin-bottom: 1.3333333em;
+}
+.prose-lg :where([class~="lead"]):not(:where([class~="not-prose"] *)) {
+    font-size: 1.2222222em;
+    line-height: 1.4545455;
+    margin-top: 1.0909091em;
+    margin-bottom: 1.0909091em;
+}
+.prose-lg :where(blockquote):not(:where([class~="not-prose"] *)) {
+    margin-top: 1.6666667em;
+    margin-bottom: 1.6666667em;
+    padding-left: 1em;
+}
+.prose-lg :where(h1):not(:where([class~="not-prose"] *)) {
+    font-size: 2.6666667em;
+    margin-top: 0;
+    margin-bottom: 0.8333333em;
+    line-height: 1;
+}
+.prose-lg :where(h2):not(:where([class~="not-prose"] *)) {
+    font-size: 1.6666667em;
+    margin-top: 1.8666667em;
+    margin-bottom: 1.0666667em;
+    line-height: 1.3333333;
+}
+.prose-lg :where(h3):not(:where([class~="not-prose"] *)) {
+    font-size: 1.3333333em;
+    margin-top: 1.6666667em;
+    margin-bottom: 0.6666667em;
+    line-height: 1.5;
+}
+.prose-lg :where(h4):not(:where([class~="not-prose"] *)) {
+    margin-top: 1.7777778em;
+    margin-bottom: 0.4444444em;
+    line-height: 1.5555556;
+}
+.prose-lg :where(img):not(:where([class~="not-prose"] *)) {
+    margin-top: 1.7777778em;
+    margin-bottom: 1.7777778em;
+}
+.prose-lg :where(video):not(:where([class~="not-prose"] *)) {
+    margin-top: 1.7777778em;
+    margin-bottom: 1.7777778em;
+}
+.prose-lg :where(figure):not(:where([class~="not-prose"] *)) {
+    margin-top: 1.7777778em;
+    margin-bottom: 1.7777778em;
+}
+.prose-lg :where(figure > *):not(:where([class~="not-prose"] *)) {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+.prose-lg :where(figcaption):not(:where([class~="not-prose"] *)) {
+    font-size: 0.8888889em;
+    line-height: 1.5;
+    margin-top: 1em;
+}
+.prose-lg :where(code):not(:where([class~="not-prose"] *)) {
+    font-size: 0.8888889em;
+}
+.prose-lg :where(h2 code):not(:where([class~="not-prose"] *)) {
+    font-size: 0.8666667em;
+}
+.prose-lg :where(h3 code):not(:where([class~="not-prose"] *)) {
+    font-size: 0.875em;
+}
+.prose-lg :where(pre):not(:where([class~="not-prose"] *)) {
+    font-size: 0.8888889em;
+    line-height: 1.75;
+    margin-top: 2em;
+    margin-bottom: 2em;
+    border-radius: 0.375rem;
+    padding-top: 1em;
+    padding-right: 1.5em;
+    padding-bottom: 1em;
+    padding-left: 1.5em;
+}
+.prose-lg :where(ol):not(:where([class~="not-prose"] *)) {
+    margin-top: 1.3333333em;
+    margin-bottom: 1.3333333em;
+    padding-left: 1.5555556em;
+}
+.prose-lg :where(ul):not(:where([class~="not-prose"] *)) {
+    margin-top: 1.3333333em;
+    margin-bottom: 1.3333333em;
+    padding-left: 1.5555556em;
+}
+.prose-lg :where(li):not(:where([class~="not-prose"] *)) {
+    margin-top: 0.6666667em;
+    margin-bottom: 0.6666667em;
+}
+.prose-lg :where(ol > li):not(:where([class~="not-prose"] *)) {
+    padding-left: 0.4444444em;
+}
+.prose-lg :where(ul > li):not(:where([class~="not-prose"] *)) {
+    padding-left: 0.4444444em;
+}
+.prose-lg :where(.prose-lg > ul > li p):not(:where([class~="not-prose"] *)) {
+    margin-top: 0.8888889em;
+    margin-bottom: 0.8888889em;
+}
+.prose-lg :where(.prose-lg > ul > li > *:first-child):not(:where([class~="not-prose"] *)) {
+    margin-top: 1.3333333em;
+}
+.prose-lg :where(.prose-lg > ul > li > *:last-child):not(:where([class~="not-prose"] *)) {
+    margin-bottom: 1.3333333em;
+}
+.prose-lg :where(.prose-lg > ol > li > *:first-child):not(:where([class~="not-prose"] *)) {
+    margin-top: 1.3333333em;
+}
+.prose-lg :where(.prose-lg > ol > li > *:last-child):not(:where([class~="not-prose"] *)) {
+    margin-bottom: 1.3333333em;
+}
+.prose-lg :where(ul ul, ul ol, ol ul, ol ol):not(:where([class~="not-prose"] *)) {
+    margin-top: 0.8888889em;
+    margin-bottom: 0.8888889em;
+}
+.prose-lg :where(hr):not(:where([class~="not-prose"] *)) {
+    margin-top: 3.1111111em;
+    margin-bottom: 3.1111111em;
+}
+.prose-lg :where(hr + *):not(:where([class~="not-prose"] *)) {
+    margin-top: 0;
+}
+.prose-lg :where(h2 + *):not(:where([class~="not-prose"] *)) {
+    margin-top: 0;
+}
+.prose-lg :where(h3 + *):not(:where([class~="not-prose"] *)) {
+    margin-top: 0;
+}
+.prose-lg :where(h4 + *):not(:where([class~="not-prose"] *)) {
+    margin-top: 0;
+}
+.prose-lg :where(table):not(:where([class~="not-prose"] *)) {
+    font-size: 0.8888889em;
+    line-height: 1.5;
+}
+.prose-lg :where(thead th):not(:where([class~="not-prose"] *)) {
+    padding-right: 0.75em;
+    padding-bottom: 0.75em;
+    padding-left: 0.75em;
+}
+.prose-lg :where(thead th:first-child):not(:where([class~="not-prose"] *)) {
+    padding-left: 0;
+}
+.prose-lg :where(thead th:last-child):not(:where([class~="not-prose"] *)) {
+    padding-right: 0;
+}
+.prose-lg :where(tbody td, tfoot td):not(:where([class~="not-prose"] *)) {
+    padding-top: 0.75em;
+    padding-right: 0.75em;
+    padding-bottom: 0.75em;
+    padding-left: 0.75em;
+}
+.prose-lg :where(tbody td:first-child, tfoot td:first-child):not(:where([class~="not-prose"] *)) {
+    padding-left: 0;
+}
+.prose-lg :where(tbody td:last-child, tfoot td:last-child):not(:where([class~="not-prose"] *)) {
+    padding-right: 0;
+}
+.prose-lg :where(.prose-lg > :first-child):not(:where([class~="not-prose"] *)) {
+    margin-top: 0;
+}
+.prose-lg :where(.prose-lg > :last-child):not(:where([class~="not-prose"] *)) {
+    margin-bottom: 0;
+}
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+.static {
+    position: static;
+}
+.fixed {
+    position: fixed;
+}
+.absolute {
+    position: absolute;
+}
+.relative {
+    position: relative;
+}
+.sticky {
+    position: sticky;
+}
+.bottom-0 {
+    bottom: 0px;
+}
+.bottom-14 {
+    bottom: 3.5rem;
+}
+.bottom-16 {
+    bottom: 4rem;
+}
+.bottom-24 {
+    bottom: 6rem;
+}
+.bottom-32 {
+    bottom: 8rem;
+}
+.bottom-4 {
+    bottom: 1rem;
+}
+.bottom-8 {
+    bottom: 2rem;
+}
+.bottom-\[12\%\] {
+    bottom: 12%;
+}
+.bottom-\[88px\] {
+    bottom: 88px;
+}
+.bottom-\[92px\] {
+    bottom: 92px;
+}
+.bottom-full {
+    bottom: 100%;
+}
+.left-0 {
+    left: 0px;
+}
+.left-1 {
+    left: 0.25rem;
+}
+.left-1\/2 {
+    left: 50%;
+}
+.left-10 {
+    left: 2.5rem;
+}
+.left-16 {
+    left: 4rem;
+}
+.left-24 {
+    left: 6rem;
+}
+.left-32 {
+    left: 8rem;
+}
+.left-4 {
+    left: 1rem;
+}
+.left-48 {
+    left: 12rem;
+}
+.left-6 {
+    left: 1.5rem;
+}
+.left-64 {
+    left: 16rem;
+}
+.left-\[160px\] {
+    left: 160px;
+}
+.left-\[164px\] {
+    left: 164px;
+}
+.left-\[25\%\] {
+    left: 25%;
+}
+.right-0 {
+    right: 0px;
+}
+.right-10 {
+    right: 2.5rem;
+}
+.right-16 {
+    right: 4rem;
+}
+.right-32 {
+    right: 8rem;
+}
+.right-4 {
+    right: 1rem;
+}
+.right-48 {
+    right: 12rem;
+}
+.right-6 {
+    right: 1.5rem;
+}
+.right-64 {
+    right: 16rem;
+}
+.right-\[25\%\] {
+    right: 25%;
+}
+.right-full {
+    right: 100%;
+}
+.top-0 {
+    top: 0px;
+}
+.top-0\.5 {
+    top: 0.125rem;
+}
+.top-1\/2 {
+    top: 50%;
+}
+.top-12 {
+    top: 3rem;
+}
+.top-14 {
+    top: 3.5rem;
+}
+.top-16 {
+    top: 4rem;
+}
+.top-24 {
+    top: 6rem;
+}
+.top-32 {
+    top: 8rem;
+}
+.top-4 {
+    top: 1rem;
+}
+.top-8 {
+    top: 2rem;
+}
+.top-\[16\%\] {
+    top: 16%;
+}
+.top-\[40\%\] {
+    top: 40%;
+}
+.top-full {
+    top: 100%;
+}
+.z-20 {
+    z-index: 20;
+}
+.z-40 {
+    z-index: 40;
+}
+.col-start-1 {
+    grid-column-start: 1;
+}
+.col-end-4 {
+    grid-column-end: 4;
+}
+.row-start-1 {
+    grid-row-start: 1;
+}
+.mx-8 {
+    margin-left: 2rem;
+    margin-right: 2rem;
+}
+.mx-auto {
+    margin-left: auto;
+    margin-right: auto;
+}
+.-mb-16 {
+    margin-bottom: -4rem;
+}
+.-ml-6 {
+    margin-left: -1.5rem;
+}
+.-mr-2 {
+    margin-right: -0.5rem;
+}
+.-mt-\[140px\] {
+    margin-top: -140px;
+}
+.ml-2 {
+    margin-left: 0.5rem;
+}
+.mt-4 {
+    margin-top: 1rem;
+}
+.block {
+    display: block;
+}
+.inline-block {
+    display: inline-block;
+}
+.inline {
+    display: inline;
+}
+.flex {
     display: flex;
+}
+.inline-flex {
+    display: inline-flex;
+}
+.grid {
+    display: grid;
+}
+.hidden {
+    display: none;
+}
+.h-\[256px\] {
+    height: 256px;
+}
+.h-\[40vh\] {
+    height: 40vh;
+}
+.h-\[480px\] {
+    height: 480px;
+}
+.h-\[560px\] {
+    height: 560px;
+}
+.h-full {
+    height: 100%;
+}
+.min-h-screen {
+    min-height: 100vh;
+}
+.w-1 {
+    width: 0.25rem;
+}
+.w-1\.5 {
+    width: 0.375rem;
+}
+.w-24 {
+    width: 6rem;
+}
+.w-48 {
+    width: 12rem;
+}
+.w-64 {
+    width: 16rem;
+}
+.w-\[200\%\] {
+    width: 200%;
+}
+.w-\[460px\] {
+    width: 460px;
+}
+.w-\[480px\] {
+    width: 480px;
+}
+.w-\[768px\] {
+    width: 768px;
+}
+.w-full {
+    width: 100%;
+}
+.min-w-0 {
+    min-width: 0px;
+}
+.min-w-\[40ch\] {
+    min-width: 40ch;
+}
+.max-w-2xl {
+    max-width: 42rem;
+}
+.max-w-7xl {
+    max-width: 80rem;
+}
+.max-w-prose {
+    max-width: 65ch;
+}
+.max-w-sm {
+    max-width: 24rem;
+}
+.flex-1 {
+    flex: 1 1 0%;
+}
+.-translate-x-1\/2 {
+    --tw-translate-x: -50%;
+    transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+.-translate-x-\[300px\] {
+    --tw-translate-x: -300px;
+    transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+.-translate-x-\[60\%\] {
+    --tw-translate-x: -60%;
+    transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+.-translate-y-1\/2 {
+    --tw-translate-y: -50%;
+    transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+.-translate-y-\[140px\] {
+    --tw-translate-y: -140px;
+    transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+.-rotate-12 {
+    --tw-rotate: -12deg;
+    transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+.-rotate-45 {
+    --tw-rotate: -45deg;
+    transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+.-rotate-6 {
+    --tw-rotate: -6deg;
+    transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+.rotate-0 {
+    --tw-rotate: 0deg;
+    transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+.rotate-1 {
+    --tw-rotate: 1deg;
+    transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+.rotate-180 {
+    --tw-rotate: 180deg;
+    transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+.rotate-90 {
+    --tw-rotate: 90deg;
+    transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+.cursor-pointer {
+    cursor: pointer;
+}
+.list-inside {
+    list-style-position: inside;
+}
+.list-decimal {
+    list-style-type: decimal;
+}
+.grid-cols-1 {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+.flex-col {
+    flex-direction: column;
+}
+.items-end {
+    align-items: flex-end;
+}
+.items-center {
     align-items: center;
-    gap: 1rem;
+}
+.justify-center {
+    justify-content: center;
+}
+.justify-between {
+    justify-content: space-between;
+}
+.gap-2 {
+    gap: 0.5rem;
+}
+.gap-y-6 {
+    row-gap: 1.5rem;
+}
+.space-x-2 > :not([hidden]) ~ :not([hidden]) {
+    --tw-space-x-reverse: 0;
+    margin-right: calc(0.5rem * var(--tw-space-x-reverse));
+    margin-left: calc(0.5rem * calc(1 - var(--tw-space-x-reverse)));
+}
+.space-y-1 > :not([hidden]) ~ :not([hidden]) {
+    --tw-space-y-reverse: 0;
+    margin-top: calc(0.25rem * calc(1 - var(--tw-space-y-reverse)));
+    margin-bottom: calc(0.25rem * var(--tw-space-y-reverse));
+}
+.space-y-4 > :not([hidden]) ~ :not([hidden]) {
+    --tw-space-y-reverse: 0;
+    margin-top: calc(1rem * calc(1 - var(--tw-space-y-reverse)));
+    margin-bottom: calc(1rem * var(--tw-space-y-reverse));
+}
+.divide-y > :not([hidden]) ~ :not([hidden]) {
+    --tw-divide-y-reverse: 0;
+    border-top-width: calc(1px * calc(1 - var(--tw-divide-y-reverse)));
+    border-bottom-width: calc(1px * var(--tw-divide-y-reverse));
+}
+.divide-almond-400 > :not([hidden]) ~ :not([hidden]) {
+    --tw-divide-opacity: 1;
+    border-color: rgb(203 182 136 / var(--tw-divide-opacity));
+}
+.divide-almond-800 > :not([hidden]) ~ :not([hidden]) {
+    --tw-divide-opacity: 1;
+    border-color: rgb(65 55 29 / var(--tw-divide-opacity));
+}
+.overflow-hidden {
+    overflow: hidden;
+}
+.overflow-scroll {
+    overflow: scroll;
+}
+.truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.rounded-md {
+    border-radius: 0.375rem;
+}
+.rounded-xl {
+    border-radius: 0.75rem;
+}
+.rounded-t-md {
+    border-top-left-radius: 0.375rem;
+    border-top-right-radius: 0.375rem;
+}
+.border {
+    border-width: 1px;
+}
+.border-2 {
+    border-width: 2px;
+}
+.border-4 {
+    border-width: 4px;
+}
+.border-b {
+    border-bottom-width: 1px;
+}
+.border-t {
+    border-top-width: 1px;
+}
+.border-t-0 {
+    border-top-width: 0px;
+}
+.border-almond-300 {
+    --tw-border-opacity: 1;
+    border-color: rgb(221 208 179 / var(--tw-border-opacity));
+}
+.border-almond-800 {
+    --tw-border-opacity: 1;
+    border-color: rgb(65 55 29 / var(--tw-border-opacity));
+}
+.border-blue-800 {
+    --tw-border-opacity: 1;
+    border-color: rgb(20 68 144 / var(--tw-border-opacity));
+}
+.border-red-600 {
+    --tw-border-opacity: 1;
+    border-color: rgb(217 32 38 / var(--tw-border-opacity));
+}
+.bg-almond-200 {
+    --tw-bg-opacity: 1;
+    background-color: rgb(240 234 221 / var(--tw-bg-opacity));
+}
+.bg-almond-300 {
+    --tw-bg-opacity: 1;
+    background-color: rgb(221 208 179 / var(--tw-bg-opacity));
+}
+.bg-almond-700 {
+    --tw-bg-opacity: 1;
+    background-color: rgb(108 90 47 / var(--tw-bg-opacity));
+}
+.bg-blue-800 {
+    --tw-bg-opacity: 1;
+    background-color: rgb(20 68 144 / var(--tw-bg-opacity));
+}
+.bg-red-600 {
+    --tw-bg-opacity: 1;
+    background-color: rgb(217 32 38 / var(--tw-bg-opacity));
+}
+.bg-teal-200 {
+    --tw-bg-opacity: 1;
+    background-color: rgb(201 220 221 / var(--tw-bg-opacity));
+}
+.p-2 {
+    padding: 0.5rem;
+}
+.px-1 {
+    padding-left: 0.25rem;
+    padding-right: 0.25rem;
+}
+.px-12 {
+    padding-left: 3rem;
+    padding-right: 3rem;
+}
+.px-4 {
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+.px-6 {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+}
+.py-1 {
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+}
+.py-10 {
+    padding-top: 2.5rem;
+    padding-bottom: 2.5rem;
+}
+.py-12 {
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+}
+.py-2 {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+}
+.py-3 {
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+}
+.py-4 {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+.py-6 {
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+}
+.pb-12 {
+    padding-bottom: 3rem;
+}
+.pb-24 {
+    padding-bottom: 6rem;
+}
+.pl-9 {
+    padding-left: 2.25rem;
+}
+.pt-10 {
+    padding-top: 2.5rem;
+}
+.pt-6 {
+    padding-top: 1.5rem;
+}
+.pt-64 {
+    padding-top: 16rem;
+}
+.text-center {
+    text-align: center;
+}
+.font-display {
+    font-family: Helsinki, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+.font-mono {
+    font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+.font-sans {
+    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+.font-serif {
+    font-family: Georgia, ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+}
+.text-3xl {
+    font-size: 1.875rem;
+    line-height: 2.25rem;
+}
+.text-4xl {
+    font-size: 2.25rem;
+    line-height: 2.5rem;
+}
+.text-6xl {
+    font-size: 3.75rem;
+    line-height: 1;
+}
+.text-base {
+    font-size: 1rem;
+    line-height: 1.5rem;
+}
+.text-lg {
+    font-size: 1.125rem;
+    line-height: 1.75rem;
+}
+.text-sm {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+}
+.text-xl {
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+}
+.text-xs {
+    font-size: 0.75rem;
+    line-height: 1rem;
+}
+.font-bold {
+    font-weight: 700;
+}
+.font-medium {
+    font-weight: 500;
+}
+.font-semibold {
+    font-weight: 600;
+}
+.uppercase {
+    text-transform: uppercase;
+}
+.leading-none {
+    line-height: 1;
+}
+.tracking-wide {
+    letter-spacing: 0.025em;
+}
+.text-almond-300 {
+    --tw-text-opacity: 1;
+    color: rgb(221 208 179 / var(--tw-text-opacity));
+}
+.text-almond-700 {
+    --tw-text-opacity: 1;
+    color: rgb(108 90 47 / var(--tw-text-opacity));
+}
+.text-almond-800 {
+    --tw-text-opacity: 1;
+    color: rgb(65 55 29 / var(--tw-text-opacity));
+}
+.text-blue-800 {
+    --tw-text-opacity: 1;
+    color: rgb(20 68 144 / var(--tw-text-opacity));
+}
+.text-gray-900 {
+    --tw-text-opacity: 1;
+    color: rgb(15 23 42 / var(--tw-text-opacity));
+}
+.text-red-50 {
+    --tw-text-opacity: 1;
+    color: rgb(250 223 224 / var(--tw-text-opacity));
+}
+.text-red-600 {
+    --tw-text-opacity: 1;
+    color: rgb(217 32 38 / var(--tw-text-opacity));
+}
+.text-teal-600 {
+    --tw-text-opacity: 1;
+    color: rgb(76 115 121 / var(--tw-text-opacity));
+}
+.text-white {
+    --tw-text-opacity: 1;
+    color: rgb(255 255 255 / var(--tw-text-opacity));
+}
+.underline {
+    text-decoration-line: underline;
+}
+.filter {
+    filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
+}
+
+pre {
+  line-height: 2;
+}
+
+nav {
+  --details-force-closed: (max-width: 1023px);
+}
+
+@media (min-width: 1024px) {
+  header>nav details>summary {
+    display: none;
+  }
+}
+
+nav details>summary {
+  display: none;
+}
+
+.direct-link {
+  font-family: sans-serif;
+  text-decoration: none;
+  font-style: normal;
+  margin-left: .1em;
+}
+
+a[href].direct-link,
+a[href].direct-link:visited {
+  color: transparent;
+}
+
+a[href].direct-link:focus,
+a[href].direct-link:focus:visited,
+:hover>a[href].direct-link,
+:hover>a[href].direct-link:visited {
+  color: #967D42
+}
+
+.animate-twinkle {
+  position: absolute;
+  animation: twinkle 10s infinite ease-out;
+}
+
+@keyframes twinkle {
+  0% {
+    opacity: 1;
   }
 
-  article header svg {
-    border-radius: 100px;
-    background: var(--bg-border);
-    color: var(--nc-lk-1);
+  5% {
+    opacity: 0;
   }
 
-  article header p,
-  article header time {
-    margin: 0;
+  10% {
+    opacity: 1;
   }
 
-  article header time {
-    font-size: .875em;
+  50% {
+    opacity: 1;
   }
 
-</style>
-<script>
-  window.route('GET', '/posts', () => dashboard())
+  55% {
+    opacity: 0;
+  }
+
+  60% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+.animate-glow {
+  transition: box-shadow;
+  animation: glow 4s infinite ease-in-out;
+}
+
+@keyframes glow {
+  0% {
+    box-shadow: 0 0 4px #D92026;
+  }
+
+  25% {
+    box-shadow: 0 0 8px #D92026;
+  }
+
+  50% {
+    box-shadow: 0 0 6px #D92026;
+  }
+
+  75% {
+    box-shadow: 0 0 8px #D92026;
+  }
+
+  100% {
+    box-shadow: 0 0 4px #D92026;
+  }
+}
+
+#demo_frame {
+  border: 1px solid #000;
+  border-radius: 0.3em;
+  overflow: auto;
+  padding: .5rem;
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  background: #fff;
+}
+
+#demo_frame #demo :where(h1, h2, h3, h4, h5, h6) {
+  margin-top: 0;
+}
+
+#demo_frame #demo button {
+  padding: .5rem .75rem;
+  font-weight: 600;
+  background: #144490;
+  line-height: 1.25;
+  font-size: 0.875rem;
+  color: #fff;
+}
+
+#demo_frame #demo table {
+  width: 100%;
+  text-align: left;
+}
+
+#demo_frame #demo td {
+  border-color: #e2e8f0;
+}
+
+#demo_frame #demo input,
+#demo_frame #demo select,
+#demo_frame #demo textarea {
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  margin-bottom: 1rem;
+  padding: .25rem .5rem;
+  border-color: #000;
+}
+
+#demo_frame #demo td>input,
+#demo_frame #demo td>select,
+#demo_frame #demo td>textarea {
+  margin-bottom: 0;
+}
+
+#demo_frame #demo dialog {
+  border: 1px solid #000;
+  border-radius: 0;
+  padding: 1rem;
+  max-width: 56ch;
+  position: fixed;
+  top: 50vh;
+  margin-left: auto;
+  margin-right: auto;
+  transform: translate(0, -50%);
+}
+/**
+ * a11y-dark theme for JavaScript, CSS, and HTML
+ * Based on the okaidia theme: https://github.com/PrismJS/prism/blob/gh-pages/themes/prism-okaidia.css
+ * @author ericwbailey
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+  color: #f8f8f2;
+  background: none;
+  text-align: left;
+  white-space: pre;
+  word-spacing: normal;
+  word-break: normal;
+  word-wrap: normal;
+  line-height: 2;
+
+  -moz-tab-size: 2;
+  -o-tab-size: 2;
+  tab-size: 2;
+
+  -webkit-hyphens: none;
+  hyphens: none;
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+  padding: 1em;
+  margin: 0.5em 0;
+  overflow: auto;
+  border-radius: 0.3em;
+}
+
+:not(pre)>code[class*="language-"],
+pre[class*="language-"] {
+  background: #2b2b2b;
+}
+
+/* Inline code */
+:not(pre)>code[class*="language-"] {
+  padding: 0.1em;
+  border-radius: 0.3em;
+  white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+  color: #d4d0ab;
+}
+
+.token.punctuation {
+  color: #fefefe;
+}
+
+.token.property,
+.token.tag,
+.token.constant,
+.token.symbol,
+.token.deleted {
+  color: #ffa07a;
+}
+
+.token.boolean,
+.token.number {
+  color: #00e0e0;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+  color: #abe338;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string,
+.token.variable {
+  color: #00e0e0;
+}
+
+.token.atrule,
+.token.attr-value,
+.token.function {
+  color: #ffd700;
+}
+
+.token.keyword {
+  color: #00e0e0;
+}
+
+.token.regex,
+.token.important {
+  color: #ffd700;
+}
+
+.token.important,
+.token.bold {
+  font-weight: bold;
+}
+
+.token.italic {
+  font-style: italic;
+}
+
+.token.entity {
+  cursor: help;
+}
+
+@media screen and (-ms-high-contrast: active) {
+
+  code[class*="language-"],
+  pre[class*="language-"] {
+    color: windowText;
+    background: window;
+  }
+
+  :not(pre)>code[class*="language-"],
+  pre[class*="language-"] {
+    background: window;
+  }
+
+  .token.important {
+    background: highlight;
+    color: window;
+    font-weight: normal;
+  }
+
+  .token.atrule,
+  .token.attr-value,
+  .token.function,
+  .token.keyword,
+  .token.operator,
+  .token.selector {
+    font-weight: bold;
+  }
+
+  .token.attr-value,
+  .token.comment,
+  .token.doctype,
+  .token.function,
+  .token.keyword,
+  .token.operator,
+  .token.property,
+  .token.string {
+    color: highlight;
+  }
+
+  .token.attr-value,
+  .token.url {
+    font-weight: normal;
+  }
+}
+
+@media (min-width: 768px) {
+    .md\:prose-xl {
+        font-size: 1.25rem;
+        line-height: 1.8;
+    }
+    .md\:prose-xl :where(p):not(:where([class~="not-prose"] *)) {
+        margin-top: 1.2em;
+        margin-bottom: 1.2em;
+    }
+    .md\:prose-xl :where([class~="lead"]):not(:where([class~="not-prose"] *)) {
+        font-size: 1.2em;
+        line-height: 1.5;
+        margin-top: 1em;
+        margin-bottom: 1em;
+    }
+    .md\:prose-xl :where(blockquote):not(:where([class~="not-prose"] *)) {
+        margin-top: 1.6em;
+        margin-bottom: 1.6em;
+        padding-left: 1.0666667em;
+    }
+    .md\:prose-xl :where(h1):not(:where([class~="not-prose"] *)) {
+        font-size: 2.8em;
+        margin-top: 0;
+        margin-bottom: 0.8571429em;
+        line-height: 1;
+    }
+    .md\:prose-xl :where(h2):not(:where([class~="not-prose"] *)) {
+        font-size: 1.8em;
+        margin-top: 1.5555556em;
+        margin-bottom: 0.8888889em;
+        line-height: 1.1111111;
+    }
+    .md\:prose-xl :where(h3):not(:where([class~="not-prose"] *)) {
+        font-size: 1.5em;
+        margin-top: 1.6em;
+        margin-bottom: 0.6666667em;
+        line-height: 1.3333333;
+    }
+    .md\:prose-xl :where(h4):not(:where([class~="not-prose"] *)) {
+        margin-top: 1.8em;
+        margin-bottom: 0.6em;
+        line-height: 1.6;
+    }
+    .md\:prose-xl :where(img):not(:where([class~="not-prose"] *)) {
+        margin-top: 2em;
+        margin-bottom: 2em;
+    }
+    .md\:prose-xl :where(video):not(:where([class~="not-prose"] *)) {
+        margin-top: 2em;
+        margin-bottom: 2em;
+    }
+    .md\:prose-xl :where(figure):not(:where([class~="not-prose"] *)) {
+        margin-top: 2em;
+        margin-bottom: 2em;
+    }
+    .md\:prose-xl :where(figure > *):not(:where([class~="not-prose"] *)) {
+        margin-top: 0;
+        margin-bottom: 0;
+    }
+    .md\:prose-xl :where(figcaption):not(:where([class~="not-prose"] *)) {
+        font-size: 0.9em;
+        line-height: 1.5555556;
+        margin-top: 1em;
+    }
+    .md\:prose-xl :where(code):not(:where([class~="not-prose"] *)) {
+        font-size: 0.9em;
+    }
+    .md\:prose-xl :where(h2 code):not(:where([class~="not-prose"] *)) {
+        font-size: 0.8611111em;
+    }
+    .md\:prose-xl :where(h3 code):not(:where([class~="not-prose"] *)) {
+        font-size: 0.9em;
+    }
+    .md\:prose-xl :where(pre):not(:where([class~="not-prose"] *)) {
+        font-size: 0.9em;
+        line-height: 1.7777778;
+        margin-top: 2em;
+        margin-bottom: 2em;
+        border-radius: 0.5rem;
+        padding-top: 1.1111111em;
+        padding-right: 1.3333333em;
+        padding-bottom: 1.1111111em;
+        padding-left: 1.3333333em;
+    }
+    .md\:prose-xl :where(ol):not(:where([class~="not-prose"] *)) {
+        margin-top: 1.2em;
+        margin-bottom: 1.2em;
+        padding-left: 1.6em;
+    }
+    .md\:prose-xl :where(ul):not(:where([class~="not-prose"] *)) {
+        margin-top: 1.2em;
+        margin-bottom: 1.2em;
+        padding-left: 1.6em;
+    }
+    .md\:prose-xl :where(li):not(:where([class~="not-prose"] *)) {
+        margin-top: 0.6em;
+        margin-bottom: 0.6em;
+    }
+    .md\:prose-xl :where(ol > li):not(:where([class~="not-prose"] *)) {
+        padding-left: 0.4em;
+    }
+    .md\:prose-xl :where(ul > li):not(:where([class~="not-prose"] *)) {
+        padding-left: 0.4em;
+    }
+    .md\:prose-xl :where(.md\:prose-xl > ul > li p):not(:where([class~="not-prose"] *)) {
+        margin-top: 0.8em;
+        margin-bottom: 0.8em;
+    }
+    .md\:prose-xl :where(.md\:prose-xl > ul > li > *:first-child):not(:where([class~="not-prose"] *)) {
+        margin-top: 1.2em;
+    }
+    .md\:prose-xl :where(.md\:prose-xl > ul > li > *:last-child):not(:where([class~="not-prose"] *)) {
+        margin-bottom: 1.2em;
+    }
+    .md\:prose-xl :where(.md\:prose-xl > ol > li > *:first-child):not(:where([class~="not-prose"] *)) {
+        margin-top: 1.2em;
+    }
+    .md\:prose-xl :where(.md\:prose-xl > ol > li > *:last-child):not(:where([class~="not-prose"] *)) {
+        margin-bottom: 1.2em;
+    }
+    .md\:prose-xl :where(ul ul, ul ol, ol ul, ol ol):not(:where([class~="not-prose"] *)) {
+        margin-top: 0.8em;
+        margin-bottom: 0.8em;
+    }
+    .md\:prose-xl :where(hr):not(:where([class~="not-prose"] *)) {
+        margin-top: 2.8em;
+        margin-bottom: 2.8em;
+    }
+    .md\:prose-xl :where(hr + *):not(:where([class~="not-prose"] *)) {
+        margin-top: 0;
+    }
+    .md\:prose-xl :where(h2 + *):not(:where([class~="not-prose"] *)) {
+        margin-top: 0;
+    }
+    .md\:prose-xl :where(h3 + *):not(:where([class~="not-prose"] *)) {
+        margin-top: 0;
+    }
+    .md\:prose-xl :where(h4 + *):not(:where([class~="not-prose"] *)) {
+        margin-top: 0;
+    }
+    .md\:prose-xl :where(table):not(:where([class~="not-prose"] *)) {
+        font-size: 0.9em;
+        line-height: 1.5555556;
+    }
+    .md\:prose-xl :where(thead th):not(:where([class~="not-prose"] *)) {
+        padding-right: 0.6666667em;
+        padding-bottom: 0.8888889em;
+        padding-left: 0.6666667em;
+    }
+    .md\:prose-xl :where(thead th:first-child):not(:where([class~="not-prose"] *)) {
+        padding-left: 0;
+    }
+    .md\:prose-xl :where(thead th:last-child):not(:where([class~="not-prose"] *)) {
+        padding-right: 0;
+    }
+    .md\:prose-xl :where(tbody td, tfoot td):not(:where([class~="not-prose"] *)) {
+        padding-top: 0.8888889em;
+        padding-right: 0.6666667em;
+        padding-bottom: 0.8888889em;
+        padding-left: 0.6666667em;
+    }
+    .md\:prose-xl :where(tbody td:first-child, tfoot td:first-child):not(:where([class~="not-prose"] *)) {
+        padding-left: 0;
+    }
+    .md\:prose-xl :where(tbody td:last-child, tfoot td:last-child):not(:where([class~="not-prose"] *)) {
+        padding-right: 0;
+    }
+    .md\:prose-xl :where(.md\:prose-xl > :first-child):not(:where([class~="not-prose"] *)) {
+        margin-top: 0;
+    }
+    .md\:prose-xl :where(.md\:prose-xl > :last-child):not(:where([class~="not-prose"] *)) {
+        margin-bottom: 0;
+    }
+}
+
+.placeholder\:text-almond-700::-moz-placeholder {
+    --tw-text-opacity: 1;
+    color: rgb(108 90 47 / var(--tw-text-opacity));
+}
+
+.placeholder\:text-almond-700::placeholder {
+    --tw-text-opacity: 1;
+    color: rgb(108 90 47 / var(--tw-text-opacity));
+}
+
+.after\:absolute::after {
+    content: var(--tw-content);
+    position: absolute;
+}
+
+.after\:left-1::after {
+    content: var(--tw-content);
+    left: 0.25rem;
+}
+
+.after\:top-1::after {
+    content: var(--tw-content);
+    top: 0.25rem;
+}
+
+.after\:h-full::after {
+    content: var(--tw-content);
+    height: 100%;
+}
+
+.after\:w-full::after {
+    content: var(--tw-content);
+    width: 100%;
+}
+
+.after\:border::after {
+    content: var(--tw-content);
+    border-width: 1px;
+}
+
+.after\:border-blue-800::after {
+    content: var(--tw-content);
+    --tw-border-opacity: 1;
+    border-color: rgb(20 68 144 / var(--tw-border-opacity));
+}
+
+.after\:content-\[\'\:\'\]::after {
+    --tw-content: ':';
+    content: var(--tw-content);
+}
+
+.empty\:border-transparent:empty {
+    border-color: transparent;
+}
+
+.hover\:bg-red-500:hover {
+    --tw-bg-opacity: 1;
+    background-color: rgb(227 63 68 / var(--tw-bg-opacity));
+}
+
+.hover\:bg-red-600:hover {
+    --tw-bg-opacity: 1;
+    background-color: rgb(217 32 38 / var(--tw-bg-opacity));
+}
+
+.hover\:text-red-600:hover {
+    --tw-text-opacity: 1;
+    color: rgb(217 32 38 / var(--tw-text-opacity));
+}
+
+.focus\:border-red-600:focus {
+    --tw-border-opacity: 1;
+    border-color: rgb(217 32 38 / var(--tw-border-opacity));
+}
+
+.focus\:bg-red-600:focus {
+    --tw-bg-opacity: 1;
+    background-color: rgb(217 32 38 / var(--tw-bg-opacity));
+}
+
+.focus\:bg-red-700:focus {
+    --tw-bg-opacity: 1;
+    background-color: rgb(173 25 30 / var(--tw-bg-opacity));
+}
+
+.focus\:text-red-600:focus {
+    --tw-text-opacity: 1;
+    color: rgb(217 32 38 / var(--tw-text-opacity));
+}
+
+.focus-visible\:outline:focus-visible {
+    outline-style: solid;
+}
+
+.focus-visible\:outline-2:focus-visible {
+    outline-width: 2px;
+}
+
+.focus-visible\:outline-offset-2:focus-visible {
+    outline-offset: 2px;
+}
+
+.focus-visible\:outline-red-600:focus-visible {
+    outline-color: #D92026;
+}
+
+.active\:bg-red-800:active {
+    --tw-bg-opacity: 1;
+    background-color: rgb(128 19 22 / var(--tw-bg-opacity));
+}
+
+.aria-\[current\=page\]\:bg-red-600[aria-current=page] {
+    --tw-bg-opacity: 1;
+    background-color: rgb(217 32 38 / var(--tw-bg-opacity));
+}
+
+.aria-\[current\=step\]\:bg-teal-200[aria-current=step] {
+    --tw-bg-opacity: 1;
+    background-color: rgb(201 220 221 / var(--tw-bg-opacity));
+}
+
+.aria-\[current\=page\]\:font-semibold[aria-current=page] {
+    font-weight: 600;
+}
+
+.aria-\[current\=page\]\:text-red-600[aria-current=page] {
+    --tw-text-opacity: 1;
+    color: rgb(217 32 38 / var(--tw-text-opacity));
+}
+
+.prose-headings\:font-sans :is(:where(h1, h2, h3, h4, h5, h6, th):not(:where([class~="not-prose"] *))) {
+    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+.prose-headings\:font-bold :is(:where(h1, h2, h3, h4, h5, h6, th):not(:where([class~="not-prose"] *))) {
+    font-weight: 700;
+}
+
+.prose-h1\:text-blue-800 :is(:where(h1):not(:where([class~="not-prose"] *))) {
+    --tw-text-opacity: 1;
+    color: rgb(20 68 144 / var(--tw-text-opacity));
+}
+
+.prose-a\:text-blue-800 :is(:where(a):not(:where([class~="not-prose"] *))) {
+    --tw-text-opacity: 1;
+    color: rgb(20 68 144 / var(--tw-text-opacity));
+}
+
+.prose-a\:underline :is(:where(a):not(:where([class~="not-prose"] *))) {
+    text-decoration-line: underline;
+}
+
+.prose-ol\:list-decimal :is(:where(ol):not(:where([class~="not-prose"] *))) {
+    list-style-type: decimal;
+}
+
+.prose-ul\:list-disc :is(:where(ul):not(:where([class~="not-prose"] *))) {
+    list-style-type: disc;
+}
+
+.prose-th\:text-left :is(:where(th):not(:where([class~="not-prose"] *))) {
+    text-align: left;
+}
+
+.prose-td\:border-t :is(:where(td):not(:where([class~="not-prose"] *))) {
+    border-top-width: 1px;
+}
+
+.prose-td\:border-almond-400 :is(:where(td):not(:where([class~="not-prose"] *))) {
+    --tw-border-opacity: 1;
+    border-color: rgb(203 182 136 / var(--tw-border-opacity));
+}
+
+@media (min-width: 640px) {
+    .sm\:flex {
+        display: flex;
+    }
+    .sm\:h-full {
+        height: 100%;
+    }
+    .sm\:justify-center {
+        justify-content: center;
+    }
+    .sm\:overflow-scroll {
+        overflow: scroll;
+    }
+    .sm\:border-l {
+        border-left-width: 1px;
+    }
+    .sm\:px-12 {
+        padding-left: 3rem;
+        padding-right: 3rem;
+    }
+    .sm\:text-4xl {
+        font-size: 2.25rem;
+        line-height: 2.5rem;
+    }
+    .sm\:text-5xl {
+        font-size: 3rem;
+        line-height: 1;
+    }
+    .sm\:text-base {
+        font-size: 1rem;
+        line-height: 1.5rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .md\:overflow-visible {
+        overflow: visible;
+    }
+    .md\:px-6 {
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .lg\:sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border-width: 0;
+    }
+    .lg\:relative {
+        position: relative;
+    }
+    .lg\:top-8 {
+        top: 2rem;
+    }
+    .lg\:col-span-2 {
+        grid-column: span 2 / span 2;
+    }
+    .lg\:col-start-3 {
+        grid-column-start: 3;
+    }
+    .lg\:col-end-5 {
+        grid-column-end: 5;
+    }
+    .lg\:row-start-1 {
+        grid-row-start: 1;
+    }
+    .lg\:row-start-2 {
+        grid-row-start: 2;
+    }
+    .lg\:row-end-3 {
+        grid-row-end: 3;
+    }
+    .lg\:mx-0 {
+        margin-left: 0px;
+        margin-right: 0px;
+    }
+    .lg\:block {
+        display: block;
+    }
+    .lg\:flex {
+        display: flex;
+    }
+    .lg\:hidden {
+        display: none;
+    }
+    .lg\:min-h-screen {
+        min-height: 100vh;
+    }
+    .lg\:w-full {
+        width: 100%;
+    }
+    .lg\:min-w-0 {
+        min-width: 0px;
+    }
+    .lg\:max-w-5xl {
+        max-width: 64rem;
+    }
+    .lg\:flex-1 {
+        flex: 1 1 0%;
+    }
+    .lg\:shrink-0 {
+        flex-shrink: 0;
+    }
+    .lg\:grid-cols-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .lg\:grid-cols-4 {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+    .lg\:flex-row-reverse {
+        flex-direction: row-reverse;
+    }
+    .lg\:items-center {
+        align-items: center;
+    }
+    .lg\:gap-6 {
+        gap: 1.5rem;
+    }
+    .lg\:gap-\[2\%\] {
+        gap: 2%;
+    }
+    .lg\:gap-x-12 {
+        -moz-column-gap: 3rem;
+             column-gap: 3rem;
+    }
+    .lg\:overflow-hidden {
+        overflow: hidden;
+    }
+    .lg\:bg-transparent {
+        background-color: transparent;
+    }
+    .lg\:px-0 {
+        padding-left: 0px;
+        padding-right: 0px;
+    }
+    .lg\:py-0 {
+        padding-top: 0px;
+        padding-bottom: 0px;
+    }
+    .lg\:pt-0 {
+        padding-top: 0px;
+    }
+    .lg\:pt-12 {
+        padding-top: 3rem;
+    }
+    .lg\:pt-6 {
+        padding-top: 1.5rem;
+    }
+}</style>
+
+  
+  <script type="module" src="/js/main.js"></script>
+  <script type="module">window.route('GET', '/posts', () => dashboard())
   window.route('GET', '/posts/1', () => new Promise(resolve => {
     setTimeout(() => resolve(post()), 2000)
   }))
 
-  example('/posts')
+  window.example('/posts')
 
   function dashboard() {
     return `<p>Refresh the page to watch this post lazy load into view:</p>
 <article id="post" x-init="$ajax('/posts/1')">
-  <svg class="loader" aria-label="Loading content" viewBox="0 0 442 107" fill="var(--bg-base)" xmlns="http://www.w3.org/2000/svg">
+  <svg class="loader" aria-label="Loading content" viewBox="0 0 442 107" fill="#fff" xmlns="http://www.w3.org/2000/svg">
     <path d="M442 79.1H0V65.5h412.4v-7.1H0V0h442v79.1Zm0 7.1V107H181.2v-7.1H0V86.2h442ZM50.1 24.6v7.2h53.3v-7.2H50.1Zm0-16.8v7.1h89.3V7.8H50.1ZM19.3 38.9c10.6 0 19.2-8.7 19.2-19.4C38.5 8.7 30 0 19.3 0A19.4 19.4 0 0 0 0 19.5c0 10.7 8.6 19.4 19.3 19.4Z" />
   </svg>
 </article>`
@@ -315,36 +2290,230 @@ class DetailsForceState extends HTMLElement {
   </header>
   <p>I'll fly the paper, as an airplane, down the bedroom ladder. It'll triple barrel-roll past the kitchen, open the fridge, and cook some eggs; then eat the eggs and unfold itself as it lays on the carpet in front of Marceline's door.</p>
 </article>`
+  }</script>
+
+  <link rel="icon" href="/img/favicon.svg">
+  <meta name="description" content="">
+  <meta name="generator" content="Eleventy v2.0.1">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Lazy Loading | Alpine AJAX">
+  <meta property="og:url" content="https://alpine-ajax.js.org/examples/lazy-load/">
+  <meta property="og:description" content="">
+  <meta property="og:image" content="https://alpine-ajax.js.org/img/share.png">
+  <meta property="twitter:card" content="summary_large_image">
+</head>
+
+<body class="bg-almond-200 font-serif">
+  <a href="#main" class="sr-only">Skip to content</a>
+  <header class="relative z-20 px-4 py-1 flex items-center justify-between md:px-6 lg:py-0">
+    <a href="/" class="block w-24 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600 lg:hidden">
+      
+      <svg fill="none" xmlns="http://www.w3.org/2000/svg" width="96" height="85" viewBox="0 0 287 255"><path d="m73.4 252.7 211.9-131.4L73.5 2.5 177 120.9l.3.3-.3.4L73.4 252.7Z" fill="#144490" stroke="#F0EADD"/><path d="M270 57.1a1 1 0 0 0-1-1.5L11.2 47.7a1 1 0 0 0-1 1.4l26 68.3c.1.4.5.7 1 .6l200.4-6.8c.4 0 .7-.2.9-.5L269.9 57Z" fill="#F0EADD" stroke="#144490" stroke-width="2" stroke-linejoin="round"/><g filter="url(#a)" fill="#D92026"><path d="M76.6 103.6a13.3 13.3 0 0 1-9-3.4 13 13 0 0 1-2.7-3.8 13 13 0 0 1-1-5.1c0-3.5.5-7.3 1.4-11.4l-5.7-3-6.3-3.5-7 12.5a56 56 0 0 1-6.4 9.5 25.9 25.9 0 0 1-7.1 6 18.4 18.4 0 0 1-9.1 2.2 18 18 0 0 1-7.9-1.9A26.5 26.5 0 0 1 3.8 89a22 22 0 0 1-.3-17A19.6 19.6 0 0 1 15 61a25 25 0 0 1 9.2-1.7c4.1 0 8.2.6 12.2 1.7s7.9 2.5 11.7 4l7.6-11.8c2.3-3.3 4.6-6.1 6.7-8.3 2.2-2.3 4.4-4 6.4-5.1 2.2-1.2 4.4-1.7 6.7-1.7 1.9 0 3.5.3 4.8 1l2.4 1.6a15.6 15.6 0 0 1 7.2-2c1.8 0 2.7.4 2.7 1.3l-.5 1-1.7 1.9a33 33 0 0 0-2.5 4.3 129 129 0 0 0-7 17 175 175 0 0 0-3.3 10.4h1a6 6 0 0 0 2.4-.4 26.8 26.8 0 0 0 4.8-1.9c.2 0 .4.1.5.3.2.2.3.5.3.8 0 .4-.3 1-1 2a19 19 0 0 1-5.9 5.4 11 11 0 0 1-4 1.6l-1 5-.2 4.3c0 2.1.5 3.6 1.5 4.6 1 .9 2.2 1.3 3.6 1.3a6 6 0 0 0 3.4-1.2 19.8 19.8 0 0 0 6.5-7.1l.6-.4.8-.2c.5 0 .9.2 1.2.5.5.4.7.8.7 1.3 0 .2 0 .4-.2.7l-.3.6-.3.8c-1.3 2-2.8 4-4.4 5.5a22 22 0 0 1-5 3.8 11.4 11.4 0 0 1-6 1.7Zm-55-9c2.2 0 4.1-.5 6-1.5 1.7-1 3.5-2.6 5.3-4.6 1.8-2 3.7-4.7 5.7-7.8l6.8-11a46 46 0 0 0-14.5-3c-6.4 0-11.4 1.6-15 4.7A15.1 15.1 0 0 0 11.2 88a10.4 10.4 0 0 0 6 5.7c1.3.5 2.8.8 4.3.8Zm34.6-26.2 5.5 2.3a74 74 0 0 0 5.5 1.8 125.7 125.7 0 0 1 12.3-29 5 5 0 0 0-2-.3 8 8 0 0 0-4.6 1.4c-1.5 1-3 2.4-4.7 4.5a264 264 0 0 0-12 19.3Z"/><path d="M117.7 47.8c0-.8-.3-1.2-1-1.2-.9 0-2 .9-3.4 2.7a55.9 55.9 0 0 0-4.1 7.3 140 140 0 0 0-4.3 10 86.3 86.3 0 0 0-3.5 11.1 52.5 52.5 0 0 0 10.4-14.8 78.5 78.5 0 0 0 5.1-11.3c.6-1.7.8-2.9.8-3.8Zm-15.6 55.8c-1.8 0-3.5-.3-5.2-1-1.6-.5-3-1.4-4.3-2.5a14 14 0 0 1-3-4.3 14 14 0 0 1-1-5.6c0-3 .3-6.3 1-10a105.7 105.7 0 0 1 7.2-21.6A53.3 53.3 0 0 1 108.2 43a11 11 0 0 1 6.5-2.4c1 0 2 .2 2.8.7 1 .5 1.7 1 2.4 1.8.7.7 1.2 1.5 1.7 2.4.4.8.6 1.6.6 2.4 0 1.2-.4 2.9-1 4.8a52 52 0 0 1-6.8 13.1 109.9 109.9 0 0 1-9.6 13.2 44 44 0 0 1-4.8 4.8 187 187 0 0 0-.6 4.4v2.4a8 8 0 0 0 1.4 5c1 1.4 2.4 2 4.2 2a6 6 0 0 0 3.5-1.2 19.8 19.8 0 0 0 6.5-7.1l.6-.4.8-.2c.5 0 .9.2 1.2.5.4.4.7.8.7 1.3l-.2.7-.3.6-.3.8c-1.4 2-2.8 4-4.4 5.5a22 22 0 0 1-5 3.8 11.4 11.4 0 0 1-6 1.7Z"/><path d="M159 92.6c-1 1.5-2.3 2.8-3.9 3.8a20 20 0 0 1-4.9 2.7 18 18 0 0 1-6.8 1.2h-1.3l-1.4-.2a14.5 14.5 0 0 1-9.5 3.5 11.1 11.1 0 0 1-9-4.6 48.1 48.1 0 0 0-3.2 12.2 107 107 0 0 0-1.6 13.4c0 1.3-.6 2-1.7 2a11 11 0 0 1-2.7-.4c-1-.2-1.8-.5-2.6-1a5.5 5.5 0 0 1-2.9-5 236.5 236.5 0 0 1 4.6-22.5 1218.4 1218.4 0 0 1 5.5-19.7l2.5-7.6c.5-1.1 1.3-1.7 2.5-1.7a6 6 0 0 1 2.5.8c1.1.5 2.3 1.9 3.7 4a33.8 33.8 0 0 1 7.5-4.8c1.4-.6 2.7-.9 4.1-.9a10.1 10.1 0 0 1 7.7 3.7c1 1 1.7 2.2 2.2 3.5.5 1.3.8 2.6.8 4a30 30 0 0 1-6.3 17h.8c1.5 0 3-.3 4.2-.9a19.8 19.8 0 0 0 6.8-5.8l.5-.4.8-.2c.5 0 .9.2 1.2.5.5.4.7.8.7 1.3 0 .2 0 .4-.2.7l-.3.6-.3.8Zm-34.5-.8c0 1.7.5 3.3 1.4 4.7.8 1.5 2 2.2 3.5 2.2 1 0 2-.5 3-1.4a2 2 0 0 1-.5-1.2c0-.5.2-1 .5-1.4.3-.6.7-1 1.1-1.5l1.5-1a3 3 0 0 1 1.3-.5 40 40 0 0 0 3.8-13.5c0-1.6-.2-2.7-.8-3.4-.4-.6-1.2-1-2.2-1-1.2 0-2.5.7-4 2a31.8 31.8 0 0 0-7.4 10.5c-.8 2-1.2 3.9-1.2 5.5Z"/><path d="M179.1 51.3a10 10 0 0 1-.6 3.5 9.5 9.5 0 0 1-4 5 6 6 0 0 1-2.6.7 5 5 0 0 1-3.4-1.4c-1-.9-1.4-2.1-1.4-3.7a9 9 0 0 1 .6-3.3c.4-1 1-2 1.6-2.9.7-.9 1.5-1.5 2.4-2 .9-.6 1.9-.8 2.9-.8 1.3 0 2.3.4 3.2 1.3a5 5 0 0 1 1.3 3.6Zm-12.8 43c0 1 .2 1.8.7 2.4.5.6 1.2 1 2.1 1a6 6 0 0 0 3.5-1.3 19.8 19.8 0 0 0 6.5-7.1l.6-.4.8-.2c.4 0 .9.2 1.2.5.4.4.6.8.6 1.3l-.1.7-.3.6-.4.8a24.8 24.8 0 0 1-9.3 9.3 11.4 11.4 0 0 1-6 1.7c-3.4 0-6.1-1-8.2-2.7a9.1 9.1 0 0 1-3.2-7.1c0-1.6.3-3.6.8-5.8a108.4 108.4 0 0 1 6.2-18.5 3 3 0 0 1 1-1.2c.4-.3.9-.5 1.4-.5.7 0 1.4.2 2.2.6.9.4 1.7 1 2.4 1.5s1.3 1 1.8 1.6c.4.6.7 1 .7 1.4 0 1.4-.3 2.8-.8 4.4l-1.8 5c-.6 1.8-1.2 3.7-1.7 5.8-.5 2-.7 4-.7 6.1Z"/><path d="M209.9 94.2c0 1 .2 1.9.7 2.5a3 3 0 0 0 2.2 1 6 6 0 0 0 3.4-1.3 19.8 19.8 0 0 0 6.5-7.1l.6-.4.8-.2c.5 0 .9.2 1.2.5.5.4.7.8.7 1.3 0 .2 0 .4-.2.7l-.3.6-.3.8c-1.3 2-2.8 4-4.4 5.5a22 22 0 0 1-5 3.8 11.4 11.4 0 0 1-6 1.7c-3.4 0-6.1-.9-8.2-2.6-2-1.8-3.1-4-3.1-6.4 0-1.9.2-3.6.7-5.3a100 100 0 0 1 3.1-9.5c.5-1.5.7-3 .7-4.3 0-.4-.1-.8-.5-1-.4-.3-.8-.5-1.3-.5-1.3 0-2.8.7-4.4 2a20 20 0 0 0-4.5 5.5 37.7 37.7 0 0 0-4.8 20.3c0 .8-.2 1.3-.5 1.4-.3.3-.8.4-1.5.4-2.3 0-4.3-.5-6-1.4-1.5-.9-2.3-2-2.3-3.5 0-2.5.2-5.1.8-7.9a79.2 79.2 0 0 1 4.3-15.2l2-5.2c.6-1.1 1.4-1.7 2.5-1.7.6 0 1.5.3 2.6.8 1 .5 2.3 1.9 3.6 4a31.3 31.3 0 0 1 8.7-4.8c1.7-.6 3.4-.9 5.3-.9 1 0 2 .2 2.8.7 1 .5 1.8 1.1 2.5 1.9a8 8 0 0 1 1.7 2.4c.4.9.6 1.8.6 2.7 0 1.3-.2 2.8-.8 4.3-.4 1.5-1 3-1.6 4.7l-1.6 4.9a16 16 0 0 0-.7 4.8Z"/><path d="M233 86.2c1.6 0 3.2-.5 4.6-1.4a16 16 0 0 0 6.2-7.2 9 9 0 0 0 .8-3.5c0-1.2-.5-1.8-1.6-1.8-1.2 0-2.4.6-3.6 1.6-1.2 1-2.3 2.2-3.2 3.6a22 22 0 0 0-2.3 4.6c-.6 1.6-.9 3-.9 4Zm24 6.4c-1.3 2-2.9 4-4.9 5.5a28 28 0 0 1-6.2 3.8 20.7 20.7 0 0 1-8.8 1.7 18 18 0 0 1-6.2-1 13 13 0 0 1-8.1-6.9 12 12 0 0 1-1.2-5.2 24.5 24.5 0 0 1 12.8-21c2.2-1.2 4.4-1.7 6.3-1.7 1.4 0 2.7.3 3.9.8a10.4 10.4 0 0 1 5.1 5 8 8 0 0 1 .8 3.6 13.8 13.8 0 0 1-7.6 11.7 15.1 15.1 0 0 1-10.3 1 8 8 0 0 0 2.3 6.1 7.9 7.9 0 0 0 5.5 2.1c2.1 0 4-.4 5.8-1.2 1.7-.9 3.1-1.9 4.3-2.9a18.5 18.5 0 0 0 4.1-4.7l.6-.4.8-.2c.5 0 .9.2 1.2.5.4.4.7.8.7 1.3l-.2.7-.3.6-.3.8Z"/></g><g filter="url(#b)"><circle cx="27.8" cy="27.8" r="27.8" transform="matrix(-1 0 0 1 120.3 124)" fill="#D92026"/><path d="M98.5 162.5H87.2l-1.6 5.3h-10l12-32.1h10.8l12 32h-10.3l-1.6-5.2Zm-2-7L92.8 144l-3.6 11.5h7.1Z" fill="#F0EADD"/><circle cx="27.8" cy="27.8" r="27.8" transform="matrix(-1 0 0 1 230.4 124)" fill="#D92026"/><path d="M208.5 162.5h-11.3l-1.5 5.3h-10.2l12.1-32.1h10.8l12 32h-10.3l-1.6-5.2Zm-2-7-3.6-11.5-3.5 11.5h7Z" fill="#F0EADD"/><circle cx="27.8" cy="27.8" r="27.8" transform="matrix(-1 0 0 1 175.4 124)" fill="#D92026"/><path d="M148.2 135.7h10V153a29 29 0 0 1-1 8.4c-.7 1.9-2 3.5-4 4.8-2 1.4-4.4 2-7.5 2-3.2 0-5.8-.4-7.5-1.3a9.6 9.6 0 0 1-4.2-3.8c-1-1.7-1.5-3.8-1.7-6.3l9.5-1.3c0 1.4.1 2.5.4 3.2.2.7.6 1.2 1.2 1.6.3.3.9.5 1.6.5 1 0 1.9-.5 2.4-1.3s.8-2.2.8-4.1v-19.8Z" fill="#F0EADD"/><circle cx="27.8" cy="27.8" r="27.8" transform="matrix(-1 0 0 1 286 124)" fill="#D92026"/><path d="M242.1 135.7h11l5.6 9.8 5.5-9.8h10.9l-10 15.5 10.9 16.6h-11.1l-6.4-10.4-6.3 10.4h-11l11-16.8-10-15.3Z" fill="#F0EADD"/></g><defs><filter id="a" x="0" y="38.1" width="257.9" height="90.4" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feColorMatrix in="SourceAlpha" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/><feOffset dx="-2" dy="2"/><feComposite in2="hardAlpha" operator="out"/><feColorMatrix values="0 0 0 0 0.595833 0 0 0 0 0.089375 0 0 0 0 0.105801 0 0 0 1 0"/><feBlend in2="BackgroundImageFix" result="effect1_dropShadow_53_201"/><feBlend in="SourceGraphic" in2="effect1_dropShadow_53_201" result="shape"/></filter><filter id="b" x="62.8" y="124" width="223.2" height="57.6" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feColorMatrix in="SourceAlpha" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/><feOffset dx="-2" dy="2"/><feComposite in2="hardAlpha" operator="out"/><feColorMatrix values="0 0 0 0 0.595833 0 0 0 0 0.089375 0 0 0 0 0.105801 0 0 0 1 0"/><feBlend in2="BackgroundImageFix" result="effect1_dropShadow_53_201"/><feBlend in="SourceGraphic" in2="effect1_dropShadow_53_201" result="shape"/></filter></defs></svg>
+
+      <span class="sr-only">Alpine AJAX</span>
+    </a>
+    <a href="#footer" class="inline-block font-display text-blue-800 border-2 border-blue-800 py-1 px-4 leading-none hover:bg-red-600 focus:bg-red-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600 lg:sr-only">Menu</a>
+  </header>
+  <div class="max-w-7xl mx-auto lg:min-h-screen lg:flex lg:gap-[2%] lg:flex-row-reverse lg:pt-6">
+    <main id="main" class="lg:flex-1 lg:min-w-0">
+      
+<div class="pt-6 px-4 pb-12 max-w-prose mx-auto prose-lg md:px-6 md:prose-xl lg:mx-0 lg:pt-12 prose-headings:font-sans prose-headings:font-bold prose-h1:text-blue-800 prose-td:border-t prose-td:border-almond-400 prose-th:text-left prose-ul:list-disc prose-ol:list-decimal prose-a:underline prose-a:text-blue-800">
+  
+
+<h1>Lazy Loading</h1>
+<p>This example shows how to lazily load an element on a page.</p>
+<p>We start with a loading indicator inside an <code>&lt;article&gt;</code>. Note that the article is assigned <code>id=&quot;post&quot;</code> :</p>
+<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>article</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>post<span class="token punctuation">"</span></span> <span class="token attr-name">x-init</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>$ajax('/posts/1')<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>svg</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>loader<span class="token punctuation">"</span></span> <span class="token attr-name">aria-label</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>Loading content<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>...<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>svg</span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>article</span><span class="token punctuation">></span></span></code></pre>
+<p>This loading indicator will exist on the page while we fetch the articles's content. You can use any CSS or SVG magic you'd like to create a fancy looking loading indicator.</p>
+<p>The loaded content is then inserted into the UI once the request has succeeded:</p>
+<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>article</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>post<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br>   <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>header</span><span class="token punctuation">></span></span>...<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>header</span><span class="token punctuation">></span></span><br>   <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>p</span><span class="token punctuation">></span></span>...<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>p</span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>article</span><span class="token punctuation">></span></span></code></pre>
+<style>
+  .loader {
+    animation: loading 1s linear infinite;
+    background-image: linear-gradient(90deg, #777, #aaa, #777, #aaa);
+    background-size: 600% 100%;
   }
-</script>
 
-<h2 id="demo" tabindex="-1">Demo <a href="#demo" aria-hidden="true" class="direct-link">#</a></h2>
+  .loader svg {
+    display: block;
+  }
 
+  @keyframes loading {
+    0% {
+      background-position: 100% 0%;
+    }
+
+    100% {
+      background-position: 0% 0%;
+    }
+  }
+
+  #post {
+    padding: 1rem;
+    background: #fff;
+    border: 1px solid #000;
+  }
+
+  #post header {
+    box-shadow: none;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  #post header svg {
+    border-radius: 100px;
+    background: #aaa;
+    color: #fff;
+  }
+
+  #post header p,
+  #post header time {
+    margin: 0;
+  }
+
+  #post header time {
+    font-size: .875em;
+  }
+</style>
+
+<h2>Demo</h2>
+<div id="demo_frame">
 <noscript>
   <strong>This demo would normally function without JavaScript enabled</strong>. However, this website is static and
   mocks HTTP responses using JavaScript instead of interacting with a real server, so you will need to enable
   JavaScript to view this demo.
 </noscript>
-<div id="example"></div>
-<details id="server_info">
-  <summary>Server Requests (<span id="server_request_count"></span>)</summary>
-  <div id="server_activity">
-    <div>
-      <ol id="server_timeline" reversed>
+<div id="demo"></div>
+<div x-data="{
+  init() {
+    document.addEventListener('server:response', (event) => {
+      this.requests.unshift({ id: this.requests.length, ...event.detail })
+    })
+  },
+  open: false,
+  active: 0,
+  requests: [],
+  select(request) {
+    this.active = request.id
+  },
+  selected(request) {
+    return this.active === request.id
+  }
+}" class="not-prose text-base z-40 fixed bottom-0 left-0 right-0 rounded-t-md bg-almond-200">
+  <button role="button" id="server_inspector_button" x-bind:aria-expanded="open.toString()" x-on:click="open = !open" aria-controls="server_inspector" class="block w-full bg-almond-300 text-almond-800 font-mono font-bold px-4 py-3 border-t border-almond-800 cursor-pointer">Server Requests (<span x-text="requests.length.toString()"></span>)</button>
+  <div x-show="open" id="server_inspector" class="overflow-scroll h-[40vh] border-t border-almond-800 sm:flex">
+    <div class="relative sm:overflow-scroll sm:h-full">
+      <ol reversed class="list-decimal list-inside border-b border-almond-800 divide-y divide-almond-800">
+        <template x-for="request in requests" x-bind:key="request.id" hidden>
+          <li x-bind:aria-current="selected(request) ? 'step' : ''" class="relative font-mono px-4 py-3 aria-[current=step]:bg-teal-200 cursor-pointer" x-on:click="select(request)">
+            <button type="button" x-bind:aria-pressed="selected(request).toString()" x-text="`${request.method} ${request.url}`" class="underline"></button>
+          </li>
+        </template>
       </ol>
     </div>
-    <div id="server_view">
+    <div class="flex-1 min-w-[40ch] border-almond-800 h-full sm:overflow-scroll sm:border-l">
+      <template x-for="request in requests" x-bind:key="request.id">
+        <dl x-show="active === request.id" class="divide-y divide-almond-800" x-ref="view" tabindex="-1">
+          <div class="py-3 px-4"><dt class="sr-only">Request</dt><dd class="font-mono" x-text="`${request.method} ${request.url}`"></dd></div>
+          <div class="py-3 px-4"><dt class="text-xs font-mono uppercase tracking-wide">Parameters</dt><dd><pre class="language-json"><code class="language-json" x-text="JSON.stringify(request.data, null, 2)"></code></pre></dd></div>
+          <div class="py-3 px-4"><dt class="text-xs font-mono uppercase tracking-wide">Response</dt><dd><pre class="language-html"><code class="language-html" x-html="window.escapeHtml(request.body)"></code></pre></dd></div>
+        </dl>
+      </template>
     </div>
   </div>
-</details>
+</div>
 
 
 
+</div>
 
-</main>
+</div>
+
+    </main>
+    <footer id="footer" class="relative px-4 pt-10 pb-24 bg-teal-200 min-h-screen lg:bg-transparent lg:shrink-0 lg:pt-0">
+      <div class="w-1.5 absolute top-16 bottom-0 left-1/2 -translate-x-1/2 bg-blue-800 lg:top-8"></div>
+      <div class="mx-auto w-48 h-full flex flex-col items-center">
+        <svg class="relative" aria-hidden="true" fill="none" width="64" height="52" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 104 84"><path fill="#144490" d="M44 55h17v18H44zm8.1-49.2c-.2 0-.5-1.3-.5-2.9 0-1.6.3-2.9.5-2.9.3 0 .5 1.3.5 3 0 1.5-.2 2.8-.5 2.8Zm0 7.8c-.2 0-.5-.6-.5-1.4 0-.8.3-1.5.5-1.5.3 0 .5.7.5 1.5s-.2 1.4-.5 1.4Zm14.2 1.1c-.8 2.1.1 2.9 1.1 1s1-2.6.2-2.6c-.4 0-1 .7-1.3 1.6Zm-29.9 1.5-.6-1.7c-.2-.6-.1-.9.4-.9.6 0 1.8 2.2 1.8 3.3 0 .6-1.4 0-1.6-.7ZM57 32l-1-.3.8-3.9c2-8 3-11.7 3.5-11.7.4 0 .5.3.4.8A743.6 743.6 0 0 0 57 32Zm6 2.4a21 21 0 0 0-1-.6A562.4 562.4 0 0 1 70.7 20c1 0 0 1.9-5.7 11.2l-2 3.2Zm6.7 6.6a21 21 0 0 0-.6-.9l3.5-2.2c8.6-5.2 11.2-6.6 10.5-5.3-.3.4-7.5 4.9-13.4 8.4Zm2.7 6-.4-1 3.2-.8h.3c12-3 12.2-3 12.2-2.3 0 .6-.4.7-13.7 3.9l-1.6.4Zm.2 9.7.2-1.1 3.8.9a42 42 0 0 1 11 3.2c0 .5-.3.6-1.3.3a1857.5 1857.5 0 0 0-13.7-3.3ZM70.1 63l.6-1c5.9 3.5 13 8 13 8.2 0 .2-.2.4-.6.4-.4 0-7.3-4-13-7.6Zm-6.9 7 1-.6 1.5 2.6c5.2 8.4 6.7 11.3 5.5 10.6-.4-.3-4.6-6.9-8-12.6Zm-22.6-.2 1 .6c-3.5 5.9-7.9 12.8-8.2 12.8-.8 0 .3-2.1 6.1-11.6l1.1-1.8Zm-6.7-7.3.6 1C29 67 22.5 70.8 21.8 71c-2 .4 0-1 9.8-7l2.3-1.5Zm-2.3-6.3.2 1.1C25.1 59 17 61 16.7 60.6c-.6-.6.7-1 11.7-3.7l3.2-.7Zm.4-9.7-.3 1.1-3.3-.7c-8.2-2-11.8-3-11.8-3.5 0-.4.3-.5.8-.4A742.2 742.2 0 0 0 32 46.5Zm2.1-4.9c-6-3.6-13.6-8.4-13.6-8.6 0-1 2 0 11.2 5.7l3 2-.6.9Zm13.6-9.8-1.2.3L43 16.5c0-1.2 1-.2 1.4 1.4a356 356 0 0 1 3.4 14Zm-7 3c.3-.3.7-.4 1-.6l-2-3.3c-6-9.6-7.5-11.8-7-9.6.3.8 4.5 7.8 8 13.5Zm10.9-12.2c0 2.8.2 4.7.5 4.7s.5-2 .5-4.7-.2-4.6-.5-4.6-.5 1.9-.5 4.6Zm-8.8 7.1c-.7 0-4.3-7.8-4.3-9.2 0-1.5 1.1 0 2.7 3.5 2.2 5.1 2.4 5.7 1.6 5.7Zm20.8-8.2c-3.1 7.6-3.3 8.2-2.2 8.2a50 50 0 0 0 3.9-9.3c0-1-1.1-.3-1.7 1.1Zm-38.4 3.2c-.4.3-2.8-1.7-2.8-2.4s.8-.4 2 .8c.6.7 1 1.4.8 1.6Zm2.6 2.9a32 32 0 0 0 7.1 6.8c.2-.2-1.1-1.9-3-3.7-3.2-3.3-4.1-4-4.1-3Zm41.5 6.8c-.2-.2 1.2-1.9 3-3.7 3.2-3.3 4.2-4 4.2-3a32 32 0 0 1-7.2 6.7Zm17.4 2.4c0-.3.6-.8 1.3-1.1 1.9-.8 2-.7 2 0 0 .4-.6 1-1.4 1.2h-.1c-1.2.5-1.6.6-1.7.5l-.1-.5Zm-49.2.5ZM78 39.8c-2.2 1-4 2-4 2.4 0 .4.1.6.2.6.8 0 9.3-3.9 9.5-4.3.3-1-1.5-.5-5.7 1.3ZM30 43c-.4.3-9.2-3.4-9.4-4-.3-.9.6-.7 5.2 1.2 4.2 1.7 4.8 2 4.1 2.8ZM.5 51.6c0 .3 1.3.5 3 .5 1.6 0 2.9-.2 2.9-.5s-1.3-.5-3-.5c-1.6 0-2.9.2-2.9.5ZM12 52c-.7 0-1.3-.1-1.3-.4 0-.3.6-.5 1.3-.5.6 0 1.2.2 1.2.5s-.6.5-1.2.5Zm6.5-.4c0 .3 1.9.5 4.7.5 2.7 0 4.6-.2 4.6-.5s-1.9-.5-4.6-.5c-2.8 0-4.7.2-4.7.5ZM81 52c-2.7 0-4.5-.1-4.5-.4 0-.3 1.8-.5 4.6-.5 2.7 0 4.6.2 4.6.5s-1.9.5-4.6.5Zm9-.4c0 .3.7.5 1.5.5.9 0 1.5-.2 1.5-.5s-.6-.5-1.5-.5c-.8 0-1.4.2-1.4.5Zm10.8.4c-1.6 0-3-.1-3-.4 0-.3 1.4-.5 3-.5s3 .2 3 .5-1.4.5-3 .5Zm-26.5 8.2c-.6.7 0 1 4.3 2.8 4.2 1.7 6.2 2 4.9.8-.7-.7-8.9-3.9-9.2-3.6ZM21 64.6c0-.4 1.7-1.4 4.2-2.4 4.9-2 5-2 5-1.2 0 .3-1.7 1.3-3.8 2.2l-.4.1c-3.9 1.6-4.8 2-5 1.7v-.3Zm66 1.1c-.3.4 2 2 3 2s.6-1.4-.3-1.6a19 19 0 0 1-1.6-.6c-.5-.2-1-.1-1.1.2ZM31 72c-1.9 1.9-3.2 3.6-3 3.8.3.3 7-6 7-6.8 0-.9-.9-.2-4 3Zm45.3 3.8c-.4.3-7.1-6-7.1-6.8 0-.9.9-.2 4 3 2 1.9 3.3 3.6 3.1 3.8Zm4.9 4.8c-.4.4-2.3-1.2-2.3-1.8 0-.7.8-.5 1.7.5.5.6.7 1.2.6 1.3Z"/><circle cx="52.4" cy="52.3" r="17.4" fill="#144490"/><path fill-rule="evenodd" clip-rule="evenodd" d="M52.4 38.4a13.8 13.8 0 1 0 0 27.7 13.8 13.8 0 0 0 0-27.7Zm-16 13.9a16 16 0 1 1 32 0 16 16 0 0 1-32 0Z" fill="#F0EADD"/><path fill-rule="evenodd" clip-rule="evenodd" d="M67 53H37.9v-1.4H67V53Z" fill="#F0EADD"/><path fill-rule="evenodd" clip-rule="evenodd" d="M51.4 67V37.6h1.9V67h-1.9Zm7.7-14.7c0-5.3-1.8-10.6-5.4-14l1.1-1.3c4 3.8 6 9.6 6 15.3 0 5.7-2 11.5-6 15.3l-1.1-1.2c3.6-3.5 5.4-8.8 5.4-14.1Zm-15 0c0-5.7 1.9-11.5 5.8-15.3l1.1 1.2a20 20 0 0 0-5.3 14A20 20 0 0 0 51 66.5l-1 1.1a21.7 21.7 0 0 1-6-15.3Z" fill="#F0EADD"/><path fill-rule="evenodd" clip-rule="evenodd" d="M52.4 44A30.5 30.5 0 0 1 67 47a.9.9 0 0 1-.8 1.4h-.3a29 29 0 0 0-13.4-2.9 29 29 0 0 0-13.3 2.8.8.8 0 0 1-1.2-.3.9.9 0 0 1 .4-1.2c3.6-2 8.9-3 14.1-3Zm0 16.7A30.5 30.5 0 0 0 67 57.4a.9.9 0 0 0-1-1.2A29 29 0 0 1 52.3 59a29 29 0 0 1-13.6-3 .8.8 0 0 0-1 .8.9.9 0 0 0 .5.9c3.6 2 8.9 3 14.1 3Z" fill="#F0EADD"/></svg>
+
+        <div class="sticky top-0 flex flex-col items-center">
+          <a href="/" class="relative block w-48 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600">
+            
+            <svg fill="none" xmlns="http://www.w3.org/2000/svg" width="192" height="171" viewBox="0 0 287 255"><path d="m73.4 252.7 211.9-131.4L73.5 2.5 177 120.9l.3.3-.3.4L73.4 252.7Z" fill="#144490" stroke="#F0EADD"/><path d="M270 57.1a1 1 0 0 0-1-1.5L11.2 47.7a1 1 0 0 0-1 1.4l26 68.3c.1.4.5.7 1 .6l200.4-6.8c.4 0 .7-.2.9-.5L269.9 57Z" fill="#F0EADD" stroke="#144490" stroke-width="2" stroke-linejoin="round"/><g filter="url(#a)" fill="#D92026"><path d="M76.6 103.6a13.3 13.3 0 0 1-9-3.4 13 13 0 0 1-2.7-3.8 13 13 0 0 1-1-5.1c0-3.5.5-7.3 1.4-11.4l-5.7-3-6.3-3.5-7 12.5a56 56 0 0 1-6.4 9.5 25.9 25.9 0 0 1-7.1 6 18.4 18.4 0 0 1-9.1 2.2 18 18 0 0 1-7.9-1.9A26.5 26.5 0 0 1 3.8 89a22 22 0 0 1-.3-17A19.6 19.6 0 0 1 15 61a25 25 0 0 1 9.2-1.7c4.1 0 8.2.6 12.2 1.7s7.9 2.5 11.7 4l7.6-11.8c2.3-3.3 4.6-6.1 6.7-8.3 2.2-2.3 4.4-4 6.4-5.1 2.2-1.2 4.4-1.7 6.7-1.7 1.9 0 3.5.3 4.8 1l2.4 1.6a15.6 15.6 0 0 1 7.2-2c1.8 0 2.7.4 2.7 1.3l-.5 1-1.7 1.9a33 33 0 0 0-2.5 4.3 129 129 0 0 0-7 17 175 175 0 0 0-3.3 10.4h1a6 6 0 0 0 2.4-.4 26.8 26.8 0 0 0 4.8-1.9c.2 0 .4.1.5.3.2.2.3.5.3.8 0 .4-.3 1-1 2a19 19 0 0 1-5.9 5.4 11 11 0 0 1-4 1.6l-1 5-.2 4.3c0 2.1.5 3.6 1.5 4.6 1 .9 2.2 1.3 3.6 1.3a6 6 0 0 0 3.4-1.2 19.8 19.8 0 0 0 6.5-7.1l.6-.4.8-.2c.5 0 .9.2 1.2.5.5.4.7.8.7 1.3 0 .2 0 .4-.2.7l-.3.6-.3.8c-1.3 2-2.8 4-4.4 5.5a22 22 0 0 1-5 3.8 11.4 11.4 0 0 1-6 1.7Zm-55-9c2.2 0 4.1-.5 6-1.5 1.7-1 3.5-2.6 5.3-4.6 1.8-2 3.7-4.7 5.7-7.8l6.8-11a46 46 0 0 0-14.5-3c-6.4 0-11.4 1.6-15 4.7A15.1 15.1 0 0 0 11.2 88a10.4 10.4 0 0 0 6 5.7c1.3.5 2.8.8 4.3.8Zm34.6-26.2 5.5 2.3a74 74 0 0 0 5.5 1.8 125.7 125.7 0 0 1 12.3-29 5 5 0 0 0-2-.3 8 8 0 0 0-4.6 1.4c-1.5 1-3 2.4-4.7 4.5a264 264 0 0 0-12 19.3Z"/><path d="M117.7 47.8c0-.8-.3-1.2-1-1.2-.9 0-2 .9-3.4 2.7a55.9 55.9 0 0 0-4.1 7.3 140 140 0 0 0-4.3 10 86.3 86.3 0 0 0-3.5 11.1 52.5 52.5 0 0 0 10.4-14.8 78.5 78.5 0 0 0 5.1-11.3c.6-1.7.8-2.9.8-3.8Zm-15.6 55.8c-1.8 0-3.5-.3-5.2-1-1.6-.5-3-1.4-4.3-2.5a14 14 0 0 1-3-4.3 14 14 0 0 1-1-5.6c0-3 .3-6.3 1-10a105.7 105.7 0 0 1 7.2-21.6A53.3 53.3 0 0 1 108.2 43a11 11 0 0 1 6.5-2.4c1 0 2 .2 2.8.7 1 .5 1.7 1 2.4 1.8.7.7 1.2 1.5 1.7 2.4.4.8.6 1.6.6 2.4 0 1.2-.4 2.9-1 4.8a52 52 0 0 1-6.8 13.1 109.9 109.9 0 0 1-9.6 13.2 44 44 0 0 1-4.8 4.8 187 187 0 0 0-.6 4.4v2.4a8 8 0 0 0 1.4 5c1 1.4 2.4 2 4.2 2a6 6 0 0 0 3.5-1.2 19.8 19.8 0 0 0 6.5-7.1l.6-.4.8-.2c.5 0 .9.2 1.2.5.4.4.7.8.7 1.3l-.2.7-.3.6-.3.8c-1.4 2-2.8 4-4.4 5.5a22 22 0 0 1-5 3.8 11.4 11.4 0 0 1-6 1.7Z"/><path d="M159 92.6c-1 1.5-2.3 2.8-3.9 3.8a20 20 0 0 1-4.9 2.7 18 18 0 0 1-6.8 1.2h-1.3l-1.4-.2a14.5 14.5 0 0 1-9.5 3.5 11.1 11.1 0 0 1-9-4.6 48.1 48.1 0 0 0-3.2 12.2 107 107 0 0 0-1.6 13.4c0 1.3-.6 2-1.7 2a11 11 0 0 1-2.7-.4c-1-.2-1.8-.5-2.6-1a5.5 5.5 0 0 1-2.9-5 236.5 236.5 0 0 1 4.6-22.5 1218.4 1218.4 0 0 1 5.5-19.7l2.5-7.6c.5-1.1 1.3-1.7 2.5-1.7a6 6 0 0 1 2.5.8c1.1.5 2.3 1.9 3.7 4a33.8 33.8 0 0 1 7.5-4.8c1.4-.6 2.7-.9 4.1-.9a10.1 10.1 0 0 1 7.7 3.7c1 1 1.7 2.2 2.2 3.5.5 1.3.8 2.6.8 4a30 30 0 0 1-6.3 17h.8c1.5 0 3-.3 4.2-.9a19.8 19.8 0 0 0 6.8-5.8l.5-.4.8-.2c.5 0 .9.2 1.2.5.5.4.7.8.7 1.3 0 .2 0 .4-.2.7l-.3.6-.3.8Zm-34.5-.8c0 1.7.5 3.3 1.4 4.7.8 1.5 2 2.2 3.5 2.2 1 0 2-.5 3-1.4a2 2 0 0 1-.5-1.2c0-.5.2-1 .5-1.4.3-.6.7-1 1.1-1.5l1.5-1a3 3 0 0 1 1.3-.5 40 40 0 0 0 3.8-13.5c0-1.6-.2-2.7-.8-3.4-.4-.6-1.2-1-2.2-1-1.2 0-2.5.7-4 2a31.8 31.8 0 0 0-7.4 10.5c-.8 2-1.2 3.9-1.2 5.5Z"/><path d="M179.1 51.3a10 10 0 0 1-.6 3.5 9.5 9.5 0 0 1-4 5 6 6 0 0 1-2.6.7 5 5 0 0 1-3.4-1.4c-1-.9-1.4-2.1-1.4-3.7a9 9 0 0 1 .6-3.3c.4-1 1-2 1.6-2.9.7-.9 1.5-1.5 2.4-2 .9-.6 1.9-.8 2.9-.8 1.3 0 2.3.4 3.2 1.3a5 5 0 0 1 1.3 3.6Zm-12.8 43c0 1 .2 1.8.7 2.4.5.6 1.2 1 2.1 1a6 6 0 0 0 3.5-1.3 19.8 19.8 0 0 0 6.5-7.1l.6-.4.8-.2c.4 0 .9.2 1.2.5.4.4.6.8.6 1.3l-.1.7-.3.6-.4.8a24.8 24.8 0 0 1-9.3 9.3 11.4 11.4 0 0 1-6 1.7c-3.4 0-6.1-1-8.2-2.7a9.1 9.1 0 0 1-3.2-7.1c0-1.6.3-3.6.8-5.8a108.4 108.4 0 0 1 6.2-18.5 3 3 0 0 1 1-1.2c.4-.3.9-.5 1.4-.5.7 0 1.4.2 2.2.6.9.4 1.7 1 2.4 1.5s1.3 1 1.8 1.6c.4.6.7 1 .7 1.4 0 1.4-.3 2.8-.8 4.4l-1.8 5c-.6 1.8-1.2 3.7-1.7 5.8-.5 2-.7 4-.7 6.1Z"/><path d="M209.9 94.2c0 1 .2 1.9.7 2.5a3 3 0 0 0 2.2 1 6 6 0 0 0 3.4-1.3 19.8 19.8 0 0 0 6.5-7.1l.6-.4.8-.2c.5 0 .9.2 1.2.5.5.4.7.8.7 1.3 0 .2 0 .4-.2.7l-.3.6-.3.8c-1.3 2-2.8 4-4.4 5.5a22 22 0 0 1-5 3.8 11.4 11.4 0 0 1-6 1.7c-3.4 0-6.1-.9-8.2-2.6-2-1.8-3.1-4-3.1-6.4 0-1.9.2-3.6.7-5.3a100 100 0 0 1 3.1-9.5c.5-1.5.7-3 .7-4.3 0-.4-.1-.8-.5-1-.4-.3-.8-.5-1.3-.5-1.3 0-2.8.7-4.4 2a20 20 0 0 0-4.5 5.5 37.7 37.7 0 0 0-4.8 20.3c0 .8-.2 1.3-.5 1.4-.3.3-.8.4-1.5.4-2.3 0-4.3-.5-6-1.4-1.5-.9-2.3-2-2.3-3.5 0-2.5.2-5.1.8-7.9a79.2 79.2 0 0 1 4.3-15.2l2-5.2c.6-1.1 1.4-1.7 2.5-1.7.6 0 1.5.3 2.6.8 1 .5 2.3 1.9 3.6 4a31.3 31.3 0 0 1 8.7-4.8c1.7-.6 3.4-.9 5.3-.9 1 0 2 .2 2.8.7 1 .5 1.8 1.1 2.5 1.9a8 8 0 0 1 1.7 2.4c.4.9.6 1.8.6 2.7 0 1.3-.2 2.8-.8 4.3-.4 1.5-1 3-1.6 4.7l-1.6 4.9a16 16 0 0 0-.7 4.8Z"/><path d="M233 86.2c1.6 0 3.2-.5 4.6-1.4a16 16 0 0 0 6.2-7.2 9 9 0 0 0 .8-3.5c0-1.2-.5-1.8-1.6-1.8-1.2 0-2.4.6-3.6 1.6-1.2 1-2.3 2.2-3.2 3.6a22 22 0 0 0-2.3 4.6c-.6 1.6-.9 3-.9 4Zm24 6.4c-1.3 2-2.9 4-4.9 5.5a28 28 0 0 1-6.2 3.8 20.7 20.7 0 0 1-8.8 1.7 18 18 0 0 1-6.2-1 13 13 0 0 1-8.1-6.9 12 12 0 0 1-1.2-5.2 24.5 24.5 0 0 1 12.8-21c2.2-1.2 4.4-1.7 6.3-1.7 1.4 0 2.7.3 3.9.8a10.4 10.4 0 0 1 5.1 5 8 8 0 0 1 .8 3.6 13.8 13.8 0 0 1-7.6 11.7 15.1 15.1 0 0 1-10.3 1 8 8 0 0 0 2.3 6.1 7.9 7.9 0 0 0 5.5 2.1c2.1 0 4-.4 5.8-1.2 1.7-.9 3.1-1.9 4.3-2.9a18.5 18.5 0 0 0 4.1-4.7l.6-.4.8-.2c.5 0 .9.2 1.2.5.4.4.7.8.7 1.3l-.2.7-.3.6-.3.8Z"/></g><g filter="url(#b)"><circle cx="27.8" cy="27.8" r="27.8" transform="matrix(-1 0 0 1 120.3 124)" fill="#D92026"/><path d="M98.5 162.5H87.2l-1.6 5.3h-10l12-32.1h10.8l12 32h-10.3l-1.6-5.2Zm-2-7L92.8 144l-3.6 11.5h7.1Z" fill="#F0EADD"/><circle cx="27.8" cy="27.8" r="27.8" transform="matrix(-1 0 0 1 230.4 124)" fill="#D92026"/><path d="M208.5 162.5h-11.3l-1.5 5.3h-10.2l12.1-32.1h10.8l12 32h-10.3l-1.6-5.2Zm-2-7-3.6-11.5-3.5 11.5h7Z" fill="#F0EADD"/><circle cx="27.8" cy="27.8" r="27.8" transform="matrix(-1 0 0 1 175.4 124)" fill="#D92026"/><path d="M148.2 135.7h10V153a29 29 0 0 1-1 8.4c-.7 1.9-2 3.5-4 4.8-2 1.4-4.4 2-7.5 2-3.2 0-5.8-.4-7.5-1.3a9.6 9.6 0 0 1-4.2-3.8c-1-1.7-1.5-3.8-1.7-6.3l9.5-1.3c0 1.4.1 2.5.4 3.2.2.7.6 1.2 1.2 1.6.3.3.9.5 1.6.5 1 0 1.9-.5 2.4-1.3s.8-2.2.8-4.1v-19.8Z" fill="#F0EADD"/><circle cx="27.8" cy="27.8" r="27.8" transform="matrix(-1 0 0 1 286 124)" fill="#D92026"/><path d="M242.1 135.7h11l5.6 9.8 5.5-9.8h10.9l-10 15.5 10.9 16.6h-11.1l-6.4-10.4-6.3 10.4h-11l11-16.8-10-15.3Z" fill="#F0EADD"/></g><defs><filter id="a" x="0" y="38.1" width="257.9" height="90.4" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feColorMatrix in="SourceAlpha" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/><feOffset dx="-2" dy="2"/><feComposite in2="hardAlpha" operator="out"/><feColorMatrix values="0 0 0 0 0.595833 0 0 0 0 0.089375 0 0 0 0 0.105801 0 0 0 1 0"/><feBlend in2="BackgroundImageFix" result="effect1_dropShadow_53_201"/><feBlend in="SourceGraphic" in2="effect1_dropShadow_53_201" result="shape"/></filter><filter id="b" x="62.8" y="124" width="223.2" height="57.6" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feColorMatrix in="SourceAlpha" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/><feOffset dx="-2" dy="2"/><feComposite in2="hardAlpha" operator="out"/><feColorMatrix values="0 0 0 0 0.595833 0 0 0 0 0.089375 0 0 0 0 0.105801 0 0 0 1 0"/><feBlend in2="BackgroundImageFix" result="effect1_dropShadow_53_201"/><feBlend in="SourceGraphic" in2="effect1_dropShadow_53_201" result="shape"/></filter></defs></svg>
+
+            <span class="sr-only">Alpine AJAX</span>
+          </a>
+          <nav class="flex justify-center mt-4 font-sans">
+            <h2 class="sr-only">Main menu</h2>
+            <ul class="relative gap-2 flex flex-col items-center">
+              
+                <li class="-rotate-1">
+                  <a class="block bg-blue-800 text-center text-white font-semibold leading-none px-4 py-2 hover:bg-red-600 focus:bg-red-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600 aria-[current=page]:bg-red-600" href="/reference/">Reference</a>
+                  
+                </li>
+              
+                <li class="rotate-1">
+                  <a class="block bg-blue-800 text-center text-white font-semibold leading-none px-4 py-2 hover:bg-red-600 focus:bg-red-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600 aria-[current=page]:bg-red-600" href="/examples/" aria-current="page">Examples</a>
+                  
+                    <ol class="relative bg-almond-200 border border-red-600 border-t-0 py-2">
+                      
+                        <a class="block text-blue-800 leading-none text-center py-2 px-4 hover:text-red-600 focus:text-red-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600 aria-[current=page]:font-semibold aria-[current=page]:text-red-600" href="/examples/toggle-button/">Toggle Button</a>
+                      
+                        <a class="block text-blue-800 leading-none text-center py-2 px-4 hover:text-red-600 focus:text-red-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600 aria-[current=page]:font-semibold aria-[current=page]:text-red-600" href="/examples/loading/">Loading Indicator</a>
+                      
+                        <a class="block text-blue-800 leading-none text-center py-2 px-4 hover:text-red-600 focus:text-red-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600 aria-[current=page]:font-semibold aria-[current=page]:text-red-600" href="/examples/inline-edit/">Inline Edit</a>
+                      
+                        <a class="block text-blue-800 leading-none text-center py-2 px-4 hover:text-red-600 focus:text-red-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600 aria-[current=page]:font-semibold aria-[current=page]:text-red-600" href="/examples/delete-row/">Delete Row</a>
+                      
+                        <a class="block text-blue-800 leading-none text-center py-2 px-4 hover:text-red-600 focus:text-red-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600 aria-[current=page]:font-semibold aria-[current=page]:text-red-600" href="/examples/edit-row/">Edit Row</a>
+                      
+                        <a class="block text-blue-800 leading-none text-center py-2 px-4 hover:text-red-600 focus:text-red-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600 aria-[current=page]:font-semibold aria-[current=page]:text-red-600" href="/examples/bulk-update/">Bulk Update</a>
+                      
+                        <a class="block text-blue-800 leading-none text-center py-2 px-4 hover:text-red-600 focus:text-red-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600 aria-[current=page]:font-semibold aria-[current=page]:text-red-600" href="/examples/instant-search/">Instant Search</a>
+                      
+                        <a class="block text-blue-800 leading-none text-center py-2 px-4 hover:text-red-600 focus:text-red-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600 aria-[current=page]:font-semibold aria-[current=page]:text-red-600" href="/examples/filterable-content/">Filterable Content</a>
+                      
+                        <a class="block text-blue-800 leading-none text-center py-2 px-4 hover:text-red-600 focus:text-red-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600 aria-[current=page]:font-semibold aria-[current=page]:text-red-600" href="/examples/inline-validation/">Inline Validation</a>
+                      
+                        <a class="block text-blue-800 leading-none text-center py-2 px-4 hover:text-red-600 focus:text-red-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600 aria-[current=page]:font-semibold aria-[current=page]:text-red-600" href="/examples/lazy-load/" aria-current="page">Lazy Loading</a>
+                      
+                        <a class="block text-blue-800 leading-none text-center py-2 px-4 hover:text-red-600 focus:text-red-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600 aria-[current=page]:font-semibold aria-[current=page]:text-red-600" href="/examples/dialog/">Dialog (Modal)</a>
+                      
+                        <a class="block text-blue-800 leading-none text-center py-2 px-4 hover:text-red-600 focus:text-red-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600 aria-[current=page]:font-semibold aria-[current=page]:text-red-600" href="/examples/progress-bar/">Progress Bar</a>
+                      
+                        <a class="block text-blue-800 leading-none text-center py-2 px-4 hover:text-red-600 focus:text-red-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600 aria-[current=page]:font-semibold aria-[current=page]:text-red-600" href="/examples/infinite-scroll/">Infinite Scroll</a>
+                      
+                        <a class="block text-blue-800 leading-none text-center py-2 px-4 hover:text-red-600 focus:text-red-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600 aria-[current=page]:font-semibold aria-[current=page]:text-red-600" href="/examples/notifications/">Notifications</a>
+                      
+                        <a class="block text-blue-800 leading-none text-center py-2 px-4 hover:text-red-600 focus:text-red-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600 aria-[current=page]:font-semibold aria-[current=page]:text-red-600" href="/examples/server-events/">Server Events</a>
+                      
+                        <a class="block text-blue-800 leading-none text-center py-2 px-4 hover:text-red-600 focus:text-red-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600 aria-[current=page]:font-semibold aria-[current=page]:text-red-600" href="/examples/dialog-form/">Dialog (Modal) Form</a>
+                      
+                    </ol>
+                  
+                </li>
+              
+                <li class="-rotate-1">
+                  <a class="block bg-blue-800 text-center text-white font-semibold leading-none px-4 py-2 hover:bg-red-600 focus:bg-red-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600 aria-[current=page]:bg-red-600" href="/comparisons/">Comparisons</a>
+                  
+                </li>
+              
+                <li class="rotate-1">
+                  <a class="block bg-blue-800 text-center text-white font-semibold leading-none px-4 py-2 hover:bg-red-600 focus:bg-red-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600 aria-[current=page]:bg-red-600" href="https://github.com/imacrayon/alpine-ajax/releases">Changelog</a>
+                  
+                </li>
+              
+                <li class="-rotate-1">
+                  <a class="block bg-blue-800 text-center text-white font-semibold leading-none px-4 py-2 hover:bg-red-600 focus:bg-red-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600 aria-[current=page]:bg-red-600" href="https://https://github.com/imacrayon/alpine-ajax">GitHub</a>
+                  
+                </li>
+              
+            </ul>
+          </nav>
+        </div>
+      </div>
+    </footer>
   </div>
-
-
-
 </body>
 </html>
