@@ -63,7 +63,7 @@ Try using the keyboard in the following demo and notice how keyboard focus is ma
   }
 </style>
 
-{% js %}
+<script type="module">
   let database = function () {
     let data = [
       { id: 1, name: "Finn Mertins", email: "fmertins@candykingdom.gov", status: "Active" },
@@ -134,4 +134,4 @@ Try using the keyboard in the following demo and notice how keyboard focus is ma
   </tbody>
 </table>`
   }
-{% endjs %}
+</script>

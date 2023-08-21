@@ -76,7 +76,7 @@ When the `<form>` is submitted, a `PUT` request is issued to `/contacts/1` and t
 
 Finally, the `contact:updated` event causes the `<tbody>` to refresh with the updated contact data.
 
-{% js %}
+<script type="module">
   var database = function () {
     let data = [
       { id: 1, name: "Finn Mertins", email: "fmertins@candykingdom.gov", status: "Active" },
@@ -165,4 +165,4 @@ Finally, the `contact:updated` event causes the `<tbody>` to refresh with the up
   <div id="contact"></div>
 </dialog>`
   }
-{% endjs %}
+</script>

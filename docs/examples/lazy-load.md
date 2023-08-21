@@ -78,7 +78,7 @@ The loaded content is then inserted into the UI once the request has succeeded:
   }
 </style>
 
-{% js %}
+<script type="module">
   window.route('GET', '/posts', () => dashboard())
   window.route('GET', '/posts/1', () => new Promise(resolve => {
     setTimeout(() => resolve(post()), 2000)
@@ -109,4 +109,4 @@ The loaded content is then inserted into the UI once the request has succeeded:
   <p>I'll fly the paper, as an airplane, down the bedroom ladder. It'll triple barrel-roll past the kitchen, open the fridge, and cook some eggs; then eat the eggs and unfold itself as it lays on the carpet in front of Marceline's door.</p>
 </article>`
   }
-{% endjs %}
+</script>

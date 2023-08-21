@@ -84,7 +84,7 @@ Fortunately, Alpine AJAX adds `aria-busy="true"` to targets while a request is p
 </style>
 
 
-{% js %}
+<script type="module">
   window.route('GET', '/dashboard', () => dashboard())
   window.route('GET', '/contacts', () => new Promise(resolve => {
     setTimeout(() => resolve(contacts()), 2000)
@@ -133,4 +133,4 @@ Fortunately, Alpine AJAX adds `aria-busy="true"` to targets while a request is p
   </tbody>
 </table>`
   }
-{% endjs %}
+</script>

@@ -53,7 +53,7 @@ Below is a working demo of this example. Any email input without an "@" is consi
   }
 </style>
 
-{% js %}
+<script type="module">
   window.route('GET', '/register', () => view())
   window.route('POST', '/validate-email', (input) => {
     if (input.email === 'test@example.com') {
@@ -85,4 +85,4 @@ Below is a working demo of this example. Any email input without an "@" is consi
   <button>Submit</button>
 </form>`
   }
-{% endjs %}
+</script>

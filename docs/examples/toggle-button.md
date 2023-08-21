@@ -26,7 +26,7 @@ When the form is submitted, a `POST` request is issued to the server, and the se
 
 The `x-arrange="morph"` attribute ensures that the new form HTML is "morphed" into the old HTML, so that keyboard focus is preserved between state changes. Try out the following demo, note that when the button is toggled using the keyboard, focus stays consistent:
 
-{% js %}
+<script type="module">
 window.route('GET', '/comments', () => view(false))
 window.route('POST', '/comments/1/like', () => view(true))
 window.route('DELETE', '/comments/1/like', () => view(false))
@@ -38,4 +38,4 @@ function view(liked) {
 <button name="user_id" value="1">${liked ? 'Unlike' : 'Like'}</button>
 </form>`
 }
-{% endjs %}
+</script>

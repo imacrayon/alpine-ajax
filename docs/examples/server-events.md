@@ -75,7 +75,7 @@ Next, we'll add an `x-focus` attribute to our form, so that we can return focus 
 }
 </style>
 
-{% js %}
+<script type="module">
   let database = function () {
     let data = [];
     return {
@@ -121,4 +121,4 @@ ${serverEvent()}
   <button>Submit</button>
 </form>`
   }
-{% endjs %}
+</script>

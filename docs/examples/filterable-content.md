@@ -75,7 +75,7 @@ Let's see our filterable table in action. Try activating a filter button using t
   }
 </style>
 
-{% js %}
+<script type="module">
   let database = function () {
     let data = [
       { id: 1, name: "Finn", email: "fmertins@candykingdom.gov", status: "Active" },
@@ -124,4 +124,4 @@ Let's see our filterable table in action. Try activating a filter button using t
 </table>
 </div>`
   }
-{% endjs %}
+</script>

@@ -36,7 +36,7 @@ Finally, the server responds with the modal content:
 </div>
 ```
 
-{% js %}
+<script type="module">
   var database = function () {
     let data = [
       { id: 1, name: "Finn Mertins", email: "fmertins@candykingdom.gov", status: "Active" },
@@ -75,4 +75,4 @@ Finally, the server responds with the modal content:
   <p><strong>Status</strong>: ${contact.status}</p>
 </div>`
   }
-{% endjs %}
+</script>

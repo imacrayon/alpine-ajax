@@ -42,7 +42,7 @@ with a table that is lacking the row which was just deleted.
 </tr>
 ```
 
-{% js %}
+<script type="module">
   let database = function () {
     let data = [
       { id: 1, name: "Finn", email: "fmertins@candykingdom.gov", status: "Active" },
@@ -97,4 +97,4 @@ with a table that is lacking the row which was just deleted.
   </tbody>
 </table>`
   }
-{% endjs %}
+</script>

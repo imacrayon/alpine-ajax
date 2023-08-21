@@ -48,7 +48,7 @@ Finally, when the job is complete, the `x-init` directive is removed and a `<for
 </div>
 ```
 
-{% js %}
+<script type="module">
   window.route('GET', '/jobs/create', () => create())
   window.route('POST', '/jobs', () => {
     let job = jobManager.start()
@@ -109,4 +109,4 @@ Finally, when the job is complete, the `x-init` directive is removed and a `<for
       }
     }
   })()
-{% endjs %}
+</script>

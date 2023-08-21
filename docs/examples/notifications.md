@@ -122,7 +122,7 @@ And finally, we can make our notifications automatically dismiss after 6 seconds
   }
 </style>
 
-{% js %}
+<script type="module">
   var count = 0;
 
   window.route('GET', '/action', () => view())
@@ -161,4 +161,4 @@ And finally, we can make our notifications automatically dismiss after 6 seconds
     <button @click="dismiss()" type="button" aria-label="Dismiss">&times;</button>
   </li>`
   }
-{% endjs %}
+</script>

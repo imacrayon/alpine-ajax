@@ -36,7 +36,7 @@ accomplished by putting an AJAX form below a table, with associated checkboxes i
 Notice the AJAX form is targeting the `contacts` table. The server will either activate or deactivate the checked users and then rerender the `contacts` table with
 updated rows.
 
-{% js %}
+<script type="module">
   let database = function () {
     let data = [
       { id: 1, name: "Finn", email: "fmertins@candykingdom.gov", status: "Active" },
@@ -86,4 +86,4 @@ updated rows.
   <button name="status" value="Inactive">Deactivate</button>
 </form>`
   }
-{% endjs %}
+</script>

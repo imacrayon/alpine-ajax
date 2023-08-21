@@ -44,7 +44,7 @@ Since we use a `search` type input we will get an "x" in the input field to clea
 
 We use `x-show="false"` on the form's submit button so that it is hidden when JavaScript is loaded. This ensures that the search form is still functional if JavaScript fails to load or is disabled.
 
-{% js %}
+<script type="module">
   let database = function () {
     let data = [
       { id: 1, name: "Finn", email: "fmertins@candykingdom.gov", status: "Active" },
@@ -98,4 +98,4 @@ We use `x-show="false"` on the form's submit button so that it is hidden when Ja
   </tbody>
 </table>`
   }
-{% endjs %}
+</script>

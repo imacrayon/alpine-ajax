@@ -83,7 +83,7 @@ Last, but not least, we need to ensure that the new table rows from subsequent p
 }
 </style>
 
-{% js %}
+<script type="module">
   window.route('GET', '/contacts', (input) => {
     if (input.page) {
       return new Promise(resolve => {
@@ -160,4 +160,4 @@ function getPrefix(number, result = ''){
     ? getPrefix(parseInt(quotient), result)
     : result
 }
-{% endjs %}
+</script>
