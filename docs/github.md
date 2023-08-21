@@ -1,6 +1,7 @@
 ---
 eleventyNavigation:
   key: GitHub
-  url: https://https://github.com/imacrayon/alpine-ajax
+  url: https://github.com/imacrayon/alpine-ajax
   order: 5
+  permalink: false
 ---
