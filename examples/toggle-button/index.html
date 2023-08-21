@@ -2267,17 +2267,7 @@ pre[class*="language-"] {
 
   
   <script type="module" src="/js/main.js"></script>
-  <script type="module">window.route('GET', '/comments', () => view(false))
-window.route('POST', '/comments/1/like', () => view(true))
-window.route('DELETE', '/comments/1/like', () => view(false))
-
-window.example('/comments')
-
-function view(liked) {
-  return `<form id="like" x-target x-arrange="morph" method="${liked ? 'delete' : 'post'}" action="/comments/1/like">
-<button name="user_id" value="1">${liked ? 'Unlike' : 'Like'}</button>
-</form>`
-}</script>
+  <script type="module"></script>
 
   <link rel="icon" href="/img/favicon.svg">
   <meta name="description" content="">
@@ -2314,6 +2304,19 @@ function view(liked) {
 <p>When the form is submitted, a <code>POST</code> request is issued to the server, and the server will return a new form state:</p>
 <pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>form</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>like<span class="token punctuation">"</span></span> <span class="token attr-name">x-target</span> <span class="token attr-name">x-arrange</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>morph<span class="token punctuation">"</span></span> <span class="token attr-name">method</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>delete<span class="token punctuation">"</span></span> <span class="token attr-name">action</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>/comments/1/like<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>button</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>user_id<span class="token punctuation">"</span></span> <span class="token attr-name">value</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>1<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>Unlike<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>button</span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>form</span><span class="token punctuation">></span></span></code></pre>
 <p>The <code>x-arrange=&quot;morph&quot;</code> attribute ensures that the new form HTML is &quot;morphed&quot; into the old HTML, so that keyboard focus is preserved between state changes. Try out the following demo, note that when the button is toggled using the keyboard, focus stays consistent:</p>
+<script type="module">
+window.route('GET', '/comments', () => view(false))
+window.route('POST', '/comments/1/like', () => view(true))
+window.route('DELETE', '/comments/1/like', () => view(false))
+
+window.example('/comments')
+
+function view(liked) {
+  return `<form id="like" x-target x-arrange="morph" method="${liked ? 'delete' : 'post'}" action="/comments/1/like">
+<button name="user_id" value="1">${liked ? 'Unlike' : 'Like'}</button>
+</form>`
+}
+</script>
 
 <h2>Demo</h2>
 <div id="demo_frame">

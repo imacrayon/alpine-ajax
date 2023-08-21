@@ -2267,44 +2267,7 @@ pre[class*="language-"] {
 
   
   <script type="module" src="/js/main.js"></script>
-  <script type="module">var count = 0;
-
-  window.route('GET', '/action', () => view())
-  window.route('POST', '/action', () => {
-    count++
-    return view()
-  })
-
-  window.example('/action')
-
-  function view() {
-    return `<form id="action" x-target method="post" action="/action">
-  <button>Click Me</button>
-</form>
-<ul x-sync id="notification_list" x-arrange="prepend" role="status" aria-live="polite">
-  ${count > 0 ? notification() : ''}
-</ul>`
-  }
-
-  function notification() {
-    return `<li x-data="{
-      show: false,
-      init() {
-        this.$nextTick(() => this.show = true)
-        setTimeout(() => this.dismiss(), 6000)
-      },
-      dismiss() {
-        this.show = false
-        setTimeout(() => this.$el.remove(), 500)
-      }
-    }"
-    x-show="show"
-    x-transition.duration.500ms
-  >
-    <span>The button was clicked ${count} ${count > 1 ? 'times' : 'time'}.</span>
-    <button @click="dismiss()" type="button" aria-label="Dismiss">&times;</button>
-  </li>`
-  }</script>
+  <script type="module"></script>
 
   <link rel="icon" href="/img/favicon.svg">
   <meta name="description" content="">
@@ -2372,6 +2335,46 @@ pre[class*="language-"] {
     margin-right: 2rem;
   }
 </style>
+<script type="module">
+  var count = 0;
+
+  window.route('GET', '/action', () => view())
+  window.route('POST', '/action', () => {
+    count++
+    return view()
+  })
+
+  window.example('/action')
+
+  function view() {
+    return `<form id="action" x-target method="post" action="/action">
+  <button>Click Me</button>
+</form>
+<ul x-sync id="notification_list" x-arrange="prepend" role="status" aria-live="polite">
+  ${count > 0 ? notification() : ''}
+</ul>`
+  }
+
+  function notification() {
+    return `<li x-data="{
+      show: false,
+      init() {
+        this.$nextTick(() => this.show = true)
+        setTimeout(() => this.dismiss(), 6000)
+      },
+      dismiss() {
+        this.show = false
+        setTimeout(() => this.$el.remove(), 500)
+      }
+    }"
+    x-show="show"
+    x-transition.duration.500ms
+  >
+    <span>The button was clicked ${count} ${count > 1 ? 'times' : 'time'}.</span>
+    <button @click="dismiss()" type="button" aria-label="Dismiss">&times;</button>
+  </li>`
+  }
+</script>
 
 <h2>Demo</h2>
 <div id="demo_frame">

@@ -2267,44 +2267,7 @@ pre[class*="language-"] {
 
   
   <script type="module" src="/js/main.js"></script>
-  <script type="module">var database = function () {
-    let data = [
-      { id: 1, name: "Finn Mertins", email: "fmertins@candykingdom.gov", status: "Active" },
-      { id: 2, name: "Jake the Dog", email: "jake@candykingdom.gov", status: "Active" },
-      { id: 3, name: "BMO", email: "bmo@mo.co", status: "Active" },
-      { id: 4, name: "Marceline", email: "marceline@vampirequeen.me", status: "Inactive" }
-    ];
-    return {
-      find: (id) => data.find(contact => contact.id === parseInt(id)),
-      all: () => data,
-    }
-  }()
-
-  window.route('GET', '/contacts', () => index(database.all()))
-  database.all().forEach(contact => {
-    window.route('GET', `/contacts/${contact.id}`, () => show(database.find(contact.id)))
-  })
-
-  window.example('/contacts')
-
-  function index(contacts) {
-    let items = contacts.map(contact => `<li><a href="/contacts/${contact.id}" x-target="contact">${contact.name}</a>`).join('\n')
-    return `<ul x-init @ajax:before="$dispatch('dialog:open')">
-  ${items}
-</ul>
-<dialog x-init @dialog:open.window="$el.showModal()">
-  <div id="contact"></div>
-  <form method="dialog" novalidate><button>Close</button></form>
-</dialog>`
-  }
-
-  function show(contact) {
-    return `<div id="contact">
-  <p><strong>Name</strong>: ${contact.name}</p>
-  <p><strong>Email</strong>: ${contact.email}</p>
-  <p><strong>Status</strong>: ${contact.status}</p>
-</div>`
-  }</script>
+  <script type="module"></script>
 
   <link rel="icon" href="/img/favicon.svg">
   <meta name="description" content="">
@@ -2342,6 +2305,46 @@ pre[class*="language-"] {
 <p>The <code>&lt;dialog&gt;</code> is set to listen for <code>dialog:open</code> and will open when that event is fired.</p>
 <p>Finally, the server responds with the modal content:</p>
 <pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>contact<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>p</span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>strong</span><span class="token punctuation">></span></span>First Name<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>strong</span><span class="token punctuation">></span></span>: Finn<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>p</span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>p</span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>strong</span><span class="token punctuation">></span></span>Last Name<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>strong</span><span class="token punctuation">></span></span>: Mertens<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>p</span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>p</span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>strong</span><span class="token punctuation">></span></span>Email<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>strong</span><span class="token punctuation">></span></span>: fmertens@candykingdom.gov<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>p</span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>p</span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>strong</span><span class="token punctuation">></span></span>Status<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>strong</span><span class="token punctuation">></span></span>: Active<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>p</span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span></code></pre>
+<script type="module">
+  var database = function () {
+    let data = [
+      { id: 1, name: "Finn Mertins", email: "fmertins@candykingdom.gov", status: "Active" },
+      { id: 2, name: "Jake the Dog", email: "jake@candykingdom.gov", status: "Active" },
+      { id: 3, name: "BMO", email: "bmo@mo.co", status: "Active" },
+      { id: 4, name: "Marceline", email: "marceline@vampirequeen.me", status: "Inactive" }
+    ];
+    return {
+      find: (id) => data.find(contact => contact.id === parseInt(id)),
+      all: () => data,
+    }
+  }()
+
+  window.route('GET', '/contacts', () => index(database.all()))
+  database.all().forEach(contact => {
+    window.route('GET', `/contacts/${contact.id}`, () => show(database.find(contact.id)))
+  })
+
+  window.example('/contacts')
+
+  function index(contacts) {
+    let items = contacts.map(contact => `<li><a href="/contacts/${contact.id}" x-target="contact">${contact.name}</a>`).join('\n')
+    return `<ul x-init @ajax:before="$dispatch('dialog:open')">
+  ${items}
+</ul>
+<dialog x-init @dialog:open.window="$el.showModal()">
+  <div id="contact"></div>
+  <form method="dialog" novalidate><button>Close</button></form>
+</dialog>`
+  }
+
+  function show(contact) {
+    return `<div id="contact">
+  <p><strong>Name</strong>: ${contact.name}</p>
+  <p><strong>Email</strong>: ${contact.email}</p>
+  <p><strong>Status</strong>: ${contact.status}</p>
+</div>`
+  }
+</script>
 
 <h2>Demo</h2>
 <div id="demo_frame">

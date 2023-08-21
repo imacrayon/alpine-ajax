@@ -2267,54 +2267,7 @@ pre[class*="language-"] {
 
   
   <script type="module" src="/js/main.js"></script>
-  <script type="module">window.route('GET', '/dashboard', () => dashboard())
-  window.route('GET', '/contacts', () => new Promise(resolve => {
-    setTimeout(() => resolve(contacts()), 2000)
-  }))
-
-  window.example('/dashboard')
-
-  function dashboard() {
-    return `<div id="card">
-  <div id="table">
-    <a href="/contacts" x-target="table">Load Contacts</a>
-  </div>
-</div>`
-  }
-
-  function contacts(rows) {
-    return `<table id="table">
-  <thead>
-    <tr>
-      <th scope="col">Name</th>
-      <th scope="col">Email</th>
-      <th scope="col">Status</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Finn</td>
-      <td>fmertins@candykingdom.gov</td>
-      <td>Active</td>
-    </tr>
-    <tr>
-      <td>Jake</td>
-      <td>jake@candykingdom.gov</td>
-      <td>Inactive</td>
-    </tr>
-    <tr>
-      <td>BMO</td>
-      <td>bmo@mo.co</td>
-      <td>Inactive</td>
-    </tr>
-    <tr>
-      <td>Marceline</td>
-      <td>marceline@vampirequeen.me</td>
-      <td>Active</td>
-    </tr>
-  </tbody>
-</table>`
-  }</script>
+  <script type="module"></script>
 
   <link rel="icon" href="/img/favicon.svg">
   <meta name="description" content="">
@@ -2384,6 +2337,56 @@ pre[class*="language-"] {
   }
 
 </style>
+<script type="module">
+  window.route('GET', '/dashboard', () => dashboard())
+  window.route('GET', '/contacts', () => new Promise(resolve => {
+    setTimeout(() => resolve(contacts()), 2000)
+  }))
+
+  window.example('/dashboard')
+
+  function dashboard() {
+    return `<div id="card">
+  <div id="table">
+    <a href="/contacts" x-target="table">Load Contacts</a>
+  </div>
+</div>`
+  }
+
+  function contacts(rows) {
+    return `<table id="table">
+  <thead>
+    <tr>
+      <th scope="col">Name</th>
+      <th scope="col">Email</th>
+      <th scope="col">Status</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Finn</td>
+      <td>fmertins@candykingdom.gov</td>
+      <td>Active</td>
+    </tr>
+    <tr>
+      <td>Jake</td>
+      <td>jake@candykingdom.gov</td>
+      <td>Inactive</td>
+    </tr>
+    <tr>
+      <td>BMO</td>
+      <td>bmo@mo.co</td>
+      <td>Inactive</td>
+    </tr>
+    <tr>
+      <td>Marceline</td>
+      <td>marceline@vampirequeen.me</td>
+      <td>Active</td>
+    </tr>
+  </tbody>
+</table>`
+  }
+</script>
 
 <h2>Demo</h2>
 <div id="demo_frame">

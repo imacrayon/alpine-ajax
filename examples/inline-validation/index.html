@@ -2267,37 +2267,7 @@ pre[class*="language-"] {
 
   
   <script type="module" src="/js/main.js"></script>
-  <script type="module">window.route('GET', '/register', () => view())
-  window.route('POST', '/validate-email', (input) => {
-    if (input.email === 'test@example.com') {
-      return view()
-    } else if (input.email.includes('@')) {
-      return view('The email is already taken.')
-    }
-
-    return view('The email field is invalid.')
-  })
-
-  window.example('/register')
-
-  function view(message = '') {
-    message = message ? `<div id="email_error" style="color:#cc0000">${message}</div>` : ''
-    return `<form x-data="{ email: '' }" aria-label="Register">
-  <div id="email_field" @change="$ajax('/validate-email', {
-    method: 'post',
-    body: { email },
-  })">
-    <label for="email">Email</label>
-    ${message}
-    <input type="email" name="email" id="email" x-model="email"${message ? ' aria-describedby="email_error"' : ''}>
-  </div>
-  <div>
-    <label for="name">Name</label>
-    <input name="name" id="name">
-  </div>
-  <button>Submit</button>
-</form>`
-  }</script>
+  <script type="module"></script>
 
   <link rel="icon" href="/img/favicon.svg">
   <meta name="description" content="">
@@ -2340,6 +2310,39 @@ pre[class*="language-"] {
     display: block;
   }
 </style>
+<script type="module">
+  window.route('GET', '/register', () => view())
+  window.route('POST', '/validate-email', (input) => {
+    if (input.email === 'test@example.com') {
+      return view()
+    } else if (input.email.includes('@')) {
+      return view('The email is already taken.')
+    }
+
+    return view('The email field is invalid.')
+  })
+
+  window.example('/register')
+
+  function view(message = '') {
+    message = message ? `<div id="email_error" style="color:#cc0000">${message}</div>` : ''
+    return `<form x-data="{ email: '' }" aria-label="Register">
+  <div id="email_field" @change="$ajax('/validate-email', {
+    method: 'post',
+    body: { email },
+  })">
+    <label for="email">Email</label>
+    ${message}
+    <input type="email" name="email" id="email" x-model="email"${message ? ' aria-describedby="email_error"' : ''}>
+  </div>
+  <div>
+    <label for="name">Name</label>
+    <input name="name" id="name">
+  </div>
+  <button>Submit</button>
+</form>`
+  }
+</script>
 
 <h2>Demo</h2>
 <div id="demo_frame">

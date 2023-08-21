@@ -2267,51 +2267,7 @@ pre[class*="language-"] {
 
   
   <script type="module" src="/js/main.js"></script>
-  <script type="module">let database = function () {
-    let data = [];
-    return {
-      save: (body) => {
-        return data.push({id: data.length, body })
-      },
-      all: () => data,
-    }
-  }()
-
-  window.route('GET', '/comments', () => index(database.all()))
-  window.route('POST', '/comments', (input) => {
-    database.save(input.comment_body)
-    return create('comment:created')
-  })
-  window.example('/comments')
-
-  function serverEvent(name = '') {
-    let event = name ? `<div x-init="$dispatch('${name}')" style="color:#008800">Your comment was added!</div>` : ''
-
-    return `<div role="status" aria-live="polite">
-  <div x-sync id="server_events">${event}</div>
-</div>`
-  }
-
-  function index(comments) {
-    let items = comments.map(comment => `<li key="${comment.id}">${window.escapeHtml(comment.body)}</li>`).join('')
-    items = items || '<li>No comments</li>'
-
-    return `<ul x-data @comment:created.window="$ajax('/comments')" id="comments">${items}</ul>
-${serverEvent()}
-<form id="comment_form" x-target x-focus="comment_body" method="post" action="/comments">
-  <label for="comment_body">Comment</label>
-  <textarea id="comment_body" name="comment_body"></textarea>
-  <button>Submit</button>
-</form>`
-  }
-  function create(event) {
-    return `${serverEvent(event)}
-<form id="comment_form" x-target x-focus="comment_body" method="post" action="/comments">
-  <label for="comment_body">Comment</label>
-  <textarea id="comment_body" name="comment_body"></textarea>
-  <button>Submit</button>
-</form>`
-  }</script>
+  <script type="module"></script>
 
   <link rel="icon" href="/img/favicon.svg">
   <meta name="description" content="">
@@ -2366,6 +2322,53 @@ ${serverEvent()}
   display: block;
 }
 </style>
+<script type="module">
+  let database = function () {
+    let data = [];
+    return {
+      save: (body) => {
+        return data.push({id: data.length, body })
+      },
+      all: () => data,
+    }
+  }()
+
+  window.route('GET', '/comments', () => index(database.all()))
+  window.route('POST', '/comments', (input) => {
+    database.save(input.comment_body)
+    return create('comment:created')
+  })
+  window.example('/comments')
+
+  function serverEvent(name = '') {
+    let event = name ? `<div x-init="$dispatch('${name}')" style="color:#008800">Your comment was added!</div>` : ''
+
+    return `<div role="status" aria-live="polite">
+  <div x-sync id="server_events">${event}</div>
+</div>`
+  }
+
+  function index(comments) {
+    let items = comments.map(comment => `<li key="${comment.id}">${window.escapeHtml(comment.body)}</li>`).join('')
+    items = items || '<li>No comments</li>'
+
+    return `<ul x-data @comment:created.window="$ajax('/comments')" id="comments">${items}</ul>
+${serverEvent()}
+<form id="comment_form" x-target x-focus="comment_body" method="post" action="/comments">
+  <label for="comment_body">Comment</label>
+  <textarea id="comment_body" name="comment_body"></textarea>
+<p><button>Submit</button></p>
+</form>`
+  }
+  function create(event) {
+    return `${serverEvent(event)}
+<form id="comment_form" x-target x-focus="comment_body" method="post" action="/comments">
+  <label for="comment_body">Comment</label>
+  <textarea id="comment_body" name="comment_body"></textarea>
+  <button>Submit</button>
+</form>`
+  }
+</script>
 
 <h2>Demo</h2>
 <div id="demo_frame">

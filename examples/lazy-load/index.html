@@ -2267,36 +2267,7 @@ pre[class*="language-"] {
 
   
   <script type="module" src="/js/main.js"></script>
-  <script type="module">window.route('GET', '/posts', () => dashboard())
-  window.route('GET', '/posts/1', () => new Promise(resolve => {
-    setTimeout(() => resolve(post()), 2000)
-  }))
-
-  window.example('/posts')
-
-  function dashboard() {
-    return `<p>Refresh the page to watch this post lazy load into view:</p>
-<article id="post" x-init="$ajax('/posts/1')">
-  <svg class="loader" aria-label="Loading content" viewBox="0 0 442 107" fill="#fff" xmlns="http://www.w3.org/2000/svg">
-    <path d="M442 79.1H0V65.5h412.4v-7.1H0V0h442v79.1Zm0 7.1V107H181.2v-7.1H0V86.2h442ZM50.1 24.6v7.2h53.3v-7.2H50.1Zm0-16.8v7.1h89.3V7.8H50.1ZM19.3 38.9c10.6 0 19.2-8.7 19.2-19.4C38.5 8.7 30 0 19.3 0A19.4 19.4 0 0 0 0 19.5c0 10.7 8.6 19.4 19.3 19.4Z" />
-  </svg>
-</article>`
-  }
-
-  function post() {
-    return `<article id="post">
-  <header>
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="64" height="64">
-      <path fill-rule="evenodd" d="M18.685 19.097A9.723 9.723 0 0021.75 12c0-5.385-4.365-9.75-9.75-9.75S2.25 6.615 2.25 12a9.723 9.723 0 003.065 7.097A9.716 9.716 0 0012 21.75a9.716 9.716 0 006.685-2.653zm-12.54-1.285A7.486 7.486 0 0112 15a7.486 7.486 0 015.855 2.812A8.224 8.224 0 0112 20.25a8.224 8.224 0 01-5.855-2.438zM15.75 9a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" clip-rule="evenodd" />
-    </svg>
-    <div>
-      <p><strong>Finn Mertins</strong></p>
-      <time>2 hours ago</time>
-    </div>
-  </header>
-  <p>I'll fly the paper, as an airplane, down the bedroom ladder. It'll triple barrel-roll past the kitchen, open the fridge, and cook some eggs; then eat the eggs and unfold itself as it lays on the carpet in front of Marceline's door.</p>
-</article>`
-  }</script>
+  <script type="module"></script>
 
   <link rel="icon" href="/img/favicon.svg">
   <meta name="description" content="">
@@ -2383,6 +2354,38 @@ pre[class*="language-"] {
     font-size: .875em;
   }
 </style>
+<script type="module">
+  window.route('GET', '/posts', () => dashboard())
+  window.route('GET', '/posts/1', () => new Promise(resolve => {
+    setTimeout(() => resolve(post()), 2000)
+  }))
+
+  window.example('/posts')
+
+  function dashboard() {
+    return `<p>Refresh the page to watch this post lazy load into view:</p>
+<article id="post" x-init="$ajax('/posts/1')">
+  <svg class="loader" aria-label="Loading content" viewBox="0 0 442 107" fill="#fff" xmlns="http://www.w3.org/2000/svg">
+    <path d="M442 79.1H0V65.5h412.4v-7.1H0V0h442v79.1Zm0 7.1V107H181.2v-7.1H0V86.2h442ZM50.1 24.6v7.2h53.3v-7.2H50.1Zm0-16.8v7.1h89.3V7.8H50.1ZM19.3 38.9c10.6 0 19.2-8.7 19.2-19.4C38.5 8.7 30 0 19.3 0A19.4 19.4 0 0 0 0 19.5c0 10.7 8.6 19.4 19.3 19.4Z" />
+  </svg>
+</article>`
+  }
+
+  function post() {
+    return `<article id="post">
+  <header>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="64" height="64">
+      <path fill-rule="evenodd" d="M18.685 19.097A9.723 9.723 0 0021.75 12c0-5.385-4.365-9.75-9.75-9.75S2.25 6.615 2.25 12a9.723 9.723 0 003.065 7.097A9.716 9.716 0 0012 21.75a9.716 9.716 0 006.685-2.653zm-12.54-1.285A7.486 7.486 0 0112 15a7.486 7.486 0 015.855 2.812A8.224 8.224 0 0112 20.25a8.224 8.224 0 01-5.855-2.438zM15.75 9a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" clip-rule="evenodd" />
+    </svg>
+    <div>
+      <p><strong>Finn Mertins</strong></p>
+      <time>2 hours ago</time>
+    </div>
+  </header>
+  <p>I'll fly the paper, as an airplane, down the bedroom ladder. It'll triple barrel-roll past the kitchen, open the fridge, and cook some eggs; then eat the eggs and unfold itself as it lays on the carpet in front of Marceline's door.</p>
+</article>`
+  }
+</script>
 
 <h2>Demo</h2>
 <div id="demo_frame">
