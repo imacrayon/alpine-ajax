@@ -33,7 +33,7 @@
   {% for dependency in dependencies %}
     <script type="module" src="{{ dependency }}"></script>
   {% endfor %}
-  <script type="module" src="/js/main.js"></script>
+  <script type="module" src="/js/main.js?id=1"></script>
   <script type="module">{% getBundle "js" %}</script>
 
   <link rel="icon" href="/img/favicon.svg">
