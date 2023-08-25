@@ -738,8 +738,34 @@ function src_default(Alpine) {
   });
 }
 
-// builds/module.js
-var module_default = src_default;
+// src/send.js
+function send_default(Alpine) {
+  Alpine.magic("send", (el2) => {
+    return () => {
+      let method = ["GET", "POST", "PUT", "PATCH", "DELETE"].find((method2) => el2.hasAttribute(`x-${method2}`));
+      let body = el2._x_dataStack.reduce((form, data) => {
+        for (let key in data) {
+          form.append(key, data[key]);
+        }
+        return form;
+      }, new FormData());
+      let request = {
+        action: Alpine.bound(el2, `x-${method}`),
+        method,
+        body,
+        referrer: source(el2)
+      };
+      let targets = addSyncTargets(getTargets(parseIds(el2)));
+      return render(request, targets, el2, true, "morph");
+    };
+  });
+}
+
+// builds/goblin-mode.js
+function goblin_mode_default(Alpine) {
+  src_default(Alpine);
+  send_default(Alpine);
+}
 export {
-  module_default as default
+  goblin_mode_default as default
 };

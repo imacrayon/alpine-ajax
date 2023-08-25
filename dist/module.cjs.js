@@ -31,30 +31,18 @@ var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: tru
 
 // node_modules/@alpinejs/morph/dist/module.cjs.js
 var require_module_cjs = __commonJS({
-  "node_modules/@alpinejs/morph/dist/module.cjs.js"(exports, module2) {
+  "node_modules/@alpinejs/morph/dist/module.cjs.js"(exports) {
     var __defProp2 = Object.defineProperty;
-    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
-    var __getOwnPropNames2 = Object.getOwnPropertyNames;
-    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
+    var __markAsModule = (target) => __defProp2(target, "__esModule", { value: true });
     var __export2 = (target, all) => {
       for (var name in all)
         __defProp2(target, name, { get: all[name], enumerable: true });
     };
-    var __copyProps2 = (to, from, except, desc) => {
-      if (from && typeof from === "object" || typeof from === "function") {
-        for (let key of __getOwnPropNames2(from))
-          if (!__hasOwnProp2.call(to, key) && key !== except)
-            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
-      }
-      return to;
-    };
-    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
-    var module_exports2 = {};
-    __export2(module_exports2, {
+    __markAsModule(exports);
+    __export2(exports, {
       default: () => module_default2,
       morph: () => morph
     });
-    module2.exports = __toCommonJS2(module_exports2);
     function createElement(html) {
       const template = document.createElement("template");
       template.innerHTML = html;
@@ -122,6 +110,7 @@ var require_module_cjs = __commonJS({
     var logger = () => {
     };
     function morph(from, toHtml, options) {
+      monkeyPatchDomSetAttributeToAllowAtSymbols();
       let fromEl;
       let toEl;
       let key, lookahead, updating, updated, removing, removed, adding, added;
@@ -372,6 +361,23 @@ var require_module_cjs = __commonJS({
         window.Alpine.clone(from, to);
       }
     }
+    var patched = false;
+    function monkeyPatchDomSetAttributeToAllowAtSymbols() {
+      if (patched)
+        return;
+      patched = true;
+      let original = Element.prototype.setAttribute;
+      let hostDiv = document.createElement("div");
+      Element.prototype.setAttribute = function newSetAttribute(name, value) {
+        if (!name.includes("@")) {
+          return original.call(this, name, value);
+        }
+        hostDiv.innerHTML = `<span ${name}="${value}"></span>`;
+        let attr = hostDiv.firstElementChild.getAttributeNode(name);
+        hostDiv.firstElementChild.removeAttributeNode(attr);
+        this.setAttributeNode(attr);
+      };
+    }
     function src_default2(Alpine) {
       Alpine.morph = morph;
     }
@@ -482,7 +488,7 @@ var arrange = {
     return document.getElementById(to.id);
   }
 };
-async function render(request, targets, el2, events = true) {
+async function render(request, targets, el2, events = true, strategy = "replace") {
   let dispatch = (name, detail = {}) => {
     return el2.dispatchEvent(
       new CustomEvent(name, {
@@ -513,7 +519,7 @@ async function render(request, targets, el2, events = true) {
   let fragment = document.createRange().createContextualFragment(response.html);
   targets = targets.map((target) => {
     let template = fragment.getElementById(target.id);
-    let strategy = target.getAttribute("x-arrange") || "replace";
+    strategy = target.getAttribute("x-arrange") || strategy;
     if (!template) {
       if (!dispatch("ajax:missing", response)) {
         return;
@@ -790,13 +796,6 @@ function src_default(Alpine) {
       };
       return render(request, targets, el2, Boolean(options.events));
     };
-  });
-  Alpine.addInitSelector(() => `[${Alpine.prefixed("load")}]`);
-  Alpine.directive("load", (el2, { expression }, { evaluate }) => {
-    if (typeof expression === "string") {
-      return !!expression.trim() && evaluate(expression);
-    }
-    return evaluate(expression);
   });
 }
 

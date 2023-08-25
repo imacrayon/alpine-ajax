@@ -123,6 +123,7 @@
   var logger = () => {
   };
   function morph(from, toHtml, options) {
+    monkeyPatchDomSetAttributeToAllowAtSymbols();
     let fromEl;
     let toEl;
     let key, lookahead, updating, updated, removing, removed, adding, added;
@@ -373,6 +374,23 @@
       window.Alpine.clone(from, to);
     }
   }
+  var patched = false;
+  function monkeyPatchDomSetAttributeToAllowAtSymbols() {
+    if (patched)
+      return;
+    patched = true;
+    let original = Element.prototype.setAttribute;
+    let hostDiv = document.createElement("div");
+    Element.prototype.setAttribute = function newSetAttribute(name, value) {
+      if (!name.includes("@")) {
+        return original.call(this, name, value);
+      }
+      hostDiv.innerHTML = `<span ${name}="${value}"></span>`;
+      let attr = hostDiv.firstElementChild.getAttributeNode(name);
+      hostDiv.firstElementChild.removeAttributeNode(attr);
+      this.setAttributeNode(attr);
+    };
+  }
 
   // src/render.js
   var queue = {};
@@ -410,7 +428,7 @@
       return document.getElementById(to.id);
     }
   };
-  async function render(request, targets, el2, events = true) {
+  async function render(request, targets, el2, events = true, strategy = "replace") {
     let dispatch = (name, detail = {}) => {
       return el2.dispatchEvent(
         new CustomEvent(name, {
@@ -441,7 +459,7 @@
     let fragment = document.createRange().createContextualFragment(response.html);
     targets = targets.map((target) => {
       let template = fragment.getElementById(target.id);
-      let strategy = target.getAttribute("x-arrange") || "replace";
+      strategy = target.getAttribute("x-arrange") || strategy;
       if (!template) {
         if (!dispatch("ajax:missing", response)) {
           return;
@@ -718,13 +736,6 @@
         };
         return render(request, targets, el2, Boolean(options.events));
       };
-    });
-    Alpine.addInitSelector(() => `[${Alpine.prefixed("load")}]`);
-    Alpine.directive("load", (el2, { expression }, { evaluate }) => {
-      if (typeof expression === "string") {
-        return !!expression.trim() && evaluate(expression);
-      }
-      return evaluate(expression);
     });
   }
 

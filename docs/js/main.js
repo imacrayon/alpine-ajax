@@ -1,9 +1,10 @@
 import Alpine from 'alpinejs'
 import ajax from '../../dist/module.esm'
 import '../../dist/server'
-
+import send from '../../src/send'
 
 Alpine.plugin(ajax)
+Alpine.plugin(send)
 
 window.Alpine = Alpine
 Alpine.start();

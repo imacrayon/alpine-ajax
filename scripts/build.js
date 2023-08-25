@@ -30,7 +30,14 @@ let builds = [
     bundle: true,
     target: ['node10.4'],
     platform: 'node',
-  }
+  },
+  {
+    entryPoints: [`builds/goblin-mode.js`],
+    outfile: 'dist/goblin-mode.esm.js',
+    bundle: true,
+    platform: 'neutral',
+    mainFields: ['module', 'main'],
+  },
 ]
 
 builds.forEach(async config => {

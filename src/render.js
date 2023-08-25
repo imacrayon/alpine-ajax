@@ -41,7 +41,7 @@ let merge = {
   }
 }
 
-export async function render(request, targets, el, events = true) {
+export async function render(request, targets, el, events = true, strategy = 'replace') {
   let dispatch = (name, detail = {}) => {
     return el.dispatchEvent(
       new CustomEvent(name, {
@@ -77,7 +77,7 @@ export async function render(request, targets, el, events = true) {
   let fragment = document.createRange().createContextualFragment(response.html)
   targets = targets.map(target => {
     let template = fragment.getElementById(target.id)
-    let strategy = target.getAttribute('x-merge') || 'replace'
+    strategy = target.getAttribute('x-merge') || strategy
     if (!template) {
       if (!dispatch('ajax:missing', response)) {
         return
