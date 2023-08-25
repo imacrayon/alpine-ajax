@@ -1,7 +1,7 @@
 import { test, html } from './utils'
 
-test('content is arranged before',
-  html`<form x-init x-target id="target" method="post" x-arrange="before"><button></button></form>`,
+test('content is merged before',
+  html`<form x-init x-target id="target" method="post" x-merge="before"><button></button></form>`,
   ({ intercept, get, wait }) => {
     intercept('POST', '/tests', {
       statusCode: 200,
@@ -15,8 +15,8 @@ test('content is arranged before',
   }
 )
 
-test('arranged content is prepended',
-  html`<form x-init x-target id="target" method="post" x-arrange="prepend"><button></button></form>`,
+test('merged content is prepended',
+  html`<form x-init x-target id="target" method="post" x-merge="prepend"><button></button></form>`,
   ({ intercept, get, wait }) => {
     intercept('POST', '/tests', {
       statusCode: 200,
@@ -30,8 +30,8 @@ test('arranged content is prepended',
   }
 )
 
-test('arranged content is updated',
-  html`<form x-init x-target id="target" method="post" x-arrange="update"><button></button></form>`,
+test('merged content is updated',
+  html`<form x-init x-target id="target" method="post" x-merge="update"><button></button></form>`,
   ({ intercept, get, wait }) => {
     intercept('POST', '/tests', {
       statusCode: 200,
@@ -45,8 +45,8 @@ test('arranged content is updated',
   }
 )
 
-test('arranged content is appended',
-  html`<form x-init x-target id="target" method="post" x-arrange="append"><button></button></form>`,
+test('merged content is appended',
+  html`<form x-init x-target id="target" method="post" x-merge="append"><button></button></form>`,
   ({ intercept, get, wait }) => {
     intercept('POST', '/tests', {
       statusCode: 200,
@@ -60,8 +60,8 @@ test('arranged content is appended',
   }
 )
 
-test('content is arranged after',
-  html`<form x-init x-target id="target" method="post" x-arrange="after"><button></button></form>`,
+test('content is merged after',
+  html`<form x-init x-target id="target" method="post" x-merge="after"><button></button></form>`,
   ({ intercept, get, wait }) => {
     intercept('POST', '/tests', {
       statusCode: 200,
@@ -75,23 +75,8 @@ test('content is arranged after',
   }
 )
 
-test('arranged content is removed',
-  html`<form x-init x-target id="target" method="post" x-arrange="remove"><button></button></form>`,
-  ({ intercept, get, wait }) => {
-    intercept('POST', '/tests', {
-      statusCode: 200,
-      body: '<h1 id="title">Success</h1><div id="target"><p>After</p></div>'
-    }).as('response')
-    get('button').click()
-    wait('@response').then(() => {
-      get('#title').should('not.exist')
-      get('#target').should('not.exist')
-    })
-  }
-)
-
-test('focus is maintained when arranged content is morphed',
-  html`<form x-init x-target id="replace" method="post" x-arrange="morph"><button aria-pressed="false">Like</button></form>`,
+test('focus is maintained when merged content is morphed',
+  html`<form x-init x-target id="replace" method="post" x-merge="morph"><button aria-pressed="false">Like</button></form>`,
   ({ intercept, get, wait }) => {
     intercept('POST', '/tests', {
       statusCode: 200,

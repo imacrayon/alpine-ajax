@@ -3,7 +3,7 @@ import { morph as AlpineMorph } from '@alpinejs/morph'
 
 let queue = {}
 
-let arrange = {
+let merge = {
   before(from, to) {
     from.before(...to.childNodes)
 
@@ -33,11 +33,6 @@ let arrange = {
     from.after(...to.childNodes)
 
     return from
-  },
-  remove(from) {
-    from.remove()
-
-    return null
   },
   morph(from, to) {
     AlpineMorph(from, to)
@@ -82,7 +77,7 @@ export async function render(request, targets, el, events = true) {
   let fragment = document.createRange().createContextualFragment(response.html)
   targets = targets.map(target => {
     let template = fragment.getElementById(target.id)
-    let strategy = target.getAttribute('x-arrange') || 'replace'
+    let strategy = target.getAttribute('x-merge') || 'replace'
     if (!template) {
       if (!dispatch('ajax:missing', response)) {
         return
@@ -118,7 +113,7 @@ export async function render(request, targets, el, events = true) {
 }
 
 function renderElement(strategy, from, to) {
-  return arrange[strategy](from, to)
+  return merge[strategy](from, to)
 }
 
 async function send({ method, action, body, referrer }) {
