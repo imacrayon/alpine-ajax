@@ -93,7 +93,7 @@ test('aria-busy is added to busy targets',
 )
 
 test('aria-busy is removed from targets that are not replaced',
-  html`<div id="append" x-arrange="append"><a href="/tests" x-init x-target="append">Link</a><div>`,
+  html`<div id="append" x-merge="append"><a href="/tests" x-init x-target="append">Link</a><div>`,
   ({ intercept, get, wait }) => {
     intercept('GET', '/tests', {
       delay: 1000,
