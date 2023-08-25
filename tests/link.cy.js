@@ -1,7 +1,7 @@
 import { test, html } from './utils'
 
 test('makes GET requests for link',
-  html`<a href="/tests" x-target id="replace">Link</a>`,
+  html`<a href="/tests" x-init x-target id="replace">Link</a>`,
   ({ intercept, get, wait }) => {
     intercept('GET', '/tests', {
       statusCode: 200,
@@ -16,7 +16,7 @@ test('makes GET requests for link',
 )
 
 test('request URL is determined by link href',
-  html`<a href="other.html" x-target id="replace">Link</a>`,
+  html`<a href="other.html" x-init x-target id="replace">Link</a>`,
   ({ intercept, get, wait }) => {
     intercept('GET', 'other.html', {
       statusCode: 200,
@@ -31,7 +31,7 @@ test('request URL is determined by link href',
 )
 
 test('target can be set in attribute',
-  html`<div id="replace"></div><a href="/tests" x-target="replace">Link</a>`,
+  html`<div id="replace"></div><a href="/tests" x-init x-target="replace">Link</a>`,
   ({ intercept, get, wait }) => {
     intercept('GET', '/tests', {
       statusCode: 200,

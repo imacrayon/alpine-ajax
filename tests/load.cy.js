@@ -20,7 +20,7 @@ test('content is lazily loaded with x-init',
 )
 
 test('replaced content gets a source',
-  html`<a href="/tests" x-target id="replace">Link</a>`,
+  html`<a href="/tests" x-init x-target id="replace">Link</a>`,
   ({ intercept, get, wait }) => {
     intercept('GET', '/tests', {
       statusCode: 200,
@@ -34,7 +34,7 @@ test('replaced content gets a source',
 )
 
 test('referer header is set when [data-source] exists',
-  html`<form x-target id="replace" method="post" action="/tests" data-source="/tests/other.html"><button></button></form>`,
+  html`<form x-init x-target id="replace" method="post" action="/tests" data-source="/tests/other.html"><button></button></form>`,
   ({ intercept, get, wait }) => {
     intercept('POST', '/tests', {
       statusCode: 200,
@@ -48,7 +48,7 @@ test('referer header is set when [data-source] exists',
 )
 
 test('action is set to referrer for naked form when [data-source] exists',
-  html`<form x-target id="replace" data-source="/tests/other.html"><button></button></form>`,
+  html`<form x-init x-target id="replace" data-source="/tests/other.html"><button></button></form>`,
   ({ intercept, get, wait }) => {
     intercept('GET', '/tests/other.html', {
       statusCode: 200,
@@ -78,7 +78,7 @@ test('content is lazily loaded with a custom event trigger',
 )
 
 test('aria-busy is added to busy targets',
-  html`<a href="/tests" x-target id="replace">Link</a>`,
+  html`<a href="/tests" x-init x-target id="replace">Link</a>`,
   ({ intercept, get, wait }) => {
     intercept('GET', '/tests', {
       delay: 1000,
@@ -93,7 +93,7 @@ test('aria-busy is added to busy targets',
 )
 
 test('aria-busy is removed from targets that are not replaced',
-  html`<div id="append" x-arrange="append"><a href="/tests" x-target="append">Link</a><div>`,
+  html`<div id="append" x-arrange="append"><a href="/tests" x-init x-target="append">Link</a><div>`,
   ({ intercept, get, wait }) => {
     intercept('GET', '/tests', {
       delay: 1000,

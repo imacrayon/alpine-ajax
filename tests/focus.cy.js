@@ -1,7 +1,7 @@
 import { test, html } from './utils'
 
 test('focus is set with [x-focus] string',
-  html`<form x-target id="replace" method="post" x-focus="toggle_button"><button aria-pressed="false">Like</button></form>`,
+  html`<form x-init x-target id="replace" method="post" x-focus="toggle_button"><button aria-pressed="false">Like</button></form>`,
   ({ intercept, get, wait }) => {
     intercept('POST', '/tests', {
       statusCode: 200,

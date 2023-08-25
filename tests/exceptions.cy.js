@@ -1,7 +1,7 @@
 import { test, html } from './utils'
 
 test('Element throws an exception when a target is missing',
-  html`<form x-target="not_found" method="post" action="/tests"><button></button></form>`,
+  html`<form x-init x-target="not_found" method="post" action="/tests"><button></button></form>`,
   ({ intercept, get }) => {
     intercept('POST', '/tests', {
       statusCode: 200,
@@ -19,7 +19,7 @@ test('Element throws an exception when a target is missing',
 )
 
 test('Target throws an exception when it is missing an ID',
-  html`<form method="post" action="/tests"><button></button></form>`,
+  html`<form x-init x-target method="post" action="/tests"><button></button></form>`,
   ({ intercept, get }) => {
     intercept('POST', '/tests', {
       statusCode: 200,
