@@ -62,7 +62,7 @@ async function withSubmitter(submitter, callback) {
   return result
 }
 
-function mergeBodyIntoAction(body, action) {
+export function mergeBodyIntoAction(body, action) {
   let params = Array.from(body.entries()).filter(([key, value]) => value !== '' || value !== null)
   if (params.length) {
     let parts = action.split('#')
