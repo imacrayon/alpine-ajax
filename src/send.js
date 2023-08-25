@@ -7,6 +7,8 @@ export default function (Alpine) {
     return () => {
       let method = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'].find(method => el.hasAttribute(`x-${method}`))
 
+      let action = Alpine.bound(el, `x-${method}`)
+
       let body = el._x_dataStack.reduce((form, data) => {
         for (let key in data) {
           form.append(key, data[key]);
@@ -21,7 +23,7 @@ export default function (Alpine) {
       }
 
       let request = {
-        action: Alpine.bound(el, `x-${method}`),
+        action,
         method,
         body,
         referrer: source(el),
