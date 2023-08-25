@@ -54,7 +54,7 @@ Take a look at the following comment list markup, notice the `x-target="comments
 <ul id="comments">
   <li>Comment #1</li>
 </ul>
-<form x-target="comments" method="post" action="/comment">
+<form x-init x-target="comments" method="post" action="/comment">
   <input aria-label="Comment text" name="text" required />
   <button>Submit</button>
 </form>
@@ -73,7 +73,7 @@ Here's an expanded comment list example:
 <ul id="comments">
   <li>Comment #1</li>
 </ul>
-<form x-target="comments comments_count" method="post" action="/comment">
+<form x-init x-target="comments comments_count" method="post" action="/comment">
   <input name="comment" required />
   <button>Submit</button>
 </form>
@@ -86,7 +86,7 @@ Now, when the form is submitted, both the `#comments` list, and the `#comments_c
 In cases when a form or link targets itself, you may leave the value of `x-target` blank, however the form or link must still have an `id`:
 
 ```html
-<form x-target id="star_repo" method="post" action="/repos/1/star">
+<form x-init x-target id="star_repo" method="post" action="/repos/1/star">
   <button>Star Repository</button>
 </form>
 ```
@@ -145,7 +145,7 @@ The `morph` option uses a DOM diffing algorithm to update HTML, it's a bit more 
 Add `x-focus` to a form or link to control keyboard focus after an AJAX request has completed. The `x-focus` attribute accepts an element `id` that will be focused. Consider the following markup, we'll assume that clicking the "Edit" link will load a form to change the listed email address:
 
 ```html
-<div x-target id="contact_1">
+<div x-init x-target id="contact_1">
   <p>fmertens@candykingdom.gov</p>
   <a href="/contacts/1/edit" x-focus="email_field">Edit</a>
 </div>
@@ -306,7 +306,7 @@ route('POST', '/update-quantity', (request) => {
 
 <label for="current_quantity">Current quantity</label>
 <output id="current_quantity">0</output>
-<form x-target="current_quantity" method="POST" action="/update-quantity">
+<form x-init x-target="current_quantity" method="POST" action="/update-quantity">
   <label form="quantity">New quantity</label>
   <input type="number" id="quantity" name="quantity">
   <button>Update</button>

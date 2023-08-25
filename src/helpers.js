@@ -1,15 +1,15 @@
-export function parseIds(el) {
-  let target = el.getAttribute('x-target')
-
-  return target ? target.split(' ') : [el.id]
-}
-
-export function getTargets(ids = []) {
-  ids = ids.filter(id => id)
+export function parseIds(el, expression = '') {
+  let ids = expression ? expression.split(' ') : [el.id]
 
   if (ids.length === 0) {
     throw new MissingIdError(el)
   }
+
+  return ids
+}
+
+export function getTargets(ids = []) {
+  ids = ids.filter(id => id)
 
   return ids.map(id => {
     let target = document.getElementById(id)
@@ -33,10 +33,6 @@ export function addSyncTargets(targets) {
   })
 
   return targets
-}
-
-export function hasTarget(el) {
-  return el.hasAttribute('x-target')
 }
 
 export class MissingIdError extends Error {

@@ -1,5 +1,5 @@
-import Alpine from 'alpinejs';
-import ajax from '../../src/index'
+import Alpine from 'alpinejs'
+import ajax from '../../dist/module.esm'
 import '../../dist/server'
 
 
