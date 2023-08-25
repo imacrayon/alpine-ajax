@@ -1,5 +1,6 @@
 import { parseIds, getTargets, addSyncTargets, source } from './helpers'
 import { render } from './render'
+import { mergeBodyIntoAction } from './form'
 
 export default function (Alpine) {
   Alpine.magic('send', (el) => {
@@ -13,6 +14,11 @@ export default function (Alpine) {
 
         return form
       }, new FormData)
+
+      if (method === 'GET') {
+        action = mergeBodyIntoAction(body, action)
+        body = null
+      }
 
       let request = {
         action: Alpine.bound(el, `x-${method}`),
