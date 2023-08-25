@@ -1,22 +1,21 @@
-import { hasTarget, parseIds, getTargets, addSyncTargets, source, FailedResponseError } from './helpers'
+import { getTargets, addSyncTargets, source, FailedResponseError } from './helpers'
 import { render } from './render'
 
-export function listenForSubmit(el) {
+export function listenForSubmit(el, targetIds) {
   let handler = async (event) => {
-    let form = event.target
-    if (!hasTarget(form)) return
     event.preventDefault()
     event.stopPropagation()
-    let ids = addSyncTargets(getTargets(parseIds(form)))
+    let targets = addSyncTargets(getTargets(targetIds))
+    let form = event.target
     let request = formRequest(form, event.submitter)
     try {
       return await withSubmitter(event.submitter, () => {
-        return render(request, ids, form)
+        return render(request, targets, form)
       })
     } catch (error) {
       if (error instanceof FailedResponseError) {
         console.warn(error.message)
-        form.removeAttribute('x-target')
+        form.removeEventListener('submit', handler)
         form.requestSubmit(event.submitter)
         return
       }

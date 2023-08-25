@@ -1,13 +1,12 @@
-import { hasTarget, parseIds, getTargets, addSyncTargets, source, FailedResponseError } from './helpers'
+import { getTargets, addSyncTargets, source, FailedResponseError } from './helpers'
 import { render } from './render'
 
-export function listenForNavigate(el) {
+export function listenForNavigate(el, targetIds) {
   let handler = async (event) => {
-    let link = event.target
-    if (!isLocalLink(link) || !hasTarget(link)) return
     event.preventDefault()
     event.stopPropagation()
-    let targets = addSyncTargets(getTargets(parseIds(link)))
+    let targets = addSyncTargets(getTargets(targetIds))
+    let link = event.target
     let request = navigateRequest(link)
     try {
       return await render(request, targets, link)
@@ -36,7 +35,7 @@ function navigateRequest(link) {
   }
 }
 
-function isLocalLink(el) {
+export function isLocalLink(el) {
   return el.href &&
     !el.hash &&
     el.origin == location.origin

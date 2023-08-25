@@ -1,17 +1,23 @@
 import { parseIds, getTargets, addSyncTargets, source } from './helpers'
 import { render } from './render'
-import { listenForNavigate } from './link'
-import { listenForSubmit } from './form'
+import { isLocalLink, listenForNavigate } from './link'
 import { listenForSubmit, mergeBodyIntoAction } from './form'
 import './polyfills'
 
 export default function (Alpine) {
-  listenForSubmit(window)
-  listenForNavigate(window)
+  Alpine.directive('target', (el, { expression }, { cleanup }) => {
+    let ids = parseIds(el, expression)
+
+    let stopListening = isLocalLink(el)
+      ? listenForNavigate(el, ids)
+      : listenForSubmit(el, ids)
+
+    cleanup(stopListening)
+  })
 
   Alpine.magic('ajax', (el) => {
     return (action, options = {}) => {
-      let ids = options.target ? options.target.split(' ') : parseIds(el)
+      let ids = options.target ? options.target.split(' ') : parseIds(el, el.getAttribute('x-target'))
       let targets = getTargets(ids)
       targets = options.sync ? addSyncTargets(targets) : targets
 

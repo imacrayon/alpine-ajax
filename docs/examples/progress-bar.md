@@ -11,7 +11,7 @@ This example shows how to implement a smoothly scrolling progress bar.
 We start with an AJAX form that issues a `POST` request to `/jobs` to begin a job process:
 
 ```html
-<form id="jobs" x-target method="post" action="/jobs">
+<form id="jobs" x-init x-target method="post" action="/jobs">
   <h3>New Job</h3>
   <button>Start New Job</button>
 </form>
@@ -62,7 +62,7 @@ Finally, when the job is complete, the `x-init` directive is removed and a `<for
   window.example('/jobs/create')
 
   function create() {
-    return `<form id="jobs" x-target method="post" action="/jobs">
+    return `<form id="jobs" x-init x-target method="post" action="/jobs">
     <h3>New Job</h3>
   <button>Start New Job</button>
 </form>`;
