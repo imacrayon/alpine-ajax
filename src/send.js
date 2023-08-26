@@ -29,7 +29,7 @@ export default function (Alpine) {
         referrer: source(el),
       }
 
-      let targets = addSyncTargets(getTargets(parseIds(el)))
+      let targets = addSyncTargets(getTargets(parseIds(el, el.getAttribute('x-target'))))
 
       return render(request, targets, el, true, 'morph')
     }
