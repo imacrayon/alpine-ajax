@@ -761,14 +761,14 @@ function send_default(Alpine) {
         referrer: source(el)
       };
       let targets = addSyncTargets(getTargets(parseIds(el, el.getAttribute("x-target"))));
-      return render(request, targets, el, true, "morph");
+      return render(request, targets, el, true);
     };
   });
 }
 
 // builds/goblin-mode.js
 function GoblinMode(Alpine) {
-  console.log("GOBLIN MODE ACTIVATE: v1");
+  console.log("GOBLIN MODE ACTIVATE: v2");
   src_default(Alpine);
   send_default(Alpine);
 }
