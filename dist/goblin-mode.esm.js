@@ -753,6 +753,7 @@ function send_default(Alpine) {
 
 // builds/goblin-mode.js
 function goblin_mode_default(Alpine) {
+  console.log("GOBLIN MODE ACTIVATE: v1");
   src_default(Alpine);
   send_default(Alpine);
 }
