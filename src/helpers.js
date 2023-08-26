@@ -1,3 +1,14 @@
+export let configuration = {
+  followRedirects: false,
+  mergeStrategy: 'replace',
+}
+
+export function configure(options) {
+  configuration = Object.assign(configuration, options)
+
+  return configuration
+}
+
 export function parseIds(el, expression = '') {
   let ids = expression ? expression.split(' ') : [el.id]
 

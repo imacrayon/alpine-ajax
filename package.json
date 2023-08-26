@@ -15,9 +15,9 @@
     "url": "https://github.com/imacrayon/alpine-ajax"
   },
   "files": [
-    "LICENSE.md",
-    "README.md",
-    "dist/*.js"
+    "dist/",
+    "src/",
+    "builds/"
   ],
   "main": "dist/module.cjs.js",
   "module": "dist/module.esm.js",

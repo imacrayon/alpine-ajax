@@ -1,4 +1,12 @@
 // src/helpers.js
+var configuration = {
+  followRedirects: false,
+  mergeStrategy: "replace"
+};
+function configure(options) {
+  configuration = Object.assign(configuration, options);
+  return configuration;
+}
 function parseIds(el, expression = "") {
   let ids = expression ? expression.split(" ") : [el.id];
   if (ids.length === 0) {
@@ -408,7 +416,7 @@ var merge = {
     return document.getElementById(to.id);
   }
 };
-async function render(request, targets, el, events = true, strategy = "replace") {
+async function render(request, targets, el, events = true) {
   let dispatch = (name, detail = {}) => {
     return el.dispatchEvent(
       new CustomEvent(name, {
@@ -439,7 +447,7 @@ async function render(request, targets, el, events = true, strategy = "replace")
   let fragment = document.createRange().createContextualFragment(response.html);
   targets = targets.map((target) => {
     let template = fragment.getElementById(target.id);
-    strategy = target.getAttribute("x-merge") || strategy;
+    let strategy = target.getAttribute("x-merge") || configuration.mergeStrategy;
     if (!template) {
       if (!dispatch("ajax:missing", response)) {
         return;
@@ -486,7 +494,7 @@ async function send({ method, action, body, referrer }) {
     referrer,
     method,
     body
-  }).then(readHtml).then(onSuccess).catch(onError);
+  }).then(handleRedirect).then(readHtml).then(onSuccess).catch(onError);
   return method === "GET" ? proxy : response;
 }
 function enqueue(key) {
@@ -507,6 +515,13 @@ function isLocked(key) {
 function dequeue(key, resolver) {
   (queue[key] || []).forEach(resolver);
   queue[key] = void 0;
+}
+function handleRedirect(response) {
+  if (response.redirected && !configuration.followRedirects) {
+    window.location.href = response.url;
+    return;
+  }
+  return response;
 }
 function readHtml(response) {
   return response.text().then((html) => {
@@ -752,11 +767,16 @@ function send_default(Alpine) {
 }
 
 // builds/goblin-mode.js
-function goblin_mode_default(Alpine) {
+function GoblinMode(Alpine) {
   console.log("GOBLIN MODE ACTIVATE: v1");
   src_default(Alpine);
   send_default(Alpine);
 }
+GoblinMode.configure = (options) => {
+  configure(options);
+  return GoblinMode;
+};
+var goblin_mode_default = GoblinMode;
 export {
   goblin_mode_default as default
 };

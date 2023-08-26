@@ -7,7 +7,7 @@ Alpine.plugin(ajax)
 Alpine.plugin(send)
 
 window.Alpine = Alpine
-Alpine.start();
+Alpine.start()
 
 window.example = function (action) {
   document.addEventListener('DOMContentLoaded', () => {

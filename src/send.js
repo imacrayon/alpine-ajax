@@ -31,7 +31,7 @@ export default function (Alpine) {
 
       let targets = addSyncTargets(getTargets(parseIds(el, el.getAttribute('x-target'))))
 
-      return render(request, targets, el, true, 'morph')
+      return render(request, targets, el, true)
     }
   })
 }

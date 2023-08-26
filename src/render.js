@@ -1,4 +1,4 @@
-import { FailedResponseError } from './helpers'
+import { configuration, FailedResponseError } from './helpers'
 import { morph as AlpineMorph } from '@alpinejs/morph'
 
 let queue = {}
@@ -41,7 +41,7 @@ let merge = {
   }
 }
 
-export async function render(request, targets, el, events = true, strategy = 'replace') {
+export async function render(request, targets, el, events = true) {
   let dispatch = (name, detail = {}) => {
     return el.dispatchEvent(
       new CustomEvent(name, {
@@ -77,7 +77,7 @@ export async function render(request, targets, el, events = true, strategy = 're
   let fragment = document.createRange().createContextualFragment(response.html)
   targets = targets.map(target => {
     let template = fragment.getElementById(target.id)
-    strategy = target.getAttribute('x-merge') || strategy
+    let strategy = target.getAttribute('x-merge') || configuration.mergeStrategy
     if (!template) {
       if (!dispatch('ajax:missing', response)) {
         return
@@ -112,11 +112,11 @@ export async function render(request, targets, el, events = true, strategy = 're
   return targets
 }
 
-function renderElement(strategy, from, to) {
+export function renderElement(strategy, from, to) {
   return merge[strategy](from, to)
 }
 
-async function send({ method, action, body, referrer }) {
+export async function send({ method, action, body, referrer }) {
   // When duplicate `GET` requests are issued we'll proxy
   // the initial request to save network roundtrips.
   let proxy
@@ -138,7 +138,7 @@ async function send({ method, action, body, referrer }) {
     referrer,
     method,
     body,
-  }).then(readHtml).then(onSuccess).catch(onError)
+  }).then(handleRedirect).then(readHtml).then(onSuccess).catch(onError)
 
   return method === 'GET' ? proxy : response
 }
@@ -164,6 +164,15 @@ function isLocked(key) {
 function dequeue(key, resolver) {
   (queue[key] || []).forEach(resolver)
   queue[key] = undefined
+}
+
+function handleRedirect(response) {
+  if (response.redirected && !configuration.followRedirects) {
+    window.location.href = response.url
+    return
+  }
+
+  return response
 }
 
 function readHtml(response) {
