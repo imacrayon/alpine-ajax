@@ -1,10 +1,11 @@
+import { configure } from '../src/helpers.js'
 import { parseIds, getTargets, addSyncTargets, source } from './helpers'
 import { render } from './render'
 import { isLocalLink, listenForNavigate } from './link'
 import { listenForSubmit, mergeBodyIntoAction } from './form'
 import './polyfills'
 
-export default function (Alpine) {
+function Ajax(Alpine) {
   Alpine.directive('target', (el, { expression }, { cleanup }) => {
     let ids = parseIds(el, expression)
 
@@ -51,3 +52,11 @@ export default function (Alpine) {
     }
   })
 }
+
+Ajax.configure = (options) => {
+  configure(options)
+
+  return Ajax
+}
+
+export default Ajax
