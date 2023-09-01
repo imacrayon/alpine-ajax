@@ -9,7 +9,7 @@ test('Element throws an exception when a target is missing',
     }).as('response')
     cy.on('uncaught:exception', (err) => {
       if (err.name.includes('Missing Target')) {
-        return false;
+        return false
       }
 
       return true
@@ -27,7 +27,7 @@ test('Target throws an exception when it is missing an ID',
     }).as('response')
     cy.on('uncaught:exception', (err) => {
       if (err.name.includes('Target Missing ID')) {
-        return false;
+        return false
       }
 
       return true

@@ -69,6 +69,7 @@ Below is a working demo of this example. Any email input without an "@" is consi
 
   function view(message = '') {
     message = message ? `<div id="email_error" style="color:#cc0000">${message}</div>` : ''
+
     return `<form x-data="{ email: '' }" aria-label="Register">
   <div id="email_field" @change="$ajax('/validate-email', {
     method: 'post',

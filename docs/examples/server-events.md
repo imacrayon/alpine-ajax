@@ -77,7 +77,8 @@ Next, we'll add an `x-focus` attribute to our form, so that we can return focus 
 
 <script type="module">
   let database = function () {
-    let data = [];
+    let data = []
+
     return {
       save: (body) => {
         return data.push({id: data.length, body })
@@ -89,6 +90,7 @@ Next, we'll add an `x-focus` attribute to our form, so that we can return focus 
   window.route('GET', '/comments', () => index(database.all()))
   window.route('POST', '/comments', (input) => {
     database.save(input.comment_body)
+
     return create('comment:created')
   })
   window.example('/comments')

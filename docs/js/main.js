@@ -6,7 +6,7 @@ import '../../dist/server'
 Alpine.plugin(ajax)
 
 window.Alpine = Alpine
-Alpine.start();
+Alpine.start()
 
 window.example = function (action) {
   document.addEventListener('DOMContentLoaded', () => {
@@ -17,9 +17,9 @@ window.example = function (action) {
 }
 
 window.escapeHtml = function (string) {
-  let pre = document.createElement('pre');
-  let text = document.createTextNode(string);
-  pre.appendChild(text);
+  let pre = document.createElement('pre')
+  let text = document.createTextNode(string)
+  pre.appendChild(text)
 
-  return pre.innerHTML;
+  return pre.innerHTML
 }

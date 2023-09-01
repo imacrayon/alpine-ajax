@@ -43,7 +43,8 @@ Finally, the server responds with the modal content:
       { id: 2, name: "Jake the Dog", email: "jake@candykingdom.gov", status: "Active" },
       { id: 3, name: "BMO", email: "bmo@mo.co", status: "Active" },
       { id: 4, name: "Marceline", email: "marceline@vampirequeen.me", status: "Inactive" }
-    ];
+    ]
+
     return {
       find: (id) => data.find(contact => contact.id === parseInt(id)),
       all: () => data,
@@ -59,6 +60,7 @@ Finally, the server responds with the modal content:
 
   function index(contacts) {
     let items = contacts.map(contact => `<li><a href="/contacts/${contact.id}" x-target="contact">${contact.name}</a>`).join('\n')
+
     return `<ul x-init @ajax:before="$dispatch('dialog:open')">
   ${items}
 </ul>

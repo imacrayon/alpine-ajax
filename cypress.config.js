@@ -1,4 +1,4 @@
-const { defineConfig } = require("cypress");
+const { defineConfig } = require("cypress")
 
 module.exports = defineConfig({
   e2e: {
@@ -10,4 +10,4 @@ module.exports = defineConfig({
   fixturesFolder: false,
   video: false,
   screenshotOnRunFailure: false,
-});
+})

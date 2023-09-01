@@ -43,7 +43,8 @@ updated rows.
       { id: 2, name: "Jake", email: "jake@candykingdom.gov", status: "Active" },
       { id: 3, name: "BMO", email: "bmo@mo.co", status: "Active" },
       { id: 4, name: "Marceline", email: "marceline@vampirequeen.me", status: "Inactive" }
-    ];
+    ]
+
     return {
       find: (id) => data.find(contact => contact.id === parseInt(id)),
       all: () => data,
@@ -57,7 +58,7 @@ updated rows.
       database.find(id)['status'] = input.status
     })
 
-    return view(database.all());
+    return view(database.all())
   })
 
   window.example('/contacts')

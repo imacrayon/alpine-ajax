@@ -1,5 +1,5 @@
 let fs = require('fs')
-let zlib = require('zlib');
+let zlib = require('zlib')
 let esbuild = require('esbuild')
 
 let builds = [

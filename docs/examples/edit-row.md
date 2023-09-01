@@ -70,7 +70,8 @@ Try using the keyboard in the following demo and notice how keyboard focus is ma
       { id: 2, name: "Jake the Dog", email: "jake@candykingdom.gov", status: "Active" },
       { id: 3, name: "BMO", email: "bmo@mo.co", status: "Active" },
       { id: 4, name: "Marceline", email: "marceline@vampirequeen.me", status: "Inactive" }
-    ];
+    ]
+
     return {
       find: (id) => data.find(contact => contact.id === parseInt(id)),
       update: (id, changes) => {

@@ -177,5 +177,5 @@ function focusOn(el) {
   setTimeout(() => {
     if (!el.hasAttribute('tabindex')) el.setAttribute('tabindex', '0')
     el.focus()
-  }, 0);
+  }, 0)
 }

@@ -51,10 +51,12 @@ We use `x-show="false"` on the form's submit button so that it is hidden when Ja
       { id: 2, name: "Jake", email: "jake@candykingdom.gov", status: "Active" },
       { id: 3, name: "BMO", email: "bmo@mo.co", status: "Active" },
       { id: 4, name: "Marceline", email: "marceline@vampirequeen.me", status: "Inactive" }
-    ];
+    ]
+
     return {
       search: (term) => {
         term = term.toLowerCase()
+
         return data.filter(contact => {
           return contact.name.toLowerCase().includes(term) ||
             contact.email.toLowerCase().includes(term) ||

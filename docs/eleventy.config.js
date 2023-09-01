@@ -2,8 +2,8 @@ const markdownIt = require('markdown-it')
 const markdownItAnchor = require('markdown-it-anchor')
 const { EleventyHtmlBasePlugin, EleventyRenderPlugin } = require('@11ty/eleventy')
 const pluginSyntaxHighlight = require('@11ty/eleventy-plugin-syntaxhighlight')
-const pluginBundle = require("@11ty/eleventy-plugin-bundle");
-const pluginNavigation = require("@11ty/eleventy-navigation");
+const pluginBundle = require("@11ty/eleventy-plugin-bundle")
+const pluginNavigation = require("@11ty/eleventy-navigation")
 const esbuild = require('esbuild')
 const postcss = require('postcss')
 
@@ -16,7 +16,7 @@ module.exports = function (eleventyConfig) {
   })
 
   eleventyConfig.addPlugin(EleventyHtmlBasePlugin)
-  eleventyConfig.addPlugin(pluginNavigation);
+  eleventyConfig.addPlugin(pluginNavigation)
   eleventyConfig.addPlugin(EleventyRenderPlugin)
   eleventyConfig.addPlugin(pluginSyntaxHighlight)
   eleventyConfig.addPlugin(pluginBundle, {
@@ -28,14 +28,15 @@ module.exports = function (eleventyConfig) {
           let result = await postcss([
             require('autoprefixer'),
             require('tailwindcss')
-          ]).process(content, { from: this.page.inputPath, to: null });
-          return result.css;
+          ]).process(content, { from: this.page.inputPath, to: null })
+
+          return result.css
         }
 
-        return content;
+        return content
       }
     ]
-  });
+  })
 
   eleventyConfig.addGlobalData('APLINE_AJAX_VERSION', () => process.env.npm_package_version)
 

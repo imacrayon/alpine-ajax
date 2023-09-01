@@ -30,7 +30,7 @@ export default function (Alpine) {
         } else {
           body = new FormData
           for (let key in options.body) {
-            body.append(key, options.body[key]);
+            body.append(key, options.body[key])
           }
         }
 

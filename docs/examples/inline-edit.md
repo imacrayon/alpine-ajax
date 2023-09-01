@@ -75,7 +75,7 @@ Try using the keyboard in the following demo and notice how keyboard focus is ma
     "first_name": "Finn",
     "last_name": "Mertens",
     "email": "fmertens@candykingdom.gov"
-  };
+  }
 
   window.route('GET', '/contacts/1', () => show(contact))
   window.route('GET', '/contacts/1/edit', () => edit(contact))
@@ -83,6 +83,7 @@ Try using the keyboard in the following demo and notice how keyboard focus is ma
     contact.first_name = input.first_name
     contact.last_name = input.last_name
     contact.email = input.email
+
     return show(contact)
   })
 
@@ -113,6 +114,6 @@ Try using the keyboard in the following demo and notice how keyboard focus is ma
   <p><strong>Last Name</strong>: ${contact.last_name}</p>
   <p><strong>Email</strong>: ${contact.email}</p>
   <a href="/contacts/1/edit" id="contact_1_edit" x-init x-target="contact_1" x-focus="first_name">Edit</a>
-</div>`;
+</div>`
   }
 </script>

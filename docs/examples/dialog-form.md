@@ -83,7 +83,8 @@ Finally, the `contact:updated` event causes the `<tbody>` to refresh with the up
       { id: 2, name: "Jake the Dog", email: "jake@candykingdom.gov", status: "Active" },
       { id: 3, name: "BMO", email: "bmo@mo.co", status: "Active" },
       { id: 4, name: "Marceline", email: "marceline@vampirequeen.me", status: "Inactive" }
-    ];
+    ]
+
     return {
       find: (id) => data.find(contact => contact.id === parseInt(id)),
       update: (id, changes) => {
@@ -101,6 +102,7 @@ Finally, the `contact:updated` event causes the `<tbody>` to refresh with the up
     window.route('GET', `/contacts/${contact.id}/edit`, () => edit(database.find(contact.id)))
     window.route('PUT', `/contacts/${contact.id}`, (input) => {
       database.update(contact.id, input)
+
       return show(database.find(contact.id))
     })
   })

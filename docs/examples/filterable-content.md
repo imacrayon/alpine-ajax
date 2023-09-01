@@ -82,7 +82,8 @@ Let's see our filterable table in action. Try activating a filter button using t
       { id: 2, name: "Jake", email: "jake@candykingdom.gov", status: "Inactive" },
       { id: 3, name: "BMO", email: "bmo@mo.co", status: "Active" },
       { id: 4, name: "Marceline", email: "marceline@vampirequeen.me", status: "Inactive" }
-    ];
+    ]
+
     return {
       filter: (key, value) => {
         return data.filter(contact => contact[key] === value)

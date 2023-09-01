@@ -52,10 +52,12 @@ Finally, when the job is complete, the `x-init` directive is removed and a `<for
   window.route('GET', '/jobs/create', () => create())
   window.route('POST', '/jobs', () => {
     let job = jobManager.start()
+
     return show(job)
   })
   window.route('GET', '/jobs/1', () => {
     let job = jobManager.currentProcess()
+
     return show(job)
   })
 
@@ -65,7 +67,7 @@ Finally, when the job is complete, the `x-init` directive is removed and a `<for
     return `<form id="jobs" x-init x-target method="post" action="/jobs">
     <h3>New Job</h3>
   <button>Start New Job</button>
-</form>`;
+</form>`
   }
 
   function show(job) {
@@ -86,26 +88,30 @@ Finally, when the job is complete, the `x-init` directive is removed and a `<for
   }
 
   function restart(job) {
-    if (!job.complete) return '';
+    if (!job.complete) return ''
+
     return `<form x-target="jobs" method="post" action="/jobs">
   <button>Restart Job</button>
 </form>`
   }
 
   var jobManager = (function () {
-    let job = null;
+    let job = null
+
     return {
       start: function () {
         job = {
           complete: false,
           progress: 0
         }
-        return job;
+
+        return job
       },
       currentProcess: () => {
         job.progress += Math.min(100, Math.floor(33 * Math.random()));  // simulate progress
         job.complete = job.progress >= 100;
-        return job;
+
+        return job
       }
     }
   })()
