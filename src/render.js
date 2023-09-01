@@ -1,4 +1,4 @@
-import { FailedResponseError } from './helpers'
+import { configuration, FailedResponseError } from './helpers'
 import { morph as AlpineMorph } from '@alpinejs/morph'
 
 let queue = {}
@@ -77,7 +77,7 @@ export async function render(request, targets, el, events = true) {
   let fragment = document.createRange().createContextualFragment(response.html)
   targets = targets.map(target => {
     let template = fragment.getElementById(target.id)
-    let strategy = target.getAttribute('x-merge') || 'replace'
+    let strategy = target.getAttribute('x-merge') || configuration.mergeStrategy
     if (!template) {
       if (!dispatch('ajax:missing', response)) {
         return
@@ -138,7 +138,7 @@ async function send({ method, action, body, referrer }) {
     referrer,
     method,
     body,
-  }).then(readHtml).then(onSuccess).catch(onError)
+  }).then(handleRedirect).then(readHtml).then(onSuccess).catch(onError)
 
   return method === 'GET' ? proxy : response
 }
@@ -164,6 +164,15 @@ function isLocked(key) {
 function dequeue(key, resolver) {
   (queue[key] || []).forEach(resolver)
   queue[key] = undefined
+}
+
+function handleRedirect(response) {
+  if (response.redirected && !configuration.followRedirects) {
+    window.location.href = response.url
+    return
+  }
+
+  return response
 }
 
 function readHtml(response) {

@@ -2,18 +2,18 @@ export function html(strings) {
   return strings.raw[0]
 }
 
-export let test = function (name, template, callback) {
+export let test = function (name, template, callback, ajaxConfig) {
   it(name, () => {
-    injectHtmlAndBootAlpine(cy, template, callback)
+    injectHtmlAndBootAlpine(cy, template, callback, ajaxConfig)
   })
 }
 
-function injectHtmlAndBootAlpine(cy, template, callback) {
+function injectHtmlAndBootAlpine(cy, template, callback, ajaxConfig) {
   cy.visit('/tests')
 
   cy.get('#root').then(([el]) => {
     el.innerHTML = template
-    el.bootAlpine()
+    el.bootAlpine(ajaxConfig)
 
     // We can't just simply reload a page from a test, because we need to
     // re-inject all the templates and such. This is a helper to allow
@@ -23,7 +23,7 @@ function injectHtmlAndBootAlpine(cy, template, callback) {
 
       cy.get('#root').then(([el]) => {
         el.innerHTML = template
-        el.bootAlpine()
+        el.bootAlpine(ajaxConfig)
         cy.get('[alpine-is-ready]', { timeout: 5000 }).should('be.visible')
       })
     }
