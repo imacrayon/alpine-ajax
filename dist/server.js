@@ -29,25 +29,30 @@
     let data = formatData(options.body || new FormData, formatData(params))
     console.log(`Mock Server Request:`, { method, url, data })
     let body = evaluate(routes[key], data)
-    if (document.body) {
-      document.body.dispatchEvent(
-        new CustomEvent('server:response', {
-          detail: { method, url, data, body },
-          bubbles: true,
-          composed: true,
-          cancelable: true,
-        })
-      )
-    }
+    return Promise.resolve(body).then((body) => {
+      if (document.body) {
+        document.body.dispatchEvent(
+          new CustomEvent('server:response', {
+            detail: { method, url, data, body },
+            bubbles: true,
+            composed: true,
+            cancelable: true,
+          })
+        )
+      }
 
-    let response = {
-      ok: true,
-      url,
-      text: () => Promise.resolve(body)
-    }
-    console.log(`Mock Server Response:`, response)
+      console.log(`Mock Server Response:`, {
+        ok: true,
+        url,
+        text: body
+      })
 
-    return Promise.resolve(response)
+      return {
+        ok: true,
+        url,
+        text: () => Promise.resolve(body)
+      }
+    })
   }
 
   function formatData(entries, params = {}) {
