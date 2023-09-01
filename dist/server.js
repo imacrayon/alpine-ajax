@@ -40,14 +40,17 @@
       )
     }
 
-    let response = {
+    console.log(`Mock Server Response:`, {
+      ok: true,
+      url,
+      text: body
+    })
+
+    return Promise.resolve({
       ok: true,
       url,
       text: () => Promise.resolve(body)
-    }
-    console.log(`Mock Server Response:`, response)
-
-    return Promise.resolve(response)
+    })
   }
 
   function formatData(entries, params = {}) {
