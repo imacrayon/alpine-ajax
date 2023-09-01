@@ -744,12 +744,8 @@ function send_default(Alpine) {
     return () => {
       let method = ["GET", "POST", "PUT", "PATCH", "DELETE"].find((method2) => el.hasAttribute(`x-${method2}`));
       let action = Alpine.bound(el, `x-${method}`);
-      let body = el._x_dataStack.reduce((form, data) => {
-        for (let key in data) {
-          form.append(key, data[key]);
-        }
-        return form;
-      }, new FormData());
+      let body = new FormData();
+      body.append("data_stack", JSON.stringify(el._x_dataStack));
       if (method === "GET") {
         action = mergeBodyIntoAction(body, action);
         body = null;
