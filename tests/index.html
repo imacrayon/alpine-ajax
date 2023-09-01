@@ -13,6 +13,15 @@
   // Cypress to inject HTML into "#root", THEN we'll call
   // this function from Cypress to boot everything up.
   root.bootAlpine = (options) => {
+    document.addEventListener('alpine:initialized', () => {
+      let readyEl = document.createElement('blockquote')
+      readyEl.setAttribute('alpine-is-ready', true)
+      readyEl.style.width = '1px'
+      readyEl.style.height = '1px'
+
+      document.getElementById('root').after(readyEl)
+    })
+
     let script = document.createElement('script')
     script.type = 'module'
     script.innerHTML = `
