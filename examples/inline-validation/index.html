@@ -398,7 +398,6 @@ input::placeholder,textarea::placeholder {
 }
 ::-webkit-date-and-time-value {
     min-height: 1.5em;
-    text-align: inherit;
 }
 ::-webkit-datetime-edit,::-webkit-datetime-edit-year-field,::-webkit-datetime-edit-month-field,::-webkit-datetime-edit-day-field,::-webkit-datetime-edit-hour-field,::-webkit-datetime-edit-minute-field,::-webkit-datetime-edit-second-field,::-webkit-datetime-edit-millisecond-field,::-webkit-datetime-edit-meridiem-field {
     padding-top: 0;
@@ -2327,7 +2326,6 @@ pre[class*="language-"] {
 
   function view(message = '') {
     message = message ? `<div id="email_error" style="color:#cc0000">${message}</div>` : ''
-
     return `<form x-data="{ email: '' }" aria-label="Register">
   <div id="email_field" @change="$ajax('/validate-email', {
     method: 'post',
