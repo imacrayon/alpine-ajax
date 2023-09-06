@@ -1,27 +1,15 @@
-export let configuration = {
-  followRedirects: false,
+export let config = {
+  followRedirects: true,
   mergeStrategy: 'replace',
 }
 
 export function configure(options) {
-  configuration = Object.assign(configuration, options)
+  config = Object.assign(config, options)
 
-  return configuration
+  return config
 }
 
-export function parseIds(el, expression = '') {
-  let ids = expression ? expression.split(' ') : [el.id]
-
-  if (ids.length === 0) {
-    throw new MissingIdError(el)
-  }
-
-  return ids
-}
-
-export function getTargets(ids = []) {
-  ids = ids.filter(id => id)
-
+export function findTargets(ids = []) {
   return ids.map(id => {
     let target = document.getElementById(id)
     if (!target) {
@@ -46,11 +34,35 @@ export function addSyncTargets(targets) {
   return targets
 }
 
+export function dispatch(el, name, detail) {
+  return el.dispatchEvent(
+    new CustomEvent(name, {
+      detail,
+      bubbles: true,
+      composed: true,
+      cancelable: true,
+    })
+  )
+}
+
+export function redirectHandler(follow) {
+  return follow
+    ? (response) => response
+    : (response) => {
+      if (response.redirected) {
+        window.location.href = response.url
+        return
+      }
+
+      return response
+    }
+}
+
 export class MissingIdError extends Error {
   constructor(el) {
     let description = (el.outerHTML.match(/<[^>]+>/) ?? [])[0] ?? '[Element]'
     super(`${description} is missing an ID to target.`)
-    this.name = 'Target Missing ID'
+    this.name = 'Missing ID'
   }
 }
 

@@ -1,4 +1,4 @@
-import { configuration, FailedResponseError } from './helpers'
+import { config, FailedResponseError } from './helpers'
 import { morph as AlpineMorph } from '@alpinejs/morph'
 
 let queue = {}
@@ -41,45 +41,31 @@ let merge = {
   }
 }
 
-export async function render(request, targets, el, events = true) {
-  let dispatch = (name, detail = {}) => {
-    return el.dispatchEvent(
-      new CustomEvent(name, {
-        detail,
-        bubbles: true,
-        composed: true,
-        cancelable: true,
-      })
-    )
-  }
-
-  if (!events) {
-    dispatch = () => true
-  }
-
-  if (!dispatch('ajax:before')) return
+export async function render(request, targets, el, dispatch, redirectHandler) {
+  if (!dispatch(el, 'ajax:before')) return
 
   targets.forEach(target => {
     target.setAttribute('aria-busy', 'true')
   })
 
-  let response = await send(request)
+  let response = await send(request, redirectHandler)
+
   if (response.ok) {
-    dispatch('ajax:success', response)
+    dispatch(el, 'ajax:success', response)
   } else {
-    dispatch('ajax:error', response)
+    dispatch(el, 'ajax:error', response)
   }
 
-  dispatch('ajax:after', response)
+  dispatch(el, 'ajax:after', response)
 
   if (!response.html) return
 
   let fragment = document.createRange().createContextualFragment(response.html)
   targets = targets.map(target => {
     let template = fragment.getElementById(target.id)
-    let strategy = target.getAttribute('x-merge') || configuration.mergeStrategy
+    let strategy = target.getAttribute('x-merge') || config.mergeStrategy
     if (!template) {
-      if (!dispatch('ajax:missing', response)) {
+      if (!dispatch(el, 'ajax:missing', response)) {
         return
       }
 
@@ -116,7 +102,7 @@ function renderElement(strategy, from, to) {
   return merge[strategy](from, to)
 }
 
-async function send({ method, action, body, referrer }) {
+async function send({ method, action, body, referrer }, handleRedirect) {
   // When duplicate `GET` requests are issued we'll proxy
   // the initial request to save network roundtrips.
   let proxy
@@ -138,7 +124,10 @@ async function send({ method, action, body, referrer }) {
     referrer,
     method,
     body,
-  }).then(handleRedirect).then(readHtml).then(onSuccess).catch(onError)
+  }).then(handleRedirect)
+    .then(readHtml)
+    .then(onSuccess)
+    .catch(onError)
 
   return method === 'GET' ? proxy : response
 }
@@ -166,8 +155,8 @@ function dequeue(key, resolver) {
   queue[key] = undefined
 }
 
-function handleRedirect(response) {
-  if (response.redirected && !configuration.followRedirects) {
+function handleRedirect(response, follow) {
+  if (response.redirected && !follow) {
     window.location.href = response.url
     return
   }

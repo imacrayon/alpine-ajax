@@ -7,15 +7,9 @@ test('Element throws an exception when a target is missing',
       statusCode: 200,
       body: '<h1 id="title">Success</h1><div id="replace">Replaced</div>'
     }).as('response')
-    cy.on('uncaught:exception', (err) => {
-      if (err.name.includes('Missing Target')) {
-        return false
-      }
-
-      return true
-    })
     get('button').click()
-  }
+  },
+  (err) => err.name === 'Missing Target'
 )
 
 test('Target throws an exception when it is missing an ID',
@@ -25,13 +19,7 @@ test('Target throws an exception when it is missing an ID',
       statusCode: 200,
       body: '<h1 id="title">Success</h1><div id="replace">Replaced</div>'
     }).as('response')
-    cy.on('uncaught:exception', (err) => {
-      if (err.name.includes('Target Missing ID')) {
-        return false
-      }
-
-      return true
-    })
     get('button').click()
-  }
+  },
+  (err) => err.name === 'Missing ID'
 )
