@@ -91,6 +91,24 @@ In cases when a form or link targets itself, you may leave the value of `x-targe
 </form>
 ```
 
+### Handling Redirects
+
+AJAX requests issued by `x-target` will transparently follow redirects without reloading the browser window. You may use the `x-target.nofollow` modifier to force the browser to reload when the server responds with a redirect. Notice the `nofollow` modifier used on this form for creating a new blog post:
+
+```html
+<form x-init x-target.nofollow id="create_post" method="post" action="/posts">
+  <label for="content">Post title</label>
+  <input id="title" name="title" required />
+  <label for="content">Post content</label>
+  <input id="content" name="content" required />
+  <button>Publish</button>
+</form>
+```
+
+When this form is submitted a `POST` request is issued to `/posts`. If the server responds with a `302` redirect to the newly created blog post at `/posts/1`, the browser will preform a full page reload and navigate to `/posts/1`.
+
+You can change the default way that `x-target` handles redirects using the `followRedirects` global [configuration option](#configuration).
+
 ## x-merge
 
 By default incoming HTML from the server will `replace` a targeted element. You can add `x-merge` to a targeted element to change how it merges incoming content. For example, if you wanted to `append` new items to a list of messages, you would add `x-merge="append"` to the list:
@@ -119,7 +137,7 @@ And after the HTML is merged, you'll have a list with two items:
 
 There are a total of seven merge strategies you can use, `replace` is the default strategy:
 
-<div class="table">
+<div id="merge-strategies" class="table">
 <table>
   <thead>
     <th scope="col" width="60">Strategy</th>
@@ -160,7 +178,7 @@ There are a total of seven merge strategies you can use, `replace` is the defaul
 
 The `morph` option uses a DOM diffing algorithm to update HTML, it's a bit more computationally intensive, but it works great in situations where you need to preserve your Alpine component's state and keyboard focus. In contrast, the `replace` and `update` strategies will each wipe away DOM state with fresh HTML.
 
-You can change the default merge strategy for all AJAX requests using the `mergeStrategy` [configuration option](#configuration).
+You can change the default merge strategy for all AJAX requests using the `mergeStrategy` global [configuration option](#configuration).
 
 ## x-focus
 
@@ -236,6 +254,11 @@ In this example we make a `POST` request with the `email` value to the `/validat
     <td>The request target. If this is empty <code>x-target</code> is used.</td>
   </tr>
   <tr>
+    <td><code>targets</code></td>
+    <td><code>[]</code></td>
+    <td>Same as <code>target</code>, but specified as an array of strings. If this is empty <code>target</code> is used.</td>
+  </tr>
+  <tr>
     <td><code>body</code></td>
     <td><code>{}</code></td>
     <td>The request body.</td>
@@ -250,11 +273,14 @@ In this example we make a `POST` request with the `email` value to the `/validat
     <td><code>false</code></td>
     <td>Setting this to <code>true</code> will include <code>x-sync</code> targets in the request.</td>
   </tr>
+  <tr>
+    <td><code>followRedirects</code></td>
+    <td><code>true</code></td>
+    <td>Switch this to <code>false</code> and AJAX requests will reload the browser window when they encounter a redirect response.</td>
+  </tr>
   </tbody>
 </table>
 </div>
-
-
 
 ## AJAX Events
 
@@ -307,6 +333,43 @@ While an AJAX request is in progress there are a few loading states to be aware 
 
   * If a form submission triggered the request, the form's submit button is automatically disabled, this prevents users from triggering additional network requests by accidentally double clicking the submit button.
   * During an AJAX request, `aria-busy="true"` is set on all targets of the request. This attribute can be used in CSS to provide a loading indicator, check out the [Loading Indicator example](/examples/loading) for more details.
+
+## Configuration
+
+You have the option to configure the default behavior of Alpine AJAX when importing it in your code:
+
+```js
+import ajax from '@imacrayon/alpine-ajax'
+
+Alpine.plugin(ajax.configure({
+  followRedirects: false,
+  mergeStrategy: 'morph',
+}))
+```
+
+Here are the configuration options and there defaults:
+
+<div class="table">
+<table>
+  <thead>
+    <th scope="col" width="68">Option</th>
+    <th scope="col" width="60">Default</th>
+    <th scope="col">Description</th>
+  </thead>
+  <tbody>
+  <tr>
+    <td><code>followRedirects</code></td>
+    <td><code>true</code></td>
+    <td>Switch this to <code>false</code> and AJAX requests will reload the browser window when they encounter a redirect response. You can then follow redirects case-by-case using the <code>follow</code> modifier on <code>x-target</code>.</td>
+  </tr>
+  <tr>
+    <td><code>mergeStrategy</code></td>
+    <td><code>'replace'</code></td>
+    <td>Set the default <a href="#merge-strategies">merge strategy</a> used when new content is merged onto the page.</td>
+  </tr>
+  </tbody>
+</table>
+</div>
 
 ## Creating Demos
 

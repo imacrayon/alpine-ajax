@@ -393,15 +393,15 @@ __export(module_exports, {
 module.exports = __toCommonJS(module_exports);
 
 // src/helpers.js
-function parseIds(el, expression = "") {
-  let ids = expression ? expression.split(" ") : [el.id];
-  if (ids.length === 0) {
-    throw new MissingIdError(el);
-  }
-  return ids;
+var config = {
+  followRedirects: true,
+  mergeStrategy: "replace"
+};
+function configure(options) {
+  config = Object.assign(config, options);
+  return config;
 }
-function getTargets(ids = []) {
-  ids = ids.filter((id) => id);
+function findTargets(ids = []) {
   return ids.map((id) => {
     let target = document.getElementById(id);
     if (!target) {
@@ -421,12 +421,31 @@ function addSyncTargets(targets) {
   });
   return targets;
 }
+function dispatch(el, name, detail) {
+  return el.dispatchEvent(
+    new CustomEvent(name, {
+      detail,
+      bubbles: true,
+      composed: true,
+      cancelable: true
+    })
+  );
+}
+function redirectHandler(follow) {
+  return follow ? (response) => response : (response) => {
+    if (response.redirected) {
+      window.location.href = response.url;
+      return;
+    }
+    return response;
+  };
+}
 var MissingIdError = class extends Error {
   constructor(el) {
     var _a, _b;
     let description = (_b = ((_a = el.outerHTML.match(/<[^>]+>/)) != null ? _a : [])[0]) != null ? _b : "[Element]";
     super(`${description} is missing an ID to target.`);
-    this.name = "Target Missing ID";
+    this.name = "Missing ID";
   }
 };
 var MissingTargetError = class extends Error {
@@ -451,7 +470,7 @@ function source(el) {
 // src/render.js
 var import_morph = __toESM(require_module_cjs());
 var queue = {};
-var arrange = {
+var merge = {
   before(from, to) {
     from.before(...to.childNodes);
     return from;
@@ -476,49 +495,32 @@ var arrange = {
     from.after(...to.childNodes);
     return from;
   },
-  remove(from) {
-    from.remove();
-    return null;
-  },
   morph(from, to) {
     (0, import_morph.morph)(from, to);
     return document.getElementById(to.id);
   }
 };
-async function render(request, targets, el, events = true) {
-  let dispatch = (name, detail = {}) => {
-    return el.dispatchEvent(
-      new CustomEvent(name, {
-        detail,
-        bubbles: true,
-        composed: true,
-        cancelable: true
-      })
-    );
-  };
-  if (!events) {
-    dispatch = () => true;
-  }
-  if (!dispatch("ajax:before"))
+async function render(request, targets, el, dispatch2, redirectHandler2) {
+  if (!dispatch2(el, "ajax:before"))
     return;
   targets.forEach((target) => {
     target.setAttribute("aria-busy", "true");
   });
-  let response = await send(request);
+  let response = await send(request, redirectHandler2);
   if (response.ok) {
-    dispatch("ajax:success", response);
+    dispatch2(el, "ajax:success", response);
   } else {
-    dispatch("ajax:error", response);
+    dispatch2(el, "ajax:error", response);
   }
-  dispatch("ajax:after", response);
+  dispatch2(el, "ajax:after", response);
   if (!response.html)
     return;
   let fragment = document.createRange().createContextualFragment(response.html);
   targets = targets.map((target) => {
     let template = fragment.getElementById(target.id);
-    let strategy = target.getAttribute("x-arrange") || "replace";
+    let strategy = target.getAttribute("x-merge") || config.mergeStrategy;
     if (!template) {
-      if (!dispatch("ajax:missing", response)) {
+      if (!dispatch2(el, "ajax:missing", response)) {
         return;
       }
       if (!target.hasAttribute("x-sync")) {
@@ -543,9 +545,9 @@ async function render(request, targets, el, events = true) {
   return targets;
 }
 function renderElement(strategy, from, to) {
-  return arrange[strategy](from, to);
+  return merge[strategy](from, to);
 }
-async function send({ method, action, body, referrer }) {
+async function send({ method, action, body, referrer }, handleRedirect) {
   let proxy;
   let onSuccess = (response2) => response2;
   let onError = (error) => error;
@@ -563,7 +565,7 @@ async function send({ method, action, body, referrer }) {
     referrer,
     method,
     body
-  }).then(readHtml).then(onSuccess).catch(onError);
+  }).then(handleRedirect).then(readHtml).then(onSuccess).catch(onError);
   return method === "GET" ? proxy : response;
 }
 function enqueue(key) {
@@ -600,19 +602,18 @@ function focusOn(el) {
 }
 
 // src/link.js
-function listenForNavigate(el, targetIds) {
+function listenForNavigate(el, behavior) {
   let handler = async (event) => {
     event.preventDefault();
     event.stopPropagation();
-    let targets = addSyncTargets(getTargets(targetIds));
-    let link = event.target;
-    let request = navigateRequest(link);
+    let targets = addSyncTargets(findTargets(behavior.targets));
+    let request = navigateRequest(el);
     try {
-      return await render(request, targets, link);
+      return await render(request, targets, el, dispatch, redirectHandler(behavior.followRedirects));
     } catch (error) {
       if (error instanceof FailedResponseError) {
         console.warn(error.message);
-        window.location.href = link.href;
+        window.location.href = el.href;
         return;
       }
       throw error;
@@ -629,27 +630,23 @@ function navigateRequest(link) {
     body: null
   };
 }
-function isLocalLink(el) {
-  return el.href && !el.hash && el.origin == location.origin;
-}
 
 // src/form.js
-function listenForSubmit(el, targetIds) {
+function listenForSubmit(el, behavior) {
   let handler = async (event) => {
     event.preventDefault();
     event.stopPropagation();
-    let targets = addSyncTargets(getTargets(targetIds));
-    let form = event.target;
-    let request = formRequest(form, event.submitter);
+    let targets = addSyncTargets(findTargets(behavior.targets));
+    let request = formRequest(el, event.submitter);
     try {
       return await withSubmitter(event.submitter, () => {
-        return render(request, targets, form);
+        return render(request, targets, el, dispatch, redirectHandler(behavior.followRedirects));
       });
     } catch (error) {
       if (error instanceof FailedResponseError) {
         console.warn(error.message);
-        form.removeEventListener("submit", handler);
-        form.requestSubmit(event.submitter);
+        el.removeEventListener("submit", handler);
+        el.requestSubmit(event.submitter);
         return;
       }
       throw error;
@@ -762,17 +759,22 @@ function clickCaptured(event) {
 })(HTMLFormElement.prototype);
 
 // src/index.js
-function src_default(Alpine) {
-  Alpine.directive("target", (el, { expression }, { cleanup }) => {
-    let ids = parseIds(el, expression);
-    let stopListening = isLocalLink(el) ? listenForNavigate(el, ids) : listenForSubmit(el, ids);
-    cleanup(stopListening);
+var behaviors = /* @__PURE__ */ new WeakMap();
+function Ajax(Alpine) {
+  Alpine.directive("target", (el, { modifiers, expression }, { cleanup }) => {
+    let behavior = {
+      targets: parseIds(el, expression),
+      followRedirects: followRedirects(modifiers)
+    };
+    behaviors.set(el, behavior);
+    if (isLocalLink(el)) {
+      cleanup(listenForNavigate(el, behavior));
+    } else if (isForm(el)) {
+      cleanup(listenForSubmit(el, behavior));
+    }
   });
   Alpine.magic("ajax", (el) => {
     return (action, options = {}) => {
-      let ids = options.target ? options.target.split(" ") : parseIds(el, el.getAttribute("x-target"));
-      let targets = getTargets(ids);
-      targets = options.sync ? addSyncTargets(targets) : targets;
       let method = options.method ? options.method.toUpperCase() : "GET";
       let body = null;
       if (options.body) {
@@ -795,9 +797,42 @@ function src_default(Alpine) {
         body,
         referrer: source(el)
       };
-      return render(request, targets, el, Boolean(options.events));
+      let behavior = behaviors.get(el) || {
+        followRedirects: config.followRedirects
+      };
+      behavior = Object.assign(behavior, options);
+      let ids = parseIds(el, behavior.targets || behavior.target);
+      let targets = findTargets(ids);
+      targets = behavior.sync ? addSyncTargets(targets) : targets;
+      let dispatcher = behavior.events ? dispatch : () => true;
+      return render(request, targets, el, dispatcher, redirectHandler(behavior.followRedirects));
     };
   });
+}
+Ajax.configure = (options) => {
+  configure(options);
+  return Ajax;
+};
+var src_default = Ajax;
+function parseIds(el, expression = null) {
+  let ids = [el.id];
+  if (expression) {
+    ids = Array.isArray(expression) ? expression : expression.split(" ");
+  }
+  ids = ids.filter((id) => id);
+  if (ids.length === 0) {
+    throw new MissingIdError(el);
+  }
+  return ids;
+}
+function followRedirects(modifiers = []) {
+  return config.followRedirects ? !modifiers.includes("nofollow") : modifiers.includes("follow");
+}
+function isLocalLink(el) {
+  return el.href && !el.hash && el.origin == location.origin;
+}
+function isForm(el) {
+  return el.tagName === "FORM";
 }
 
 // builds/module.js

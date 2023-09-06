@@ -1,27 +1,30 @@
-import { configure } from '../src/helpers.js'
-import { parseIds, getTargets, addSyncTargets, source } from './helpers'
+import { findTargets, addSyncTargets, dispatch, redirectHandler, config, configure, MissingIdError, source } from './helpers'
 import { render } from './render'
-import { isLocalLink, listenForNavigate } from './link'
+import { listenForNavigate } from './link'
 import { listenForSubmit, mergeBodyIntoAction } from './form'
 import './polyfills'
 
+let behaviors = new WeakMap()
+
 function Ajax(Alpine) {
-  Alpine.directive('target', (el, { expression }, { cleanup }) => {
-    let ids = parseIds(el, expression)
+  Alpine.directive('target', (el, { modifiers, expression }, { cleanup }) => {
+    let behavior = {
+      targets: parseIds(el, expression),
+      followRedirects: followRedirects(modifiers)
+    }
 
-    let stopListening = isLocalLink(el)
-      ? listenForNavigate(el, ids)
-      : listenForSubmit(el, ids)
 
-    cleanup(stopListening)
+    behaviors.set(el, behavior)
+
+    if (isLocalLink(el)) {
+      cleanup(listenForNavigate(el, behavior))
+    } else if (isForm(el)) {
+      cleanup(listenForSubmit(el, behavior))
+    }
   })
 
   Alpine.magic('ajax', (el) => {
     return (action, options = {}) => {
-      let ids = options.target ? options.target.split(' ') : parseIds(el, el.getAttribute('x-target'))
-      let targets = getTargets(ids)
-      targets = options.sync ? addSyncTargets(targets) : targets
-
       let method = options.method ? options.method.toUpperCase() : 'GET'
 
       let body = null
@@ -48,7 +51,18 @@ function Ajax(Alpine) {
         referrer: source(el),
       }
 
-      return render(request, targets, el, Boolean(options.events))
+      let behavior = behaviors.get(el) || {
+        followRedirects: config.followRedirects
+      }
+      behavior = Object.assign(behavior, options)
+
+      let ids = parseIds(el, behavior.targets || behavior.target)
+      let targets = findTargets(ids)
+      targets = behavior.sync ? addSyncTargets(targets) : targets
+
+      let dispatcher = behavior.events ? dispatch : () => true
+
+      return render(request, targets, el, dispatcher, redirectHandler(behavior.followRedirects))
     }
   })
 }
@@ -60,3 +74,33 @@ Ajax.configure = (options) => {
 }
 
 export default Ajax
+
+function parseIds(el, expression = null) {
+  let ids = [el.id]
+  if (expression) {
+    ids = Array.isArray(expression) ? expression : expression.split(' ')
+  }
+  ids = ids.filter(id => id)
+
+  if (ids.length === 0) {
+    throw new MissingIdError(el)
+  }
+
+  return ids
+}
+
+function followRedirects(modifiers = []) {
+  return config.followRedirects
+    ? !modifiers.includes('nofollow')
+    : modifiers.includes('follow')
+}
+
+function isLocalLink(el) {
+  return el.href &&
+    !el.hash &&
+    el.origin == location.origin
+}
+
+function isForm(el) {
+  return el.tagName === 'FORM'
+}

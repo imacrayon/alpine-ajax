@@ -1,19 +1,19 @@
-import { getTargets, addSyncTargets, source, FailedResponseError } from './helpers'
+import { findTargets, addSyncTargets, config, dispatch, redirectHandler, source, FailedResponseError } from './helpers'
 import { render } from './render'
 
-export function listenForNavigate(el, targetIds) {
+export function listenForNavigate(el, behavior) {
   let handler = async (event) => {
     event.preventDefault()
     event.stopPropagation()
-    let targets = addSyncTargets(getTargets(targetIds))
-    let link = event.target
-    let request = navigateRequest(link)
+    let targets = addSyncTargets(findTargets(behavior.targets))
+    let request = navigateRequest(el)
+
     try {
-      return await render(request, targets, link)
+      return await render(request, targets, el, dispatch, redirectHandler(behavior.followRedirects))
     } catch (error) {
       if (error instanceof FailedResponseError) {
         console.warn(error.message)
-        window.location.href = link.href
+        window.location.href = el.href
         return
       }
 
@@ -33,10 +33,4 @@ function navigateRequest(link) {
     referrer: source(link),
     body: null
   }
-}
-
-export function isLocalLink(el) {
-  return el.href &&
-    !el.hash &&
-    el.origin == location.origin
 }
