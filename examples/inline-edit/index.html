@@ -2318,7 +2318,7 @@ pre[class*="language-"] {
     "first_name": "Finn",
     "last_name": "Mertens",
     "email": "fmertens@candykingdom.gov"
-  };
+  }
 
   window.route('GET', '/contacts/1', () => show(contact))
   window.route('GET', '/contacts/1/edit', () => edit(contact))
@@ -2326,6 +2326,7 @@ pre[class*="language-"] {
     contact.first_name = input.first_name
     contact.last_name = input.last_name
     contact.email = input.email
+
     return show(contact)
   })
 
@@ -2356,7 +2357,7 @@ pre[class*="language-"] {
   <p><strong>Last Name</strong>: ${contact.last_name}</p>
   <p><strong>Email</strong>: ${contact.email}</p>
   <a href="/contacts/1/edit" id="contact_1_edit" x-init x-target="contact_1" x-focus="first_name">Edit</a>
-</div>`;
+</div>`
   }
 </script>
 
