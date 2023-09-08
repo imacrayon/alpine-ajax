@@ -19,7 +19,8 @@ jobs:
 
       - name: Install dependencies & build
         run: |
-          npm install --only=dev
+          npm install
+          npm run build
           npm run build:docs
 
       - name: Deploy

@@ -30,7 +30,13 @@ let builds = [
     bundle: true,
     target: ['node10.4'],
     platform: 'node',
-  }
+  },
+  {
+    entryPoints: [`builds/server.js`],
+    outfile: 'dist/server.js',
+    bundle: true,
+    platform: 'neutral',
+  },
 ]
 
 builds.forEach(async config => {
