@@ -91,14 +91,38 @@ In cases when a form or link targets itself, you may leave the value of `x-targe
 </form>
 ```
 
-## x-arrange
+## x-merge
 
-Use `x-arrange` to control how targeted elements will handle incoming AJAX content. By default, incoming content will `replace` a targeted element, instead you can choose one of the 7 other options for arranging content:
+By default incoming HTML from the server will `replace` a targeted element. You can add `x-merge` to a targeted element to change how it merges incoming content. For example, if you wanted to `append` new items to a list of messages, you would add `x-merge="append"` to the list:
+
+```html
+<ul id="messages" x-merge="append">
+  <li>First message</li>
+</ul>
+```
+
+New HTML sent from the server might look like this:
+
+```html
+<ul id="messages">
+  <li>Second message</li>
+</ul>
+```
+And after the HTML is merged, you'll have a list with two items:
+
+```html
+<ul id="messages" x-merge="append">
+  <li>First message</li>
+  <li>Second message</li>
+</ul>
+```
+
+There are a total of seven merge strategies you can use, `replace` is the default strategy:
 
 <div class="table">
 <table>
   <thead>
-    <th scope="col" width="60">Option</th>
+    <th scope="col" width="60">Strategy</th>
     <th scope="col">Description</th>
   </thead>
   <tbody>
@@ -127,10 +151,6 @@ Use `x-arrange` to control how targeted elements will handle incoming AJAX conte
     <td>Inserts the content of the incoming element after the target element.</td>
   </tr>
   <tr>
-    <td><code>remove</code></td>
-    <td>Removes the target element from the DOM.</td>
-  </tr>
-  <tr>
     <td><code>morph</code></td>
     <td>Morphs the incoming element into the target element using the <a href="https://alpinejs.dev/plugins/morph">Alpine Morph Plugin</a>.</td>
   </tr>
@@ -138,7 +158,9 @@ Use `x-arrange` to control how targeted elements will handle incoming AJAX conte
 </table>
 </div>
 
-The `morph` option uses a DOM diffing algorithm to update HTML, it's a bit more computationally intensive, but it works great in situations where you need to preserve your Alpine component's state and keyboard focus. In contrast, the `replace`, `update`, and `remove` options will each wipe away DOM state with fresh HTML.
+The `morph` option uses a DOM diffing algorithm to update HTML, it's a bit more computationally intensive, but it works great in situations where you need to preserve your Alpine component's state and keyboard focus. In contrast, the `replace` and `update` strategies will each wipe away DOM state with fresh HTML.
+
+You can change the default merge strategy for all AJAX requests using the `mergeStrategy` [configuration option](#configuration).
 
 ## x-focus
 
@@ -155,7 +177,7 @@ The `x-focus` attribute on the "Edit" link ensures that the element with `id="em
 
 Controlling focus is important for providing [meaningful sequencing](https://www.w3.org/TR/WCAG21/#meaningful-sequence) and [focus order](https://www.w3.org/TR/WCAG21/#focus-order) for keyboard users, however, take care not to overuse focus control. This attribute should primarily be used to prevent the keyboard focus from disappearing when page content changes.
 
-It's worth noting that `x-arrange="morph"` is another way to preserve keyboard focus between content changes. However, there are cases when the DOM is transformed so much that the Morph algorithm is unable to reliably preserve focus state. In theses situations `x-focus` can correct any focus discrepancies.
+It's worth noting that `x-merge="morph"` is another way to preserve keyboard focus between content changes. However, there are cases when the DOM is transformed so much that the Morph algorithm is unable to reliably preserve focus state. In theses situations `x-focus` can correct any focus discrepancies.
 
 ## x-sync
 

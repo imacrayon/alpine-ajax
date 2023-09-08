@@ -8,10 +8,10 @@ eleventyNavigation:
 
 This example filters down a table of contacts based on the user's selection.
 
-We start with some filter buttons and a table inside an AJAX Component with `id="contacts"`. It's important to note the `x-arrange="morph"` attribute on the AJAX Component. The `morph` option ensures that the keyboard focus state of our filter buttons will be preserved as the HTML on our Component changes between AJAX requests.
+We start with some filter buttons and a table inside an AJAX Component with `id="contacts"`. It's important to note the `x-merge="morph"` attribute on the AJAX Component. The `morph` option ensures that the keyboard focus state of our filter buttons will be preserved as the HTML on our Component changes between AJAX requests.
 
 ```html
-<div id="contacts" x-arrange="morph">
+<div id="contacts" x-merge="morph">
   <form action="/contacts" aria-label="Filter contacts" x-init x-target="contacts">
     <button name="status" value="Active" aria-pressed="false">Active</button>
     <button name="status" value="Inactive" aria-pressed="false">Inactive</button>
@@ -104,7 +104,7 @@ Let's see our filterable table in action. Try activating a filter button using t
 
     let reset = filter ? `<button name="status" value="">Reset</button>` : ``
 
-    return `<div x-arrange="morph" id="contacts">
+    return `<div x-merge="morph" id="contacts">
 <form action="/contacts" aria-label="Filter contacts" x-init x-target="contacts">
   <button name="status" value="Active" aria-pressed="${String(filter === 'Active')}">Active</button>
   <button name="status" value="Inactive" aria-pressed="${String(filter === 'Inactive')}">Inactive</button>
