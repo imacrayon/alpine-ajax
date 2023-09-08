@@ -155,15 +155,6 @@ function dequeue(key, resolver) {
   queue[key] = undefined
 }
 
-function handleRedirect(response, follow) {
-  if (response.redirected && !follow) {
-    window.location.href = response.url
-    return
-  }
-
-  return response
-}
-
 function readHtml(response) {
   return response.text().then(html => {
     response.html = html
