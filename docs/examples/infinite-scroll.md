@@ -54,10 +54,10 @@ With the Intercept Plugin installed, when we can update our pagination markup to
 
 Note that the `x-target` attribute includes both the table **and** pagination. This ensures that the table is updated with fresh records and the pagination is updated with a fresh page URL after each AJAX request. This also means that when the final page of records is loaded we can not include the pagination in our server response and the pagination will subsequently disappear from the UI.
 
-Last, but not least, we need to ensure that the new table rows from subsequent pages are appended to the end of the table. The default behavior is for Alpine AJAX to replace the existing table rows with the incoming rows. To change this behavior we need to add `x-arrange="append"` to the table's `tbody`:
+Last, but not least, we need to ensure that the new table rows from subsequent pages are appended to the end of the table. The default behavior is for Alpine AJAX to replace the existing table rows with the incoming rows. To change this behavior we need to add `x-merge="append"` to the table's `tbody`:
 
 ```html
-<tbody id="records" x-arrange="append">
+<tbody id="records" x-merge="append">
 ```
 
 <style>
@@ -133,7 +133,7 @@ Last, but not least, we need to ensure that the new table rows from subsequent p
       <th scope="col">Status</th>
     </tr>
   </thead>
-  <tbody id="records" x-arrange="append">
+  <tbody id="records" x-merge="append">
     ${rows}
   </tbody>
 </table>
