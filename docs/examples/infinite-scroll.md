@@ -43,18 +43,18 @@ Alpine already provides a great way to a users's scroll: We can use the first-pa
 <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/intersect@3.x.x/dist/cdn.min.js"></script>
 ```
 
-If you'd rather bundle your JavaScript the [Intercept installation instructions](https://alpinejs.dev/plugins/intersect#installation) explain how to do this too.
+_If you'd rather bundle your JavaScript, the [Intercept installation instructions](https://alpinejs.dev/plugins/intersect#installation) explain how to do this too._
 
-With the Intercept Plugin installed, when we can update our pagination markup to issue an AJAX request when it is scrolled into view:
+With the Intercept Plugin installed we can update our pagination markup to issue an AJAX request when it is scrolled into view:
 
 ```html
 <div id="pagination" x-init x-intersect="$ajax('/contacts?page=2')" x-target="records pagination">
 </div>
 ```
 
-Note that the `x-target` attribute includes both the table **and** pagination. This ensures that the table is updated with fresh records and the pagination is updated with a fresh page URL after each AJAX request. This also means that when the final page of records is loaded we can not include the pagination in our server response and the pagination will subsequently disappear from the UI.
+Note that the `x-target` attribute includes both the table **and** pagination. This ensures that the table is updated with fresh records and the pagination is updated with a fresh page URL after each AJAX request.
 
-Last, but not least, we need to ensure that the new table rows from subsequent pages are appended to the end of the table. The default behavior is for Alpine AJAX to replace the existing table rows with the incoming rows. To change this behavior we need to add `x-merge="append"` to the table's `tbody`:
+Lastly, we need to ensure that the new table rows from subsequent pages are _appended_ to the end of the table. The default behavior is for Alpine AJAX to _replace_ the existing table rows with the incoming rows. To change this behavior we need to add `x-merge="append"` to the element that will receive the new records, in this case that's our table's `tbody`:
 
 ```html
 <tbody id="records" x-merge="append">
