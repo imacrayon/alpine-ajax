@@ -24,7 +24,8 @@ description: Radio-controlled HTML elements!
     {% include 'remote.svg' %}
     <div class="lg:flex lg:gap-6">
       <div class="-mt-[140px]">
-        {% include 'server.njk' %}
+        <h2 class="sr-only">A demonstration</h2>
+        {% include 'demo.njk' %}
       </div>
       <div class="min-w-0 relative space-y-4 pt-6 px-4 lg:pt-0 lg:px-0">
         <p class="text-lg">Alpine AJAX is an <a href="https://alpinejs.dev" class="underline font-semibold text-blue-800 hover:text-red-600">Alpine.js</a> plugin that enables your HTML elements to request remote content from your server. Use it to build straight-forward, robust, interactive&nbsp;websites.</p>
@@ -190,18 +191,27 @@ description: Radio-controlled HTML elements!
 
   function list(songs, term) {
     if (!term) {
-      return `<ul id="songs"></ul>`
+      return `<div id="songs">
+        <h3 class="sr-only" tabindex="-1">Songs:</h3>
+        <p id="info" class="py-2 text-almond-700 font-sans text-center text-sm">Results will update as you type.</p>
+      </div>`
     }
 
     if (songs.length) {
       let items = `<li>\n ` + songs.map(track => item(track)).join(`\n</li>\n<li>\n `) + `\n</li>`
 
-      return `<ul id="songs" class="border border-blue-800 bg-almond-200 rounded-md divide-y divide-almond-400 empty:border-transparent">
-  ${items}
-  </ul>`
+      return `<div id="songs">
+    <h3 class="sr-only" tabindex="-1">Songs: ${songs.length} found</h3>
+    <ul class="border border-blue-800 bg-almond-200 rounded-md divide-y divide-almond-400 empty:border-transparent">
+      ${items}
+    </ul>
+  </div>`
     }
 
-    return `<p id="songs" class="font-sans px-1 py-4 text-center font-medium border border-blue-800 rounded-md text-blue-800">No songs found matching “<em>${window.escapeHtml(term)}</em>”</p>`
+    return `<div id="songs">
+      <h3 class="sr-only" tabindex="-1">Songs:</h3>
+      <p class="font-sans px-1 py-4 text-center font-medium border border-blue-800 rounded-md text-blue-800">No songs found matching “<em>${window.escapeHtml(term)}</em>”</p>
+  </div><div id="notifications">No results found.</div>`
   }
 
   function index() {
@@ -214,10 +224,12 @@ description: Radio-controlled HTML elements!
           </div>
           <div class="absolute top-[40%] bottom-[12%] left-[25%] right-[25%] flex flex-col space-y-1">
             <form x-init x-target="songs" action="/songs" role="search" aria-label="Search jukebox music" class="relative" autocomplete="off">
-              <input type="search" name="search" placeholder="Search songs..." @input.debounce="$el.form.requestSubmit()" class="animate-glow relative font-sans w-full rounded-md border-blue-800 placeholder:text-almond-700 bg-almond-200 text-blue-800 focus:border-red-600">
-              <button x-show="false" class="sr-only">Search</button>
+              <label for="search" class="sr-only">Search</label>
+              <input type="search" name="search" id="search" aria-describedby="info" placeholder="Search songs..." @input.debounce="$el.form.requestSubmit()" class="animate-glow relative font-sans w-full rounded-md border-blue-800 placeholder:text-almond-700 bg-almond-200 text-blue-800 focus:border-red-600">
+              <button x-show="false" class="sr-only">Submit</button>
             </form>
-            <ul id="songs"></ul>
+            <div id="songs"><p id="info" class="py-2 text-almond-700 font-sans text-center text-sm">Results will update as you type.</p></div>
+            <div aria-live="assertive" aria-atomic="true" class="sr-only"><div x-sync id="notifications"></div></div>
           </div>
         </div>
       </div>
