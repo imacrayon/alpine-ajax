@@ -334,6 +334,11 @@ While an AJAX request is in progress there are a few loading states to be aware 
   * If a form submission triggered the request, the form's submit button is automatically disabled, this prevents users from triggering additional network requests by accidentally double clicking the submit button.
   * During an AJAX request, `aria-busy="true"` is set on all targets of the request. This attribute can be used in CSS to provide a loading indicator, check out the [Loading Indicator example](/examples/loading) for more details.
 
+## Request headers
+
+Requests sent by alpine-ajax have a `x-alpine-request` header with contents `true`.
+The server may use this to change the contents of the response.
+
 ## Configuration
 
 You have the option to configure the default behavior of Alpine AJAX when importing it in your code:
