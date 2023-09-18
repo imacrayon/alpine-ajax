@@ -1,6 +1,6 @@
 ---
 eleventyNavigation:
-  key: AJAX Events
+  key: AJAX events
   url: /reference/#ajax-events
   order: 8
 ---

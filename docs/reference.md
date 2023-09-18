@@ -81,7 +81,7 @@ Here's an expanded comment list example:
 
 Now, when the form is submitted, both the `#comments` list, and the `#comments_count` indicator will be updated.
 
-### Target Shorthand
+### Target shorthand
 
 In cases when a form or link targets itself, you may leave the value of `x-target` blank, however the form or link must still have an `id`:
 
@@ -91,7 +91,7 @@ In cases when a form or link targets itself, you may leave the value of `x-targe
 </form>
 ```
 
-### Handling Redirects
+### Handling redirects
 
 AJAX requests issued by `x-target` will transparently follow redirects without reloading the browser window. You may use the `x-target.nofollow` modifier to force the browser to reload when the server responds with a redirect. Notice the `nofollow` modifier used on this form for creating a new blog post:
 
@@ -282,7 +282,7 @@ In this example we make a `POST` request with the `email` value to the `/validat
 </table>
 </div>
 
-## AJAX Events
+## AJAX events
 
 You can listen for AJAX events to perform additional actions during an AJAX request:
 
@@ -327,7 +327,7 @@ Here's an example of aborting a form request when the user cancels a dialog prom
 
 **Note:** The `ajax:success` and `ajax:error` events only convey the status code of an AJAX request. You'll probably find that [Server Events](/examples/server-events/) are better for triggering actions based on your server's response.
 
-## Loading States
+## Loading states
 
 While an AJAX request is in progress there are a few loading states to be aware of:
 
@@ -336,8 +336,7 @@ While an AJAX request is in progress there are a few loading states to be aware 
 
 ## Request headers
 
-Requests sent by alpine-ajax have a `x-alpine-request` header with contents `true`.
-The server may use this to change the contents of the response.
+Requests sent by Alpine AJAX have a `X-Alpine-Request` header with contents `true`. The server may use this to change the contents of the response.
 
 ## Configuration
 
@@ -376,7 +375,7 @@ Here are the configuration options and there defaults:
 </table>
 </div>
 
-## Creating Demos
+## Creating demos
 
 Use the mock server script included with Alpine AJAX when you need to build a quick prototype or demonstrate a bug, without a server. The mock server script adds a global `route` helper function for mocking server endpoints on the frontend:
 

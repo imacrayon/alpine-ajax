@@ -1,6 +1,6 @@
 ---
 eleventyNavigation:
-  key: Creating Demos
+  key: Creating demos
   url: /reference/#creating-demos
-  order: 11
+  order: 12
 ---
