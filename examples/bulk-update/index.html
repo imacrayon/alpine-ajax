@@ -1435,6 +1435,10 @@ select {
     --tw-text-opacity: 1;
     color: rgb(221 208 179 / var(--tw-text-opacity));
 }
+.text-almond-500 {
+    --tw-text-opacity: 1;
+    color: rgb(184 157 94 / var(--tw-text-opacity));
+}
 .text-almond-700 {
     --tw-text-opacity: 1;
     color: rgb(108 90 47 / var(--tw-text-opacity));
@@ -2438,7 +2442,11 @@ updated rows.</p>
     return this.active === request.id
   }
 }" class="not-prose text-base z-40 fixed bottom-0 left-0 right-0 rounded-t-md bg-almond-200">
-  <button role="button" id="server_inspector_button" x-bind:aria-expanded="open.toString()" x-on:click="open = !open" aria-controls="server_inspector" class="block w-full bg-almond-300 text-almond-800 font-mono font-bold px-4 py-3 border-t border-almond-800 cursor-pointer">Server Requests (<span x-text="requests.length.toString()"></span>)</button>
+  <button role="button" id="server_inspector_button" x-bind:aria-expanded="open.toString()" x-on:click="open = !open" aria-controls="server_inspector" class="flex gap-2 items-center justify-center w-full bg-almond-300 text-almond-800 font-mono font-bold px-4 py-3 border-t border-almond-800 cursor-pointer">
+    <svg x-show="!open" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" class="text-almond-500" width="20" height="20" fill="currentColor" viewBox="0 0 256 256"><path d="M181.66,133.66l-80,80A8,8,0,0,1,88,208V48a8,8,0,0,1,13.66-5.66l80,80A8,8,0,0,1,181.66,133.66Z"></path></svg>
+    <svg x-show="open" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" class="text-almond-500" width="20" height="30" fill="currentColor" viewBox="0 0 256 256"><path d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,48,88H208a8,8,0,0,1,5.66,13.66Z"></path></svg>
+    <span>Server Requests (<span x-text="requests.length.toString()"></span>)</span>
+  </button>
   <div x-show="open" id="server_inspector" class="overflow-scroll h-[40vh] border-t border-almond-800 sm:flex">
     <div class="relative sm:overflow-scroll sm:h-full">
       <ol reversed class="list-decimal list-inside border-b border-almond-800 divide-y divide-almond-800">
