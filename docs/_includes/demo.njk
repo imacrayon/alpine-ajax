@@ -6,7 +6,7 @@
 <div id="demo"></div>
 <div x-data="{
   init() {
-    document.addEventListener('server:response', (event) => {E
+    document.addEventListener('server:response', (event) => {
       this.requests.unshift({ id: this.requests.length, ...event.detail })
     })
   },
