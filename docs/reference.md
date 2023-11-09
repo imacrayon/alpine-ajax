@@ -64,9 +64,9 @@ When the form is submitted a `POST` request is issued to `/comment` and the `#co
 
 ### Multiple Targets
 
-You can replace multiple elements from a single server response by separating `id`s with a space.
+`x-target` can replace multiple elements from a single server response by separating `id`s with a space.
 
-Here's an expanded comment list example:
+In this comment list example note that the `x-target` attribute on the `<form>` targets two elements:
 
 ```html
 <h2>Comments (<span id="comments_count">1</span>)</h2>
