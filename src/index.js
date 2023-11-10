@@ -25,9 +25,10 @@ function Ajax(Alpine) {
     }
   })
 
-  Alpine.directive('merge', (el, { expression }) => {
+  Alpine.directive('merge', (el, { modifiers, expression }) => {
     mergeConfig.set(el, {
       strategy: expression,
+      transition: transition(modifiers)
     })
   })
 
@@ -101,6 +102,10 @@ function followRedirects(modifiers = []) {
   return globalConfig.followRedirects
     ? !modifiers.includes('nofollow')
     : modifiers.includes('follow')
+}
+
+function transition(modifiers = []) {
+  return globalConfig.transitions || modifiers.includes('transition')
 }
 
 function isLocalLink(el) {
@@ -247,7 +252,7 @@ async function render(request, targets, el, dispatch, redirectHandler) {
   if (!response.html) return
 
   let fragment = document.createRange().createContextualFragment(response.html)
-  targets = targets.map(target => {
+  let renders = targets.map(async target => {
     let template = fragment.getElementById(target.id)
     let strategy = mergeConfig.get(target)?.strategy || globalConfig.mergeStrategy
     if (!template) {
@@ -260,13 +265,13 @@ async function render(request, targets, el, dispatch, redirectHandler) {
       }
 
       if (response.ok) {
-        return merge(strategy, target, target.cloneNode(false))
+        return await merge(strategy, target, target.cloneNode(false))
       }
 
       throw new FailedResponseError(el)
     }
 
-    let freshEl = merge(strategy, target, template)
+    let freshEl = await merge(strategy, target, template)
 
     if (freshEl) {
       freshEl.removeAttribute('aria-busy')
@@ -276,6 +281,7 @@ async function render(request, targets, el, dispatch, redirectHandler) {
     return freshEl
   })
 
+  targets = await Promise.all(renders)
   let focus = el.getAttribute('x-focus')
   if (focus) {
     focusOn(document.getElementById(focus))
@@ -284,7 +290,7 @@ async function render(request, targets, el, dispatch, redirectHandler) {
   return targets
 }
 
-function merge(strategy, from, to) {
+async function merge(strategy, from, to) {
   let strategies = {
     before(from, to) {
       from.before(...to.childNodes)
@@ -323,7 +329,18 @@ function merge(strategy, from, to) {
     }
   }
 
-  return strategies[strategy](from, to)
+  if (!mergeConfig.get(from)?.transition || !document.startViewTransition) {
+    return strategies[strategy](from, to)
+  }
+
+  let freshEl = null
+  let transition = document.startViewTransition(() => {
+    freshEl = strategies[strategy](from, to)
+    return Promise.resolve()
+  })
+  await transition.updateCallbackDone
+
+  return freshEl
 }
 
 function focusOn(el) {

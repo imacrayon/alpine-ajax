@@ -121,7 +121,7 @@ form {
   window.example('/contacts/1')
 
   function edit(contact) {
-    return `<form id="contact_1" x-init x-target method="put" action="/contacts/1" x-focus="contact_1_edit" aria-label="Contact Information">
+    return `<form id="contact_1" x-init x-target x-merge.transition method="put" action="/contacts/1" x-focus="contact_1_edit" aria-label="Contact Information">
   <div>
     <label for="first_name">First Name</label>
     <input id="first_name" name="first_name" value="${contact.first_name}" style="width:18ch">
@@ -140,7 +140,7 @@ form {
   }
 
   function show(contact) {
-    return `<div id="contact_1">
+    return `<div id="contact_1" x-merge.transition>
   <p><strong>First Name</strong>: ${contact.first_name}</p>
   <p><strong>Last Name</strong>: ${contact.last_name}</p>
   <p><strong>Email</strong>: ${contact.email}</p>
