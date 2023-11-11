@@ -24,7 +24,7 @@ This example demonstrates how you can configure AJAX Components to respond to ev
 
 Notice that the comment form does not explicitly target the comment list. Instead, we want to decouple the form and the comment list behavior. The form will be in charge of updating it's own state after a submission, and the comment list will be in charge of adding new comments when a comment is created on the server.
 
-To this end we've add an custom event listener to the comment list. The comment list is listening for an event named `comment:created` to trigger on the root `window` object. When the `comment:created` event is triggered, a `GET` request is issued to `/comments`, and the comments list is reloaded with a fresh list of comments.
+To this end we've added a custom event listener to the comment list. The comment list is listening for an event named `comment:created` to trigger on the root `window` object. When the `comment:created` event is triggered, a `GET` request is issued to `/comments`, and the comments list is reloaded with a fresh list of comments.
 
 We've also included a placeholder element on the page assigned `id="sever_events"`. This placeholder will act as an event bus for our server events. We've included the `x-sync` attribute on this element so that we can easily push content into it without explicitly targeting it in an AJAX requests.
 
