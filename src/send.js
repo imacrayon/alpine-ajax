@@ -1,9 +1,10 @@
 let jobs = {}
 
-export async function send({ method, action, body, referrer }, handleRedirect) {
+export async function send({ method, action, body, referrer }, followRedirects) {
   // When duplicate `GET` requests are issued we'll proxy
   // the initial request to save network roundtrips.
   let proxy
+  let handleRedirects = redirectHandler(followRedirects)
   let onSuccess = response => response
   let onError = error => error
   if (method === 'GET') {
@@ -22,7 +23,7 @@ export async function send({ method, action, body, referrer }, handleRedirect) {
     referrer,
     method,
     body,
-  }).then(handleRedirect)
+  }).then(handleRedirects)
     .then(readHtml)
     .then(onSuccess)
     .catch(onError)
@@ -58,4 +59,17 @@ function isLocked(key) {
 function dequeue(key, resolver) {
   (jobs[key] || []).forEach(resolver)
   jobs[key] = undefined
+}
+
+function redirectHandler(follow) {
+  return follow
+    ? (response) => response
+    : (response) => {
+      if (response.redirected) {
+        window.location.href = response.url
+        return
+      }
+
+      return response
+    }
 }
