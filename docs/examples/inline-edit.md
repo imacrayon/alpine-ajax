@@ -69,6 +69,37 @@ Lastly, we'll update the edit form and the "Cancel" link so that focus is return
 
 Try using the keyboard in the following demo and notice how keyboard focus is maintained as your navigate between modes.
 
+<style>
+@keyframes fade-in {
+  from { opacity: 0; }
+}
+
+@keyframes fade-out {
+  to { opacity: 0; }
+}
+
+@keyframes slide-from-right {
+  from { transform: translateX(25%); }
+}
+
+@keyframes slide-to-left {
+  to { transform: translateX(25%); }
+}
+
+/* define animations for the old and new content */
+::view-transition-old(slide-fade) {
+  animation: 200ms ease 150ms both fade-out, 200ms ease 150ms both slide-to-left;
+}
+::view-transition-new(slide-fade) {
+  animation: 300ms ease 50ms both fade-in, 300ms ease 50ms both slide-from-right;
+}
+
+form {
+  background: #fff;
+  view-transition-name: slide-fade;
+}
+</style>
+
 
 <script type="module">
   let contact = {
@@ -90,7 +121,7 @@ Try using the keyboard in the following demo and notice how keyboard focus is ma
   window.example('/contacts/1')
 
   function edit(contact) {
-    return `<form id="contact_1" x-init x-target method="put" action="/contacts/1" x-focus="contact_1_edit" aria-label="Contact Information">
+    return `<form id="contact_1" x-init x-target x-merge.transition method="put" action="/contacts/1" x-focus="contact_1_edit" aria-label="Contact Information">
   <div>
     <label for="first_name">First Name</label>
     <input id="first_name" name="first_name" value="${contact.first_name}" style="width:18ch">
@@ -109,7 +140,7 @@ Try using the keyboard in the following demo and notice how keyboard focus is ma
   }
 
   function show(contact) {
-    return `<div id="contact_1">
+    return `<div id="contact_1" x-merge.transition>
   <p><strong>First Name</strong>: ${contact.first_name}</p>
   <p><strong>Last Name</strong>: ${contact.last_name}</p>
   <p><strong>Email</strong>: ${contact.email}</p>
