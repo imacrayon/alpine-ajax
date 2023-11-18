@@ -180,6 +180,12 @@ The `morph` option uses a DOM diffing algorithm to update HTML, it's a bit more 
 
 You can change the default merge strategy for all AJAX requests using the `mergeStrategy` global [configuration option](#configuration).
 
+### View transitions & animations
+
+You can animate transitions between different DOM states using the [View Transitions API](https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API). This API is still in active development and is currently only supported in Chrome browsers. Alpine AJAX provides support for View Transitions and gracefully falls back to no animations if the API is not available in a browser.
+
+To enable View Transitions on an element use the `x-merge.transition` modifier. When enabled in a supported browser, you should see content automatically animate as it is merged onto the page. You can customize any transition animation via CSS by following [Chrome's documentation for customizing transitions](https://developer.chrome.com/docs/web-platform/view-transitions/#simple-customization).
+
 ## x-focus
 
 Add `x-focus` to a form or link to control keyboard focus after an AJAX request has completed. The `x-focus` attribute accepts an element `id` that will be focused. Consider the following markup, we'll assume that clicking the "Edit" link will load a form to change the listed email address:
