@@ -10,14 +10,11 @@ let sendConfig = new WeakMap()
 let mergeConfig = new WeakMap()
 
 function Ajax(Alpine) {
-  var originalPopstate = window.onpopstate
-  window.onpopstate = function (event) {
-    if (event.state?.__AJAX__) {
-      window.location.reload(true)
-    } else {
-      originalPopstate(event)
-    }
-  }
+  window.addEventListener('popstate', (e) => {
+    if (!e.state || !e.state.__AJAX__) return
+
+    window.location.reload(true)
+  })
 
   Alpine.directive('target', (el, { modifiers, expression }, { cleanup }) => {
     let config = {
