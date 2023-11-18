@@ -109,6 +109,14 @@ When this form is submitted a `POST` request is issued to `/posts`. If the serve
 
 You can change the default way that `x-target` handles redirects using the `followRedirects` global [configuration option](#configuration).
 
+### History & URL Support
+
+Use the `x-target.replace` modifier to replace the URL in the browser's navigation bar when an AJAX request is issued.
+
+Use the `x-target.push` modifier to push a new history entry onto the browser's session history stack when an AJAX request is issued.
+
+`replace` simply changes the browser’s URL without adding a new entry to the browser’s session history stack, where as `push` creates a new history entry allowing your users to navigate back to the previous URL using the browser’s "Back" button.
+
 ## x-merge
 
 By default incoming HTML from the server will `replace` a targeted element. You can add `x-merge` to a targeted element to change how it merges incoming content. For example, if you wanted to `append` new items to a list of messages, you would add `x-merge="append"` to the list:

@@ -10,10 +10,17 @@ let sendConfig = new WeakMap()
 let mergeConfig = new WeakMap()
 
 function Ajax(Alpine) {
+  window.addEventListener('popstate', (e) => {
+    if (!e.state || !e.state.__AJAX__) return
+
+    window.location.reload(true)
+  })
+
   Alpine.directive('target', (el, { modifiers, expression }, { cleanup }) => {
     let config = {
       targets: parseIds(el, expression),
-      followRedirects: followRedirects(modifiers)
+      events: true,
+      ...parseModifiers(modifiers)
     }
 
     sendConfig.set(el, config)
@@ -59,18 +66,17 @@ function Ajax(Alpine) {
         referrer: source(el),
       }
 
-      let behavior = sendConfig.get(el) || {
-        followRedirects: globalConfig.followRedirects
+      let config = sendConfig.get(el) || {
+        followRedirects: globalConfig.followRedirects,
+        history: false,
       }
-      behavior = Object.assign(behavior, options)
+      config = Object.assign(config, options)
 
-      let ids = parseIds(el, behavior.targets || behavior.target)
+      let ids = parseIds(el, config.targets || config.target)
       let targets = findTargets(ids)
-      targets = behavior.sync ? addSyncTargets(targets) : targets
+      targets = config.sync ? addSyncTargets(targets) : targets
 
-      let dispatcher = behavior.events ? dispatch : () => true
-
-      return render(request, targets, el, dispatcher, redirectHandler(behavior.followRedirects))
+      return render(request, targets, el, config)
     }
   })
 }
@@ -97,10 +103,19 @@ function parseIds(el, expression = null) {
   return ids
 }
 
-function followRedirects(modifiers = []) {
-  return globalConfig.followRedirects
+function parseModifiers(modifiers = []) {
+  let followRedirects = globalConfig.followRedirects
     ? !modifiers.includes('nofollow')
     : modifiers.includes('follow')
+
+  let history = false;
+  if (modifiers.includes('push')) history = 'push'
+  if (modifiers.includes('replace')) history = 'replace'
+
+  return {
+    followRedirects,
+    history,
+  }
 }
 
 function isLocalLink(el) {
@@ -113,15 +128,16 @@ function isForm(el) {
   return el.tagName === 'FORM'
 }
 
-function listenForNavigate(el, sendConfig) {
+function listenForNavigate(el, config) {
   let handler = async (event) => {
     event.preventDefault()
     event.stopPropagation()
-    let targets = addSyncTargets(findTargets(sendConfig.targets))
+
     let request = navigateRequest(el)
+    let targets = addSyncTargets(findTargets(config.targets))
 
     try {
-      return await render(request, targets, el, dispatch, redirectHandler(sendConfig.followRedirects))
+      return await render(request, targets, el, config)
     } catch (error) {
       if (error instanceof FailedResponseError) {
         console.warn(error.message)
@@ -147,16 +163,17 @@ function navigateRequest(link) {
   }
 }
 
-function listenForSubmit(el, sendConfig) {
+function listenForSubmit(el, config) {
   let handler = async (event) => {
     event.preventDefault()
     event.stopPropagation()
-    let targets = addSyncTargets(findTargets(sendConfig.targets))
+
     let request = formRequest(el, event.submitter)
+    let targets = addSyncTargets(findTargets(config.targets))
 
     try {
       return await withSubmitter(event.submitter, () => {
-        return render(request, targets, el, dispatch, redirectHandler(sendConfig.followRedirects))
+        return render(request, targets, el, config)
       })
     } catch (error) {
       if (error instanceof FailedResponseError) {
@@ -211,14 +228,9 @@ function mergeBodyIntoAction(body, action) {
   let params = Array.from(body.entries()).filter(([key, value]) => value !== '' || value !== null)
   if (params.length) {
     let parts = action.split('#')
-    action = parts[0]
-    if (!action.includes('?')) {
-      action += '?'
-    } else {
-      action += '&'
-    }
-    action += new URLSearchParams(params)
     let hash = parts[1]
+    parts = parts[0].split('?')
+    action = parts[0] + '?' + new URLSearchParams(params)
     if (hash) {
       action += '#' + hash
     }
@@ -227,14 +239,29 @@ function mergeBodyIntoAction(body, action) {
   return action
 }
 
-async function render(request, targets, el, dispatch, redirectHandler) {
+async function render(request, targets, el, config) {
+
+  let dispatch = () => true
+  if (config.events) {
+    dispatch = (el, name, detail) => {
+      return el.dispatchEvent(
+        new CustomEvent(name, {
+          detail,
+          bubbles: true,
+          composed: true,
+          cancelable: true,
+        })
+      )
+    }
+  }
+
   if (!dispatch(el, 'ajax:before')) return
 
   targets.forEach(target => {
     target.setAttribute('aria-busy', 'true')
   })
 
-  let response = await send(request, redirectHandler)
+  let response = await send(request, config.followRedirects)
 
   if (response.ok) {
     dispatch(el, 'ajax:success', response)
@@ -279,6 +306,10 @@ async function render(request, targets, el, dispatch, redirectHandler) {
   let focus = el.getAttribute('x-focus')
   if (focus) {
     focusOn(document.getElementById(focus))
+  }
+
+  if (config.history) {
+    updateHistory(config.history, response.url)
   }
 
   return targets
@@ -334,6 +365,15 @@ function focusOn(el) {
   }, 0)
 }
 
+function updateHistory(strategy, url) {
+  let strategies = {
+    push: () => window.history.pushState({ __AJAX__: true }, '', url),
+    replace: () => window.history.replaceState({ __AJAX__: true }, '', url),
+  }
+
+  return strategies[strategy]();
+}
+
 function findTargets(ids = []) {
   return ids.map(id => {
     let target = document.getElementById(id)
@@ -357,30 +397,6 @@ function addSyncTargets(targets) {
   })
 
   return targets
-}
-
-function dispatch(el, name, detail) {
-  return el.dispatchEvent(
-    new CustomEvent(name, {
-      detail,
-      bubbles: true,
-      composed: true,
-      cancelable: true,
-    })
-  )
-}
-
-function redirectHandler(follow) {
-  return follow
-    ? (response) => response
-    : (response) => {
-      if (response.redirected) {
-        window.location.href = response.url
-        return
-      }
-
-      return response
-    }
 }
 
 function source(el) {
