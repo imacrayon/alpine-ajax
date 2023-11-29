@@ -52,6 +52,7 @@
   <header class="relative z-20 px-4 py-1 flex items-center justify-between md:px-6 lg:py-0">
     <a href="/" class="block w-24 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600 lg:hidden">
       {% set attrs = { width: 96, height: 85 } %}
+      {% set prefix = 'head_' %}
       {% include 'logo.svg' %}
       <span class="sr-only">Alpine AJAX</span>
     </a>
@@ -68,6 +69,7 @@
         <div class="sticky top-0 flex flex-col items-center">
           <a href="/" class="relative block w-48 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600">
             {% set attrs = { width: 192, height: 171 } %}
+            {% set prefix = 'foot_' %}
             {% include 'logo.svg' %}
             <span class="sr-only">Alpine AJAX</span>
           </a>
