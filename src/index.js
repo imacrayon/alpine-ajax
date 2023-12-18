@@ -170,6 +170,10 @@ function navigateRequest(link) {
 
 function listenForSubmit(el, config) {
   let handler = async (event) => {
+    if (event.submitter.hasAttribute('x-ajax.disable')) {
+      return;
+    }
+    
     event.preventDefault()
     event.stopPropagation()
 
