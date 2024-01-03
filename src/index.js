@@ -32,6 +32,8 @@ function Ajax(Alpine) {
     }
   })
 
+  Alpine.addInitSelector(() => `[${Alpine.prefixed('merge')}]`)
+
   Alpine.directive('merge', (el, { modifiers, expression }) => {
     mergeConfig.set(el, {
       strategy: expression,
