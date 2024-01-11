@@ -117,6 +117,10 @@ Use the `x-target.push` modifier to push a new history entry onto the browser's 
 
 `replace` simply changes the browser’s URL without adding a new entry to the browser’s session history stack, where as `push` creates a new history entry allowing your users to navigate back to the previous URL using the browser’s "Back" button.
 
+### Disable AJAX per submit button
+
+In cases where you have a form with multiple submit buttons, you may not always want all submit buttons to trigger an AJAX request. Add the `formnoajax` attribute to a submit element to instruct the form to make a standard full-page request instead of an AJAX request.
+
 ## x-merge
 
 By default incoming HTML from the server will `replace` a targeted element. You can add `x-merge` to a targeted element to change how it merges incoming content. For example, if you wanted to `append` new items to a list of messages, you would add `x-merge="append"` to the list:

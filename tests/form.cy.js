@@ -204,6 +204,25 @@ test('ajax:before can cancel AJAX requests',
   }
 )
 
+test('formnoajax can cancel AJAX requests',
+  html`<h1 id="title">Replace me</h1><form x-init x-target="title" method="post" action="/tests"><button formnoajax></button></form>`,
+  ({ intercept, get, wait }) => {
+    cy.on('fail', (error, runnable) => {
+      if (error.message.indexOf('Timed out retrying') !== 0) throw error
+    })
+    intercept('POST', '/tests', {
+      statusCode: 200,
+      body: '<h1 id="title">Success</h1>'
+    }).as('response')
+    get('button').click()
+    wait('@response', {
+      requestTimeout: 500,
+    }).then(() => {
+      get('#title').should('have.text', 'Replace me')
+    })
+  }
+)
+
 test('performs a normal submit when a 500 status code is returned',
   html`<form x-init x-target id="replace" method="post"><button></button></form>`,
   ({ intercept, get, wait }) => {
