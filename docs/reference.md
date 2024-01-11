@@ -121,6 +121,16 @@ Use the `x-target.push` modifier to push a new history entry onto the browser's 
 
 In cases where you have a form with multiple submit buttons, you may not always want all submit buttons to trigger an AJAX request. Add the `formnoajax` attribute to a submit element to instruct the form to make a standard full-page request instead of an AJAX request.
 
+```html
+<form id="checkout" x-init x-target method="post" action="/checkout">
+  <button name="procedure" value="increment">Increment quantity</button>
+  <button name="procedure" value="decrement">Decrement quantity</button>
+  <button formnoajax name="procedure" value="purchase">Complete checkout</button>
+</form>
+```
+
+In this example clicking "Increment" or "Decrement" will issue an AJAX request. Clicking "Complete Checkout" will perform a standard form submission.
+
 ## x-merge
 
 By default incoming HTML from the server will `replace` a targeted element. You can add `x-merge` to a targeted element to change how it merges incoming content. For example, if you wanted to `append` new items to a list of messages, you would add `x-merge="append"` to the list:
