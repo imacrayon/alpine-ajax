@@ -172,7 +172,7 @@ function navigateRequest(link) {
 
 function listenForSubmit(el, config) {
   let handler = async (event) => {
-    if (event.submitter.hasAttribute('formnoajax')) {
+    if (event.submitter && event.submitter.hasAttribute('formnoajax')) {
       return;
     }
 
