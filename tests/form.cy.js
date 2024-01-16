@@ -170,7 +170,19 @@ test('[x-target] handles extra whitespace',
   }
 )
 
-test('ajax:before event is fired',
+test('[x-headers] sets request headers',
+  html`<form x-init x-target x-headers="{ 'x-test': 'test' }" id="replace" method="post"><button></button></form>`,
+  ({ intercept, get, wait }) => {
+    intercept('POST', '/tests', {
+      statusCode: 200,
+      body: '<h1 id="title">Success</h1><div id="replace">Replaced</div>'
+    }).as('response')
+    get('button').click()
+    wait('@response').its('request.headers').should('have.property', 'x-test', 'test')
+  }
+)
+
+test('[ajax:before] event is fired',
   html`<p id="before">CHANGE ME</p><form x-init x-target id="replace" @ajax:before="document.getElementById('before').textContent = 'Changed'" method="post" action="/tests"><button></button></form>`,
   ({ intercept, get, wait }) => {
     intercept('POST', '/tests', {
@@ -185,7 +197,7 @@ test('ajax:before event is fired',
   }
 )
 
-test('ajax:before can cancel AJAX requests',
+test('[ajax:before] can cancel AJAX requests',
   html`<h1 id="title">Replace me</h1><form x-init x-target="title" @ajax:before="$event.preventDefault()" method="post" action="/tests"><button></button></form>`,
   ({ intercept, get, wait }) => {
     cy.on('fail', (error, runnable) => {
@@ -204,7 +216,7 @@ test('ajax:before can cancel AJAX requests',
   }
 )
 
-test('formnoajax can cancel AJAX requests',
+test('[formnoajax] can cancel AJAX requests',
   html`<h1 id="title">Replace me</h1><form x-init x-target="title" method="post" action="/tests"><button formnoajax></button></form>`,
   ({ intercept, get, wait }) => {
     cy.on('fail', (error, runnable) => {

@@ -45,3 +45,15 @@ test('target can be set in attribute',
     })
   }
 )
+
+test('[x-headers] sets request headers',
+  html`<div id="replace"></div><a href="/tests" x-init x-target="replace" x-headers="() => ({ 'x-test': 'te' + 'st' })">Link</a>`,
+  ({ intercept, get, wait }) => {
+    intercept('GET', '/tests', {
+      statusCode: 200,
+      body: '<h1 id="title">Success</h1><div id="replace">Replaced</div>'
+    }).as('response')
+    get('a').click()
+    wait('@response').its('request.headers').should('have.property', 'x-test', 'test')
+  }
+)

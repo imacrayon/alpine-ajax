@@ -1,6 +1,6 @@
 let jobs = {}
 
-export async function send({ method, action, body, referrer }, followRedirects) {
+export async function send({ method, action, body, referrer, headers }, followRedirects) {
   // When duplicate `GET` requests are issued we'll proxy
   // the initial request to save network roundtrips.
   let proxy
@@ -19,7 +19,7 @@ export async function send({ method, action, body, referrer }, followRedirects) 
   referrer = referrer || window.location.href
 
   let response = fetch(action, {
-    headers: { 'X-Alpine-Request': 'true' },
+    headers,
     referrer,
     method,
     body,
