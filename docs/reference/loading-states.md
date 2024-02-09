@@ -2,5 +2,5 @@
 eleventyNavigation:
   key: Loading states
   url: /reference/#loading-states
-  order: 9
+  order: 10
 ---

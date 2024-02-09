@@ -2,5 +2,5 @@
 eleventyNavigation:
   key: x-merge
   url: /reference/#x-merge
-  order: 4
+  order: 5
 ---

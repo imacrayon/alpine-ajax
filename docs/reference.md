@@ -131,6 +131,22 @@ In cases where you have a form with multiple submit buttons, you may not always 
 
 In this example clicking "Increment" or "Decrement" will issue an AJAX request. Clicking "Complete Checkout" will perform a standard form submission.
 
+## x-headers
+
+Use `x-headers` to add additional request headers:
+
+```html
+<form method="post" action="/comments" x-target="comments comments_count" x-headers="{'Custom-Header': 'Shmow-zow!'}">
+```
+
+Alpine AJAX adds two default headers to every request: `X-Alpine-Request` which is always `true`, and `X-Alpine-Target` which contains a space-separated list of target IDs. The previous form example would include these headers with its request:
+
+```txt
+X-Alpine-Request: true
+X-Alpine-Target: comments comments_count
+Custom-Header: Shmow-zow!
+```
+
 ## x-merge
 
 By default incoming HTML from the server will `replace` a targeted element. You can add `x-merge` to a targeted element to change how it merges incoming content. For example, if you wanted to `append` new items to a list of messages, you would add `x-merge="append"` to the list:
@@ -361,10 +377,6 @@ While an AJAX request is in progress there are a few loading states to be aware 
 
   * If a form submission triggered the request, the form's submit button is automatically disabled, this prevents users from triggering additional network requests by accidentally double clicking the submit button.
   * During an AJAX request, `aria-busy="true"` is set on all targets of the request. This attribute can be used in CSS to provide a loading indicator, check out the [Loading Indicator example](/examples/loading) for more details.
-
-## Request headers
-
-Requests sent by Alpine AJAX have a `X-Alpine-Request` header with contents `true`. The server may use this to change the contents of the response.
 
 ## Configuration
 
