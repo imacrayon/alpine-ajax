@@ -88,3 +88,17 @@ test('focus is maintained when merged content is morphed',
     })
   }
 )
+
+test('table elements can be merged',
+  html`<table><tr id="row"><td>Replace</td></tr></table><form x-init x-target="row" method="post"><button></button></form>`,
+  ({ intercept, get, wait }) => {
+    intercept('POST', '/tests', {
+      statusCode: 200,
+      body: '<tr id="row"><td>Replaced</td></tr>'
+    }).as('response')
+    get('button').focus().click()
+    wait('@response').then(() => {
+      get('#row').should('have.text', 'Replaced')
+    })
+  }
+)

@@ -284,7 +284,8 @@ async function render(request, targets, el, config) {
 
   if (!response.html) return
 
-  let fragment = document.createRange().createContextualFragment(response.html)
+  let wrapper = document.createRange().createContextualFragment('<template>' + response.html + '</template>')
+  let fragment = wrapper.firstElementChild.content
   let renders = targets.map(async target => {
     let template = fragment.getElementById(target.id)
     let strategy = mergeConfig.get(target)?.strategy || globalConfig.mergeStrategy
