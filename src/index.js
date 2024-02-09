@@ -16,7 +16,7 @@ function Ajax(Alpine) {
     window.location.reload(true)
   })
 
-  Alpine.directive('target', (el, { modifiers, expression }, { cleanup }) => {
+  Alpine.directive('target', (el, { modifiers, expression }, { evaluate, cleanup }) => {
     let config = {
       targets: parseIds(el, expression),
       events: true,
@@ -24,6 +24,8 @@ function Ajax(Alpine) {
     }
 
     sendConfig.set(el, config)
+
+    config.headers = evaluate(Alpine.bound(el, 'x-headers', '{}'))
 
     if (isLocalLink(el)) {
       cleanup(listenForNavigate(el, config))
@@ -62,10 +64,18 @@ function Ajax(Alpine) {
         }
       }
 
+      let headers = options.headers
+      if (!headers) {
+        headers = el.hasAttribute('x-headers')
+          ? Alpine.evaluate(el, Alpine.bound(el, 'x-headers', '{}'))
+          : {}
+      }
+
       let request = {
         action,
         method,
         body,
+        headers,
         referrer: source(el),
       }
 
@@ -141,6 +151,7 @@ function listenForNavigate(el, config) {
     event.stopPropagation()
 
     let request = navigateRequest(el)
+    request.headers = config.headers || {}
     let targets = addSyncTargets(findTargets(config.targets))
 
     try {
@@ -180,6 +191,7 @@ function listenForSubmit(el, config) {
     event.stopPropagation()
 
     let request = formRequest(el, event.submitter)
+    request.headers = config.headers || {}
     let targets = addSyncTargets(findTargets(config.targets))
 
     try {
@@ -268,10 +280,14 @@ async function render(request, targets, el, config) {
 
   if (!dispatch(el, 'ajax:before')) return
 
+  let targetIds = []
   targets.forEach(target => {
     target.setAttribute('aria-busy', 'true')
+    targetIds.push(target.id)
   })
 
+  request.headers['X-Alpine-Request'] = 'true'
+  request.headers['X-Alpine-Target'] = targetIds.join('  ')
   let response = await send(request, config.followRedirects)
 
   if (response.ok) {

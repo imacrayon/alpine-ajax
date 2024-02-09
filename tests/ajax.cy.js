@@ -19,6 +19,35 @@ test('GET request data is added to the URL',
   }
 )
 
+test('custom headers can be set through options',
+  html`<button type="button" id="replace" x-init @click="$ajax('/tests', {
+    method: 'POST',
+    headers: { 'X-Test': 'test' }
+  })"></button>`,
+  ({ intercept, get, wait }) => {
+    intercept('POST', '/tests', {
+      statusCode: 200,
+      body: '<h1 id="title">Success</h1><div id="replace">Replaced</div>'
+    }).as('response')
+    get('button').click()
+    wait('@response').its('request.headers').should('have.property', 'x-test', 'test')
+  }
+)
+
+test('[x-headers] can set custom headers',
+  html`<button type="button" id="replace" x-init x-headers="{ 'X-Test': 'test' }" @click="$ajax('/tests', {
+    method: 'POST',
+  })"></button>`,
+  ({ intercept, get, wait }) => {
+    intercept('POST', '/tests', {
+      statusCode: 200,
+      body: '<h1 id="title">Success</h1><div id="replace">Replaced</div>'
+    }).as('response')
+    get('button').click()
+    wait('@response').its('request.headers').should('have.property', 'x-test', 'test')
+  }
+)
+
 test('follows redirects by default',
   html`<button type="button" id="replace" x-init @click="$ajax('/tests', {
     method: 'POST',
