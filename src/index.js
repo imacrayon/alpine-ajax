@@ -280,14 +280,14 @@ async function render(request, targets, el, config) {
 
   if (!dispatch(el, 'ajax:before')) return
 
-  let header = []
+  let targetIds = []
   targets.forEach(target => {
     target.setAttribute('aria-busy', 'true')
-    header.push(target.id)
+    targetIds.push(target.id)
   })
 
   request.headers['X-Alpine-Request'] = 'true'
-  request.headers['X-Alpine-Target'] = header.join('  ')
+  request.headers['X-Alpine-Target'] = targetIds.join('  ')
   let response = await send(request, config.followRedirects)
 
   if (response.ok) {
