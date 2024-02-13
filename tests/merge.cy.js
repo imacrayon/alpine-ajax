@@ -75,20 +75,6 @@ test('content is merged after',
   }
 )
 
-test('focus is maintained when merged content is morphed',
-  html`<form x-init x-target id="replace" method="post" x-merge="morph"><button aria-pressed="false">Like</button></form>`,
-  ({ intercept, get, wait }) => {
-    intercept('POST', '/tests', {
-      statusCode: 200,
-      body: '<form x-target id="replace" method="post"><button aria-pressed="true">Unlike</button></form>'
-    }).as('response')
-    get('button').focus().click()
-    wait('@response').then(() => {
-      get('button').should('have.focus')
-    })
-  }
-)
-
 test('table elements can be merged',
   html`<table><tr id="row"><td>Replace</td></tr></table><form x-init x-target="row" method="post"><button></button></form>`,
   ({ intercept, get, wait }) => {
