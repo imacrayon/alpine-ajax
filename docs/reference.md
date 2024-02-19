@@ -392,6 +392,7 @@ import ajax from '@imacrayon/alpine-ajax'
 
 Alpine.plugin(ajax.configure({
   followRedirects: false,
+  headers: { 'X-CSRF-Token': 'mathmatical!' }
   mergeStrategy: 'morph',
 }))
 ```
@@ -410,6 +411,11 @@ Here are the configuration options and there defaults:
     <td><code>followRedirects</code></td>
     <td><code>true</code></td>
     <td>Switch this to <code>false</code> and AJAX requests will reload the browser window when they encounter a redirect response. You can then follow redirects case-by-case using the <code>follow</code> modifier on <code>x-target</code>.</td>
+  </tr>
+  <tr>
+    <td><code>headers</code></td>
+    <td><code>{}</code></td>
+    <td>Additional request headers, as key/value pairs, included in every AJAX request.</td>
   </tr>
   <tr>
     <td><code>mergeStrategy</code></td>
