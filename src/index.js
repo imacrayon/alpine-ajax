@@ -300,6 +300,10 @@ async function render(request, targets, el, config) {
 
   if (!response.html) return
 
+  if (config.history) {
+    updateHistory(config.history, response.url)
+  }
+
   let wrapper = document.createRange().createContextualFragment('<template>' + response.html + '</template>')
   let fragment = wrapper.firstElementChild.content
   let renders = targets.map(async target => {
@@ -335,10 +339,6 @@ async function render(request, targets, el, config) {
   let focus = el.getAttribute('x-focus')
   if (focus) {
     focusOn(document.getElementById(focus))
-  }
-
-  if (config.history) {
-    updateHistory(config.history, response.url)
   }
 
   return targets
