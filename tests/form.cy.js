@@ -45,6 +45,42 @@ test('makes POST requests for form',
   }
 )
 
+test('makes POST requests without an enctype',
+  html`<form x-init x-target id="replace" method="post"><button></button></form>`,
+  ({ intercept, get, wait }) => {
+    intercept('POST', '/tests', {
+      statusCode: 200,
+      body: '<h1 id="title">Success</h1><div id="replace">Replaced</div>'
+    }).as('response')
+    get('button').click()
+    wait('@response').its('request.headers.content-type').should('contain', 'application/x-www-form-urlencoded')
+  }
+)
+
+test('makes POST requests with an enctype',
+  html`<form x-init x-target id="replace" method="post" enctype="multipart/form-data"><button></button></form>`,
+  ({ intercept, get, wait }) => {
+    intercept('POST', '/tests', {
+      statusCode: 200,
+      body: '<h1 id="title">Success</h1><div id="replace">Replaced</div>'
+    }).as('response')
+    get('button').click()
+    wait('@response').its('request.headers.content-type').should('contain', 'multipart/form-data')
+  },
+)
+
+test('[formenctype] changes the enctype',
+  html`<form x-init x-target id="replace" method="post"><button formenctype="multipart/form-data"></button></form>`,
+  ({ intercept, get, wait }) => {
+    intercept('POST', '/tests', {
+      statusCode: 200,
+      body: '<h1 id="title">Success</h1><div id="replace">Replaced</div>'
+    }).as('response')
+    get('button').click()
+    wait('@response').its('request.headers.content-type').should('contain', 'multipart/form-data')
+  },
+)
+
 test('makes PUT requests for form',
   html`<form x-init x-target id="replace" method="put"><button></button></form>`,
   ({ intercept, get, wait }) => {
