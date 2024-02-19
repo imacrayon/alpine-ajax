@@ -39,3 +39,19 @@ test('default merge strategy can be changed',
     mergeStrategy: 'append',
   }
 )
+
+test('default request headers can be set',
+  html`<form x-init x-target id="replace" method="post"><button></button></form>`,
+  ({ intercept, get, wait }) => {
+    intercept('POST', '/tests', {
+      statusCode: 200,
+      body: '<h1 id="title">Success</h1><div id="replace">Replaced</div>'
+    }).as('response')
+    get('button').click()
+    wait('@response').its('request.headers').should('have.property', 'x-test', 'test')
+  },
+  null,
+  {
+    headers: { 'x-test': 'test' }
+  }
+)

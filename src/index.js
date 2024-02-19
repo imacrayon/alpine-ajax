@@ -4,6 +4,7 @@ import { morph as AlpineMorph } from '@alpinejs/morph'
 
 let globalConfig = {
   followRedirects: true,
+  headers: {},
   mergeStrategy: 'replace',
 }
 let sendConfig = new WeakMap()
@@ -25,7 +26,10 @@ function Ajax(Alpine) {
 
     sendConfig.set(el, config)
 
-    config.headers = evaluate(Alpine.bound(el, 'x-headers', '{}'))
+    config.headers = Object.assign(
+      globalConfig.headers,
+      evaluate(Alpine.bound(el, 'x-headers', '{}'))
+    )
 
     if (isLocalLink(el)) {
       cleanup(listenForNavigate(el, config))
@@ -65,6 +69,7 @@ function Ajax(Alpine) {
           ? Alpine.evaluate(el, Alpine.bound(el, 'x-headers', '{}'))
           : {}
       }
+      headers = Object.assign(globalConfig.headers, headers)
 
       let request = {
         action,
