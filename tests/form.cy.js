@@ -69,7 +69,7 @@ test('makes POST requests with an enctype',
   },
 )
 
-test('[formenctype] changes the enctype',
+test('respects [formenctype]',
   html`<form x-init x-target id="replace" method="post"><button formenctype="multipart/form-data"></button></form>`,
   ({ intercept, get, wait }) => {
     intercept('POST', '/tests', {
@@ -126,8 +126,38 @@ test('makes DELETE requests for form',
   }
 )
 
+test('respects [formmethod]',
+  html`<form x-init x-target id="replace" method="post"><button formmethod="post"></button></form>`,
+  ({ intercept, get, wait }) => {
+    intercept('POST', '/tests', {
+      statusCode: 200,
+      body: '<h1 id="title">Success</h1><div id="replace">Replaced</div>'
+    }).as('response')
+    get('button').click()
+    wait('@response').then(() => {
+      get('#title').should('not.exist')
+      get('#replace').should('have.text', 'Replaced')
+    })
+  }
+)
+
 test('request URL is determined by action attribute',
   html`<form x-init x-target id="replace" action="other.html"><button></button></form>`,
+  ({ intercept, get, wait }) => {
+    intercept('GET', '/tests/other.html', {
+      statusCode: 200,
+      body: '<h1 id="title">Success</h1><div id="replace">Replaced</div>'
+    }).as('response')
+    get('button').click()
+    wait('@response').then(() => {
+      get('#title').should('not.exist')
+      get('#replace').should('have.text', 'Replaced')
+    })
+  }
+)
+
+test('respects [formaction]',
+  html`<form x-init x-target id="replace"><button formaction="other.html"></button></form>`,
   ({ intercept, get, wait }) => {
     intercept('GET', '/tests/other.html', {
       statusCode: 200,
