@@ -228,12 +228,17 @@ function listenForSubmit(el, config) {
 
 function formRequest(form, submitter = null) {
   let method = (form.getAttribute('method') || 'GET').toUpperCase()
-  let enctype = form.getAttribute('enctype') || submitter?.getAttribute('formenctype') || 'application/x-www-form-urlencoded'
+  let enctype = form.getAttribute('enctype') || 'application/x-www-form-urlencoded'
   let referrer = source(form)
   let action = form.getAttribute('action') || referrer || window.location.href
   let body = parseFormData(form)
-  if (submitter?.name) {
-    body.append(submitter.name, submitter.value)
+  if (submitter) {
+    method = submitter.getAttribute('formmethod') || method
+    enctype = submitter.getAttribute('formenctype') || enctype
+    action = submitter.getAttribute('formaction') || action
+    if (submitter.name) {
+      body.append(submitter.name, submitter.value)
+    }
   }
   if (method === 'GET') {
     action = mergeBodyIntoAction(body, action)
