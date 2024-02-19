@@ -147,6 +147,10 @@ function isForm(el) {
 
 function listenForNavigate(el, config) {
   let handler = async (event) => {
+    if (event.which > 1 || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) {
+      return
+    }
+
     event.preventDefault()
     event.stopPropagation()
 
@@ -184,7 +188,7 @@ function navigateRequest(link) {
 function listenForSubmit(el, config) {
   let handler = async (event) => {
     if (event.submitter && event.submitter.hasAttribute('formnoajax')) {
-      return;
+      return
     }
 
     event.preventDefault()

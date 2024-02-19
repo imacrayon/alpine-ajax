@@ -46,6 +46,22 @@ test('target can be set in attribute',
   }
 )
 
+test('meta clicking a link does not issue an ajax request',
+  html`<a href="/tests" x-init x-target id="replace">Link</a>`,
+  ({ intercept, get, wait }) => {
+    intercept('GET', '/tests', {
+      statusCode: 200,
+      body: '<h1 id="title">Success</h1><div id="replace">Replaced</div>'
+    }).as('response')
+    get('a').click({ metaKey: true })
+    wait('@response', {
+      requestTimeout: 500,
+    }).then(() => {
+      get('#replace').should('have.text', 'Link')
+    })
+  }
+)
+
 test('[x-headers] sets request headers',
   html`<div id="replace"></div><a href="/tests" x-init x-target="replace" x-headers="() => ({ 'x-test': 'te' + 'st' })">Link</a>`,
   ({ intercept, get, wait }) => {
