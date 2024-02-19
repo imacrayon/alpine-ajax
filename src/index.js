@@ -46,21 +46,16 @@ function Ajax(Alpine) {
   Alpine.magic('ajax', (el) => {
     return (action, options = {}) => {
       let method = options.method ? options.method.toUpperCase() : 'GET'
-
+      let enctype = options.enctype || 'application/x-www-form-urlencoded'
       let body = null
-      if (options.body) {
-        if (options.body instanceof HTMLFormElement) {
-          body = new FormData(options.body)
-        } else {
-          body = new FormData
-          for (let key in options.body) {
-            body.append(key, options.body[key])
-          }
-        }
 
+      if (options.body) {
+        body = parseFormData(options.body)
         if (method === 'GET') {
           action = mergeBodyIntoAction(body, action)
           body = null
+        } else if (enctype !== 'multipart/form-data') {
+          body = formDataToParams(body)
         }
       }
 
@@ -145,6 +140,22 @@ function isForm(el) {
   return el.tagName === 'FORM'
 }
 
+function parseFormData(data) {
+  if (data instanceof HTMLFormElement) return new FormData(data)
+  if (data instanceof FormData) return data
+
+  const formData = new FormData()
+  for (let key in data) {
+    if (typeof data[key] === 'object') {
+      formData.append(key, JSON.stringify(data[key]))
+    } else {
+      formData.append(key, data[key])
+    }
+  }
+
+  return formData
+}
+
 function listenForNavigate(el, config) {
   let handler = async (event) => {
     event.preventDefault()
@@ -217,15 +228,18 @@ function listenForSubmit(el, config) {
 
 function formRequest(form, submitter = null) {
   let method = (form.getAttribute('method') || 'GET').toUpperCase()
+  let enctype = form.getAttribute('enctype') || submitter?.getAttribute('formenctype') || 'application/x-www-form-urlencoded'
   let referrer = source(form)
   let action = form.getAttribute('action') || referrer || window.location.href
-  let body = new FormData(form)
-  if (submitter && submitter.name) {
+  let body = parseFormData(form)
+  if (submitter?.name) {
     body.append(submitter.name, submitter.value)
   }
   if (method === 'GET') {
     action = mergeBodyIntoAction(body, action)
     body = null
+  } else if (enctype !== 'multipart/form-data') {
+    body = formDataToParams(body)
   }
 
   return { method, action, body, referrer }
@@ -248,18 +262,28 @@ async function withSubmitter(submitter, callback) {
 }
 
 function mergeBodyIntoAction(body, action) {
-  let params = Array.from(body.entries()).filter(([key, value]) => value !== '' || value !== null)
-  if (params.length) {
+  let params = formDataToParams(body)
+
+  if (Array.from(params).length) {
     let parts = action.split('#')
     let hash = parts[1]
-    parts = parts[0].split('?')
-    action = parts[0] + '?' + new URLSearchParams(params)
+    action += parts[0].includes('?') ? '&' : '?'
+    action += params
     if (hash) {
       action += '#' + hash
     }
+
   }
 
   return action
+}
+
+function formDataToParams(body) {
+  let params = Array.from(body.entries()).filter(([key, value]) => {
+    return !(value instanceof File)
+  })
+
+  return new URLSearchParams(params)
 }
 
 async function render(request, targets, el, config) {
