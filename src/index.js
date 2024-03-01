@@ -82,6 +82,7 @@ function Ajax(Alpine) {
       let config = sendConfig.get(el) || {
         followRedirects: globalConfig.followRedirects,
         history: false,
+        focus: true,
       }
       config = Object.assign(config, options)
 
@@ -128,6 +129,7 @@ function parseModifiers(modifiers = []) {
   return {
     followRedirects,
     history,
+    focus: !modifiers.includes('nofocus')
   }
 }
 
@@ -344,6 +346,7 @@ async function render(request, targets, el, config) {
 
   let wrapper = document.createRange().createContextualFragment('<template>' + response.html + '</template>')
   let fragment = wrapper.firstElementChild.content
+  let focused = !config.focus
   let renders = targets.map(async target => {
     let template = fragment.getElementById(target.id)
     let strategy = mergeConfig.get(target)?.strategy || globalConfig.mergeStrategy
@@ -366,20 +369,24 @@ async function render(request, targets, el, config) {
     let freshEl = await merge(strategy, target, template)
 
     if (freshEl) {
-      freshEl.removeAttribute('aria-busy')
       freshEl.dataset.source = response.url
+      freshEl.removeAttribute('aria-busy')
+      if (!focused) {
+        ['[x-autofocus]', '[autofocus]'].forEach(selector => {
+          if (focused) return
+          let autofocus = freshEl.matches(selector) ? freshEl : freshEl.querySelector(selector)
+          if (autofocus) {
+            focusOn(autofocus)
+            focused = true
+          }
+        })
+      }
     }
 
     return freshEl
   })
 
-  targets = await Promise.all(renders)
-  let focus = el.getAttribute('x-focus')
-  if (focus) {
-    focusOn(document.getElementById(focus))
-  }
-
-  return targets
+  return await Promise.all(renders)
 }
 
 async function merge(strategy, from, to) {
