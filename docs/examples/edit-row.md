@@ -29,31 +29,48 @@ Here is the HTML for a table row:
   <td>Finn Mertins</td>
   <td>fmertins@candykingdom.gov</td>
   <td>
-    <a id="contact_1_edit" href="/contacts/1/edit" x-target="contact_1" x-focus="contact_1_name">Edit</a>
+    <a href="/contacts/1/edit" x-target="contact_1">Edit</a>
   </td>
 </tr>
 ```
 
-Notice the "Edit" link in the table row is targeting its own row, this will tell the request triggered by the "Edit" link to replace the entire table row. Additionally, we've added an `id` and `x-focus` attribute to the "Edit" link so that we can control keyboard focus and we switch between "view" and "edit" modes for this table row.
+Notice the "Edit" link in the table row is targeting its own row, this will tell the request triggered by the "Edit" link to replace the entire table row.
 
 Finally, here is the "edit mode" state that will replace a row:
 
 ```html
 <tr id="contact_1">
-  <td><input aria-label="Name" form="contact_1_form" name="name" id="contact_1_name" value="Finn Mertins"></td>
-  <td><input aria-label="Email" form="contact_1_form" name="email" type="email" id="contact_1_email" value="fmertins@candykingdom.gov">
+  <td><input aria-label="Name" form="contact_1_form" name="name" value="Finn Mertins"></td>
+  <td><input aria-label="Email" form="contact_1_form" name="email" value="fmertins@candykingdom.gov" type="email">
   </td>
   <td>
-    <a x-target="contact_1" href="/contacts" x-focus="contact_1_edit">Cancel</a>
-    <form x-target="contact_1" id="contact_1_form" method="put" action="/contacts/1" x-focus="contact_1_edit">
+    <a x-target="contact_1" href="/contacts">Cancel</a>
+    <form x-target="contact_1" id="contact_1_form" method="put" action="/contacts/1">
       <button>Save</button>
     </form>
   </td>
 </tr>
 ```
-Note the matching `id="contact_1"` which is used to match the table row being replaced. We've also added `x-focus` to the "Cancel" link and edit form so that keyboard focus is returned to the "Edit" button in "view mode" when we cancel or submit changes.
 
-Try using the keyboard in the following demo and notice how keyboard focus is maintained as your navigate between "view mode" and "edit mode" in each row.
+When submitted, the form issues a `PUT` back to `/contacts/1`, which will again display the "view mode" with updated contact details.
+
+## Improving focus
+
+Our editable table is functioning now, but we can sprinkle in a few more attributes to ensure that it's a good experience for keyboard users. We'll use the `x-autofocus` attribute to control the keyboard focus as we switch between the "view" and "edit" modes on the page.
+
+First, we'll add `x-autofocus` to the "Name" field so that it is focused when our edit form is rendered:
+
+```html
+<input aria-label="Name" form="contact_1_form" name="name" value="Finn Mertins" x-autofocus>
+```
+
+Next, we'll add `x-autofocus` to the "Edit" link, so that it is focused when returning back to the details page:
+
+```html
+<a href="/contacts/1/edit" x-target="contact_1" x-autofocus>Edit</a>
+```
+
+Try using the keyboard in the following demo and notice how keyboard focus is maintained as your navigate between the "view" and "edit" modes.
 
 <style>
   td > div {
@@ -100,19 +117,19 @@ Try using the keyboard in the following demo and notice how keyboard focus is ma
     let rows = contacts.map(contact => `<tr id="contact_${contact.id}">
   <td>${contact.name}</td>
   <td>${contact.email}</td>
-  <td><a href="/contacts/${contact.id}/edit" x-target="contact_${contact.id}" id="contact_${contact.id}_edit" x-focus="contact_${contact.id}_name">Edit</a></td>
+  <td><a href="/contacts/${contact.id}/edit" x-target="contact_${contact.id}" x-autofocus>Edit</a></td>
 </tr>`).join('\n')
     return table(rows)
   }
 
   function edit(contacts) {
     let rows = contacts.map(contact => `<tr id="contact_${contact.id}">
-  <td><input aria-label="Name" form="contact_${contact.id}_form" name="name" id="contact_${contact.id}_name" value="${contact.name}"></td>
-  <td><input aria-label="Email" form="contact_${contact.id}_form" name="email" id="contact_${contact.id}_email" value="${contact.email}"></td>
+  <td><input aria-label="Name" form="contact_${contact.id}_form" name="name" value="${contact.name}" x-autofocus></td>
+  <td><input aria-label="Email" form="contact_${contact.id}_form" name="email" value="${contact.email}"></td>
   <td>
     <div>
-      <a x-target="contact_${contact.id}" href="/contacts" x-focus="contact_${contact.id}_edit">Cancel</a>
-      <form x-target="contact_${contact.id}" id="contact_${contact.id}_form" method="put" action="/contacts/${contact.id}" x-focus="contact_${contact.id}_edit" style="margin:0;display:inline-flex;">
+      <a x-target="contact_${contact.id}" href="/contacts">Cancel</a>
+      <form x-target="contact_${contact.id}" id="contact_${contact.id}_form" method="put" action="/contacts/${contact.id}">
         <button>Save</button>
       </form>
     </div>

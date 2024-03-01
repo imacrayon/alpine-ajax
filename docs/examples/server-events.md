@@ -63,10 +63,10 @@ To address the first issue, we'll include a message in our new server event and 
 </div>
 ```
 
-Next, we'll add an `x-focus` attribute to our form, so that we can return focus back to the comment `<textarea>` after a comment is posted:
+Next, we'll add a `x-autofocus` attribute to the comment `<textarea>`, so that focus is returned to it after a comment is posted:
 
 ```html
-<form id="comment_form" x-init x-target x-focus="comment_body" method="post" action="/comments">
+<textarea id="comment_body" name="comment_body" x-autofocus></textarea>
 ```
 
 <style>
@@ -109,17 +109,17 @@ Next, we'll add an `x-focus` attribute to our form, so that we can return focus 
 
     return `<ul x-data @comment:created.window="$ajax('/comments')" id="comments">${items}</ul>
 ${serverEvent()}
-<form id="comment_form" x-target x-focus="comment_body" method="post" action="/comments">
+<form id="comment_form" x-target method="post" action="/comments">
   <label for="comment_body">Comment</label>
-  <textarea id="comment_body" name="comment_body"></textarea>
+  <textarea id="comment_body" name="comment_body" x-autofocus></textarea>
   <button>Submit</button>
 </form>`
   }
   function create(event) {
     return `${serverEvent(event)}
-<form id="comment_form" x-init x-target x-focus="comment_body" method="post" action="/comments">
+<form id="comment_form" x-init x-target method="post" action="/comments">
   <label for="comment_body">Comment</label>
-  <textarea id="comment_body" name="comment_body"></textarea>
+  <textarea id="comment_body" name="comment_body" x-autofocus></textarea>
   <button>Submit</button>
 </form>`
   }

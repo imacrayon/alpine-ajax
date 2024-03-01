@@ -224,22 +224,33 @@ You can animate transitions between different DOM states using the [View Transit
 
 To enable View Transitions on an element use the `x-merge.transition` modifier. When enabled in a supported browser, you should see content automatically animate as it is merged onto the page. You can customize any transition animation via CSS by following [Chrome's documentation for customizing transitions](https://developer.chrome.com/docs/web-platform/view-transitions/#simple-customization).
 
-## x-focus
+## x-autofocus
 
-Add `x-focus` to a form or link to control keyboard focus after an AJAX request has completed. The `x-focus` attribute accepts an element `id` that will be focused. Consider the following markup, we'll assume that clicking the "Edit" link will load a form to change the listed email address:
+When AJAX requests change content on the page it's important that you control keyboard focus to maintain [meaningful sequencing](https://www.w3.org/TR/WCAG21/#meaningful-sequence) and [focus order](https://www.w3.org/TR/WCAG21/#focus-order). `x-autofocus` will restore a user's keyboard focus when the content they were focused on is changed by an AJAX request.
+
+Notice the `x-autofocus` attribute on this email `<input>`:
 
 ```html
-<div x-init x-target id="contact_1">
-  <p>fmertens@candykingdom.gov</p>
-  <a href="/contacts/1/edit" x-focus="email_field">Edit</a>
-</div>
+<input type="email" name="email" x-autofocus />
 ```
 
-The `x-focus` attribute on the "Edit" link ensures that the element with `id="email_field"` will be focused after the requested edit form is injected onto the page.
+This input will steal keyboard focus whenever it is inserted into the page by Alpine AJAX. Check out the [Toggle Button](/examples/toggle-button/) and [Inline Edit](/examples/inline-edit/) examples to see `x-autofocus` in action.
 
-Controlling focus is important for providing [meaningful sequencing](https://www.w3.org/TR/WCAG21/#meaningful-sequence) and [focus order](https://www.w3.org/TR/WCAG21/#focus-order) for keyboard users, however, take care not to overuse focus control. This attribute should primarily be used to prevent the keyboard focus from disappearing when page content changes.
+### Disabling autofocus
 
-It's worth noting that `x-merge="morph"` is another way to preserve keyboard focus between content changes. However, there are cases when the DOM is transformed so much that the Morph algorithm is unable to reliably preserve focus state. In theses situations `x-focus` can correct any focus discrepancies.
+You may use the `nofocus` modifier on `x-target` to disable autofocus behavior. This can be useful in situations where you may need to hand over focus control to a  third-party script. In the following example we've disabled focus so that our dialog component can handle focus instead:
+
+```html
+<a href="/preview/1" x-target.nofocus="dialog_content" @ajax:before="$dispatch('dialog:open')">Open preview</a>
+```
+
+### The standard `autofocus` attribute
+
+Alpine AJAX will also respect the standard `autofocus` attribute and treat it like `x-autofocus`. When AJAX content contains elements with both `x-autofocus` and `autofocus`. The element with `x-autofocus` will win focus.
+
+### Using `morph` and focus
+
+It's worth noting that `x-merge="morph"` is another way to preserve keyboard focus between content changes. However, there are cases when the DOM is transformed so much that the Morph algorithm is unable to reliably preserve focus state, so `x-autofocus` is a lot more predictable in most situations.
 
 ## x-sync
 

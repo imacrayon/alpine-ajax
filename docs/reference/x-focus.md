@@ -1,6 +1,6 @@
 ---
 eleventyNavigation:
-  key: x-focus
-  url: /reference/#x-focus
+  key: x-autofocus
+  url: /reference/#x-autofocus
   order: 6
 ---
