@@ -88,3 +88,32 @@ test('table elements can be merged',
     })
   }
 )
+
+test('merging can be interrupted',
+  html`<form x-init x-target id="target" method="post" @ajax:merge="$event.preventDefault()"><button></button></form>`,
+  ({ intercept, get, wait }) => {
+    intercept('POST', '/tests', {
+      statusCode: 200,
+      body: '<h1 id="title">Success</h1><div id="target">Replace</div>'
+    }).as('response')
+    get('button').click()
+    wait('@response').then(() => {
+      get('#title').should('not.exist')
+      get('#target').should('have.html', '<button></button>')
+    })
+  }
+)
+
+test('merged content can be changed',
+  html`<form x-init x-target id="target" method="post" @ajax:merge="$event.preventDefault();$event.detail.content.innerHTML = 'Changed';$event.detail.merge();"><button></button></form>`,
+  ({ intercept, get, wait }) => {
+    intercept('POST', '/tests', {
+      statusCode: 200,
+      body: '<div id="target">Test</div>'
+    }).as('response')
+    get('button').click()
+    wait('@response').then(() => {
+      get('#target').should('have.text', 'Changed')
+    })
+  }
+)

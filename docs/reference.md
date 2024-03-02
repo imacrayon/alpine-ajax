@@ -374,9 +374,9 @@ In this example we make a `POST` request with the `email` value to the `/validat
 </table>
 </div>
 
-## AJAX events
+## Events
 
-You can listen for AJAX events to perform additional actions during an AJAX request:
+You can listen for events to perform additional actions during the lifecycle of an AJAX request:
 
 <div class="table">
 <table>
@@ -387,23 +387,31 @@ You can listen for AJAX events to perform additional actions during an AJAX requ
   <tbody>
   <tr>
     <td><code>ajax:before</code></td>
-    <td>Fired before a network request is made. If this event is canceled using <code>$event.preventDefault()</code> the request will be aborted.</td>
+    <td>Fired before an network request is made. If this event is canceled using <code>$event.preventDefault()</code> the request will be aborted.</td>
   </tr>
   <tr>
     <td><code>ajax:success</code></td>
-    <td>Fired when a network request completes. <code>detail</code> contains the server response data.</td>
+    <td>Fired when an network request completes. <code>$event.detail</code> contains the server response data.</td>
   </tr>
   <tr>
     <td><code>ajax:error</code></td>
-    <td>Fired when a request responds with a `400` or `500` status code. <code>detail</code> contains the server response data.</td>
+    <td>Fired when an network request responds with a `400` or `500` status code. <code>$event.detail</code> contains the server response data.</td>
   </tr>
   <tr>
     <td><code>ajax:after</code></td>
-    <td>Fired after every successful or unsuccessful request.</td>
+    <td>Fired after every successful or unsuccessful network request.</td>
   </tr>
   <tr>
     <td><code>ajax:missing</code></td>
-    <td>Fired if a matching target is not found in the response body. <code>detail</code> contains the server response data. You may cancel this event using <code>$event.preventDefault()</code> to override the default behavior.</td>
+    <td>Fired if a matching target is not found in the response body. <code>$event.detail</code> contains the server response data. You may cancel this event using <code>$event.preventDefault()</code> to override the default behavior.</td>
+  </tr>
+  <tr>
+    <td><code>ajax:merge</code></td>
+    <td>Fired when new content is being merged into <code>$event.target</code>. You may override a merge using <code>$event.preventDefault()</code>. <code>$event.detail</code> contains the server <code>response</code> data, the <code>content</code> to merge, and a <code>merge()</code> method to continue the merge.</td>
+  </tr>
+  <tr>
+    <td><code>ajax:merged</code></td>
+    <td>Fired after new content was merged into <code>$event.target</code>.</td>
   </tr>
   </tbody>
 </table>
