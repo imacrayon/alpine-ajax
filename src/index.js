@@ -86,7 +86,7 @@ function Ajax(Alpine) {
       let config = sendConfig.get(el) || {
         followRedirects: globalConfig.followRedirects,
         history: false,
-        focus: true,
+        focus: false,
       }
       config = Object.assign(config, options)
 
