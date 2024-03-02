@@ -37,13 +37,13 @@ This example demonstrates how to load content automatically when the user scroll
 </table>
 ```
 
-Alpine already provides a great way to a users's scroll: We can use the first-party [Intercept Plugin](https://alpinejs.dev/plugins/intersect), so let's load that onto the page:
+Alpine already provides a great way to react to a users's scroll position: We can use the first-party [Intercept Plugin](https://alpinejs.dev/plugins/intersect), so let's load that onto the page:
 
 ```html
 <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/intersect@3.x.x/dist/cdn.min.js"></script>
 ```
 
-_If you'd rather bundle your JavaScript, the [Intercept installation instructions](https://alpinejs.dev/plugins/intersect#installation) explain how to do this too._
+_If you'd rather bundle your JavaScript, the [Intercept Plugin installation instructions](https://alpinejs.dev/plugins/intersect#installation) explain how to do this too._
 
 With the Intercept Plugin installed we can update our pagination markup to issue an AJAX request when it is scrolled into view:
 

@@ -8,7 +8,7 @@ eleventyNavigation:
 
 The inline edit pattern provides a way to edit parts of a record by toggling between a "view mode" and "edit mode" without a page refresh .
 
-This pattern starts with a "view mode" showing the details of a contact inside an AJAX Component assigned `id="contact_1"`. The AJAX Component contains a link that will fetch the "edit mode" for editing a contact at the URL `/contacts/1/edit`.
+This pattern starts with a "view mode" showing the details of a contact inside an AJAX component assigned `id="contact_1"`. The AJAX component contains a link that will fetch the "edit mode" for editing a contact at the URL `/contacts/1/edit`.
 
 ```html
 <div id="contact_1">
