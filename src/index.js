@@ -366,7 +366,7 @@ async function render(request, targets, el, config) {
       throw new FailedResponseError(el)
     }
 
-    let mergeTarget = async () => {
+    let mergeContent = async () => {
       let merged = await merge(strategy, target, content)
 
       if (merged) {
@@ -389,11 +389,11 @@ async function render(request, targets, el, config) {
       return merged
     }
 
-    if (!dispatch(target, 'ajax:merge', { strategy, content, merge: mergeTarget })) {
+    if (!dispatch(target, 'ajax:merge', { strategy, content, merge: mergeContent })) {
       return
     }
 
-    return mergeTarget()
+    return mergeContent()
   })
 
   return await Promise.all(renders)
