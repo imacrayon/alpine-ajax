@@ -10,7 +10,7 @@ dependencies:
 
 This example filters down a table of contacts based on the user's selection.
 
-We start with some filter buttons and a table inside an AJAX component with `id="contacts"` and `x-merge="morph"`.
+We start with some filter buttons and a table inside a container with `id="contacts"` and `x-merge="morph"`.
 
 ```html
 <div id="contacts" x-merge="morph">
@@ -43,7 +43,7 @@ We start with some filter buttons and a table inside an AJAX component with `id=
 </div>
 ```
 
-It's important to note the `x-merge="morph"` attribute on the AJAX component. The `morph` option ensures that the keyboard focus state of our filter buttons will be preserved as the HTML in our component changes between AJAX requests. Morphing requires an extra dependency, so let's pull in Alpine's [Morph Plugin](https://alpinejs.dev/plugins/morph):
+The `x-merge="morph` attribute does a lot of the heavy lifting in this example. The `morph` option ensures that the keyboard focus state of our filter buttons will be preserved as the HTML changes between AJAX requests. Morphing requires an extra dependency, so let's pull in Alpine's [Morph Plugin](https://alpinejs.dev/plugins/morph):
 
 ```html
 <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/morph@3.x.x/dist/cdn.min.js"></script>

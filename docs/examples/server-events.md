@@ -6,7 +6,7 @@ eleventyNavigation:
   order: 15
 ---
 
-This example demonstrates how you can configure AJAX components to respond to events that occur on your server. Alpine already provides a pattern for communicating between components using an [event listener on the `window` object](https://alpinejs.dev/essentials/events#listening-for-events-on-window). We can use this same pattern to also communicate from the server to any component on the page. Consider this list of comments followed by a comment form:
+This example demonstrates how you can configure components to respond to events that occur on your server. Alpine already provides a pattern for communicating between components using an [event listener on the `window` object](https://alpinejs.dev/essentials/events#listening-for-events-on-window). We can use this same pattern to also communicate from the server to any component on the page. Consider this list of comments followed by a comment form:
 
 ```html
 <ul x-init @comment:created.window="$ajax('/comments')" id="comments">
