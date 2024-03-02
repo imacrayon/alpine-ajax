@@ -352,42 +352,48 @@ async function render(request, targets, el, config) {
   let fragment = wrapper.firstElementChild.content
   let focused = !config.focus
   let renders = targets.map(async target => {
-    let template = fragment.getElementById(target.id)
+    let content = fragment.getElementById(target.id)
     let strategy = mergeConfig.get(target)?.strategy || globalConfig.mergeStrategy
-    if (!template) {
-      if (!dispatch(el, 'ajax:missing', response)) {
+    if (!content) {
+      if (!dispatch(el, 'ajax:missing', { response, fragment })) {
         return
       }
 
-      if (!target.hasAttribute('x-sync')) {
-        console.warn(`Target #${target.id} not found in AJAX response.`)
-      }
-
       if (response.ok) {
-        return await merge(strategy, target, target.cloneNode(false))
+        return target.remove();
       }
 
       throw new FailedResponseError(el)
     }
 
-    let freshEl = await merge(strategy, target, template)
+    let mergeTarget = async () => {
+      let merged = await merge(strategy, target, content)
 
-    if (freshEl) {
-      freshEl.dataset.source = response.url
-      freshEl.removeAttribute('aria-busy')
-      if (!focused) {
-        ['[x-autofocus]', '[autofocus]'].forEach(selector => {
-          if (focused) return
-          let autofocus = freshEl.matches(selector) ? freshEl : freshEl.querySelector(selector)
-          if (autofocus) {
-            focusOn(autofocus)
-            focused = true
-          }
-        })
+      if (merged) {
+        merged.dataset.source = response.url
+        merged.removeAttribute('aria-busy')
+        if (!focused) {
+          ['[x-autofocus]', '[autofocus]'].forEach(selector => {
+            if (focused) return
+            let autofocus = merged.matches(selector) ? merged : merged.querySelector(selector)
+            if (autofocus) {
+              focusOn(autofocus)
+              focused = true
+            }
+          })
+        }
       }
+
+      dispatch(merged, 'ajax:merged')
+
+      return merged
     }
 
-    return freshEl
+    if (!dispatch(target, 'ajax:merge', { strategy, content, merge: mergeTarget })) {
+      return
+    }
+
+    return mergeTarget()
   })
 
   return await Promise.all(renders)
@@ -436,14 +442,14 @@ async function merge(strategy, from, to) {
     return strategies[strategy](from, to)
   }
 
-  let freshEl = null
+  let merged = null
   let transition = document.startViewTransition(() => {
-    freshEl = strategies[strategy](from, to)
+    merged = strategies[strategy](from, to)
     return Promise.resolve()
   })
   await transition.updateCallbackDone
 
-  return freshEl
+  return merged
 }
 
 function focusOn(el) {
