@@ -376,7 +376,7 @@ In this example we make a `POST` request with the `email` value to the `/validat
 
 ## Events
 
-You can listen for events to perform additional actions during the life cycle of an AJAX request:
+You can listen for events to perform additional actions during the lifecycle of an AJAX request:
 
 <div class="table">
 <table>
