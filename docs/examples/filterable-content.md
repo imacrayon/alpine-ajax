@@ -4,11 +4,13 @@ eleventyNavigation:
   key: Filterable Content
   excerpt: Filter down a table or list of content.
   order: 8
+dependencies:
+  - https://cdn.jsdelivr.net/npm/@alpinejs/morph@3.x.x/dist/cdn.min.js
 ---
 
 This example filters down a table of contacts based on the user's selection.
 
-We start with some filter buttons and a table inside an AJAX Component with `id="contacts"`. It's important to note the `x-merge="morph"` attribute on the AJAX Component. The `morph` option ensures that the keyboard focus state of our filter buttons will be preserved as the HTML on our Component changes between AJAX requests.
+We start with some filter buttons and a table inside an AJAX component with `id="contacts"` and `x-merge="morph"`.
 
 ```html
 <div id="contacts" x-merge="morph">
@@ -40,6 +42,14 @@ We start with some filter buttons and a table inside an AJAX Component with `id=
   </table>
 </div>
 ```
+
+It's important to note the `x-merge="morph"` attribute on the AJAX component. The `morph` option ensures that the keyboard focus state of our filter buttons will be preserved as the HTML in our component changes between AJAX requests. Morphing requires an extra dependency, so let's pull in Alpine's [Morph Plugin](https://alpinejs.dev/plugins/morph):
+
+```html
+<script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/morph@3.x.x/dist/cdn.min.js"></script>
+```
+
+_If you'd rather bundle your JavaScript, the [Morph Plugin installation instructions](https://alpinejs.dev/plugins/morph#installation) explain how to do this too._
 
 Clicking a filter button issues a `GET` request to `/contacts?status=` which returns a response with updated content.
 

@@ -2,11 +2,15 @@ import Alpine from 'alpinejs'
 import ajax from '../../dist/module.esm'
 import '../../dist/server'
 
-
-Alpine.plugin(ajax)
-
 window.Alpine = Alpine
-Alpine.start()
+
+// Load the ajax plugin within an event handler so
+// script tag dependencies are initialized first
+document.addEventListener('alpine:init', () => {
+  window.Alpine.plugin(ajax)
+});
+
+window.Alpine.start()
 
 window.example = function (action) {
   document.addEventListener('DOMContentLoaded', () => {

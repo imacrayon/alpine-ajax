@@ -1,6 +1,5 @@
 import './polyfills'
 import { send } from './send'
-import { morph as AlpineMorph } from '@alpinejs/morph'
 
 let globalConfig = {
   followRedirects: true,
@@ -10,7 +9,12 @@ let globalConfig = {
 let sendConfig = new WeakMap()
 let mergeConfig = new WeakMap()
 
+let morphElement = (from, to) => {
+  console.error(`You can't use the "morph" merge without first installing the Alpine "morph" plugin here: https://alpinejs.dev/plugins/morph`)
+};
+
 function Ajax(Alpine) {
+  if (Alpine.morph) morphElement = Alpine.morph
   window.addEventListener('popstate', (e) => {
     if (!e.state || !e.state.__AJAX__) return
 
@@ -422,7 +426,7 @@ async function merge(strategy, from, to) {
       return from
     },
     morph(from, to) {
-      AlpineMorph(from, to)
+      morphElement(from, to)
 
       return document.getElementById(to.id)
     }

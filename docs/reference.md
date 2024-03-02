@@ -206,17 +206,44 @@ There are a total of seven merge strategies you can use, `replace` is the defaul
     <td><code>after</code></td>
     <td>Inserts the content of the incoming element after the target element.</td>
   </tr>
-  <tr>
-    <td><code>morph</code></td>
-    <td>Morphs the incoming element into the target element using the <a href="https://alpinejs.dev/plugins/morph">Alpine Morph Plugin</a>.</td>
-  </tr>
   </tbody>
 </table>
 </div>
 
-The `morph` option uses a DOM diffing algorithm to update HTML, it's a bit more computationally intensive, but it works great in situations where you need to preserve your Alpine component's state and keyboard focus. In contrast, the `replace` and `update` strategies will each wipe away DOM state with fresh HTML.
-
 You can change the default merge strategy for all AJAX requests using the `mergeStrategy` global [configuration option](#configuration).
+
+### Morphing
+
+Alpine AJAX supports using the [Alpine Morph Plugin](https://alpinejs.dev/plugins/morph) as a merge strategy for when you want to update content and preserve UI state in a more fine-grained way.
+
+To enable the morph strategy, install the Morph Plugin **before** installing Alpine AJAX.
+
+Via CDN:
+
+```html
+<script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/morph@3.x.x/dist/cdn.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/@imacrayon/alpine-ajax@{{ APLINE_AJAX_VERSION }}/dist/cdn.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.11.1/dist/cdn.min.js"></script>
+
+```
+
+Or via NPM:
+
+```bash
+npm i @alpinejs/morph
+```
+
+```js
+import Alpine from 'alpinejs'
+import morph from '@alpinejs/morph'
+import ajax from '@imacrayon/alpine-ajax'
+
+window.Alpine = Alpine
+Alpine.plugin(morph)
+Alpine.plugin(ajax)
+```
+
+With the Morph Plugin installed you can use `x-merge="morph"` to morph content changes on the page.
 
 ### View transitions & animations
 
