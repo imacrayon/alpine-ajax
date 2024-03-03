@@ -1,4 +1,7 @@
 {
+  "tags": [
+    "reference"
+  ],
   "eleventyNavigation": {
     "parent": "Reference",
     "permalink": false

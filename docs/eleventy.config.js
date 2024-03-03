@@ -40,7 +40,14 @@ module.exports = function (eleventyConfig) {
 
   eleventyConfig.addGlobalData('APLINE_AJAX_VERSION', () => process.env.npm_package_version)
 
-  eleventyConfig.on("eleventy.before", async () => {
+  eleventyConfig.addFilter('sort', (collection, path = '') => {
+    let keys = path.split('.')
+    let value = (entry) => keys.reduce((v, k) => v?.[k], entry)
+
+    return collection.slice().sort((a, b) => value(a) - value(b))
+  })
+
+  eleventyConfig.on('eleventy.before', async () => {
     await esbuild.build({
       entryPoints: ['js/main.js'],
       bundle: true,
@@ -67,4 +74,9 @@ module.exports = function (eleventyConfig) {
   eleventyConfig.setServerOptions({
     watch: ['_sites/**/*.js'],
   })
+
+  return {
+    markdownTemplateEngine: 'njk',
+    htmlTemplateEngine: "njk",
+  }
 }

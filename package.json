@@ -31,7 +31,7 @@
     "debug": "DEBUG=* npx @11ty/eleventy"
   },
   "devDependencies": {
-    "@11ty/eleventy": "^2.0.0-canary.15",
+    "@11ty/eleventy": "^2.0.0",
     "@11ty/eleventy-navigation": "^0.3.5",
     "@11ty/eleventy-plugin-bundle": "^1.0.4",
     "@11ty/eleventy-plugin-syntaxhighlight": "^4.2.0",

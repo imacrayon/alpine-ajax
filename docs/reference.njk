@@ -1,0 +1,14 @@
+---
+layout: page.njk
+title: Reference
+description: The documentation for Alpine AJAX
+eleventyNavigation:
+  key: Reference
+  order: 1
+---
+
+<h1>Reference</h1>
+
+{% for entry in collections.reference | sort('data.eleventyNavigation.order') %}
+  {{ entry.content | safe }}
+{% endfor %}
