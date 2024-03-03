@@ -1,0 +1,49 @@
+<h2 id="events" tabindex="-1">Events <a class="direct-link" href="#events" aria-hidden="true">#</a></h2>
+<p>You can listen for events to perform additional actions during the lifecycle of an AJAX request:</p>
+<div class="table">
+<table>
+  <thead>
+    <th scope="col" width="117">Name</th>
+    <th scope="col">Description</th>
+  </thead>
+  <tbody>
+  <tr>
+    <td><code>ajax:before</code></td>
+    <td>Fired before an network request is made. If this event is canceled using <code>$event.preventDefault()</code> the request will be aborted.</td>
+  </tr>
+  <tr>
+    <td><code>ajax:success</code></td>
+    <td>Fired when an network request completes. <code>$event.detail</code> contains the server response data.</td>
+  </tr>
+  <tr>
+    <td><code>ajax:error</code></td>
+    <td>Fired when an network request responds with a `400` or `500` status code. <code>$event.detail</code> contains the server response data.</td>
+  </tr>
+  <tr>
+    <td><code>ajax:after</code></td>
+    <td>Fired after every successful or unsuccessful network request.</td>
+  </tr>
+  <tr>
+    <td><code>ajax:missing</code></td>
+    <td>Fired if a matching target is not found in the response body. <code>$event.detail</code> contains the server response data. You may cancel this event using <code>$event.preventDefault()</code> to override the default behavior.</td>
+  </tr>
+  <tr>
+    <td><code>ajax:merge</code></td>
+    <td>Fired when new content is being merged into <code>$event.target</code>. You may override a merge using <code>$event.preventDefault()</code>. <code>$event.detail</code> contains the server <code>response</code> data, the <code>content</code> to merge, and a <code>merge()</code> method to continue the merge.</td>
+  </tr>
+  <tr>
+    <td><code>ajax:merged</code></td>
+    <td>Fired after new content was merged into <code>$event.target</code>.</td>
+  </tr>
+  </tbody>
+</table>
+</div>
+<p>Here's an example of aborting a form request when the user cancels a dialog prompt:</p>
+<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>form</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>delete_user<span class="token punctuation">"</span></span> <span class="token attr-name">x-init</span> <span class="token attr-name">x-target</span> <span class="token attr-name"><span class="token namespace">@ajax:</span>before</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>confirm('Are you sure?') || $event.preventDefault()<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>button</span><span class="token punctuation">></span></span>Delete User<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>button</span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>form</span><span class="token punctuation">></span></span></code></pre>
+<p><strong>Note:</strong> The <code>ajax:success</code> and <code>ajax:error</code> events only convey the status code of an AJAX request. You'll probably find that <a href="/examples/server-events/">Server Events</a> are better for triggering actions based on your server's response.</p>
+<h2 id="loading-states" tabindex="-1">Loading states <a class="direct-link" href="#loading-states" aria-hidden="true">#</a></h2>
+<p>While an AJAX request is in progress there are a few loading states to be aware of:</p>
+<ul>
+<li>If a form submission triggered the request, the form's submit button is automatically disabled, this prevents users from triggering additional network requests by accidentally double clicking the submit button.</li>
+<li>During an AJAX request, <code>aria-busy=&quot;true&quot;</code> is set on all targets of the request. This attribute can be used in CSS to provide a loading indicator, check out the <a href="/examples/loading">Loading Indicator example</a> for more details.</li>
+</ul>

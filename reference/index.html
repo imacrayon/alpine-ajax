@@ -29,7 +29,7 @@
   
   
   <style>/*
-! tailwindcss v3.3.3 | MIT License | https://tailwindcss.com
+! tailwindcss v3.4.1 | MIT License | https://tailwindcss.com
 *//*
 1. Prevent padding and border from affecting element width. (https://github.com/mozdevs/cssremedy/issues/4)
 2. Allow adding a border to an element by just adding a border-width. (https://github.com/tailwindcss/tailwindcss/pull/116)
@@ -56,17 +56,20 @@
 4. Use the user's configured `sans` font-family by default.
 5. Use the user's configured `sans` font-feature-settings by default.
 6. Use the user's configured `sans` font-variation-settings by default.
+7. Disable tap highlights on iOS
 */
 
-html {
+html,
+:host {
   line-height: 1.5; /* 1 */
   -webkit-text-size-adjust: 100%; /* 2 */
   -moz-tab-size: 4; /* 3 */
   -o-tab-size: 4;
      tab-size: 4; /* 3 */
-  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"; /* 4 */
+  font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"; /* 4 */
   font-feature-settings: normal; /* 5 */
   font-variation-settings: normal; /* 6 */
+  -webkit-tap-highlight-color: transparent; /* 7 */
 }
 
 /*
@@ -133,8 +136,10 @@ strong {
 }
 
 /*
-1. Use the user's configured `mono` font family by default.
-2. Correct the odd `em` font sizing in all browsers.
+1. Use the user's configured `mono` font-family by default.
+2. Use the user's configured `mono` font-feature-settings by default.
+3. Use the user's configured `mono` font-variation-settings by default.
+4. Correct the odd `em` font sizing in all browsers.
 */
 
 code,
@@ -142,7 +147,9 @@ kbd,
 samp,
 pre {
   font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; /* 1 */
-  font-size: 1em; /* 2 */
+  font-feature-settings: normal; /* 2 */
+  font-variation-settings: normal; /* 3 */
+  font-size: 1em; /* 4 */
 }
 
 /*
@@ -549,8 +556,26 @@ select {
   background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3e%3c/svg%3e");
 }
 
+@media (forced-colors: active)  {
+
+  [type='checkbox']:checked {
+    -webkit-appearance: auto;
+       -moz-appearance: auto;
+            appearance: auto;
+  }
+}
+
 [type='radio']:checked {
   background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3ccircle cx='8' cy='8' r='3'/%3e%3c/svg%3e");
+}
+
+@media (forced-colors: active)  {
+
+  [type='radio']:checked {
+    -webkit-appearance: auto;
+       -moz-appearance: auto;
+            appearance: auto;
+  }
 }
 
 [type='checkbox']:checked:hover,[type='checkbox']:checked:focus,[type='radio']:checked:hover,[type='radio']:checked:focus {
@@ -565,6 +590,15 @@ select {
   background-size: 100% 100%;
   background-position: center;
   background-repeat: no-repeat;
+}
+
+@media (forced-colors: active)  {
+
+  [type='checkbox']:indeterminate {
+    -webkit-appearance: auto;
+       -moz-appearance: auto;
+            appearance: auto;
+  }
 }
 
 [type='checkbox']:indeterminate:hover,[type='checkbox']:indeterminate:focus {
@@ -1452,13 +1486,13 @@ select {
   text-align: center;
 }
 .font-display {
-  font-family: Helsinki, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-family: Helsinki, ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 .font-mono {
   font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 .font-sans {
-  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 .font-serif {
   font-family: Georgia, ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
@@ -1664,7 +1698,7 @@ a[href].direct-link:focus:visited,
   border-radius: 0.3em;
   overflow: auto;
   padding: .5rem;
-  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   background: #fff;
 }
 
@@ -1693,7 +1727,7 @@ a[href].direct-link:focus:visited,
 #demo_frame #demo input,
 #demo_frame #demo select,
 #demo_frame #demo textarea {
-  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   margin-bottom: 1rem;
   padding: .25rem .5rem;
   border-color: #000;
@@ -2257,7 +2291,7 @@ pre[class*="language-"] {
 }
 
 .prose-headings\:font-sans :is(:where(h1, h2, h3, h4, h5, h6, th):not(:where([class~="not-prose"],[class~="not-prose"] *))) {
-  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
 .prose-headings\:font-bold :is(:where(h1, h2, h3, h4, h5, h6, th):not(:where([class~="not-prose"],[class~="not-prose"] *))) {
@@ -2532,8 +2566,11 @@ pre[class*="language-"] {
     <main id="main" class="lg:flex-1 lg:min-w-0">
       
 <div class="pt-6 px-4 pb-12 max-w-prose mx-auto prose-lg md:px-6 md:prose-xl lg:mx-0 lg:pt-12 prose-headings:font-sans prose-headings:font-bold prose-h1:text-blue-800 prose-td:border-t prose-td:border-almond-400 prose-th:text-left prose-ul:list-disc prose-ol:list-decimal prose-a:underline prose-a:text-blue-800">
-  <h1 id="reference" tabindex="-1">Reference <a class="direct-link" href="#reference" aria-hidden="true">#</a></h1>
-<h2 id="installation" tabindex="-1">Installation <a class="direct-link" href="#installation" aria-hidden="true">#</a></h2>
+  
+<h1>Reference</h1>
+
+
+  <h2 id="installation" tabindex="-1">Installation <a class="direct-link" href="#installation" aria-hidden="true">#</a></h2>
 <p>You can use Alpine AJAX by either including it from a <code>&lt;script&gt;</code> tag or installing it via NPM.</p>
 <h3 id="via-cdn" tabindex="-1">Via CDN <a class="direct-link" href="#via-cdn" aria-hidden="true">#</a></h3>
 <p>Include the CDN build of Alpine AJAX as a <code>&lt;script&gt;</code> tag, just make sure to include it <strong>before</strong> Alpine's core JS file.</p>
@@ -2543,9 +2580,13 @@ pre[class*="language-"] {
 <pre class="language-bash"><code class="language-bash"><span class="token function">npm</span> i @imacrayon/alpine-ajax</code></pre>
 <p>Then initialize it from your bundle:</p>
 <pre class="language-js"><code class="language-js"><span class="token keyword">import</span> Alpine <span class="token keyword">from</span> <span class="token string">'alpinejs'</span><br><span class="token keyword">import</span> ajax <span class="token keyword">from</span> <span class="token string">'@imacrayon/alpine-ajax'</span><br><br>window<span class="token punctuation">.</span>Alpine <span class="token operator">=</span> Alpine<br>Alpine<span class="token punctuation">.</span><span class="token function">plugin</span><span class="token punctuation">(</span>ajax<span class="token punctuation">)</span></code></pre>
-<h2 id="usage" tabindex="-1">Usage <a class="direct-link" href="#usage" aria-hidden="true">#</a></h2>
+
+
+  <h2 id="usage" tabindex="-1">Usage <a class="direct-link" href="#usage" aria-hidden="true">#</a></h2>
 <p>It’s good practice to start building your UI <strong>without</strong> Alpine AJAX. Make your entire website work as it would if Alpine AJAX were not available, then sprinkle in AJAX functionality at the end. Working in this way will ensure that your AJAX interactions degrade gracefully <a href="https://www.kryogenix.org/code/browser/everyonehasjs.html">when JavaScript is not available</a>: Links and forms will continue to work as normal, they simply won't fire AJAX requests. This is known as <a href="https://developer.mozilla.org/en-US/docs/Glossary/Progressive_Enhancement">Progressive Enhancement</a>, and it allows a wider audience to use your website.</p>
-<h2 id="x-target" tabindex="-1">x-target <a class="direct-link" href="#x-target" aria-hidden="true">#</a></h2>
+
+
+  <h2 id="x-target" tabindex="-1">x-target <a class="direct-link" href="#x-target" aria-hidden="true">#</a></h2>
 <p>Add the <code>x-target</code> attribute to forms or links to enable AJAX behavior. The value of <code>x-target</code> should equal the <code>id</code> of an element on the page that the form or link should target.</p>
 <p>Take a look at the following comment list markup, notice the <code>x-target=&quot;comments&quot;</code> attribute on the <code>&lt;form&gt;</code>:</p>
 <pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>ul</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>comments<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>li</span><span class="token punctuation">></span></span>Comment #1<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>li</span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>ul</span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>form</span> <span class="token attr-name">x-init</span> <span class="token attr-name">x-target</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>comments<span class="token punctuation">"</span></span> <span class="token attr-name">method</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>post<span class="token punctuation">"</span></span> <span class="token attr-name">action</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>/comment<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>input</span> <span class="token attr-name">aria-label</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>Comment text<span class="token punctuation">"</span></span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>text<span class="token punctuation">"</span></span> <span class="token attr-name">required</span> <span class="token punctuation">/></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>button</span><span class="token punctuation">></span></span>Submit<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>button</span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>form</span><span class="token punctuation">></span></span></code></pre>
@@ -2571,12 +2612,16 @@ pre[class*="language-"] {
 <p>In cases where you have a form with multiple submit buttons, you may not always want all submit buttons to trigger an AJAX request. Add the <code>formnoajax</code> attribute to a submit element to instruct the form to make a standard full-page request instead of an AJAX request.</p>
 <pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>form</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>checkout<span class="token punctuation">"</span></span> <span class="token attr-name">x-init</span> <span class="token attr-name">x-target</span> <span class="token attr-name">method</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>post<span class="token punctuation">"</span></span> <span class="token attr-name">action</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>/checkout<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>button</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>procedure<span class="token punctuation">"</span></span> <span class="token attr-name">value</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>increment<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>Increment quantity<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>button</span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>button</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>procedure<span class="token punctuation">"</span></span> <span class="token attr-name">value</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>decrement<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>Decrement quantity<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>button</span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>button</span> <span class="token attr-name">formnoajax</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>procedure<span class="token punctuation">"</span></span> <span class="token attr-name">value</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>purchase<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>Complete checkout<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>button</span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>form</span><span class="token punctuation">></span></span></code></pre>
 <p>In this example clicking &quot;Increment&quot; or &quot;Decrement&quot; will issue an AJAX request. Clicking &quot;Complete Checkout&quot; will perform a standard form submission.</p>
-<h2 id="x-headers" tabindex="-1">x-headers <a class="direct-link" href="#x-headers" aria-hidden="true">#</a></h2>
+
+
+  <h2 id="x-headers" tabindex="-1">x-headers <a class="direct-link" href="#x-headers" aria-hidden="true">#</a></h2>
 <p>Use <code>x-headers</code> to add additional request headers:</p>
 <pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>form</span> <span class="token attr-name">method</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>post<span class="token punctuation">"</span></span> <span class="token attr-name">action</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>/comments<span class="token punctuation">"</span></span> <span class="token attr-name">x-target</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>comments comments_count<span class="token punctuation">"</span></span> <span class="token attr-name">x-headers</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>{'Custom-Header': 'Shmow-zow!'}<span class="token punctuation">"</span></span><span class="token punctuation">></span></span></code></pre>
 <p>Alpine AJAX adds two default headers to every request: <code>X-Alpine-Request</code> which is always <code>true</code>, and <code>X-Alpine-Target</code> which contains a space-separated list of target IDs. The previous form example would include these headers with its request:</p>
 <pre class="language-txt"><code class="language-txt">X-Alpine-Request: true<br>X-Alpine-Target: comments comments_count<br>Custom-Header: Shmow-zow!</code></pre>
-<h2 id="x-merge" tabindex="-1">x-merge <a class="direct-link" href="#x-merge" aria-hidden="true">#</a></h2>
+
+
+  <h2 id="x-merge" tabindex="-1">x-merge <a class="direct-link" href="#x-merge" aria-hidden="true">#</a></h2>
 <p>By default incoming HTML from the server will <code>replace</code> a targeted element. You can add <code>x-merge</code> to a targeted element to change how it merges incoming content. For example, if you wanted to <code>append</code> new items to a list of messages, you would add <code>x-merge=&quot;append&quot;</code> to the list:</p>
 <pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>ul</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>messages<span class="token punctuation">"</span></span> <span class="token attr-name">x-merge</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>append<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>li</span><span class="token punctuation">></span></span>First message<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>li</span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>ul</span><span class="token punctuation">></span></span></code></pre>
 <p>New HTML sent from the server might look like this:</p>
@@ -2631,7 +2676,9 @@ pre[class*="language-"] {
 <h3 id="view-transitions-and-animations" tabindex="-1">View transitions &amp; animations <a class="direct-link" href="#view-transitions-and-animations" aria-hidden="true">#</a></h3>
 <p>You can animate transitions between different DOM states using the <a href="https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API">View Transitions API</a>. This API is still in active development and is currently only supported in Chrome browsers. Alpine AJAX provides support for View Transitions and gracefully falls back to no animations if the API is not available in a browser.</p>
 <p>To enable View Transitions on an element use the <code>x-merge.transition</code> modifier. When enabled in a supported browser, you should see content automatically animate as it is merged onto the page. You can customize any transition animation via CSS by following <a href="https://developer.chrome.com/docs/web-platform/view-transitions/#simple-customization">Chrome's documentation for customizing transitions</a>.</p>
-<h2 id="x-autofocus" tabindex="-1">x-autofocus <a class="direct-link" href="#x-autofocus" aria-hidden="true">#</a></h2>
+
+
+  <h2 id="x-autofocus" tabindex="-1">x-autofocus <a class="direct-link" href="#x-autofocus" aria-hidden="true">#</a></h2>
 <p>When AJAX requests change content on the page it's important that you control keyboard focus to maintain <a href="https://www.w3.org/TR/WCAG21/#meaningful-sequence">meaningful sequencing</a> and <a href="https://www.w3.org/TR/WCAG21/#focus-order">focus order</a>. <code>x-autofocus</code> will restore a user's keyboard focus when the content they were focused on is changed by an AJAX request.</p>
 <p>Notice the <code>x-autofocus</code> attribute on this email <code>&lt;input&gt;</code>:</p>
 <pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>input</span> <span class="token attr-name">type</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>email<span class="token punctuation">"</span></span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>email<span class="token punctuation">"</span></span> <span class="token attr-name">x-autofocus</span> <span class="token punctuation">/></span></span></code></pre>
@@ -2643,14 +2690,18 @@ pre[class*="language-"] {
 <p>Alpine AJAX will also respect the standard <code>autofocus</code> attribute and treat it like <code>x-autofocus</code>. When AJAX content contains elements with both <code>x-autofocus</code> and <code>autofocus</code>. The element with <code>x-autofocus</code> will win focus.</p>
 <h3 id="using-morph-and-focus" tabindex="-1">Using <code>morph</code> and focus <a class="direct-link" href="#using-morph-and-focus" aria-hidden="true">#</a></h3>
 <p>It's worth noting that <code>x-merge=&quot;morph&quot;</code> is another way to preserve keyboard focus between content changes. However, there are cases when the DOM is transformed so much that the Morph algorithm is unable to reliably preserve focus state, so <code>x-autofocus</code> is a lot more predictable in most situations.</p>
-<h2 id="x-sync" tabindex="-1">x-sync <a class="direct-link" href="#x-sync" aria-hidden="true">#</a></h2>
+
+
+  <h2 id="x-sync" tabindex="-1">x-sync <a class="direct-link" href="#x-sync" aria-hidden="true">#</a></h2>
 <p>Elements with the <code>x-sync</code> attribute are updated whenever the server sends a matching element, even if the element isn't targeted with <code>x-target</code>.</p>
 <p><code>x-sync</code> elements must have a unique <code>id</code>. Any element sent from the server with a matching <code>id</code> will replace the existing <code>x-sync</code> element.</p>
 <p>Use cases for this attribute are unread message counters or notification flashes. These elements often live in the base layout, outside of the content area that is being replaced.</p>
 <p>Consider this list of notifications:</p>
 <pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">aria-live</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>polite<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>ul</span> <span class="token attr-name">x-sync</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>notifications<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>ul</span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span></code></pre>
 <p>Every server response that includes an element with <code>id=&quot;notifications&quot;</code> will replace the existing list of notifications inside the <code>aria-live</code> region. Take a look at the <a href="/examples/notifications">Notifications example</a> for a complete demonstration of this UI pattern.</p>
-<h2 id="ajax" tabindex="-1">$ajax <a class="direct-link" href="#ajax" aria-hidden="true">#</a></h2>
+
+
+  <h2 id="ajax" tabindex="-1">$ajax <a class="direct-link" href="#ajax" aria-hidden="true">#</a></h2>
 <p>The <code>$ajax</code> magic helper is for finer-grained AJAX control. Use it to programmatically issue AJAX requests in response to events. Here we've wired it up to an input's <code>change</code> event to perform some server-side validation for an email:</p>
 <pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>email_field<span class="token punctuation">"</span></span> <span class="token attr-name">x-data</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>{email : ''}<span class="token punctuation">"</span></span> <span class="token attr-name">@change</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>$ajax('/validate-email', {<br>  method: 'post',<br>  body: { email },<br>})<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>label</span> <span class="token attr-name">for</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>email<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>Email<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>label</span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>input</span> <span class="token attr-name">type</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>email<span class="token punctuation">"</span></span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>email<span class="token punctuation">"</span></span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>email<span class="token punctuation">"</span></span> <span class="token attr-name">x-model</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>email<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span></code></pre>
 <p>In this example we make a <code>POST</code> request with the <code>email</code> value to the <code>/validate-email</code> endpoint. See the <a href="/examples/inline-validation">Inline Validation example</a> for a complete demonstration.</p>
@@ -2712,7 +2763,9 @@ pre[class*="language-"] {
   </tbody>
 </table>
 </div>
-<h2 id="events" tabindex="-1">Events <a class="direct-link" href="#events" aria-hidden="true">#</a></h2>
+
+
+  <h2 id="events" tabindex="-1">Events <a class="direct-link" href="#events" aria-hidden="true">#</a></h2>
 <p>You can listen for events to perform additional actions during the lifecycle of an AJAX request:</p>
 <div class="table">
 <table>
@@ -2761,7 +2814,11 @@ pre[class*="language-"] {
 <li>If a form submission triggered the request, the form's submit button is automatically disabled, this prevents users from triggering additional network requests by accidentally double clicking the submit button.</li>
 <li>During an AJAX request, <code>aria-busy=&quot;true&quot;</code> is set on all targets of the request. This attribute can be used in CSS to provide a loading indicator, check out the <a href="/examples/loading">Loading Indicator example</a> for more details.</li>
 </ul>
-<h2 id="configuration" tabindex="-1">Configuration <a class="direct-link" href="#configuration" aria-hidden="true">#</a></h2>
+
+
+  
+
+  <h2 id="configuration" tabindex="-1">Configuration <a class="direct-link" href="#configuration" aria-hidden="true">#</a></h2>
 <p>You have the option to configure the default behavior of Alpine AJAX when importing it in your code:</p>
 <pre class="language-js"><code class="language-js"><span class="token keyword">import</span> ajax <span class="token keyword">from</span> <span class="token string">'@imacrayon/alpine-ajax'</span><br><br>Alpine<span class="token punctuation">.</span><span class="token function">plugin</span><span class="token punctuation">(</span>ajax<span class="token punctuation">.</span><span class="token function">configure</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>  <span class="token literal-property property">followRedirects</span><span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span><br>  <span class="token literal-property property">headers</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token string-property property">'X-CSRF-Token'</span><span class="token operator">:</span> <span class="token string">'mathmatical!'</span> <span class="token punctuation">}</span><br>  <span class="token literal-property property">mergeStrategy</span><span class="token operator">:</span> <span class="token string">'morph'</span><span class="token punctuation">,</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">)</span></code></pre>
 <p>Here are the configuration options and there defaults:</p>
@@ -2791,7 +2848,9 @@ pre[class*="language-"] {
   </tbody>
 </table>
 </div>
-<h2 id="creating-demos" tabindex="-1">Creating demos <a class="direct-link" href="#creating-demos" aria-hidden="true">#</a></h2>
+
+
+  <h2 id="creating-demos" tabindex="-1">Creating demos <a class="direct-link" href="#creating-demos" aria-hidden="true">#</a></h2>
 <p>Use the mock server script included with Alpine AJAX when you need to build a quick prototype or demonstrate a bug, without a server. The mock server script adds a global <code>route</code> helper function for mocking server endpoints on the frontend:</p>
 <pre class="language-html"><code class="language-html"><span class="token comment">&lt;!--<br>Include the typical required scripts before the mock server:<br>&lt;script defer src="https://cdn.jsdelivr.net/npm/@imacrayon/alpine-ajax@0.5.0/dist/cdn.min.js">&lt;/script><br>&lt;script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.11.1/dist/cdn.min.js">&lt;/script><br>--></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span> <span class="token attr-name">src</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>https://cdn.jsdelivr.net/npm/@imacrayon/alpine-ajax@0.5.0/dist/server.js<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token script"></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">></span></span><br><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span><span class="token punctuation">></span></span><span class="token script"><span class="token language-javascript"><br><span class="token function">route</span><span class="token punctuation">(</span><span class="token string">'POST'</span><span class="token punctuation">,</span> <span class="token string">'/update-quantity'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token parameter">request</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span><br>  <span class="token keyword">return</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">&lt;output id="current_quantity"></span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span><span class="token function">Number</span><span class="token punctuation">(</span>request<span class="token punctuation">.</span>quantity<span class="token punctuation">)</span><span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">&lt;/output></span><span class="token template-punctuation string">`</span></span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><br></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">></span></span><br><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>label</span> <span class="token attr-name">for</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>current_quantity<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>Current quantity<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>label</span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>output</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>current_quantity<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>0<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>output</span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>form</span> <span class="token attr-name">x-init</span> <span class="token attr-name">x-target</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>current_quantity<span class="token punctuation">"</span></span> <span class="token attr-name">method</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>POST<span class="token punctuation">"</span></span> <span class="token attr-name">action</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>/update-quantity<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>label</span> <span class="token attr-name">form</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>quantity<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>New quantity<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>label</span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>input</span> <span class="token attr-name">type</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>number<span class="token punctuation">"</span></span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>quantity<span class="token punctuation">"</span></span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>quantity<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>button</span><span class="token punctuation">></span></span>Update<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>button</span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>form</span><span class="token punctuation">></span></span></code></pre>
 <p>Now, instead of issuing a real <code>POST</code> request to <code>/update-quantity</code>, Alpine AJAX will use the HTML returned in our route definition as the response. Note that any form data included in the AJAX request is made available too you in the <code>route</code> function.</p>
@@ -2807,6 +2866,8 @@ pre[class*="language-"] {
   </div>
 </details>
 <p><strong>Important</strong>: The mock server should only be used for demos and testing, this utility is not designed for production environments.</p>
+
+
 
 </div>
 

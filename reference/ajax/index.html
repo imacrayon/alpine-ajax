@@ -1,0 +1,62 @@
+<h2 id="ajax" tabindex="-1">$ajax <a class="direct-link" href="#ajax" aria-hidden="true">#</a></h2>
+<p>The <code>$ajax</code> magic helper is for finer-grained AJAX control. Use it to programmatically issue AJAX requests in response to events. Here we've wired it up to an input's <code>change</code> event to perform some server-side validation for an email:</p>
+<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>email_field<span class="token punctuation">"</span></span> <span class="token attr-name">x-data</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>{email : ''}<span class="token punctuation">"</span></span> <span class="token attr-name">@change</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>$ajax('/validate-email', {<br>  method: 'post',<br>  body: { email },<br>})<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>label</span> <span class="token attr-name">for</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>email<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>Email<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>label</span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>input</span> <span class="token attr-name">type</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>email<span class="token punctuation">"</span></span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>email<span class="token punctuation">"</span></span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>email<span class="token punctuation">"</span></span> <span class="token attr-name">x-model</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>email<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span></code></pre>
+<p>In this example we make a <code>POST</code> request with the <code>email</code> value to the <code>/validate-email</code> endpoint. See the <a href="/examples/inline-validation">Inline Validation example</a> for a complete demonstration.</p>
+<p><strong>Note:</strong> Since <code>$ajax</code> is intended to be used in side effects it doesn't emit any events or target <code>x-sync</code> elements like <code>x-target</code>. However, you can change these defaults using the <code>$ajax</code> options.</p>
+<h3 id="ajax-options" tabindex="-1">$ajax options <a class="direct-link" href="#ajax-options" aria-hidden="true">#</a></h3>
+<div class="table">
+<table>
+  <thead>
+    <th scope="col" width="68">Option</th>
+    <th scope="col" width="60">Default</th>
+    <th scope="col">Description</th>
+  </thead>
+  <tbody>
+  <tr>
+    <td><code>method</code></td>
+    <td><code>'GET'</code></td>
+    <td>The request method.</td>
+  </tr>
+  <tr>
+    <td><code>target</code></td>
+    <td><code>''</code></td>
+    <td>The request target. If this is empty <code>x-target</code> is used.</td>
+  </tr>
+  <tr>
+    <td><code>targets</code></td>
+    <td><code>[]</code></td>
+    <td>Same as <code>target</code>, but specified as an array of strings. If this is empty <code>target</code> is used.</td>
+  </tr>
+  <tr>
+    <td><code>body</code></td>
+    <td><code>{}</code></td>
+    <td>The request body.</td>
+  </tr>
+  <tr>
+    <td><code>events</code></td>
+    <td><code>false</code></td>
+    <td>Setting this to <code>true</code> will fire AJAX request events.</td>
+  </tr>
+  <tr>
+    <td><code>focus</code></td>
+    <td><code>false</code></td>
+    <td>Setting this to <code>true</code> will enable `x-autofocus` & `autofocus` behavior.</td>
+  </tr>
+  <tr>
+    <td><code>sync</code></td>
+    <td><code>false</code></td>
+    <td>Setting this to <code>true</code> will include <code>x-sync</code> targets in the request.</td>
+  </tr>
+  <tr>
+    <td><code>followRedirects</code></td>
+    <td><code>true</code></td>
+    <td>Switch this to <code>false</code> and AJAX requests will reload the browser window when they encounter a redirect response.</td>
+  </tr>
+  <tr>
+    <td><code>headers</code></td>
+    <td><code>{}</code></td>
+    <td>Additional request headers as key/value pairs.</td>
+  </tr>
+  </tbody>
+</table>
+</div>
