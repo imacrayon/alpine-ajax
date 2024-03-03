@@ -24,7 +24,7 @@ Both HTMX and Alpine AJAX are server-agnostic, they'll integrate nicely with alm
 
 HTMX favors flexibility where as Alpine AJAX prefers [convention over configuration](https://en.wikipedia.org/wiki/Convention_over_configuration). Beyond the low-level tooling that HTMX provides, the library isn't very prescriptive about how it should be used. The [HTMX documentation for updating content](https://htmx.org/examples/update-other-content/) is one example of the library's lack of opinion: It presents you with four different solutions and leaves it up to you to consider the trade-offs for each. In contrast, Alpine AJAX tries to provide you with more guidance so you can become productive faster without stumbling into common accessibility and progressive enhancement pitfalls.
 
-HTMX weighs in at 13KB of JavaScript compared to only 3KB for Alpine AJAX.
+HTMX weighs in at 13kB of JavaScript compared to only 3kB for Alpine AJAX.
 
 ## Hotwired Turbo
 
@@ -40,7 +40,7 @@ Turbo communicates updates from the server to the client via Turbo Streams. Turb
 
 One notable advantage to using the Hotwire framework is that it provides a workflow for transforming your website into a native mobile application, so if you intend to launch your website on Android and iOS platforms, Hotwired Turbo might be worth considering.
 
-Turbo weighs in at 22kB of JavaScript compared to only 3KB for Alpine AJAX.
+Turbo weighs in at 22kB of JavaScript compared to only 3kB for Alpine AJAX.
 
 ## Unpoly
 
@@ -62,4 +62,4 @@ The lack of progressive enhancement in Livewire is another reason you might choo
 
 Alpine.js was originally created as a companion to Laravel Livewire, so of course Alpine.js and Livewire pair flawlessly together for handling client-side interactions.
 
-Livewire's JavaScript bundle weighs in at 43kB compared to only 3KB for Alpine AJAX.
+Livewire's JavaScript bundle weighs in at 43kB compared to only 3kB for Alpine AJAX.
