@@ -372,16 +372,15 @@ async function render(request, targets, el, config) {
       if (merged) {
         merged.dataset.source = response.url
         merged.removeAttribute('aria-busy')
-        if (!focused) {
-          ['[x-autofocus]', '[autofocus]'].forEach(selector => {
-            if (focused) return
-            let autofocus = merged.matches(selector) ? merged : merged.querySelector(selector)
-            if (autofocus) {
-              focusOn(autofocus)
-              focused = true
-            }
-          })
-        }
+        let focusables = ['[x-autofocus]', '[autofocus]']
+        focusables.some(selector => {
+          if (focused) return true
+          if (merged.matches(selector)) {
+            focused = focusOn(merged)
+          }
+
+          return focused || Array.from(merged.querySelectorAll(selector)).some(focusable => focusOn(focusable))
+        })
       }
 
       dispatch(merged, 'ajax:merged')
@@ -453,11 +452,14 @@ async function merge(strategy, from, to) {
 }
 
 function focusOn(el) {
-  if (!el) return
+  if (!el) return false
+  if (!el.getClientRects().length) return false
   setTimeout(() => {
     if (!el.hasAttribute('tabindex')) el.setAttribute('tabindex', '0')
     el.focus()
   }, 0)
+
+  return true
 }
 
 function updateHistory(strategy, url) {

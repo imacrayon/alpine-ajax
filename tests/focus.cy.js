@@ -56,6 +56,20 @@ test('first listed target is focused when multiple [autofocus] are merged',
   }
 )
 
+test('hidden [autofocus] elements are ignored',
+  html`<form x-init x-target id="replace" method="post"><button>First</button><a href="#">Second</a></form>`,
+  ({ intercept, get, wait }) => {
+    intercept('POST', '/tests', {
+      statusCode: 200,
+      body: '<form x-init x-target id="replace" method="post"><button hidden autofocus>First</button><a href="#" autofocus>Second</a></form>'
+    }).as('response')
+    get('button').focus().click()
+    wait('@response').then(() => {
+      get('a').should('have.focus')
+    })
+  }
+)
+
 test('[x-autofocus] overrides [autofocus]',
   html`<form x-init x-target id="replace" method="post"><button>First</button><a href="#">Second</a></form>`,
   ({ intercept, get, wait }) => {
