@@ -25,3 +25,9 @@ Tests are located in `/tests`.
 `npm run test` will run the test suite in the [Cypress](https://www.cypress.io/) CLI.
 
 `npm run cypress` will open the Cypress browser UI.
+
+## Sponsors
+
+<a href="https://moonbaselabs.com">
+  <img alt="Moonbase Labs" src="https://alpine-ajax.js.org/img/sponsors/moonbase-labs.svg" height="56" width="192">
+</a>
