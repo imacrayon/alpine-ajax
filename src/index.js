@@ -108,7 +108,7 @@ Ajax.configure = (options) => {
 export default Ajax
 
 function parseIds(el, expression = null) {
-  let ids = [el.id]
+  let ids = [el.getAttribute('id')]
   if (expression) {
     ids = Array.isArray(expression) ? expression : expression.split(' ')
   }
@@ -327,7 +327,7 @@ async function render(request, targets, el, config) {
   let targetIds = []
   targets.forEach(target => {
     target.setAttribute('aria-busy', 'true')
-    targetIds.push(target.id)
+    targetIds.push(target.getAttribute('id'))
   })
 
   request.headers['X-Alpine-Request'] = 'true'
@@ -352,7 +352,7 @@ async function render(request, targets, el, config) {
   let fragment = wrapper.firstElementChild.content
   let focused = !config.focus
   let renders = targets.map(async target => {
-    let content = fragment.getElementById(target.id)
+    let content = fragment.getElementById(target.getAttribute('id'))
     let strategy = mergeConfig.get(target)?.strategy || globalConfig.mergeStrategy
     if (!content) {
       if (!dispatch(el, 'ajax:missing', { response, fragment })) {
@@ -433,7 +433,7 @@ async function merge(strategy, from, to) {
     morph(from, to) {
       morphElement(from, to)
 
-      return document.getElementById(to.id)
+      return document.getElementById(to.getAttribute('id'))
     }
   }
 
@@ -484,11 +484,12 @@ function findTargets(ids = []) {
 
 function addSyncTargets(targets) {
   document.querySelectorAll('[x-sync]').forEach(el => {
-    if (!el.id) {
+    let id = el.getAttribute('id')
+    if (!id) {
       throw new MissingIdError(el)
     }
 
-    if (!targets.some(target => target.id === el.id)) {
+    if (!targets.some(target => target.getAttribute('id') === id)) {
       targets.push(el)
     }
   })
