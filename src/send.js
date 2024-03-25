@@ -58,7 +58,7 @@ function isLocked(key) {
 
 function dequeue(key, resolver) {
   (jobs[key] || []).forEach(resolver)
-  jobs[key] = undefined
+  delete jobs[key]
 }
 
 function redirectHandler(follow) {

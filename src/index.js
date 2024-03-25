@@ -1,158 +1,466 @@
 import './polyfills'
-import { send } from './send'
 
-let globalConfig = {
+let settings = {
   followRedirects: true,
   headers: {},
   mergeStrategy: 'replace',
+  snapshotLimit: 10,
 }
-let sendConfig = new WeakMap()
-let mergeConfig = new WeakMap()
 
-let morphElement = (from, to) => {
+let doMorph = (from, to) => {
   console.error(`You can't use the "morph" merge without first installing the Alpine "morph" plugin here: https://alpinejs.dev/plugins/morph`)
-};
+}
+
+let MergeTargets = new WeakMap()
+
+class AjaxClient {
+  constructor(follow, headers = {}) {
+    this.redirectHandler = follow
+      ? (response) => response
+      : (response) => {
+        if (response.redirected) {
+          window.location.href = response.url
+          return
+        }
+
+        return response
+      }
+
+    return this
+
+    this.headers = {}
+
+  }
+}
+
+class AjaxElement {
+  constructor(el, target = '') {
+    let targets = [el.getAttribute('id')]
+    if (target) {
+      targets = Array.isArray(target) ? target : target.split(' ')
+    }
+    targets = targets.filter(id => id)
+    if (targets.length === 0) {
+      throw new MissingIdError(el)
+    }
+
+    this.el = el
+    this.method = 'GET'
+    this.targets = targets
+    this.sync = true
+    this.focus = true
+    this.followRedirects = true
+    this.enctype = 'application/x-www-form-urlencoded'
+    this.history = false
+    this.headers = {}
+  }
+
+  nearestSource() {
+    return this.el.closest('[data-source]')?.dataset.source
+  }
+
+  dispatchEvents(dispatch) {
+    this.dispatch = dispatch
+      ? (name, detail) => {
+        return this.el.dispatchEvent(
+          new CustomEvent(name, {
+            detail,
+            bubbles: true,
+            composed: true,
+            cancelable: true,
+          })
+        )
+      }
+      : () => true
+  }
+
+  destruct() { }
+
+  canNavigate() {
+    return this.el.href &&
+      !this.el.hash &&
+      this.el.origin == window.url.origin
+  }
+
+  canSubmit() {
+    return this.el.tagName === 'FORM'
+  }
+
+  async send(body) {
+    if (!this.dispatch(el, 'ajax:before')) return
+
+    let targetIds = []
+    let targets = this.targets.map(id => {
+      let target = document.getElementById(id)
+      if (!target) {
+        throw new MissingTargetError(id)
+      }
+
+      targetIds.push(id)
+      target.setAttribute('aria-busy', 'true')
+
+      return target
+    })
+
+    if (this.sync) {
+      document.querySelectorAll('[x-sync]').forEach(el => {
+        let id = el.getAttribute('id')
+        if (!id) {
+          throw new MissingIdError(el)
+        }
+
+
+        if (!targets.some(target => target.getAttribute('id') === id)) {
+          targetIds.push(id)
+          targets.push(el)
+          el.setAttribute('aria-busy', 'true')
+        }
+      })
+    }
+
+    let response = new AjaxRequest(this.method, this.action, this.referrer)
+      .setHeaders({
+        'X-Alpine-Target': targetIds.join('  '),
+        ...this.headers,
+      })
+      .followRedirects(this.followRedirects)
+      .send(body)
+
+    if (response.ok) {
+      this.dispatch('ajax:success', response)
+    } else {
+      this.dispatch('ajax:error', response)
+    }
+
+    this.dispatch('ajax:after', response)
+
+    if (!response.html) return
+
+    if (this.history) {
+      updateHistory(this.history, response.url)
+    }
+
+    let wrapper = document.createRange().createContextualFragment('<template>' + response.html + '</template>')
+    let fragment = wrapper.firstElementChild.content
+    let focused = !this.focus
+    let renders = targets.map(async target => {
+      let content = fragment.getElementById(target.getAttribute('id'))
+      let strategy = MergeTargets.get(target)?.strategy || settings.mergeStrategy
+      if (!content) {
+        if (!this.dispatch('ajax:missing', { response, fragment })) {
+          return
+        }
+
+        if (response.ok) {
+          return target.remove();
+        }
+
+        throw new FailedResponseError(el)
+      }
+
+      let mergeContent = async () => {
+        let merged = await merge(strategy, target, content)
+
+        if (merged) {
+          merged.dataset.source = response.url
+          merged.removeAttribute('aria-busy')
+          let focusables = ['[x-autofocus]', '[autofocus]']
+          focusables.some(selector => {
+            if (focused) return true
+            if (merged.matches(selector)) {
+              focused = focusOn(merged)
+            }
+
+            return focused || Array.from(merged.querySelectorAll(selector)).some(focusable => focusOn(focusable))
+          })
+        }
+
+        dispatch(merged, 'ajax:merged')
+
+        return merged
+      }
+
+      if (!this.dispatch('ajax:merge', { strategy, content, merge: mergeContent })) {
+        return
+      }
+
+      return mergeContent()
+    })
+
+    return await Promise.all(renders)
+  }
+}
+
+class AjaxAnchorElement extends AjaxElement {
+  constructor(el, target = '') {
+    super(el, target)
+    this.method = 'GET'
+    this.el.addEventListener('click', handleClick)
+  }
+
+  async handleClick(event) {
+    if (event.which > 1 || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) {
+      return
+    }
+
+    event.preventDefault()
+
+    this.referrer = this.nearestSource()
+    this.action = el.href
+
+    try {
+      return await render()
+    } catch (error) {
+      if (!(error instanceof FailedResponseError)) {
+        throw error
+      }
+
+      console.warn(error.message)
+      window.url.href = el.href
+    }
+  }
+
+  destruct() {
+    this.el.removeEventListener('click', handleClick)
+  }
+}
+
+class AjaxFormElement extends AjaxElement {
+  constructor(el, target = '') {
+    super(el, target)
+    this.el.addEventListener('submit', handleSubmit)
+  }
+
+  async handleSubmit(event) {
+    if (event.submitter && event.submitter.hasAttribute('formnoajax')) {
+      return
+    }
+
+    event.preventDefault()
+
+    this.method = (this.el.getAttribute('method') || 'GET').toUpperCase()
+    this.referrer = this.nearestSource()
+    this.action = this.el.getAttribute('action') || this.referrer || window.url.href
+    this.enctype = this.el.getAttribute('enctype') || this.enctype
+
+    let data = new FormData(this.el)
+    let name = event.submitter?.getAttribute("name")
+    if (name) {
+      data.append(name, event.submitter.getAttribute('value') || '')
+    }
+
+    try {
+      return this.send(data)
+    } catch (error) {
+      if (!(error instanceof FailedResponseError)) {
+        throw error
+      }
+
+      console.warn(error.message)
+      el.removeEventListener('submit', handler)
+      el.requestSubmit(event.submitter)
+    }
+  }
+
+  destruct() {
+    this.el.removeEventListener('submit', handleSubmit)
+  }
+}
+
+class AjaxRequest {
+  construct(method, action, referrer = null) {
+    this.action = action
+    this.method = method
+    this.headers = {
+      'X-Alpine-Request': 'true',
+      ...settings.headers,
+    }
+    this.referrer = referrer
+    this.redirectHandler = (response) => response
+  }
+
+  setHeaders(headers = {}) {
+    Object.assign(this.headers, headers)
+
+    return this
+  }
+
+  followRedirects(follow) {
+    this.redirectHandler = follow
+      ? (response) => response
+      : (response) => {
+        if (response.redirected) {
+          window.location.href = response.url
+          return
+        }
+
+        return response
+      }
+
+    return this
+  }
+
+  send(data = null) {
+    let body = parseFormData(data)
+    if (this.method === 'GET') {
+      this.mergeBodyIntoAction(body)
+      this.body = null
+    } else if (this.enctype !== 'multipart/form-data') {
+      this.body = this.formDataToParams(body)
+    }
+  }
+
+  mergeBodyIntoAction(body) {
+    let params = this.formDataToParams(body)
+
+    if (Array.from(params).length) {
+      let parts = this.action.split('#')
+      let hash = parts[1]
+      this.action += parts[0].includes('?') ? '&' : '?'
+      this.action += params
+      if (hash) {
+        this.action += '#' + hash
+      }
+    }
+  }
+
+  formDataToParams(body) {
+    let params = Array.from(body.entries()).filter(([key, value]) => {
+      return !(value instanceof File)
+    })
+
+    return new URLSearchParams(params)
+  }
+}
+
+class MergeTarget {
+  construct(el, strategy, transition) {
+    this.strategy = strategy
+    this.transition = transition(modifiers)
+
+    MergeTargets.set(el, this)
+  }
+}
+
+class Snapshot {
+  constructor(url, html) {
+    this.url = url
+    this.html = html
+  }
+}
+
+let Snapshots = {
+  currentKey: null,
+  currentUrl: null,
+  keys: [],
+  snapshots: {},
+
+  limit: settings.snapshotLimit,
+
+  has(url) {
+    return this.snapshots[url] !== undefined
+  },
+
+  get(url) {
+    let snapshot = this.snapshots[url]
+
+    if (!snapshot) {
+      throw new Error('No snapshot found for ' + url)
+    }
+
+    return snapshot
+  },
+
+  replace(key, snapshot) {
+    if (this.has(key)) {
+      this.snapshots[key] = snapshot
+    } else {
+      this.push(key, snapshot)
+    }
+  },
+
+  push(key, snapshot) {
+    this.snapshots[key] = snapshot
+    let index = this.keys.indexOf(key)
+    if (index > -1) {
+      this.keys.splice(index, 1)
+    }
+    this.keys.unshift(key)
+    this.trim()
+  },
+
+  trim() {
+    for (let key of this.keys.splice(this.limit)) {
+      delete this.snapshots[key]
+    }
+  }
+}
 
 function Ajax(Alpine) {
-  if (Alpine.morph) morphElement = Alpine.morph
-  window.addEventListener('popstate', (e) => {
-    if (!e.state || !e.state.__AJAX__) return
-
-    window.location.reload(true)
-  })
+  if (Alpine.morph) doMorph = Alpine.morph
 
   Alpine.directive('target', (el, { modifiers, expression }, { evaluate, cleanup }) => {
-    let config = {
-      targets: parseIds(el, expression),
-      events: true,
-      ...parseModifiers(modifiers)
-    }
-
-    sendConfig.set(el, config)
-
-    config.headers = Object.assign(
-      globalConfig.headers,
-      evaluate(Alpine.bound(el, 'x-headers', '{}'))
+    let ajaxEl = new AjaxElement(
+      el,
+      expression,
+      modifiers.includes('push') ? 'push' : (modifiers.includes('replace') ? 'replace' : false),
+      !modifiers.includes('nofocus'),
     )
+    ajaxEl.focus = !modifiers.includes('nofocus')
+    ajaxEl.followRedirects = settings.followRedirects ? !modifiers.includes('nofollow') : modifiers.includes('follow')
+    ajaxEl.headers = evaluate(Alpine.bound(el, 'x-headers', '{}'))
+    ajaxEl.history = modifiers.includes('push') ? 'push' : (modifiers.includes('replace') ? 'replace' : false)
 
-    if (isLocalLink(el)) {
-      cleanup(listenForNavigate(el, config))
-    } else if (isForm(el)) {
-      cleanup(listenForSubmit(el, config))
-    }
+    cleanup(ajaxEl.destruct)
   })
 
   Alpine.addInitSelector(() => `[${Alpine.prefixed('merge')}]`)
 
   Alpine.directive('merge', (el, { modifiers, expression }) => {
-    mergeConfig.set(el, {
-      strategy: expression,
-      transition: transition(modifiers)
-    })
+    new MergeTarget(
+      el,
+      expression,
+      settings.transitions || modifiers.includes('transition')
+    )
   })
 
   Alpine.magic('ajax', (el) => {
     return (action, options = {}) => {
-      let method = options.method ? options.method.toUpperCase() : 'GET'
-      let enctype = options.enctype || 'application/x-www-form-urlencoded'
-      let body = null
-
-      if (options.body) {
-        body = parseFormData(options.body)
-        if (method === 'GET') {
-          action = mergeBodyIntoAction(body, action)
-          body = null
-        } else if (enctype !== 'multipart/form-data') {
-          body = formDataToParams(body)
-        }
-      }
-
-      let headers = options.headers
-      if (!headers) {
-        headers = el.hasAttribute('x-headers')
-          ? Alpine.evaluate(el, Alpine.bound(el, 'x-headers', '{}'))
-          : {}
-      }
-      headers = Object.assign(globalConfig.headers, headers)
-
-      let request = {
-        action,
-        method,
-        body,
-        headers,
-        referrer: source(el),
-      }
-
-      let config = sendConfig.get(el) || {
-        followRedirects: globalConfig.followRedirects,
-        history: false,
+      options = Object.assign({
         focus: false,
-      }
-      config = Object.assign(config, options)
+        followRedirects: true,
+        history: false,
+        headers: null,
+        sync: false,
+        body: null,
+        enctype: 'application/x-www-form-urlencoded',
+        events: false,
+        method: 'GET',
+      }, options)
 
-      let ids = parseIds(el, config.targets || config.target)
-      let targets = findTargets(ids)
-      targets = config.sync ? addSyncTargets(targets) : targets
+      options.method = options.method.toUpperCase()
 
-      return render(request, targets, el, config)
+      let ajaxEl = Object.assign(
+        new AjaxElement(el, options.targets || options.target),
+        options
+      )
+      ajaxEl.action = action
+      ajaxEl.disableEvents(options.events)
+
+      return ajaxEl.send(options.body)
     }
   })
 }
 
 Ajax.configure = (options) => {
-  globalConfig = Object.assign(globalConfig, options)
+  settings = Object.assign(settings, options)
 
   return Ajax
 }
 
 export default Ajax
 
-function parseIds(el, expression = null) {
-  let ids = [el.getAttribute('id')]
-  if (expression) {
-    ids = Array.isArray(expression) ? expression : expression.split(' ')
-  }
-  ids = ids.filter(id => id)
-
-  if (ids.length === 0) {
-    throw new MissingIdError(el)
-  }
-
-  return ids
-}
-
-function parseModifiers(modifiers = []) {
-  let followRedirects = globalConfig.followRedirects
-    ? !modifiers.includes('nofollow')
-    : modifiers.includes('follow')
-
-  let history = false;
-  if (modifiers.includes('push')) history = 'push'
-  if (modifiers.includes('replace')) history = 'replace'
-
-  return {
-    followRedirects,
-    history,
-    focus: !modifiers.includes('nofocus')
-  }
-}
-
-function transition(modifiers = []) {
-  return globalConfig.transitions || modifiers.includes('transition')
-}
-
-function isLocalLink(el) {
-  return el.href &&
-    !el.hash &&
-    el.origin == location.origin
-}
-
-function isForm(el) {
-  return el.tagName === 'FORM'
-}
-
 function parseFormData(data) {
-  if (data instanceof HTMLFormElement) return new FormData(data)
   if (data instanceof FormData) return data
 
   const formData = new FormData()
@@ -165,237 +473,6 @@ function parseFormData(data) {
   }
 
   return formData
-}
-
-function listenForNavigate(el, config) {
-  let handler = async (event) => {
-    if (event.which > 1 || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) {
-      return
-    }
-
-    event.preventDefault()
-    event.stopPropagation()
-
-    let request = navigateRequest(el)
-    request.headers = config.headers || {}
-    let targets = addSyncTargets(findTargets(config.targets))
-
-    try {
-      return await render(request, targets, el, config)
-    } catch (error) {
-      if (error instanceof FailedResponseError) {
-        console.warn(error.message)
-        window.location.href = el.href
-        return
-      }
-
-      throw error
-    }
-  }
-
-  el.addEventListener('click', handler)
-
-  return () => el.removeEventListener('click', handler)
-}
-
-function navigateRequest(link) {
-  return {
-    method: 'GET',
-    action: link.href,
-    referrer: source(link),
-    body: null
-  }
-}
-
-function listenForSubmit(el, config) {
-  let handler = async (event) => {
-    if (event.submitter && event.submitter.hasAttribute('formnoajax')) {
-      return
-    }
-
-    event.preventDefault()
-    event.stopPropagation()
-
-    let request = formRequest(el, event.submitter)
-    request.headers = config.headers || {}
-    let targets = addSyncTargets(findTargets(config.targets))
-
-    try {
-      return await withSubmitter(event.submitter, () => {
-        return render(request, targets, el, config)
-      })
-    } catch (error) {
-      if (error instanceof FailedResponseError) {
-        console.warn(error.message)
-        el.removeEventListener('submit', handler)
-        el.requestSubmit(event.submitter)
-        return
-      }
-
-      throw error
-    }
-  }
-
-  el.addEventListener('submit', handler)
-
-  return () => el.removeEventListener('submit', handler)
-}
-
-function formRequest(form, submitter = null) {
-  let method = (form.getAttribute('method') || 'GET').toUpperCase()
-  let enctype = form.getAttribute('enctype') || 'application/x-www-form-urlencoded'
-  let referrer = source(form)
-  let action = form.getAttribute('action') || referrer || window.location.href
-  let body = parseFormData(form)
-  if (submitter) {
-    method = submitter.getAttribute('formmethod') || method
-    enctype = submitter.getAttribute('formenctype') || enctype
-    action = submitter.getAttribute('formaction') || action
-    if (submitter.name) {
-      body.append(submitter.name, submitter.value)
-    }
-  }
-  if (method === 'GET') {
-    action = mergeBodyIntoAction(body, action)
-    body = null
-  } else if (enctype !== 'multipart/form-data') {
-    body = formDataToParams(body)
-  }
-
-  return { method, action, body, referrer }
-}
-
-async function withSubmitter(submitter, callback) {
-  if (!submitter) return await callback()
-
-  let disableEvent = e => e.preventDefault()
-
-  submitter.setAttribute('aria-disabled', 'true')
-  submitter.addEventListener('click', disableEvent)
-
-  let result = await callback()
-
-  submitter.removeAttribute('aria-disabled')
-  submitter.removeEventListener('click', disableEvent)
-
-  return result
-}
-
-function mergeBodyIntoAction(body, action) {
-  let params = formDataToParams(body)
-
-  if (Array.from(params).length) {
-    let parts = action.split('#')
-    let hash = parts[1]
-    action += parts[0].includes('?') ? '&' : '?'
-    action += params
-    if (hash) {
-      action += '#' + hash
-    }
-
-  }
-
-  return action
-}
-
-function formDataToParams(body) {
-  let params = Array.from(body.entries()).filter(([key, value]) => {
-    return !(value instanceof File)
-  })
-
-  return new URLSearchParams(params)
-}
-
-async function render(request, targets, el, config) {
-
-  let dispatch = () => true
-  if (config.events) {
-    dispatch = (el, name, detail) => {
-      return el.dispatchEvent(
-        new CustomEvent(name, {
-          detail,
-          bubbles: true,
-          composed: true,
-          cancelable: true,
-        })
-      )
-    }
-  }
-
-  if (!dispatch(el, 'ajax:before')) return
-
-  let targetIds = []
-  targets.forEach(target => {
-    target.setAttribute('aria-busy', 'true')
-    targetIds.push(target.getAttribute('id'))
-  })
-
-  request.headers['X-Alpine-Request'] = 'true'
-  request.headers['X-Alpine-Target'] = targetIds.join('  ')
-  let response = await send(request, config.followRedirects)
-
-  if (response.ok) {
-    dispatch(el, 'ajax:success', response)
-  } else {
-    dispatch(el, 'ajax:error', response)
-  }
-
-  dispatch(el, 'ajax:after', response)
-
-  if (!response.html) return
-
-  if (config.history) {
-    updateHistory(config.history, response.url)
-  }
-
-  let wrapper = document.createRange().createContextualFragment('<template>' + response.html + '</template>')
-  let fragment = wrapper.firstElementChild.content
-  let focused = !config.focus
-  let renders = targets.map(async target => {
-    let content = fragment.getElementById(target.getAttribute('id'))
-    let strategy = mergeConfig.get(target)?.strategy || globalConfig.mergeStrategy
-    if (!content) {
-      if (!dispatch(el, 'ajax:missing', { response, fragment })) {
-        return
-      }
-
-      if (response.ok) {
-        return target.remove();
-      }
-
-      throw new FailedResponseError(el)
-    }
-
-    let mergeContent = async () => {
-      let merged = await merge(strategy, target, content)
-
-      if (merged) {
-        merged.dataset.source = response.url
-        merged.removeAttribute('aria-busy')
-        let focusables = ['[x-autofocus]', '[autofocus]']
-        focusables.some(selector => {
-          if (focused) return true
-          if (merged.matches(selector)) {
-            focused = focusOn(merged)
-          }
-
-          return focused || Array.from(merged.querySelectorAll(selector)).some(focusable => focusOn(focusable))
-        })
-      }
-
-      dispatch(merged, 'ajax:merged')
-
-      return merged
-    }
-
-    if (!dispatch(target, 'ajax:merge', { strategy, content, merge: mergeContent })) {
-      return
-    }
-
-    return mergeContent()
-  })
-
-  return await Promise.all(renders)
 }
 
 async function merge(strategy, from, to) {
@@ -431,13 +508,13 @@ async function merge(strategy, from, to) {
       return from
     },
     morph(from, to) {
-      morphElement(from, to)
+      doMorph(from, to)
 
       return document.getElementById(to.getAttribute('id'))
     }
   }
 
-  if (!mergeConfig.get(from)?.transition || !document.startViewTransition) {
+  if (!MergeTargets.get(from)?.transition || !document.startViewTransition) {
     return strategies[strategy](from, to)
   }
 
@@ -471,34 +548,12 @@ function updateHistory(strategy, url) {
   return strategies[strategy]();
 }
 
-function findTargets(ids = []) {
-  return ids.map(id => {
-    let target = document.getElementById(id)
-    if (!target) {
-      throw new MissingTargetError(id)
-    }
-
-    return target
-  })
-}
-
-function addSyncTargets(targets) {
-  document.querySelectorAll('[x-sync]').forEach(el => {
-    let id = el.getAttribute('id')
-    if (!id) {
-      throw new MissingIdError(el)
-    }
-
-    if (!targets.some(target => target.getAttribute('id') === id)) {
-      targets.push(el)
-    }
-  })
-
-  return targets
-}
-
-function source(el) {
-  return el.closest('[data-source]')?.dataset.source
+class InvalidElement extends Error {
+  constructor(el) {
+    let description = (el.outerHTML.match(/<[^>]+>/) ?? [])[0] ?? '[Element]'
+    super(`AjaxElement cannot extend ${description}.`)
+    this.name = 'Invalid Element'
+  }
 }
 
 class MissingIdError extends Error {
