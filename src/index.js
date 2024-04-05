@@ -1,268 +1,233 @@
-import './polyfills'
-import { send } from './send'
-
-let globalConfig = {
-  followRedirects: true,
+let settings = {
   headers: {},
   mergeStrategy: 'replace',
+  transitions: false,
+  followRedirects: true,
 }
-let sendConfig = new WeakMap()
-let mergeConfig = new WeakMap()
 
-let morphElement = (from, to) => {
+let doMorph = (from, to) => {
   console.error(`You can't use the "morph" merge without first installing the Alpine "morph" plugin here: https://alpinejs.dev/plugins/morph`)
-};
+}
 
 function Ajax(Alpine) {
-  if (Alpine.morph) morphElement = Alpine.morph
-  window.addEventListener('popstate', (e) => {
-    if (!e.state || !e.state.__AJAX__) return
+  if (Alpine.morph) doMorph = Alpine.morph
 
-    window.location.reload(true)
+  Alpine.directive('target', (el, { modifiers, expression }) => {
+    AjaxAttributes.set(el, {
+      targets: parseTargetIds(el, expression),
+      focus: !modifiers.includes('nofocus'),
+      history: modifiers.includes('push') ? 'push' : (modifiers.includes('replace') ? 'replace' : false),
+      follow: settings.followRedirects ? !modifiers.includes('nofollow') : modifiers.includes('follow')
+    })
   })
 
-  Alpine.directive('target', (el, { modifiers, expression }, { evaluate, cleanup }) => {
-    let config = {
-      targets: parseIds(el, expression),
-      events: true,
-      ...parseModifiers(modifiers)
-    }
-
-    sendConfig.set(el, config)
-
-    config.headers = Object.assign(
-      globalConfig.headers,
-      evaluate(Alpine.bound(el, 'x-headers', '{}'))
-    )
-
-    if (isLocalLink(el)) {
-      cleanup(listenForNavigate(el, config))
-    } else if (isForm(el)) {
-      cleanup(listenForSubmit(el, config))
-    }
+  Alpine.directive('headers', (el, { expression }, { evaluateLater, effect }) => {
+    let evaluate = evaluateLater(expression || '{}')
+    effect(() => {
+      evaluate(headers => {
+        AjaxAttributes.set(el, { headers })
+      })
+    })
   })
 
   Alpine.addInitSelector(() => `[${Alpine.prefixed('merge')}]`)
-
   Alpine.directive('merge', (el, { modifiers, expression }) => {
-    mergeConfig.set(el, {
+    AjaxAttributes.set(el, {
       strategy: expression,
-      transition: transition(modifiers)
+      transition: settings.transitions || modifiers.includes('transition')
     })
   })
 
   Alpine.magic('ajax', (el) => {
-    return (action, options = {}) => {
+    return async (action, options = {}) => {
+      let targets = findTargets(parseTargetIds(el, options.targets || options.target))
+      targets = options.sync ? addSyncTargets(targets) : targets
+      let referrer = source(el)
+      let headers = Object.assign({}, AjaxAttributes.get(el, 'headers', {}), options.headers)
       let method = options.method ? options.method.toUpperCase() : 'GET'
-      let enctype = options.enctype || 'application/x-www-form-urlencoded'
-      let body = null
+      let body = options.body
+      let follow = ('followRedirects' in options) ? options.followRedirects : AjaxAttributes.get(el, 'follow', settings.followRedirects)
 
-      if (options.body) {
-        body = parseFormData(options.body)
-        if (method === 'GET') {
-          action = mergeBodyIntoAction(body, action)
-          body = null
-        } else if (enctype !== 'multipart/form-data') {
-          body = formDataToParams(body)
-        }
-      }
+      let response = await request(el, targets, action, referrer, headers, follow, method, body)
 
-      let headers = options.headers
-      if (!headers) {
-        headers = el.hasAttribute('x-headers')
-          ? Alpine.evaluate(el, Alpine.bound(el, 'x-headers', '{}'))
-          : {}
-      }
-      headers = Object.assign(globalConfig.headers, headers)
+      let history = options.history || AjaxAttributes.get(el, 'history')
+      let focus = ('focus' in options) ? options.focus : AjaxAttributes.get(el, 'focus', true)
 
-      let request = {
-        action,
-        method,
-        body,
-        headers,
-        referrer: source(el),
-      }
-
-      let config = sendConfig.get(el) || {
-        followRedirects: globalConfig.followRedirects,
-        history: false,
-        focus: false,
-      }
-      config = Object.assign(config, options)
-
-      let ids = parseIds(el, config.targets || config.target)
-      let targets = findTargets(ids)
-      targets = config.sync ? addSyncTargets(targets) : targets
-
-      return render(request, targets, el, config)
+      return render(response, el, targets, history, focus)
     }
   })
+
+  let listeners = []
+
+  Alpine.ajax = {
+    start() {
+      if (!listeners.length) {
+        listeners.push(addGlobalListener('submit', handleForms))
+        listeners.push(addGlobalListener('click', handleLinks))
+      }
+    },
+    stop() {
+      listeners.forEach(ignore => ignore())
+      listeners = []
+    },
+  }
+
+  Alpine.ajax.start()
 }
 
 Ajax.configure = (options) => {
-  globalConfig = Object.assign(globalConfig, options)
+  settings = Object.assign(settings, options)
 
   return Ajax
 }
 
 export default Ajax
 
-function parseIds(el, expression = null) {
-  let ids = [el.getAttribute('id')]
-  if (expression) {
-    ids = Array.isArray(expression) ? expression : expression.split(' ')
-  }
-  ids = ids.filter(id => id)
-
-  if (ids.length === 0) {
-    throw new MissingIdError(el)
-  }
-
-  return ids
-}
-
-function parseModifiers(modifiers = []) {
-  let followRedirects = globalConfig.followRedirects
-    ? !modifiers.includes('nofollow')
-    : modifiers.includes('follow')
-
-  let history = false;
-  if (modifiers.includes('push')) history = 'push'
-  if (modifiers.includes('replace')) history = 'replace'
-
-  return {
-    followRedirects,
-    history,
-    focus: !modifiers.includes('nofocus')
-  }
-}
-
-function transition(modifiers = []) {
-  return globalConfig.transitions || modifiers.includes('transition')
-}
-
-function isLocalLink(el) {
-  return el.href &&
-    !el.hash &&
-    el.origin == location.origin
-}
-
-function isForm(el) {
-  return el.tagName === 'FORM'
-}
-
-function parseFormData(data) {
-  if (data instanceof HTMLFormElement) return new FormData(data)
-  if (data instanceof FormData) return data
-
-  const formData = new FormData()
-  for (let key in data) {
-    if (typeof data[key] === 'object') {
-      formData.append(key, JSON.stringify(data[key]))
+let AjaxAttributes = {
+  store: new WeakMap,
+  set(el, config) {
+    if (this.store.has(el)) {
+      this.store.set(el, Object.assign(this.store.get(el), config))
     } else {
-      formData.append(key, data[key])
+      this.store.set(el, config)
     }
-  }
+  },
+  get(el, key, fallback = null) {
+    let config = this.store.get(el) || {}
 
-  return formData
+    return (key in config) ? config[key] : fallback
+  },
+  has(el) {
+    return this.store.has(el)
+  }
 }
 
-function listenForNavigate(el, config) {
-  let handler = async (event) => {
-    if (event.which > 1 || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) {
+async function handleLinks(event) {
+  if (event.defaultPrevented ||
+    event.which > 1 ||
+    event.altKey ||
+    event.ctrlKey ||
+    event.metaKey ||
+    event.shiftKey
+  ) return
+
+  let link = event?.target.closest('a[href]:not([download]):not([noajax])')
+
+  if (!link ||
+    !AjaxAttributes.has(link) ||
+    link.isContentEditable ||
+    link.getAttribute('href').startsWith('#') ||
+    link.origin !== location.origin ||
+    ((link.pathname + link.search) === (location.pathname + location.search) && link.hash)
+  ) return
+
+  event.preventDefault()
+  event.stopImmediatePropagation()
+
+  let targets = addSyncTargets(findTargets(AjaxAttributes.get(link, 'targets', [])))
+  let referrer = source(link)
+  let action = link.getAttribute('href') || referrer
+  let headers = AjaxAttributes.get(link, 'headers', {})
+  let follow = AjaxAttributes.get(link, 'follow', settings.followRedirects)
+
+  let response = await request(link, targets, action, referrer, headers, follow)
+
+  let history = AjaxAttributes.get(link, 'history')
+  let focus = AjaxAttributes.get(link, 'focus', true)
+
+  try {
+    return await render(response, link, targets, history, focus)
+  } catch (error) {
+    if (error.name === 'RenderError') {
+      console.warn(error.message)
+      window.location.href = link.href
       return
     }
 
-    event.preventDefault()
-    event.stopPropagation()
-
-    let request = navigateRequest(el)
-    request.headers = config.headers || {}
-    let targets = addSyncTargets(findTargets(config.targets))
-
-    try {
-      return await render(request, targets, el, config)
-    } catch (error) {
-      if (error instanceof FailedResponseError) {
-        console.warn(error.message)
-        window.location.href = el.href
-        return
-      }
-
-      throw error
-    }
-  }
-
-  el.addEventListener('click', handler)
-
-  return () => el.removeEventListener('click', handler)
-}
-
-function navigateRequest(link) {
-  return {
-    method: 'GET',
-    action: link.href,
-    referrer: source(link),
-    body: null
+    throw error
   }
 }
 
-function listenForSubmit(el, config) {
-  let handler = async (event) => {
-    if (event.submitter && event.submitter.hasAttribute('formnoajax')) {
-      return
-    }
-
-    event.preventDefault()
-    event.stopPropagation()
-
-    let request = formRequest(el, event.submitter)
-    request.headers = config.headers || {}
-    let targets = addSyncTargets(findTargets(config.targets))
-
-    try {
-      return await withSubmitter(event.submitter, () => {
-        return render(request, targets, el, config)
-      })
-    } catch (error) {
-      if (error instanceof FailedResponseError) {
-        console.warn(error.message)
-        el.removeEventListener('submit', handler)
-        el.requestSubmit(event.submitter)
-        return
-      }
-
-      throw error
-    }
+async function handleForms(event) {
+  if (event.defaultPrevented) {
+    return
   }
 
-  el.addEventListener('submit', handler)
+  let form = event.target
+  let submitter = event.submitter
+  let method = (submitter?.getAttribute('formmethod') || form.getAttribute('method') || 'GET').toUpperCase()
 
-  return () => el.removeEventListener('submit', handler)
-}
+  if (!form ||
+    !AjaxAttributes.has(form) ||
+    method === 'DIALOG' ||
+    submitter?.hasAttribute('formnoajax') ||
+    submitter?.hasAttribute('formtarget') ||
+    form.hasAttribute('noajax') ||
+    form.hasAttribute('target')
+  ) return
 
-function formRequest(form, submitter = null) {
-  let method = (form.getAttribute('method') || 'GET').toUpperCase()
-  let enctype = form.getAttribute('enctype') || 'application/x-www-form-urlencoded'
+  event.preventDefault()
+  event.stopImmediatePropagation()
+
+  let targets = addSyncTargets(findTargets(AjaxAttributes.get(form, 'targets', [])))
   let referrer = source(form)
-  let action = form.getAttribute('action') || referrer || window.location.href
-  let body = parseFormData(form)
+  let action = form.getAttribute('action') || referrer
+  let headers = AjaxAttributes.get(form, 'headers', {})
+  let follow = AjaxAttributes.get(form, 'follow', settings.followRedirects)
+  let body = new FormData(form)
+  let enctype = form.getAttribute('enctype')
   if (submitter) {
-    method = submitter.getAttribute('formmethod') || method
     enctype = submitter.getAttribute('formenctype') || enctype
     action = submitter.getAttribute('formaction') || action
     if (submitter.name) {
       body.append(submitter.name, submitter.value)
     }
   }
-  if (method === 'GET') {
-    action = mergeBodyIntoAction(body, action)
-    body = null
-  } else if (enctype !== 'multipart/form-data') {
-    body = formDataToParams(body)
+
+  let response = await withSubmitter(submitter, () => {
+    return request(form, targets, action, referrer, headers, follow, method, body, enctype)
+  })
+
+  let history = AjaxAttributes.get(form, 'history')
+  let focus = AjaxAttributes.get(form, 'focus', true)
+
+  try {
+    return await render(response, form, targets, history, focus)
+  } catch (error) {
+    if (error.name === 'RenderError') {
+      console.warn(error.message)
+      form.setAttribute('noajax', 'true')
+      form.requestSubmit(submitter)
+
+      return
+    }
+
+    throw error
+  }
+}
+
+function addGlobalListener(name, callback) {
+  let callbackWithErrorHandler = async (event) => {
+    try {
+      await callback(event)
+    } catch (error) {
+      if (error.name === 'AbortError') {
+        return
+      }
+
+      throw error
+    }
   }
 
-  return { method, action, body, referrer }
+  // Late bind listeners so they're last in the event chain
+  let onCapture = () => {
+    document.removeEventListener(name, callbackWithErrorHandler, false)
+    document.addEventListener(name, callbackWithErrorHandler, false)
+  }
+
+  document.addEventListener(name, onCapture, true)
+
+  return () => document.removeEventListener(name, onCapture, true)
 }
 
 async function withSubmitter(submitter, callback) {
@@ -279,6 +244,92 @@ async function withSubmitter(submitter, callback) {
   submitter.removeEventListener('click', disableEvent)
 
   return result
+}
+
+let PendingTargets = {
+  store: new Map,
+  abort(id) {
+    if (this.store.has(id)) {
+      let request = this.store.get(id)
+      request.controller.abort()
+      request.target.removeAttribute('aria-busy')
+    }
+  },
+  set(id, target, controller) {
+    this.abort(id)
+    target.querySelectorAll('[aria-busy]').forEach((busy) => this.abort(busy.getAttribute('id')))
+    this.store.set(id, { target, controller })
+    target.setAttribute('aria-busy', 'true')
+  },
+}
+
+async function request(el, targets, action, referrer, headers, follow, method = 'GET', body = null, enctype = 'application/x-www-form-urlencoded') {
+  if (!dispatch(el, 'ajax:before')) {
+    throw new DOMException('[ajax:before] aborted', 'AbortError')
+  }
+
+  let controller = new AbortController()
+  let targetIds = []
+  targets.forEach(target => {
+    let id = target.getAttribute('id')
+    PendingTargets.set(id, target, controller)
+    targetIds.push(id)
+  })
+  headers['X-Alpine-Target'] = targetIds.join('  ')
+  headers['X-Alpine-Request'] = 'true'
+  headers = Object.assign({}, settings.headers, headers)
+
+  if (body) {
+    body = parseFormData(body)
+    if (method === 'GET') {
+      action = mergeBodyIntoAction(body, action)
+      body = null
+    } else if (enctype !== 'multipart/form-data') {
+      body = formDataToParams(body)
+    }
+  }
+
+  let response = await fetch(action, {
+    method,
+    headers,
+    body,
+    referrer,
+    signal: controller.signal
+  })
+
+  if (!follow && response.redirected) {
+    window.location.href = response.url
+
+    return response
+  }
+
+  response.html = await response.text()
+
+  if (response.ok) {
+    dispatch(el, 'ajax:success', response)
+  } else {
+    dispatch(el, 'ajax:error', response)
+  }
+
+  dispatch(el, 'ajax:after', response)
+
+  return response
+}
+
+function parseFormData(data) {
+  if (data instanceof FormData) return data
+  if (data instanceof HTMLFormElement) return new FormData(data)
+
+  const formData = new FormData()
+  for (let key in data) {
+    if (typeof data[key] === 'object') {
+      formData.append(key, JSON.stringify(data[key]))
+    } else {
+      formData.append(key, data[key])
+    }
+  }
+
+  return formData
 }
 
 function mergeBodyIntoAction(body, action) {
@@ -306,56 +357,25 @@ function formDataToParams(body) {
   return new URLSearchParams(params)
 }
 
-async function render(request, targets, el, config) {
+async function render(response, el, targets, history, focus) {
+  if (!response.html) {
+    targets.forEach(target => target.removeAttribute('aria-busy'))
 
-  let dispatch = () => true
-  if (config.events) {
-    dispatch = (el, name, detail) => {
-      return el.dispatchEvent(
-        new CustomEvent(name, {
-          detail,
-          bubbles: true,
-          composed: true,
-          cancelable: true,
-        })
-      )
-    }
+    return
   }
 
-  if (!dispatch(el, 'ajax:before')) return
-
-  let targetIds = []
-  targets.forEach(target => {
-    target.setAttribute('aria-busy', 'true')
-    targetIds.push(target.getAttribute('id'))
-  })
-
-  request.headers['X-Alpine-Request'] = 'true'
-  request.headers['X-Alpine-Target'] = targetIds.join('  ')
-  let response = await send(request, config.followRedirects)
-
-  if (response.ok) {
-    dispatch(el, 'ajax:success', response)
-  } else {
-    dispatch(el, 'ajax:error', response)
-  }
-
-  dispatch(el, 'ajax:after', response)
-
-  if (!response.html) return
-
-  if (config.history) {
-    updateHistory(config.history, response.url)
+  if (history) {
+    updateHistory(history, response.url)
   }
 
   let wrapper = document.createRange().createContextualFragment('<template>' + response.html + '</template>')
   let fragment = wrapper.firstElementChild.content
-  let focused = !config.focus
+  let focused = !focus
   let renders = targets.map(async target => {
     let content = fragment.getElementById(target.getAttribute('id'))
-    let strategy = mergeConfig.get(target)?.strategy || globalConfig.mergeStrategy
+    let strategy = AjaxAttributes.get(target, 'strategy', settings.mergeStrategy)
     if (!content) {
-      if (!dispatch(el, 'ajax:missing', { response, fragment })) {
+      if (!dispatch(el, 'ajax:missing', { target, response })) {
         return
       }
 
@@ -363,7 +383,7 @@ async function render(request, targets, el, config) {
         return target.remove();
       }
 
-      throw new FailedResponseError(el)
+      throw new RenderError(target, response.status)
     }
 
     let mergeContent = async () => {
@@ -431,13 +451,13 @@ async function merge(strategy, from, to) {
       return from
     },
     morph(from, to) {
-      morphElement(from, to)
+      doMorph(from, to)
 
       return document.getElementById(to.getAttribute('id'))
     }
   }
 
-  if (!mergeConfig.get(from)?.transition || !document.startViewTransition) {
+  if (!AjaxAttributes.get(from, 'transition', document.startViewTransition)) {
     return strategies[strategy](from, to)
   }
 
@@ -471,11 +491,25 @@ function updateHistory(strategy, url) {
   return strategies[strategy]();
 }
 
+function parseTargetIds(el, target = null) {
+  let ids = [el.getAttribute('id')]
+  if (target) {
+    ids = Array.isArray(target) ? target : target.split(' ')
+  }
+  ids = ids.filter(id => id)
+
+  if (ids.length === 0) {
+    throw new IDError(el)
+  }
+
+  return ids
+}
+
 function findTargets(ids = []) {
   return ids.map(id => {
     let target = document.getElementById(id)
     if (!target) {
-      throw new MissingTargetError(id)
+      throw new TargetError(id)
     }
 
     return target
@@ -486,7 +520,7 @@ function addSyncTargets(targets) {
   document.querySelectorAll('[x-sync]').forEach(el => {
     let id = el.getAttribute('id')
     if (!id) {
-      throw new MissingIdError(el)
+      throw new IdNotFoundError(el)
     }
 
     if (!targets.some(target => target.getAttribute('id') === id)) {
@@ -498,28 +532,36 @@ function addSyncTargets(targets) {
 }
 
 function source(el) {
-  return el.closest('[data-source]')?.dataset.source
+  return el.closest('[data-source]')?.dataset.source || window.location.href
 }
 
-class MissingIdError extends Error {
+function dispatch(el, name, detail) {
+  return el.dispatchEvent(
+    new CustomEvent(name, {
+      detail,
+      bubbles: true,
+      composed: true,
+      cancelable: true,
+    })
+  )
+}
+
+class IDError extends DOMException {
   constructor(el) {
     let description = (el.outerHTML.match(/<[^>]+>/) ?? [])[0] ?? '[Element]'
-    super(`${description} is missing an ID to target.`)
-    this.name = 'Missing ID'
+    super(`${description} is missing an ID to target.`, 'IDError')
   }
 }
 
-class MissingTargetError extends Error {
+class TargetError extends DOMException {
   constructor(id) {
-    super(`#${id} was not found in the current document.`)
-    this.name = 'Missing Target'
+    super(`[#${id}] was not found in the current document.`, 'TargetError')
   }
 }
 
-class FailedResponseError extends Error {
-  constructor(el) {
-    let description = (el.outerHTML.match(/<[^>]+>/) ?? [])[0] ?? '[Element]'
-    super(`${description} received a failed response.`)
-    this.name = 'Failed Response'
+class RenderError extends DOMException {
+  constructor(target, status) {
+    let id = target.getAttribute('id')
+    super(`Target [#${id}] was not found in response with status [${status}].`, 'RenderError')
   }
 }
