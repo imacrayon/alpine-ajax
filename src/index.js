@@ -8,22 +8,6 @@ let doMorph = (from, to) => {
   console.error(`You can't use the "morph" merge without first installing the Alpine "morph" plugin here: https://alpinejs.dev/plugins/morph`)
 };
 
-let AjaxAttributes = {
-  store: new WeakMap,
-  set(el, config) {
-    if (this.store.has(el)) {
-      this.store.set(el, Object.assign(this.store.get(el), config))
-    } else {
-      this.store.set(el, config)
-    }
-  },
-  get(el, key, fallback = null) {
-    let config = this.store.get(el) || {}
-
-    return (key in config) ? config[key] : fallback
-  }
-}
-
 function Ajax(Alpine) {
   if (Alpine.morph) doMorph = Alpine.morph
 
@@ -51,13 +35,13 @@ function Ajax(Alpine) {
 
   Alpine.magic('ajax', (el) => {
     return async (action, options = {}) => {
-      let method = options.method ? options.method.toUpperCase() : 'GET'
+      let targets = findTargets(parseTargetIds(el, options.targets || options.target))
+      targets = options.sync ? addSyncTargets(targets) : targets
+      let referrer = source(el)
       let headers = Object.assign({}, AjaxAttributes.get(el, 'headers', {}), options.headers)
+      let method = options.method ? options.method.toUpperCase() : 'GET'
       let body = options.body
       let enctype = options.enctype || 'application/x-www-form-urlencoded'
-      let targets = findTargets(parseTargetIds(el, options.targets || options.target))
-      let referrer = source(el)
-      targets = options.sync ? addSyncTargets(targets) : targets
 
       let response = await request(el, targets, action, referrer, headers, method, body, enctype)
 
@@ -149,11 +133,11 @@ addGlobalListener('submit', async (event) => {
   event.preventDefault()
   event.stopImmediatePropagation()
 
-  let enctype = form.getAttribute('enctype') || 'application/x-www-form-urlencoded'
   let referrer = source(form)
   let action = form.getAttribute('action') || referrer
   let headers = AjaxAttributes.get(form, 'headers', {})
   let body = new FormData(form)
+  let enctype = form.getAttribute('enctype') || 'application/x-www-form-urlencoded'
   if (submitter) {
     enctype = submitter.getAttribute('formenctype') || enctype
     action = submitter.getAttribute('formaction') || action
@@ -224,47 +208,6 @@ async function withSubmitter(submitter, callback) {
   submitter.removeEventListener('click', disableEvent)
 
   return result
-}
-
-function parseFormData(data) {
-  if (data instanceof FormData) return data
-  if (data instanceof HTMLFormElement) return new FormData(data)
-
-  const formData = new FormData()
-  for (let key in data) {
-    if (typeof data[key] === 'object') {
-      formData.append(key, JSON.stringify(data[key]))
-    } else {
-      formData.append(key, data[key])
-    }
-  }
-
-  return formData
-}
-
-function mergeBodyIntoAction(body, action) {
-  let params = formDataToParams(body)
-
-  if (Array.from(params).length) {
-    let parts = action.split('#')
-    let hash = parts[1]
-    action += parts[0].includes('?') ? '&' : '?'
-    action += params
-    if (hash) {
-      action += '#' + hash
-    }
-
-  }
-
-  return action
-}
-
-function formDataToParams(body) {
-  let params = Array.from(body.entries()).filter(([key, value]) => {
-    return !(value instanceof File)
-  })
-
-  return new URLSearchParams(params)
 }
 
 let PendingTargets = {
@@ -369,6 +312,47 @@ async function request(el, targets, action, referrer, headers, method = 'GET', b
   dispatch(el, 'ajax:after', response)
 
   return response
+}
+
+function parseFormData(data) {
+  if (data instanceof FormData) return data
+  if (data instanceof HTMLFormElement) return new FormData(data)
+
+  const formData = new FormData()
+  for (let key in data) {
+    if (typeof data[key] === 'object') {
+      formData.append(key, JSON.stringify(data[key]))
+    } else {
+      formData.append(key, data[key])
+    }
+  }
+
+  return formData
+}
+
+function mergeBodyIntoAction(body, action) {
+  let params = formDataToParams(body)
+
+  if (Array.from(params).length) {
+    let parts = action.split('#')
+    let hash = parts[1]
+    action += parts[0].includes('?') ? '&' : '?'
+    action += params
+    if (hash) {
+      action += '#' + hash
+    }
+
+  }
+
+  return action
+}
+
+function formDataToParams(body) {
+  let params = Array.from(body.entries()).filter(([key, value]) => {
+    return !(value instanceof File)
+  })
+
+  return new URLSearchParams(params)
 }
 
 async function render(response, el, targets, history, focus) {
