@@ -528,7 +528,7 @@ function parseTargetIds(el, target = null) {
   ids = ids.filter(id => id)
 
   if (ids.length === 0) {
-    throw new IdError(el)
+    throw new IDError(el)
   }
 
   return ids
@@ -647,25 +647,22 @@ function dispatch(el, name, detail) {
   )
 }
 
-class IdError extends Error {
+class IDError extends DOMException {
   constructor(el) {
     let description = (el.outerHTML.match(/<[^>]+>/) ?? [])[0] ?? '[Element]'
-    super(`${description} is missing an ID to target.`)
-    this.name = 'IdError'
+    super(`${description} is missing an ID to target.`, 'IDError')
   }
 }
 
-class TargetError extends Error {
+class TargetError extends DOMException {
   constructor(id) {
-    super(`[#${id}] was not found in the current document.`)
-    this.name = 'TargetError'
+    super(`[#${id}] was not found in the current document.`, 'TargetError')
   }
 }
 
-class RenderError extends Error {
+class RenderError extends DOMException {
   constructor(target, status) {
     let id = target.getAttribute('id')
-    super(`Target [#${id}] was not found in response with status [${status}].`)
-    this.name = 'RenderError'
+    super(`Target [#${id}] was not found in response with status [${status}].`, 'RenderError')
   }
 }

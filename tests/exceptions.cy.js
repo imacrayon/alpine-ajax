@@ -21,5 +21,5 @@ test('Target throws an exception when it is missing an ID',
     }).as('response')
     get('button').click()
   },
-  (err) => err.name === 'IdError'
+  (err) => err.name === 'IDError'
 )
