@@ -15,6 +15,21 @@ test('makes GET requests for naked form',
   }
 )
 
+test('[x-target] can be an empty string',
+  html`<form x-init x-target="" id="replace"><button></button></form>`,
+  ({ intercept, get, wait }) => {
+    intercept('GET', '/tests', {
+      statusCode: 200,
+      body: '<h1 id="title">Success</h1><div id="replace">Replaced</div>'
+    }).as('response')
+    get('button').click()
+    wait('@response').then(() => {
+      get('#title').should('not.exist')
+      get('#replace').should('have.text', 'Replaced')
+    })
+  }
+)
+
 test('makes GET requests for form',
   html`<form x-init x-target id="replace" method="get"><button></button></form>`,
   ({ intercept, get, wait }) => {

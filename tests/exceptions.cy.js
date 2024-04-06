@@ -9,7 +9,7 @@ test('Element throws an exception when a target is missing',
     }).as('response')
     get('button').click()
   },
-  (err) => err.name === 'Missing Target'
+  (err) => err.name === 'TargetError'
 )
 
 test('Target throws an exception when it is missing an ID',
@@ -21,5 +21,5 @@ test('Target throws an exception when it is missing an ID',
     }).as('response')
     get('button').click()
   },
-  (err) => err.name === 'Missing ID'
+  (err) => err.name === 'IDError'
 )
