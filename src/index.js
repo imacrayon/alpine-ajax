@@ -61,6 +61,22 @@ Ajax.configure = (options) => {
 
 export default Ajax
 
+let AjaxAttributes = {
+  store: new WeakMap,
+  set(el, config) {
+    if (this.store.has(el)) {
+      this.store.set(el, Object.assign(this.store.get(el), config))
+    } else {
+      this.store.set(el, config)
+    }
+  },
+  get(el, key, fallback = null) {
+    let config = this.store.get(el) || {}
+
+    return (key in config) ? config[key] : fallback
+  }
+}
+
 addGlobalListener('click', async (event) => {
   if (event.defaultPrevented ||
     event.which > 1 ||
