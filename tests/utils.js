@@ -8,6 +8,12 @@ export let test = function (name, template, callback, exceptionTest, ajaxConfig)
   })
 }
 
+test.skip = (name, template, callback, handleExpectedErrors = false) => {
+  it.skip(name, () => {
+    injectHtmlAndBootAlpine(cy, template, callback, undefined, handleExpectedErrors)
+  })
+}
+
 function injectHtmlAndBootAlpine(cy, template, callback, exceptionTest, ajaxConfig) {
   let exceptionHandler = exceptionTest ? ((err) => !exceptionTest(err)) : (() => true)
   cy.on('uncaught:exception', exceptionHandler)

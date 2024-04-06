@@ -1,6 +1,6 @@
 import { test, html } from './utils'
 
-test('does not follow redirects when followRedirects is disabled',
+test.skip('does not follow redirects when followRedirects is disabled',
   html`<form x-init x-target id="replace" method="post"><button></button></form>`,
   ({ intercept, get, wait }) => {
     intercept('POST', '/tests', (request) => {

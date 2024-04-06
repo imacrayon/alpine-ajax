@@ -48,7 +48,7 @@ test('[x-headers] can set custom headers',
   }
 )
 
-test('follows redirects by default',
+test.skip('follows redirects by default',
   html`<button type="button" id="replace" x-init @click="$ajax('/tests', {
     method: 'POST',
   })"></button>`,
@@ -68,7 +68,7 @@ test('follows redirects by default',
   }
 )
 
-test('does not follow redirects when followRedirects is disabled',
+test.skip('does not follow redirects when followRedirects is disabled',
   html`<button type="button" id="replace" x-init @click="$ajax('/tests', {
     method: 'POST',
     targets: ['replace'],

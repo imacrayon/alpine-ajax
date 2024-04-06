@@ -18,7 +18,9 @@ let AjaxAttributes = {
     }
   },
   get(el, key, fallback = null) {
-    return this.store.get(el)?.key || fallback
+    let config = this.store.get(el) || {}
+
+    return (key in config) ? config[key] : fallback
   }
 }
 
@@ -33,7 +35,7 @@ function Ajax(Alpine) {
     })
   })
 
-  Alpine.directive('x-headers', (el, { expression }, { evaluate }) => {
+  Alpine.directive('headers', (el, { expression }, { evaluate }) => {
     AjaxAttributes.set(el, {
       headers: evaluate(expression || '{}')
     })
@@ -54,14 +56,15 @@ function Ajax(Alpine) {
       let body = options.body
       let enctype = options.enctype || 'application/x-www-form-urlencoded'
       let targets = findTargets(parseTargetIds(el, options.targets || options.target))
-      targets = config.sync ? addSyncTargets(targets) : targets
+      let referrer = source(el)
+      targets = options.sync ? addSyncTargets(targets) : targets
 
-      let response = await request(el, targets, action, method, headers, body, enctype)
+      let response = await request(el, targets, action, referrer, headers, method, body, enctype)
 
       let history = options.history || AjaxAttributes.get(el, 'history')
       let focus = ('focus' in options) ? options.focus : AjaxAttributes.get(el, 'focus', true)
 
-      return render(response, targets, el, history, focus)
+      return render(response, el, targets, history, focus)
     }
   })
 }
@@ -97,16 +100,18 @@ addGlobalListener('click', async (event) => {
 
   let targets = findTargets(AjaxAttributes.get(link, 'targets', []))
   if (targets.length) {
-    targets = addSyncTargets(target)
+    targets = addSyncTargets(targets)
   }
-  let action = link.getAttribute('href')
+  let referrer = source(link)
+  let action = link.getAttribute('href') || referrer
+  let headers = AjaxAttributes.get(link, 'headers', {})
   let cacheKey = ResponseCache.key(action)
   if (ResponseCache.has(cacheKey)) {
     // console.log('preview', ResponseCache.get(cacheKey))
     render(ResponseCache.get(cacheKey), link, targets, false, true)
   }
 
-  let response = await request(link, targets, action)
+  let response = await request(link, targets, action, referrer, headers)
 
   let history = AjaxAttributes.get(link, 'history')
   let focus = AjaxAttributes.get(link, 'focus', true)
@@ -114,7 +119,7 @@ addGlobalListener('click', async (event) => {
   try {
     return await render(response, link, targets, history, focus)
   } catch (error) {
-    if (error instanceof RenderFailedError) {
+    if (error.name === 'RenderError') {
       console.warn(error.message)
       window.location.href = link.href
       return
@@ -130,8 +135,8 @@ addGlobalListener('submit', async (event) => {
   }
 
   let form = event.target
-  let submitter = submitter
-  let method = (submitter?.getAttribute('formmethod') || form.getAttribute('method')).toUpperCase()
+  let submitter = event.submitter
+  let method = (submitter?.getAttribute('formmethod') || form.getAttribute('method') || 'GET').toUpperCase()
 
   if (!form ||
     method === 'DIALOG' ||
@@ -145,7 +150,8 @@ addGlobalListener('submit', async (event) => {
   event.stopImmediatePropagation()
 
   let enctype = form.getAttribute('enctype') || 'application/x-www-form-urlencoded'
-  let action = form.getAttribute('action') || referrer || window.location.href
+  let referrer = source(form)
+  let action = form.getAttribute('action') || referrer
   let headers = AjaxAttributes.get(form, 'headers', {})
   let body = new FormData(form)
   if (submitter) {
@@ -156,23 +162,24 @@ addGlobalListener('submit', async (event) => {
     }
   }
 
-  let targets = findTargets(AjaxAttributes.get(link, 'targets', []))
+  let targets = findTargets(AjaxAttributes.get(form, 'targets', []))
   if (targets.length) {
-    targets = addSyncTargets(target)
+    targets = addSyncTargets(targets)
   }
   let response = await withSubmitter(submitter, () => {
-    return request(form, targets, action, method, headers, body, enctype)
+    return request(form, targets, action, referrer, headers, method, body, enctype)
   })
 
-  let history = AjaxAttributes.get(el, 'history')
-  let focus = AjaxAttributes.get(el, 'focus', true)
+  let history = AjaxAttributes.get(form, 'history')
+  let focus = AjaxAttributes.get(form, 'focus', true)
 
   try {
-    return await render(response, el, targets, history, focus)
+    return await render(response, form, targets, history, focus)
   } catch (error) {
-    if (error instanceof RenderFailedError) {
+    if (error.name === 'RenderError') {
       console.warn(error.message)
-      window.location.href = el.href
+      form.setAttribute('noajax', 'true')
+      form.requestSubmit(submitter)
 
       return
     }
@@ -308,8 +315,10 @@ let ResponseCache = {
   }
 }
 
-async function request(el, targets, action = location.href, method = 'GET', headers = {}, body = null, enctype = 'application/x-www-form-urlencoded') {
-  if (!dispatch(el, 'ajax:before')) return
+async function request(el, targets, action, referrer, headers, method = 'GET', body = null, enctype = 'application/x-www-form-urlencoded') {
+  if (!dispatch(el, 'ajax:before')) {
+    throw new DOMException('[ajax:before] aborted', 'AbortError')
+  }
 
   let controller = new AbortController()
   let targetIds = []
@@ -340,7 +349,7 @@ async function request(el, targets, action = location.href, method = 'GET', head
     method,
     headers,
     body,
-    referrer: el.closest('[data-source]')?.dataset.source || window.location.href,
+    referrer,
     signal: controller.signal
   })
   response.html = await response.text()
@@ -403,7 +412,7 @@ async function render(response, el, targets, history, focus) {
         return target.remove();
       }
 
-      throw new RenderFailedError(target, response.status)
+      throw new RenderError(target, response.status)
     }
 
     let mergeContent = async () => {
@@ -477,7 +486,7 @@ async function merge(strategy, from, to) {
     }
   }
 
-  if (!AjaxAttributes.get(from, 'transition', !document.startViewTransition)) {
+  if (!AjaxAttributes.get(from, 'transition', document.startViewTransition)) {
     return strategies[strategy](from, to)
   }
 
@@ -519,7 +528,7 @@ function parseTargetIds(el, target = null) {
   ids = ids.filter(id => id)
 
   if (ids.length === 0) {
-    throw new IdNotFoundError(el)
+    throw new IdError(el)
   }
 
   return ids
@@ -529,7 +538,7 @@ function findTargets(ids = []) {
   return ids.map(id => {
     let target = document.getElementById(id)
     if (!target) {
-      throw new TargetNotFoundError(id)
+      throw new TargetError(id)
     }
 
     return target
@@ -549,6 +558,10 @@ function addSyncTargets(targets) {
   })
 
   return targets
+}
+
+function source(el) {
+  return el.closest('[data-source]')?.dataset.source || window.location.href
 }
 
 function mergeHead(newHeadTag) {
@@ -590,7 +603,7 @@ function mergeHead(newHeadTag) {
     }
   }
 
-  // Push the tremaining new head elements in the Map into the
+  // Push the remaining new head elements in the Map into the
   // nodes to append to the head tag
   nodesToAppend.push(...srcToNewHeadNodes.values());
   // console.log("to append: ", nodesToAppend);
@@ -634,25 +647,25 @@ function dispatch(el, name, detail) {
   )
 }
 
-class IdNotFoundError extends Error {
+class IdError extends Error {
   constructor(el) {
     let description = (el.outerHTML.match(/<[^>]+>/) ?? [])[0] ?? '[Element]'
     super(`${description} is missing an ID to target.`)
-    this.name = 'Id Not Found'
+    this.name = 'IdError'
   }
 }
 
-class TargetNotFoundError extends Error {
+class TargetError extends Error {
   constructor(id) {
     super(`[#${id}] was not found in the current document.`)
-    this.name = 'Target Not Found'
+    this.name = 'TargetError'
   }
 }
 
-class RenderFailedError extends Error {
+class RenderError extends Error {
   constructor(target, status) {
-    id = target.getAttribute('id')
+    let id = target.getAttribute('id')
     super(`Target [#${id}] was not found in response with status [${status}].`)
-    this.name = 'Render Failed'
+    this.name = 'RenderError'
   }
 }

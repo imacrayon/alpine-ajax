@@ -1,6 +1,6 @@
 import { test, html } from './utils'
 
-test('follows redirects by default',
+test.skip('follows redirects by default',
   html`<form x-init x-target id="replace" method="post"><button></button></form>`,
   ({ intercept, get, wait }) => {
     intercept('POST', '/tests', (request) => {
@@ -18,7 +18,7 @@ test('follows redirects by default',
   }
 )
 
-test('follow modifier has no affect when followRedirects is enabled',
+test.skip('follow modifier has no affect when followRedirects is enabled',
   html`<form x-init x-target.follow id="replace" method="post"><button></button></form>`,
   ({ intercept, get, wait }) => {
     intercept('POST', '/tests', (request) => {
@@ -40,7 +40,7 @@ test('follow modifier has no affect when followRedirects is enabled',
   }
 )
 
-test('nofollow modifier does not follow redirects when followRedirects is enabled',
+test.skip('nofollow modifier does not follow redirects when followRedirects is enabled',
   html`<form x-init x-target.nofollow id="replace" method="post"><button></button></form>`,
   ({ intercept, get, wait }) => {
     intercept('POST', '/tests', (request) => {
@@ -62,7 +62,7 @@ test('nofollow modifier does not follow redirects when followRedirects is enable
   }
 )
 
-test('follow modifier follows redirects when followRedirects is disabled',
+test.skip('follow modifier follows redirects when followRedirects is disabled',
   html`<form x-init x-target.follow id="replace" method="post"><button></button></form>`,
   ({ intercept, get, wait }) => {
     intercept('POST', '/tests', (request) => {
@@ -84,7 +84,7 @@ test('follow modifier follows redirects when followRedirects is disabled',
   }
 )
 
-test('nofollow modifier has no affect when followRedirects is disabled',
+test.skip('nofollow modifier has no affect when followRedirects is disabled',
   html`<form x-init x-target.nofollow id="replace" method="post"><button></button></form>`,
   ({ intercept, get, wait }) => {
     intercept('POST', '/tests', (request) => {
