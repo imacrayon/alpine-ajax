@@ -12,13 +12,22 @@ let doMorph = (from, to) => {
 function Ajax(Alpine) {
   if (Alpine.morph) doMorph = Alpine.morph
 
-  Alpine.directive('target', (el, { modifiers, expression }) => {
-    AjaxAttributes.set(el, {
-      targets: parseTargetIds(el, expression),
-      focus: !modifiers.includes('nofocus'),
-      history: modifiers.includes('push') ? 'push' : (modifiers.includes('replace') ? 'replace' : false),
-      follow: settings.followRedirects ? !modifiers.includes('nofollow') : modifiers.includes('follow')
-    })
+  Alpine.directive('target', (el, { value, modifiers, expression }, { evaluateLater, effect }) => {
+    let setTargets = (ids) => {
+      AjaxAttributes.set(el, {
+        targets: parseTargetIds(el, ids),
+        focus: !modifiers.includes('nofocus'),
+        history: modifiers.includes('push') ? 'push' : (modifiers.includes('replace') ? 'replace' : false),
+        follow: settings.followRedirects ? !modifiers.includes('nofollow') : modifiers.includes('follow')
+      })
+    }
+
+    if (value === 'dynamic') {
+      let evaluate = evaluateLater(expression)
+      effect(() => evaluate(setTargets))
+    } else {
+      setTargets(expression)
+    }
   })
 
   Alpine.directive('headers', (el, { expression }, { evaluateLater, effect }) => {
@@ -31,11 +40,20 @@ function Ajax(Alpine) {
   })
 
   Alpine.addInitSelector(() => `[${Alpine.prefixed('merge')}]`)
-  Alpine.directive('merge', (el, { modifiers, expression }) => {
-    AjaxAttributes.set(el, {
-      strategy: expression,
-      transition: settings.transitions || modifiers.includes('transition')
-    })
+  Alpine.directive('merge', (el, { value, modifiers, expression }, { evaluateLater, effect }) => {
+    let setMerge = (strategy) => {
+      AjaxAttributes.set(el, {
+        strategy,
+        transition: settings.transitions || modifiers.includes('transition')
+      })
+    }
+
+    if (value === 'dynamic') {
+      let evaluate = evaluateLater(expression)
+      effect(() => evaluate(setMerge))
+    } else {
+      setMerge(expression)
+    }
   })
 
   Alpine.magic('ajax', (el) => {
