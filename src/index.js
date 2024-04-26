@@ -502,8 +502,8 @@ function focusOn(el) {
 
 function updateHistory(strategy, url) {
   let strategies = {
-    push: () => window.history.pushState({ __AJAX__: true }, '', url),
-    replace: () => window.history.replaceState({ __AJAX__: true }, '', url),
+    push: () => window.history.pushState({ __ajax: true }, '', url),
+    replace: () => window.history.replaceState({ __ajax: true }, '', url),
   }
 
   return strategies[strategy]();
