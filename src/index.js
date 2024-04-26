@@ -351,20 +351,10 @@ function parseFormData(data) {
 }
 
 function mergeBodyIntoAction(body, action) {
-  let params = formDataToParams(body)
+  action = new URL(action)
+  action.search = formDataToParams(body).toString()
 
-  if (Array.from(params).length) {
-    let parts = action.split('#')
-    let hash = parts[1]
-    action += parts[0].includes('?') ? '&' : '?'
-    action += params
-    if (hash) {
-      action += '#' + hash
-    }
-
-  }
-
-  return action
+  return action.toString()
 }
 
 function formDataToParams(body) {
