@@ -43,7 +43,7 @@ function Ajax(Alpine) {
   Alpine.directive('merge', (el, { value, modifiers, expression }, { evaluateLater, effect }) => {
     let setMerge = (strategy) => {
       AjaxAttributes.set(el, {
-        strategy,
+        strategy: strategy || settings.mergeStrategy,
         transition: settings.transitions || modifiers.includes('transition')
       })
     }
@@ -481,7 +481,7 @@ async function merge(strategy, from, to) {
     }
   }
 
-  if (!AjaxAttributes.get(from, 'transition', document.startViewTransition)) {
+  if (!AjaxAttributes.get(from, 'transition') || !document.startViewTransition) {
     return strategies[strategy](from, to)
   }
 
