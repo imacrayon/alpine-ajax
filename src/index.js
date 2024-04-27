@@ -367,7 +367,7 @@ function parseFormData(data) {
 }
 
 function mergeBodyIntoAction(body, action) {
-  action = new URL(action)
+  action = new URL(action, document.baseURI)
   action.search = formDataToParams(body).toString()
 
   return action.toString()
