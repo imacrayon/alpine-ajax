@@ -1,8 +1,8 @@
 let settings = {
   headers: {},
+  followRedirects: true,
   mergeStrategy: 'replace',
   transitions: false,
-  followRedirects: true,
 }
 
 let doMorph = (from, to) => {
@@ -61,10 +61,10 @@ function Ajax(Alpine) {
       let targets = findTargets(parseTargetIds(el, options.targets || options.target))
       targets = options.sync ? addSyncTargets(targets) : targets
       let referrer = source(el)
-      let headers = Object.assign({}, AjaxAttributes.get(el, 'headers', {}), options.headers)
+      let headers = Object.assign({}, settings.headers, options.headers || {})
       let method = options.method ? options.method.toUpperCase() : 'GET'
       let body = options.body
-      let follow = ('followRedirects' in options) ? options.followRedirects : AjaxAttributes.get(el, 'follow', settings.followRedirects)
+      let follow = ('followRedirects' in options) ? options.followRedirects : settings.followRedirects
 
       let response = await request(el, targets, action, referrer, headers, follow, method, body)
 

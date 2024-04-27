@@ -48,11 +48,11 @@ _If you'd rather bundle your JavaScript, the [Intercept Plugin installation inst
 With the Intercept Plugin installed we can update our pagination markup to issue an AJAX request when it is scrolled into view:
 
 ```html
-<div id="pagination" x-init x-intersect="$ajax('/contacts?page=2')" x-target="records pagination">
+<div id="pagination" x-init x-intersect="$ajax('/contacts?page=2', { target: 'records pagination' })">
 </div>
 ```
 
-Note that the `x-target` attribute includes both the table **and** pagination. This ensures that the table is updated with fresh records and the pagination is updated with a fresh page URL after each AJAX request.
+Note that the `target` option includes both the table **and** pagination elements. This ensures that the table is updated with fresh records and the pagination is updated with a fresh page URL after each AJAX request.
 
 Lastly, we need to ensure that the new table rows from subsequent pages are _appended_ to the end of the table. The default behavior is for Alpine AJAX to _replace_ the existing table rows with the incoming rows. To change this behavior we need to add `x-merge="append"` to the element that will receive the new records, in this case that's our table's `tbody`:
 
@@ -123,7 +123,7 @@ Lastly, we need to ensure that the new table rows from subsequent pages are _app
       next = `<a href="/contacts?page=${page + 1}" x-show="false">Next<span aria-hidden="true"> →</span></a>`
     }
 
-    let intersect = next ? `x-intersect="$ajax('/contacts?page=${page + 1}')" x-target="records pagination"` : ''
+    let intersect = next ? `x-intersect="$ajax('/contacts?page=${page + 1}', { target: 'records pagination' })"` : ''
 
     return `<table id="contacts">
   <thead>

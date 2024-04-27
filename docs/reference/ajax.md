@@ -41,7 +41,7 @@ In this example we make a `POST` request with the `email` value to the `/validat
   <tr>
     <td><code>target</code></td>
     <td><code>''</code></td>
-    <td>The request target. If this is empty <code>x-target</code> is used.</td>
+    <td>The request target.</td>
   </tr>
   <tr>
     <td><code>targets</code></td>
@@ -52,11 +52,6 @@ In this example we make a `POST` request with the `email` value to the `/validat
     <td><code>body</code></td>
     <td><code>{}</code></td>
     <td>The request body.</td>
-  </tr>
-  <tr>
-    <td><code>events</code></td>
-    <td><code>false</code></td>
-    <td>Setting this to <code>true</code> will fire AJAX request events.</td>
   </tr>
   <tr>
     <td><code>focus</code></td>
