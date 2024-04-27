@@ -1,11 +1,6 @@
 {
   "name": "@imacrayon/alpine-ajax",
-  "description": "Issue AJAX requests from AlpineJS components.",
-  "keywords": [
-    "AJAX",
-    "HTML",
-    "AlpineJS"
-  ],
+  "description": "An Alpine.js plugin for building server-powered frontends.",
   "version": "0.5.2",
   "license": "MIT",
   "author": "Christian Taylor",
