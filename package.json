@@ -1,7 +1,7 @@
 {
   "name": "@imacrayon/alpine-ajax",
   "description": "An Alpine.js plugin for building server-powered frontends.",
-  "version": "0.5.2",
+  "version": "0.6.0",
   "license": "MIT",
   "author": "Christian Taylor",
   "homepage": "https://alpine-ajax.js.org",
