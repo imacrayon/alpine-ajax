@@ -281,6 +281,8 @@ let PendingTargets = {
   },
 }
 
+let PendingRequests = new Map
+
 async function request(el, targets, action, referrer, headers, follow, method = 'GET', body = null, enctype = 'application/x-www-form-urlencoded') {
   if (!dispatch(el, 'ajax:before')) {
     throw new DOMException('[ajax:before] aborted', 'AbortError')
@@ -293,35 +295,49 @@ async function request(el, targets, action, referrer, headers, follow, method = 
     PendingTargets.set(id, target, controller)
     targetIds.push(id)
   })
-  headers['X-Alpine-Target'] = targetIds.join('  ')
-  headers['X-Alpine-Request'] = 'true'
-  headers = Object.assign({}, settings.headers, headers)
 
-  if (body) {
-    body = parseFormData(body)
-    if (method === 'GET') {
-      action = mergeBodyIntoAction(body, action)
-      body = null
-    } else if (enctype !== 'multipart/form-data') {
-      body = formDataToParams(body)
+  let pending
+  if (method === 'GET' && PendingRequests.has(action)) {
+    pending = PendingRequests.get(action)
+  } else {
+    headers['X-Alpine-Target'] = targetIds.join('  ')
+    headers['X-Alpine-Request'] = 'true'
+    headers = Object.assign({}, settings.headers, headers)
+
+    if (body) {
+      body = parseFormData(body)
+      if (method === 'GET') {
+        action = mergeBodyIntoAction(body, action)
+        body = null
+      } else if (enctype !== 'multipart/form-data') {
+        body = formDataToParams(body)
+      }
     }
+
+    pending = fetch(action, {
+      method,
+      headers,
+      body,
+      referrer,
+      signal: controller.signal
+    }).then(response => {
+      if (!follow && response.redirected) {
+        window.location.href = response.url
+      }
+
+      return response
+    }).then(async (response) => {
+      response.html = await response.text()
+
+      return response
+    })
+
+    PendingRequests.set(action, pending)
   }
 
-  let response = await fetch(action, {
-    method,
-    headers,
-    body,
-    referrer,
-    signal: controller.signal
-  })
+  let response = await pending
 
-  if (!follow && response.redirected) {
-    window.location.href = response.url
-
-    return response
-  }
-
-  response.html = await response.text()
+  PendingRequests.delete(action)
 
   if (response.ok) {
     dispatch(el, 'ajax:success', response)
