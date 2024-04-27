@@ -7,7 +7,7 @@ eleventyNavigation:
 
 ## x-merge
 
-By default incoming HTML from the server will `replace` a targeted element. You can add `x-merge` to a targeted element to change how it merges incoming content. For example, if you wanted to `append` new items to a list of messages, you would add `x-merge="append"` to the list:
+By default incoming HTML from the server will `replace` a targeted element. You can add `x-merge` to a **targeted element** to change how it merges incoming content. For example, if you wanted to `append` new items to a list of messages, you would add `x-merge="append"` to the list:
 
 ```html
 <ul id="messages" x-merge="append">
