@@ -52,6 +52,21 @@ In cases when a form or link targets itself, you may leave the value of `x-targe
 </form>
 ```
 
+### Dynamic targets
+
+Sometimes simple target literals (i.e. comment_1) are not sufficient. In these cases, `x-target:dynamic` allows you to dynamically generate target IDs using Alpine data and JavaScript expressions:
+
+```html
+<template x-for="comment in comments" :key="comment.id">
+  <li :id="'comment_'+comment.id">
+    <div>{{ comment.body }}</div>
+    <form x-init x-target:dynamic="'comment_'+comment.id" :action="'/comments/'+comment.id" method="post">
+      <button>Edit</button>
+    </form>
+  </li>
+</template>
+```
+
 ### Handling redirects
 
 AJAX requests issued by `x-target` will transparently follow redirects without reloading the browser window. You may use the `x-target.nofollow` modifier to force the browser to reload when the server responds with a redirect. Notice the `nofollow` modifier used on this form for creating a new blog post:
