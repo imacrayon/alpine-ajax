@@ -9,11 +9,16 @@ let doMorph = (from, to) => {
   console.error(`You can't use the "morph" merge without first installing the Alpine "morph" plugin here: https://alpinejs.dev/plugins/morph`)
 }
 
+function debug() {
+  console.debug(...arguments)
+}
+
 function Ajax(Alpine) {
   if (Alpine.morph) doMorph = Alpine.morph
 
   Alpine.directive('target', (el, { value, modifiers, expression }, { evaluateLater, effect }) => {
     let setTargets = (ids) => {
+      debug('[x-target]', el)
       AjaxAttributes.set(el, {
         targets: parseTargetIds(el, ids),
         focus: !modifiers.includes('nofocus'),
@@ -34,6 +39,7 @@ function Ajax(Alpine) {
     let evaluate = evaluateLater(expression || '{}')
     effect(() => {
       evaluate(headers => {
+        debug('[x-headers]', el)
         AjaxAttributes.set(el, { headers })
       })
     })
@@ -42,6 +48,7 @@ function Ajax(Alpine) {
   Alpine.addInitSelector(() => `[${Alpine.prefixed('merge')}]`)
   Alpine.directive('merge', (el, { value, modifiers, expression }, { evaluateLater, effect }) => {
     let setMerge = (strategy) => {
+      debug('[x-merge]', el)
       AjaxAttributes.set(el, {
         strategy: strategy || settings.mergeStrategy,
         transition: settings.transitions || modifiers.includes('transition')
@@ -127,17 +134,22 @@ async function handleLinks(event) {
     event.ctrlKey ||
     event.metaKey ||
     event.shiftKey
-  ) return
+  ) {
+    debug('Abort: Insignificant click event')
+    return
+  }
 
   let link = event?.target.closest('a[href]:not([download]):not([noajax])')
 
-  if (!link ||
-    !AjaxAttributes.has(link) ||
-    link.isContentEditable ||
-    link.getAttribute('href').startsWith('#') ||
-    link.origin !== location.origin ||
-    ((link.pathname + link.search) === (location.pathname + location.search) && link.hash)
+  if ((!link && !debug('Abort: Failed selector "a[href]:not([download]):not([noajax])"')) ||
+    (!AjaxAttributes.has(link) && !debug('Abort: No [x-target] data')) ||
+    (link.isContentEditable && !debug('Abort: Has [contenteditable]')) ||
+    (link.getAttribute('href').startsWith('#') && !debug('Abort: [href] starts with "#"')) ||
+    (link.origin !== location.origin && !debug('Abort: Not same origin')) ||
+    (((link.pathname + link.search) === (location.pathname + location.search) && link.hash) && !debug('Abort: Anchor only'))
   ) return
+
+  debug('Link is good!')
 
   event.preventDefault()
   event.stopImmediatePropagation()
@@ -239,6 +251,7 @@ function addGlobalListener(name, callback) {
 
   // Late bind listeners so they're last in the event chain
   let onCapture = () => {
+    debug(`Event: "${name}" captured`)
     document.removeEventListener(name, callbackWithErrorHandler, false)
     document.addEventListener(name, callbackWithErrorHandler, false)
   }
@@ -285,8 +298,11 @@ let PendingRequests = new Map
 
 async function request(el, targets, action, referrer, headers, follow, method = 'GET', body = null, enctype = 'application/x-www-form-urlencoded') {
   if (!dispatch(el, 'ajax:before')) {
+    debug(`Request cancelled`)
     throw new DOMException('[ajax:before] aborted', 'AbortError')
   }
+
+  debug('Requesting', arguments)
 
   let controller = new AbortController()
   let targetIds = []
@@ -383,10 +399,13 @@ function formDataToParams(body) {
 
 async function render(response, el, targets, history, focus) {
   if (!response.html) {
+    debug('No HTML in response')
     targets.forEach(target => target.removeAttribute('aria-busy'))
 
     return
   }
+
+  debug('Rendering', arguments)
 
   if (history) {
     updateHistory(history, response.url)
