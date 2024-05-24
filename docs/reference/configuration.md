@@ -14,8 +14,8 @@ import ajax from '@imacrayon/alpine-ajax'
 
 Alpine.plugin(ajax.configure({
   followRedirects: false,
-  headers: { 'X-CSRF-Token': 'mathmatical!' }
-  mergeStrategy: 'morph',
+  headers: { 'X-CSRF-Token': 'mathmatical!' },
+  mergeStrategy: 'morph'
 }))
 ```
 
