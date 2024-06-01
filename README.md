@@ -16,7 +16,7 @@ Clone this repo and run `npm install` to get started.
 
 The documentation site is hosted at [https://alpine-ajax.js.org](https://alpine-ajax.js.org), the source files are located in `/docs`.
 
-`npm run start` will locally server the documentation site built with [Eleventy](https://www.11ty.dev/). The site automatically bundles the latest Alpine AJAX build in `/docs/js/main.js`.
+`npm run start` will locally serve the documentation site built with [Eleventy](https://www.11ty.dev/). The site automatically bundles the latest Alpine AJAX build in `/docs/js/main.js`.
 
 ## Testing
 
