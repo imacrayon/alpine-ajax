@@ -399,12 +399,16 @@ async function render(response, el, targets, history, focus) {
     let content = fragment.getElementById(target.getAttribute('id'))
     let strategy = AjaxAttributes.get(target, 'strategy', settings.mergeStrategy)
     if (!content) {
+      if (target.matches('[x-sync]')) {
+        return
+      }
+
       if (!dispatch(el, 'ajax:missing', { target, response })) {
         return
       }
 
       if (response.ok) {
-        return target.remove();
+        return target.remove()
       }
 
       throw new RenderError(target, response.status)
