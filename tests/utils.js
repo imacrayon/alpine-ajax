@@ -8,7 +8,7 @@ export let test = function (name, template, callback, exceptionTest, ajaxConfig)
   })
 }
 
-function injectHtmlAndBootAlpine(cy, template, callback, exceptionTest, ajaxConfig) {
+function injectHtmlAndBootAlpine(cy, template, callback, exceptionTest, bootstrap) {
   let exceptionHandler = exceptionTest ? ((err) => !exceptionTest(err)) : (() => true)
   cy.on('uncaught:exception', exceptionHandler)
 
@@ -16,7 +16,7 @@ function injectHtmlAndBootAlpine(cy, template, callback, exceptionTest, ajaxConf
 
   cy.get('#root').then(([el]) => {
     el.innerHTML = template
-    el.bootAlpine(ajaxConfig)
+    el.bootAlpine(bootstrap)
 
     if (!exceptionTest) {
       cy.get('[alpine-is-ready]', { timeout: 5000 }).should('be.visible')
@@ -30,7 +30,7 @@ function injectHtmlAndBootAlpine(cy, template, callback, exceptionTest, ajaxConf
 
       cy.get('#root').then(([el]) => {
         el.innerHTML = template
-        el.bootAlpine(ajaxConfig)
+        el.bootAlpine(bootstrap)
         cy.get('[alpine-is-ready]', { timeout: 5000 }).should('be.visible')
       })
     }

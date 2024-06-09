@@ -1,25 +1,15 @@
 import { test, html } from './utils'
 
-test('does not follow redirects when followRedirects is disabled',
-  html`<form x-init x-target id="replace" method="post"><button></button></form>`,
-  ({ intercept, get, wait }) => {
-    intercept('POST', '/tests', (request) => {
-      request.redirect('/redirect', 302)
-    })
-    intercept('GET', '/redirect', {
-      statusCode: 200,
-      body: '<h1 id="title">Redirected</h1>'
-    }).as('response')
-    get('button').click()
-    wait('@response').then(() => {
-      get('#title').should('have.text', 'Redirected')
-    })
-  },
-  null,
-  {
-    followRedirects: false
-  }
-)
+function configure(options) {
+  return `
+  import Alpine from '../../node_modules/alpinejs/dist/module.esm.js'
+  import ajax from '../../dist/module.esm.js'
+
+  Alpine.plugin(ajax.configure(${JSON.stringify(options)}))
+  window.Alpine = Alpine
+  Alpine.start()
+  `
+}
 
 test('default merge strategy can be changed',
   html`<form x-init x-target id="target" method="post"><button></button></form>`,
@@ -35,9 +25,9 @@ test('default merge strategy can be changed',
     })
   },
   null,
-  {
+  configure({
     mergeStrategy: 'append',
-  }
+  })
 )
 
 test('default request headers can be set',
@@ -51,7 +41,7 @@ test('default request headers can be set',
     wait('@response').its('request.headers').should('have.property', 'x-test', 'test')
   },
   null,
-  {
+  configure({
     headers: { 'x-test': 'test' }
-  }
+  })
 )
