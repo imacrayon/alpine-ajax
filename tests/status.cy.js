@@ -5,7 +5,7 @@ test('change target on 201 status',
   ({ intercept, get, wait }) => {
     intercept('POST', '/tests', {
       statusCode: 201,
-      body: '<h1 id="title">Not Found</h1><div id="success">Replaced</div>'
+      body: '<h1 id="title">Created</h1><div id="success">Replaced</div>'
     }).as('response')
     get('button').click()
     wait('@response').then(() => {
@@ -20,7 +20,7 @@ test('change target on 2xx status',
   ({ intercept, get, wait }) => {
     intercept('POST', '/tests', {
       statusCode: 201,
-      body: '<h1 id="title">Not Found</h1><div id="success">Replaced</div>'
+      body: '<h1 id="title">Created</h1><div id="success">Replaced</div>'
     }).as('response')
     get('button').click()
     wait('@response').then(() => {
@@ -60,6 +60,21 @@ test('change target on 4xx status',
   }
 )
 
+test('change target on 4xx or 201 status',
+  html`<form x-init x-target x-target.4xx.201="error" id="replace" method="post"><div id="error"></div><button></button></form>`,
+  ({ intercept, get, wait }) => {
+    intercept('POST', '/tests', {
+      statusCode: 201,
+      body: '<h1 id="title">Created</h1><div id="error">Replaced</div>'
+    }).as('response')
+    get('button').click()
+    wait('@response').then(() => {
+      get('#title').should('not.exist')
+      get('#replace').should('have.text', 'Replaced')
+    })
+  }
+)
+
 test('change target on error status',
   html`<form x-init x-target x-target.error="error" id="replace" method="post"><div id="error"></div><button></button></form>`,
   ({ intercept, get, wait }) => {
@@ -75,12 +90,28 @@ test('change target on error status',
   }
 )
 
+test('More specific status modifiers win over general modifiers',
+  html`<form x-init x-target x-target.404="not_found" x-target.4xx.error="error" id="replace" method="post"><button></button></form><div id="not_found"></div><div id="error"></div>`,
+  ({ intercept, get, wait }) => {
+    intercept('POST', '/tests', {
+      statusCode: 404,
+      body: '<h1 id="title">Not Found</h1><div id="not_found">Replaced</div><div id="error">Replaced</div>'
+    }).as('response')
+    get('button').click()
+    wait('@response').then(() => {
+      get('#title').should('not.exist')
+      get('#not_found').should('have.text', 'Replaced')
+      get('#error').should('not.have.text', 'Replaced')
+    })
+  }
+)
+
 test('redirect statuses are fuzzy matched',
   html`<form x-init x-target x-target.301="redirect" id="replace" method="post"><div id="redirect"></div><button></button></form>`,
   ({ intercept, get, wait }) => {
     intercept('POST', '/tests', {
       statusCode: 302,
-      body: '<h1 id="title">Not Found</h1><div id="redirect">Replaced</div>'
+      body: '<h1 id="title">Redirected</h1><div id="redirect">Replaced</div>'
     }).as('response')
     get('button').click()
     wait('@response').then(() => {
