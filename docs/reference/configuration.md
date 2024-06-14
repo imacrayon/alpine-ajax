@@ -13,7 +13,6 @@ You have the option to configure the default behavior of Alpine AJAX when import
 import ajax from '@imacrayon/alpine-ajax'
 
 Alpine.plugin(ajax.configure({
-  followRedirects: false,
   headers: { 'X-CSRF-Token': 'mathmatical!' },
   mergeStrategy: 'morph'
 }))
@@ -29,11 +28,6 @@ Here are the configuration options and there defaults:
     <th scope="col">Description</th>
   </thead>
   <tbody>
-  <tr>
-    <td><code>followRedirects</code></td>
-    <td><code>true</code></td>
-    <td>Switch this to <code>false</code> and AJAX requests will reload the browser window when they encounter a redirect response. You can then follow redirects case-by-case using the <code>follow</code> modifier on <code>x-target</code>.</td>
-  </tr>
   <tr>
     <td><code>headers</code></td>
     <td><code>{}</code></td>

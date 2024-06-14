@@ -121,7 +121,7 @@ test('redirect statuses are fuzzy matched',
   }
 )
 
-test('redirects are followed by default',
+test('follows redirects by default',
   html`<form x-init x-target id="replace" method="post"><button></button></form>`,
   ({ intercept, get, wait }) => {
     intercept('POST', '/tests', (request) => {
