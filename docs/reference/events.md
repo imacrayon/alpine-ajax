@@ -22,7 +22,7 @@ You can listen for events to perform additional actions during the lifecycle of 
   </tr>
   <tr>
     <td><code>ajax:send</code></td>
-    <td>Fired when an AJAX request is issued. <code>$event.details</code> contains the request’s options, modifying these options will override the underlying <code>fetch</code> call.</td>
+    <td>Fired when an AJAX request is issued. <code>$event.detail</code> contains the request’s options, modifying these options will override the underlying <code>fetch</code> call.</td>
   </tr>
     <tr>
     <td><code>ajax:redirect</code></td>
