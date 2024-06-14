@@ -1,6 +1,6 @@
 <h2 id="configuration" tabindex="-1">Configuration <a class="direct-link" href="#configuration" aria-hidden="true">#</a></h2>
 <p>You have the option to configure the default behavior of Alpine AJAX when importing it in your code:</p>
-<pre class="language-js"><code class="language-js"><span class="token keyword">import</span> ajax <span class="token keyword">from</span> <span class="token string">'@imacrayon/alpine-ajax'</span><br><br>Alpine<span class="token punctuation">.</span><span class="token function">plugin</span><span class="token punctuation">(</span>ajax<span class="token punctuation">.</span><span class="token function">configure</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>  <span class="token literal-property property">followRedirects</span><span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span><br>  <span class="token literal-property property">headers</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token string-property property">'X-CSRF-Token'</span><span class="token operator">:</span> <span class="token string">'mathmatical!'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span><br>  <span class="token literal-property property">mergeStrategy</span><span class="token operator">:</span> <span class="token string">'morph'</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">)</span></code></pre>
+<pre class="language-js"><code class="language-js"><span class="token keyword">import</span> ajax <span class="token keyword">from</span> <span class="token string">'@imacrayon/alpine-ajax'</span><br><br>Alpine<span class="token punctuation">.</span><span class="token function">plugin</span><span class="token punctuation">(</span>ajax<span class="token punctuation">.</span><span class="token function">configure</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>  <span class="token literal-property property">headers</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token string-property property">'X-CSRF-Token'</span><span class="token operator">:</span> <span class="token string">'mathmatical!'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span><br>  <span class="token literal-property property">mergeStrategy</span><span class="token operator">:</span> <span class="token string">'morph'</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">)</span></code></pre>
 <p>Here are the configuration options and there defaults:</p>
 <div class="table">
 <table>
@@ -10,11 +10,6 @@
     <th scope="col">Description</th>
   </thead>
   <tbody>
-  <tr>
-    <td><code>followRedirects</code></td>
-    <td><code>true</code></td>
-    <td>Switch this to <code>false</code> and AJAX requests will reload the browser window when they encounter a redirect response. You can then follow redirects case-by-case using the <code>follow</code> modifier on <code>x-target</code>.</td>
-  </tr>
   <tr>
     <td><code>headers</code></td>
     <td><code>{}</code></td>
