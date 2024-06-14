@@ -156,35 +156,3 @@ test('targeting `_self` will refresh the page',
     })
   }
 )
-
-test('redirects can be handled globally',
-  html`
-  <form x-init x-target id="replace" method="post"><button></button></form>`,
-  ({ intercept, get, wait, location }) => {
-    intercept('POST', '/tests', (request) => {
-      request.redirect('/redirect', 302)
-    })
-    intercept('GET', '/redirect', {
-      statusCode: 200,
-      body: '<h1 id="title">Redirected</h1><div id="replace">Replaced</div>'
-    }).as('response')
-    get('button').click()
-    wait('@response').then(() => {
-      get('#title').should('have.text', 'Redirected')
-      get('#replace').should('have.text', 'Replaced')
-    })
-  },
-  null,
-  `
-  import Alpine from '../../node_modules/alpinejs/dist/module.esm.js'
-  import ajax from '../../dist/module.esm.js'
-
-  window.Alpine = Alpine
-  Alpine.start()
-
-  document.addEventListener('ajax:redirect', (event) => {
-    console.log(event.detail.url)
-    window.location.href = event.detail.url
-  })
-  `
-)

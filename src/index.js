@@ -321,28 +321,30 @@ async function request(el, targets, action, referrer, headers, method = 'GET', b
     headers['X-Alpine-Target'] = targetIds.join('  ')
     headers['X-Alpine-Request'] = 'true'
     headers = Object.assign({}, settings.headers, headers)
-
-    if (body) {
-      body = parseFormData(body)
-      if (method === 'GET') {
-        action = mergeBodyIntoAction(body, action)
-        body = null
-      } else if (enctype !== 'multipart/form-data') {
-        body = formDataToParams(body)
-      }
-    }
+    body = body ? parseFormData(body) : null
 
     let options = {
+      action,
       method,
       headers,
       body,
       referrer,
+      enctype,
       signal: controller.signal,
     }
 
     dispatch(el, 'ajax:send', options)
 
-    pending = fetch(action, options).then(async (response) => {
+    if (options.body) {
+      if (options.method === 'GET') {
+        options.action = mergeBodyIntoAction(options.body, options.action)
+        options.body = null
+      } else if (options.enctype !== 'multipart/form-data') {
+        options.body = formDataToParams(options.body)
+      }
+    }
+
+    pending = fetch(options.action, options).then(async (response) => {
       response.html = await response.text()
 
       return response
