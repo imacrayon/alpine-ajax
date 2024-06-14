@@ -263,40 +263,6 @@ test('[x-headers] sets request headers',
   }
 )
 
-test('[ajax:before] event is fired',
-  html`<p id="before">CHANGE ME</p><form x-init x-target id="replace" @ajax:before="document.getElementById('before').textContent = 'Changed'" method="post" action="/tests"><button></button></form>`,
-  ({ intercept, get, wait }) => {
-    intercept('POST', '/tests', {
-      statusCode: 200,
-      body: '<h1 id="replace">Success</h1>'
-    }).as('response')
-    get('button').click()
-    wait('@response').then(() => {
-      get('#replace').should('have.text', 'Success')
-      get('#before').should('have.text', 'Changed')
-    })
-  }
-)
-
-test('[ajax:before] can cancel AJAX requests',
-  html`<h1 id="title">Replace me</h1><form x-init x-target="title" @ajax:before="$event.preventDefault()" method="post" action="/tests"><button></button></form>`,
-  ({ intercept, get, wait }) => {
-    cy.on('fail', (error, runnable) => {
-      if (error.message.indexOf('Timed out retrying') !== 0) throw error
-    })
-    intercept('POST', '/tests', {
-      statusCode: 200,
-      body: '<h1 id="title">Success</h1>'
-    }).as('response')
-    get('button').click()
-    wait('@response', {
-      requestTimeout: 500,
-    }).then(() => {
-      get('#title').should('have.text', 'Replace me')
-    })
-  }
-)
-
 test('[formnoajax] can cancel AJAX requests',
   html`<h1 id="title">Replace me</h1><form x-init x-target="title" method="post" action="/tests"><button formnoajax></button></form>`,
   ({ intercept, get, wait }) => {

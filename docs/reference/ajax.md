@@ -64,11 +64,6 @@ In this example we make a `POST` request with the `email` value to the `/validat
     <td>Setting this to <code>true</code> will include <code>x-sync</code> targets in the request.</td>
   </tr>
   <tr>
-    <td><code>followRedirects</code></td>
-    <td><code>true</code></td>
-    <td>Switch this to <code>false</code> and AJAX requests will reload the browser window when they encounter a redirect response.</td>
-  </tr>
-  <tr>
     <td><code>headers</code></td>
     <td><code>{}</code></td>
     <td>Additional request headers as key/value pairs.</td>

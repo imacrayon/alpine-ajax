@@ -1,6 +1,5 @@
 let settings = {
   headers: {},
-  followRedirects: true,
   mergeStrategy: 'replace',
   transitions: false,
 }
@@ -14,11 +13,21 @@ function Ajax(Alpine) {
 
   Alpine.directive('target', (el, { value, modifiers, expression }, { evaluateLater, effect }) => {
     let setTargets = (ids) => {
-      AjaxAttributes.set(el, {
-        targets: parseTargetIds(el, ids),
-        focus: !modifiers.includes('nofocus'),
-        history: modifiers.includes('push') ? 'push' : (modifiers.includes('replace') ? 'replace' : false),
-        follow: settings.followRedirects ? !modifiers.includes('nofollow') : modifiers.includes('follow')
+      let statues = modifiers.filter((modifier) => modifier === 'error' || parseInt(modifier))
+      statues = statues.length ? statues : ['xxx']
+      statues.forEach(status => {
+        // Redirect status codes are opaque to fetch
+        // so we just use the first 3xx status given.
+        if (status.charAt(0) === '3') {
+          status = '3xx'
+        }
+        AjaxAttributes.set(el, {
+          [status]: {
+            ids: parseIds(el, ids),
+            focus: !modifiers.includes('nofocus'),
+            history: modifiers.includes('push') ? 'push' : (modifiers.includes('replace') ? 'replace' : false),
+          }
+        })
       })
     }
 
@@ -58,18 +67,17 @@ function Ajax(Alpine) {
 
   Alpine.magic('ajax', (el) => {
     return async (action, options = {}) => {
-      let targets = findTargets(parseTargetIds(el, options.targets || options.target))
+      let targets = findTargets(parseIds(el, options.targets || options.target))
       targets = options.sync ? addSyncTargets(targets) : targets
       let referrer = source(el)
       let headers = Object.assign({}, settings.headers, options.headers || {})
       let method = options.method ? options.method.toUpperCase() : 'GET'
       let body = options.body
-      let follow = ('followRedirects' in options) ? options.followRedirects : settings.followRedirects
 
-      let response = await request(el, targets, action, referrer, headers, follow, method, body)
+      let response = await request(el, targets, action, referrer, headers, method, body)
 
-      let history = options.history || AjaxAttributes.get(el, 'history')
-      let focus = ('focus' in options) ? options.focus : AjaxAttributes.get(el, 'focus', true)
+      let history = ('history' in options) ? options.history : false
+      let focus = ('focus' in options) ? options.focus : true
 
       return render(response, el, targets, history, focus)
     }
@@ -110,10 +118,8 @@ let AjaxAttributes = {
       this.store.set(el, config)
     }
   },
-  get(el, key, fallback = null) {
-    let config = this.store.get(el) || {}
-
-    return (key in config) ? config[key] : fallback
+  get(el) {
+    return this.store.get(el) || {}
   },
   has(el) {
     return this.store.has(el)
@@ -142,16 +148,22 @@ async function handleLinks(event) {
   event.preventDefault()
   event.stopImmediatePropagation()
 
-  let targets = addSyncTargets(findTargets(AjaxAttributes.get(link, 'targets', [])))
+  let attributes = AjaxAttributes.get(link)
+  let config = attributes.xxx || {}
+  let targets = addSyncTargets(findTargets(config.ids))
   let referrer = source(link)
   let action = link.getAttribute('href') || referrer
-  let headers = AjaxAttributes.get(link, 'headers', {})
-  let follow = AjaxAttributes.get(link, 'follow', settings.followRedirects)
+  let headers = attributes.headers || {}
 
-  let response = await request(link, targets, action, referrer, headers, follow)
+  let response = await request(link, targets, action, referrer, headers)
 
-  let history = AjaxAttributes.get(link, 'history')
-  let focus = AjaxAttributes.get(link, 'focus', true)
+  let key = statusKey(attributes, response)
+  if (key) {
+    config = attributes[key]
+    targets = addSyncTargets(findTargets(config.ids))
+  }
+  let history = config.history
+  let focus = config.focus ?? true
 
   try {
     return await render(response, link, targets, history, focus)
@@ -187,11 +199,12 @@ async function handleForms(event) {
   event.preventDefault()
   event.stopImmediatePropagation()
 
-  let targets = addSyncTargets(findTargets(AjaxAttributes.get(form, 'targets', [])))
+  let attributes = AjaxAttributes.get(form)
+  let config = attributes.xxx || {}
+  let targets = addSyncTargets(findTargets(config.ids))
   let referrer = source(form)
   let action = form.getAttribute('action') || referrer
-  let headers = AjaxAttributes.get(form, 'headers', {})
-  let follow = AjaxAttributes.get(form, 'follow', settings.followRedirects)
+  let headers = attributes.headers || {}
   let body = new FormData(form)
   let enctype = form.getAttribute('enctype')
   if (submitter) {
@@ -203,11 +216,16 @@ async function handleForms(event) {
   }
 
   let response = await withSubmitter(submitter, () => {
-    return request(form, targets, action, referrer, headers, follow, method, body, enctype)
+    return request(form, targets, action, referrer, headers, method, body, enctype)
   })
 
-  let history = AjaxAttributes.get(form, 'history')
-  let focus = AjaxAttributes.get(form, 'focus', true)
+  let key = statusKey(attributes, response)
+  if (key) {
+    config = attributes[key]
+    targets = addSyncTargets(findTargets(config.ids))
+  }
+  let history = config.history
+  let focus = config.focus ?? true
 
   try {
     return await render(response, form, targets, history, focus)
@@ -283,7 +301,7 @@ let PendingTargets = {
 
 let PendingRequests = new Map
 
-async function request(el, targets, action, referrer, headers, follow, method = 'GET', body = null, enctype = 'application/x-www-form-urlencoded') {
+async function request(el, targets, action, referrer, headers, method = 'GET', body = null, enctype = 'application/x-www-form-urlencoded') {
   if (!dispatch(el, 'ajax:before')) {
     throw new DOMException('[ajax:before] aborted', 'AbortError')
   }
@@ -303,30 +321,30 @@ async function request(el, targets, action, referrer, headers, follow, method = 
     headers['X-Alpine-Target'] = targetIds.join('  ')
     headers['X-Alpine-Request'] = 'true'
     headers = Object.assign({}, settings.headers, headers)
+    body = body ? parseFormData(body) : null
 
-    if (body) {
-      body = parseFormData(body)
-      if (method === 'GET') {
-        action = mergeBodyIntoAction(body, action)
-        body = null
-      } else if (enctype !== 'multipart/form-data') {
-        body = formDataToParams(body)
-      }
-    }
-
-    pending = fetch(action, {
+    let options = {
+      action,
       method,
       headers,
       body,
       referrer,
-      signal: controller.signal
-    }).then(response => {
-      if (!follow && response.redirected) {
-        window.location.href = response.url
-      }
+      enctype,
+      signal: controller.signal,
+    }
 
-      return response
-    }).then(async (response) => {
+    dispatch(el, 'ajax:send', options)
+
+    if (options.body) {
+      if (options.method === 'GET') {
+        options.action = mergeBodyIntoAction(options.body, options.action)
+        options.body = null
+      } else if (options.enctype !== 'multipart/form-data') {
+        options.body = formDataToParams(options.body)
+      }
+    }
+
+    pending = fetch(options.action, options).then(async (response) => {
       response.html = await response.text()
 
       return response
@@ -340,12 +358,13 @@ async function request(el, targets, action, referrer, headers, follow, method = 
   PendingRequests.delete(action)
 
   if (response.ok) {
+    response.redirected && dispatch(el, 'ajax:redirect', response)
     dispatch(el, 'ajax:success', response)
   } else {
     dispatch(el, 'ajax:error', response)
   }
 
-  dispatch(el, 'ajax:after', response)
+  dispatch(el, 'ajax:sent', response)
 
   return response
 }
@@ -396,8 +415,13 @@ async function render(response, el, targets, history, focus) {
   let fragment = wrapper.firstElementChild.content
   let focused = !focus
   let renders = targets.map(async target => {
-    let content = fragment.getElementById(target.getAttribute('id'))
-    let strategy = AjaxAttributes.get(target, 'strategy', settings.mergeStrategy)
+    if (target === document) {
+      window.location.href = response.url
+      return
+    }
+    let id = target.getAttribute('id')
+    let content = fragment.getElementById(id)
+    let strategy = AjaxAttributes.get(target)?.strategy ?? settings.mergeStrategy
     if (!content) {
       if (target.matches('[x-sync]')) {
         return
@@ -443,7 +467,14 @@ async function render(response, el, targets, history, focus) {
     return mergeContent()
   })
 
-  return await Promise.all(renders)
+  let render = await Promise.all(renders)
+
+  dispatch(el, 'ajax:after', {
+    response,
+    render,
+  })
+
+  return render
 }
 
 async function merge(strategy, from, to) {
@@ -485,7 +516,7 @@ async function merge(strategy, from, to) {
     }
   }
 
-  if (!AjaxAttributes.get(from, 'transition') || !document.startViewTransition) {
+  if (!AjaxAttributes.get(from)?.transition || !document.startViewTransition) {
     return strategies[strategy](from, to)
   }
 
@@ -519,23 +550,23 @@ function updateHistory(strategy, url) {
   return strategies[strategy]();
 }
 
-function parseTargetIds(el, target = null) {
-  let ids = [el.getAttribute('id')]
-  if (target) {
-    ids = Array.isArray(target) ? target : target.split(' ')
+function parseIds(el, ids = null) {
+  let parsed = [el.getAttribute('id')]
+  if (ids) {
+    parsed = Array.isArray(ids) ? ids : ids.split(' ')
   }
-  ids = ids.filter(id => id)
+  parsed = parsed.filter(id => id)
 
-  if (ids.length === 0) {
+  if (parsed.length === 0) {
     throw new IDError(el)
   }
 
-  return ids
+  return parsed
 }
 
 function findTargets(ids = []) {
   return ids.map(id => {
-    let target = document.getElementById(id)
+    let target = id === '_self' ? document : document.getElementById(id)
     if (!target) {
       throw new TargetError(id)
     }
@@ -557,6 +588,16 @@ function addSyncTargets(targets) {
   })
 
   return targets
+}
+
+function statusKey(attributes, response) {
+  let status = response.redirected ? '3xx' : response.status.toString()
+
+  return [
+    status,
+    status.charAt(0) + 'xx',
+    !response.ok ? 'error' : '',
+  ].find(key => key in attributes)
 }
 
 function source(el) {
@@ -583,7 +624,7 @@ class IDError extends DOMException {
 
 class TargetError extends DOMException {
   constructor(id) {
-    super(`[#${id}] was not found in the current document.`, 'TargetError')
+    super(`Target [#${id}] was not found in current document.`, 'TargetError')
   }
 }
 

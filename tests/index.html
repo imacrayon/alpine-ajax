@@ -12,7 +12,7 @@
   // We aren't loading Alpine directly because we are expecting
   // Cypress to inject HTML into "#root", THEN we'll call
   // this function from Cypress to boot everything up.
-  root.bootAlpine = (options) => {
+  root.bootAlpine = (bootstrap = null) => {
     document.addEventListener('alpine:initialized', () => {
       let readyEl = document.createElement('blockquote')
       readyEl.setAttribute('alpine-is-ready', true)
@@ -24,11 +24,11 @@
 
     let script = document.createElement('script')
     script.type = 'module'
-    script.innerHTML = `
+    script.innerHTML = bootstrap ?? `
       import Alpine from '../../node_modules/alpinejs/dist/module.esm.js'
       import ajax from '../../dist/module.esm.js'
 
-      Alpine.plugin(ajax.configure(${JSON.stringify(options)}))
+      Alpine.plugin(ajax)
       window.Alpine = Alpine
       Alpine.start()
     `;

@@ -9,9 +9,21 @@ test('focus is maintained when merged content is morphed',
     }).as('response')
     get('button').focus().click()
     wait('@response').then(() => {
+      get('button').should('have.text', 'Unlike')
       get('button').should('have.focus')
     })
-  }
+  },
+  null,
+  `
+    import morph from '../../node_modules/@alpinejs/morph/dist/module.esm.js'
+    import Alpine from '../../node_modules/alpinejs/dist/module.esm.js'
+    import ajax from '../../dist/module.esm.js'
+
+    Alpine.plugin(morph)
+    Alpine.plugin(ajax)
+    window.Alpine = Alpine
+    Alpine.start()
+  `
 )
 
 test('focus is set with [autofocus]',

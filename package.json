@@ -30,6 +30,7 @@
     "@11ty/eleventy-navigation": "^0.3.5",
     "@11ty/eleventy-plugin-bundle": "^1.0.4",
     "@11ty/eleventy-plugin-syntaxhighlight": "^4.2.0",
+    "@alpinejs/morph": "^3.14.0",
     "@tailwindcss/forms": "^0.5.4",
     "@tailwindcss/typography": "^0.5.9",
     "alpinejs": "^3.11.1",

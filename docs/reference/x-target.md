@@ -42,6 +42,51 @@ In this comment list example note that the `x-target` attribute on the `<form>` 
 
 Now, when the form is submitted, both the `#comments` list, and the `#comments_count` indicator will be updated.
 
+### Targets based on response status code
+
+Add a status code modifier to `x-target` to define different targets based on the status code received in an AJAX response:
+
+* `x-target.422="my_form"` will merge content only when a response has a 422 status code.
+* `x-target.4xx="my_form"` will merge content only when a response has a 400 class status code.
+* `x-target.error="my_form"` will merge content for both 400 and 500 class status codes.
+
+When using status code modifiers you can instruct Alpine AJAX to perform a full page load by setting the target to `_self`.
+
+#### An important note about redirect (3xx class) status codes
+
+[The JavaScript Fetch API follows all redirects transparently](https://blog.jim-nielsen.com/2021/fetch-and-3xx-redirect-status-codes/). This means there's no way for Alpine AJAX to distinguish between 3xx class status codes, to work around this limitation, we've made it so that all 3xx class modifiers will capture all redirect responses, essentially, `x-target.302` will also handle 301 & 303 redirects.
+
+Consider this contrived form for publishing a new blog post:
+
+  ```html
+  <div id="notifications"></div>
+  <div id="not_found"></div>
+  <div id="other_error"></div>
+  <div id="critical_error"></div>
+  <form x-init
+        x-target.302="_self"
+        x-target.404="not_found publish_form"
+        x-target.5xx="critical_error"
+        x-target.error="other_error"
+        x-target="publish_form"
+        id="publish_form"
+        method="post"
+        action="/publish"
+  >
+    <label for="content">Post title</label>
+    <input id="title" name="title" required />
+    ...
+    <button>Publish</button>
+  </form>
+  ```
+There's a lot of status modifiers in this markup so let's break it all down; when the form is submitted:
+
+* Any 3xx class status code will load the redirected URL in the browser window. (See [important note about redirects](#an-important-note-about-redirect-3xx-class-status-codes).)
+* A 404 status code will target `not_found` **and** `publish_form`.
+* All other 4xx class status codes will target `other_error` (thanks to `x-target.error`).
+* Any 5xx class status code will target `critical_error`.
+* All other response status codes will target `publish_form`.
+
 ### Target shorthand
 
 In cases when a form or link targets itself, you may leave the value of `x-target` blank, however the form or link must still have an `id`:
@@ -52,7 +97,7 @@ In cases when a form or link targets itself, you may leave the value of `x-targe
 </form>
 ```
 
-### Dynamic targets
+### Dynamic target names
 
 Sometimes simple target literals (i.e. comment_1) are not sufficient. In these cases, `x-target:dynamic` allows you to dynamically generate target IDs using Alpine data and JavaScript expressions:
 
@@ -66,24 +111,6 @@ Sometimes simple target literals (i.e. comment_1) are not sufficient. In these c
   </li>
 </template>
 ```
-
-### Handling redirects
-
-AJAX requests issued by `x-target` will transparently follow redirects without reloading the browser window. You may use the `x-target.nofollow` modifier to force the browser to reload when the server responds with a redirect. Notice the `nofollow` modifier used on this form for creating a new blog post:
-
-```html
-<form x-init x-target.nofollow id="create_post" method="post" action="/posts">
-  <label for="content">Post title</label>
-  <input id="title" name="title" required />
-  <label for="content">Post content</label>
-  <input id="content" name="content" required />
-  <button>Publish</button>
-</form>
-```
-
-When this form is submitted a `POST` request is issued to `/posts`. If the server responds with a `302` redirect to the newly created blog post at `/posts/1`, the browser will preform a full page reload and navigate to `/posts/1`.
-
-You can change the default way that `x-target` handles redirects using the `followRedirects` global [configuration option](#configuration).
 
 ### History & URL Support
 

@@ -18,19 +18,27 @@ You can listen for events to perform additional actions during the lifecycle of 
   <tbody>
   <tr>
     <td><code>ajax:before</code></td>
-    <td>Fired before an network request is made. If this event is canceled using <code>$event.preventDefault()</code> the request will be aborted.</td>
+    <td>Fired before any AJAX requests are made. If this event is canceled using <code>$event.preventDefault()</code> the request will be aborted.</td>
+  </tr>
+  <tr>
+    <td><code>ajax:send</code></td>
+    <td>Fired when an AJAX request is issued. <code>$event.details</code> contains the request’s options, modifying these options will override the underlying <code>fetch</code> call.</td>
+  </tr>
+    <tr>
+    <td><code>ajax:redirect</code></td>
+    <td>Fired when an AJAX request responds with a 300 class status code. <code>$event.detail</code> contains the server response data.</td>
   </tr>
   <tr>
     <td><code>ajax:success</code></td>
-    <td>Fired when an network request completes. <code>$event.detail</code> contains the server response data.</td>
+    <td>Fired when an AJAX request responds with a 200 or 300 class status code. <code>$event.detail</code> contains the server response data.</td>
   </tr>
   <tr>
     <td><code>ajax:error</code></td>
-    <td>Fired when an network request responds with a `400` or `500` status code. <code>$event.detail</code> contains the server response data.</td>
+    <td>Fired when an AJAX request responds with a 400 or 500 class status code. <code>$event.detail</code> contains the server response data.</td>
   </tr>
   <tr>
-    <td><code>ajax:after</code></td>
-    <td>Fired after every successful or unsuccessful network request.</td>
+    <td><code>ajax:sent</code></td>
+    <td>Fired after any AJAX request receives a response.</td>
   </tr>
   <tr>
     <td><code>ajax:missing</code></td>
@@ -43,6 +51,10 @@ You can listen for events to perform additional actions during the lifecycle of 
   <tr>
     <td><code>ajax:merged</code></td>
     <td>Fired after new content was merged into <code>$event.target</code>.</td>
+  </tr>
+  <tr>
+    <td><code>ajax:after</code></td>
+    <td>Fired after all AJAX merging has settled. <code>$event.target</code> contains the server <code>response</code> data and a <code>render</code> array that contains the rendered targets.</td>
   </tr>
   </tbody>
 </table>
