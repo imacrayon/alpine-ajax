@@ -41,13 +41,16 @@
         )
       }
 
+      // TODO: Add support for dynamic response status codes
       console.log(`Mock Server Response:`, {
+        status: 200,
         ok: true,
         url,
         text: body
       })
 
       return {
+        status: 200,
         ok: true,
         url,
         text: () => Promise.resolve(body)
