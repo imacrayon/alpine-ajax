@@ -159,6 +159,7 @@ async function handleLinks(event) {
 
   let key = statusKey(attributes, response)
   if (key) {
+    targets.forEach(target => target.removeAttribute('aria-busy'))
     config = attributes[key]
     targets = addSyncTargets(findTargets(config.ids))
   }
@@ -221,6 +222,7 @@ async function handleForms(event) {
 
   let key = statusKey(attributes, response)
   if (key) {
+    targets.forEach(target => target.removeAttribute('aria-busy'))
     config = attributes[key]
     targets = addSyncTargets(findTargets(config.ids))
   }
