@@ -140,9 +140,9 @@ async function handleLinks(event) {
   if (!link ||
     !AjaxAttributes.has(link) ||
     link.isContentEditable ||
+    link.origin !== window.location.origin ||
     link.getAttribute('href').startsWith('#') ||
-    link.origin !== location.origin ||
-    ((link.pathname + link.search) === (location.pathname + location.search) && link.hash)
+    (sameUrl(link, window.location) && link.hash)
   ) return
 
   event.preventDefault()
@@ -159,9 +159,12 @@ async function handleLinks(event) {
 
   let key = statusKey(attributes, response)
   if (key) {
-    targets.forEach(target => target.removeAttribute('aria-busy'))
-    config = attributes[key]
-    targets = addSyncTargets(findTargets(config.ids))
+    let newConfig = attributes[key]
+    if (!newConfig.ids.includes('_self') || !response.redirected || !sameUrl(new URL(response.url), window.location)) {
+      targets.forEach(target => target.removeAttribute('aria-busy'))
+      config = newConfig
+      targets = addSyncTargets(findTargets(config.ids))
+    }
   }
   let history = config.history
   let focus = config.focus ?? true
@@ -222,9 +225,12 @@ async function handleForms(event) {
 
   let key = statusKey(attributes, response)
   if (key) {
-    targets.forEach(target => target.removeAttribute('aria-busy'))
-    config = attributes[key]
-    targets = addSyncTargets(findTargets(config.ids))
+    let newConfig = attributes[key]
+    if (!newConfig.ids.includes('_self') || !response.redirected || !sameUrl(new URL(response.url), window.location)) {
+      targets.forEach(target => target.removeAttribute('aria-busy'))
+      config = newConfig
+      targets = addSyncTargets(findTargets(config.ids))
+    }
   }
   let history = config.history
   let focus = config.focus ?? true
@@ -568,7 +574,7 @@ function parseIds(el, ids = null) {
 
 function findTargets(ids = []) {
   return ids.map(id => {
-    let target = id === '_self' ? document : document.getElementById(id)
+    let target = ['_self', '_top'].includes(id) ? document : document.getElementById(id)
     if (!target) {
       throw new TargetError(id)
     }
@@ -615,6 +621,14 @@ function dispatch(el, name, detail) {
       cancelable: true,
     })
   )
+}
+
+function sameUrl(urlA, urlB) {
+  return (stripTrailingSlash(urlA.pathname) + urlA.search) === (stripTrailingSlash(urlB.pathname) + urlB.search)
+}
+
+function stripTrailingSlash(str) {
+  return str.replace(/\/$/, "")
 }
 
 class IDError extends DOMException {

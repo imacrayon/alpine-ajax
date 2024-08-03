@@ -139,13 +139,67 @@ test('follows redirects by default',
   }
 )
 
-test('targeting `_self` will refresh the page',
+test('targeting `_self` will reload the page',
   html`<form x-init x-target x-target.302="_self" id="replace" method="post"><button></button></form>`,
   ({ intercept, get, wait }) => {
     intercept('POST', '/tests', (request) => {
       request.redirect('/redirect', 302)
     })
     intercept('GET', '/redirect', {
+      statusCode: 200,
+      body: '<h1 id="title">Redirected</h1><div id="replace">Replaced</div>'
+    }).as('response')
+    get('button').click()
+    wait('@response').then(() => {
+      get('#title').should('have.text', 'Redirected')
+      get('#replace').should('have.text', 'Replaced')
+    })
+  }
+)
+
+test('targeting `_self` will not reload the page when redirected back to the same URL',
+  html`<form x-init x-target x-target.302="_self" id="replace" method="post"><button></button></form>`,
+  ({ intercept, get, wait }) => {
+    intercept('POST', '/tests', (request) => {
+      request.redirect('/tests', 302)
+    })
+    intercept('GET', '/tests', {
+      statusCode: 200,
+      body: '<h1 id="title">Redirected</h1><div id="replace">Validation Error</div>'
+    }).as('response')
+    get('button').click()
+    wait('@response').then(() => {
+      get('#title').should('not.exist')
+      get('#replace').should('have.text', 'Validation Error')
+    })
+  }
+)
+
+test('targeting `_top` will reload the page',
+  html`<form x-init x-target x-target.302="_top" id="replace" method="post"><button></button></form>`,
+  ({ intercept, get, wait }) => {
+    intercept('POST', '/tests', (request) => {
+      request.redirect('/redirect', 302)
+    })
+    intercept('GET', '/redirect', {
+      statusCode: 200,
+      body: '<h1 id="title">Redirected</h1><div id="replace">Replaced</div>'
+    }).as('response')
+    get('button').click()
+    wait('@response').then(() => {
+      get('#title').should('have.text', 'Redirected')
+      get('#replace').should('have.text', 'Replaced')
+    })
+  }
+)
+
+test('targeting `_top` will reload the page when redirected back to the same URL',
+  html`<form x-init x-target x-target.302="_top" id="replace" method="post"><button></button></form>`,
+  ({ intercept, get, wait }) => {
+    intercept('POST', '/tests', (request) => {
+      request.redirect('/tests', 302)
+    })
+    intercept('GET', '/tests', {
       statusCode: 200,
       body: '<h1 id="title">Redirected</h1><div id="replace">Replaced</div>'
     }).as('response')
