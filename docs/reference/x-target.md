@@ -50,7 +50,8 @@ Add a status code modifier to `x-target` to define different targets based on th
 * `x-target.4xx="my_form"` will merge content only when a response has a 400 class status code.
 * `x-target.error="my_form"` will merge content for both 400 and 500 class status codes.
 
-When using status code modifiers you can instruct Alpine AJAX to perform a full page load by setting the target to `_self`.
+When using status code modifiers you can instruct Alpine AJAX to perform a full page load by setting the target to `_self`. <span id="_self-special-exception">However, this has one special exception:</span> When `_self` is used in combination with a 3xx status code, it will **not** trigger a full page load on redirects back to the current page. This behavior means that your forms can still redirect back to the same page to show validation errors and eventually redirect away to a new location when all input is valid. If you want to trigger a full page reload no matter what status code you get in the response, you can set the target to `_top` instead.
+
 
 #### An important note about redirect (3xx class) status codes
 
@@ -64,10 +65,10 @@ Consider this contrived form for publishing a new blog post:
   <div id="other_error"></div>
   <div id="critical_error"></div>
   <form x-init
-        x-target.302="_self"
-        x-target.404="not_found publish_form"
         x-target.5xx="critical_error"
+        x-target.404="not_found publish_form"
         x-target.error="other_error"
+        x-target.302="_self"
         x-target="publish_form"
         id="publish_form"
         method="post"
@@ -81,10 +82,11 @@ Consider this contrived form for publishing a new blog post:
   ```
 There's a lot of status modifiers in this markup so let's break it all down; when the form is submitted:
 
-* Any 3xx class status code will load the redirected URL in the browser window. (See [important note about redirects](#an-important-note-about-redirect-3xx-class-status-codes).)
+* Any 5xx class status code will target `critical_error`.
 * A 404 status code will target `not_found` **and** `publish_form`.
 * All other 4xx class status codes will target `other_error` (thanks to `x-target.error`).
-* Any 5xx class status code will target `critical_error`.
+* Any 3xx class status code redirecting to a different page will load the redirected URL in the browser window (See [important note about redirects](#an-important-note-about-redirect-3xx-class-status-codes).)
+* Any 3xx class status code redirecting back to the current page will target `publish_form`   (See [the `_self` special exception](#_self-special-exception).)
 * All other response status codes will target `publish_form`.
 
 ### Target shorthand
