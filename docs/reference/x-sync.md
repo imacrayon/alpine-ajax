@@ -16,7 +16,7 @@ Use cases for this attribute are unread message counters or notification flashes
 Consider this list of notifications:
 
 ```html
-<div aria-live="polite">
+<div role="status">
   <ul x-sync id="notifications"></ul>
 </div>
 ```

@@ -11,7 +11,7 @@ This demo shows how to implement notification "toasts".
 This pattern starts with an empty list for our notifications, the list needs an `id` and `x-sync`. We've added `aria-live` to the list so that screen readers will read out new notifications when the are added to the list.
 
 ```html
-<ul x-sync id="notification_list" role="status" aria-live="polite">
+<ul x-sync id="notification_list" role="status">
 </ul>
 ```
 
@@ -26,7 +26,7 @@ We'll also add an AJAX form to this demo so that we can issue requests to the se
 When the AJAX form is submitted the server will respond with a new notification in the list:
 
 ```html
-<ul x-sync id="notification_list" role="status" aria-live="polite">
+<ul x-sync id="notification_list" role="status">
   <li>
     <span>The button was clicked 1 time.</span>
   </li>
@@ -38,7 +38,7 @@ Notice that our AJAX form **does not** target the `notification_list` element, h
 Our notifications should now be appearing with each form submission, however, every time the form is submitted the new incoming notification will replace the existing notification in our list of notifications; Essentially, our UI can only display a single notification at a time. Instead, we should prepend incoming notifications to our list so that older notifications aren't clobbered with each AJAX request. We can control how new content is added to our list using the `x-merge` attribute:
 
 ```html
-<ul x-sync id="notification_list" x-merge="prepend" role="status" aria-live="polite">
+<ul x-sync id="notification_list" x-merge="prepend" role="status">
 ```
 
 The basic functionality of our notifications is complete, next there are a few refinements we can make to the notification messages to further improve the user experience. First, let's sprinkle in some additional Alpine code to animate our notifications:
@@ -137,7 +137,7 @@ And finally, we can make our notifications automatically dismiss after 6 seconds
     return `<form id="action" x-init x-target method="post" action="/action">
   <button>Click Me</button>
 </form>
-<ul x-sync id="notification_list" x-merge="prepend" role="status" aria-live="polite">
+<ul x-sync id="notification_list" x-merge="prepend" role="status">
   ${count > 0 ? notification() : ''}
 </ul>`
   }

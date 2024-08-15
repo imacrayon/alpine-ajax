@@ -56,7 +56,7 @@ We can solve both of this issues by adding with only a few tweaks:
 To address the first issue, we'll include a message in our new server event and wrap the `#server_events` component in a `status` element so that the message can be automatically discovered up by assistive technologies:
 
 ```html
-<div role="status" aria-live="polite">
+<div role="status">
   <div x-sync id="server_events">
     <div x-init="$dispatch('comment:created')">Your comment was added!</div>
   </div>
@@ -98,7 +98,7 @@ Next, we'll add a `x-autofocus` attribute to the comment `<textarea>`, so that f
   function serverEvent(name = '') {
     let event = name ? `<div x-init="$dispatch('${name}')" style="color:#008800">Your comment was added!</div>` : ''
 
-    return `<div role="status" aria-live="polite">
+    return `<div role="status">
   <div x-sync id="server_events">${event}</div>
 </div>`
   }
