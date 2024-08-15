@@ -67,14 +67,14 @@ Now our messages will smoothly transition in and out as they are added and remov
     },
     dismiss() {
       this.show = false
-      setTimeout(() => this.$el.remove(), 500)
+      setTimeout(() => this.$root.remove(), 500)
     }
   }"
   x-show="show"
   x-transition.duration.500ms
 >
   <span>The button was clicked 1 time.</span>
-  <button @click="dismiss()" type="button" aria-label="Dismiss">&times;</button>
+  <button @click="dismiss" type="button" aria-label="Dismiss">&times;</button>
 </li>
 ```
 
@@ -89,14 +89,14 @@ And finally, we can make our notifications automatically dismiss after 6 seconds
     },
     dismiss() {
       this.show = false
-      setTimeout(() => this.$el.remove(), 500)
+      setTimeout(() => this.$root.remove(), 500)
     }
   }"
   x-show="show"
   x-transition.duration.500ms
 >
   <span>The button was clicked 1 time.</span>
-  <button @click="dismiss()" type="button" aria-label="Dismiss">&times;</button>
+  <button @click="dismiss" type="button" aria-label="Dismiss">&times;</button>
 </li>
 ```
 
@@ -151,14 +151,14 @@ And finally, we can make our notifications automatically dismiss after 6 seconds
       },
       dismiss() {
         this.show = false
-        setTimeout(() => this.$el.remove(), 500)
+        setTimeout(() => this.$root.remove(), 500)
       }
     }"
     x-show="show"
     x-transition.duration.500ms
   >
     <span>The button was clicked ${count} ${count > 1 ? 'times' : 'time'}.</span>
-    <button @click="dismiss()" type="button" aria-label="Dismiss">&times;</button>
+    <button @click="dismiss" type="button" aria-label="Dismiss">&times;</button>
   </li>`
   }
 </script>
