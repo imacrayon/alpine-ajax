@@ -13,7 +13,7 @@ Use the mock server script included with Alpine AJAX when you need to build a qu
 <!--
 Include the typical required scripts before the mock server:
 <script defer src="https://cdn.jsdelivr.net/npm/@imacrayon/alpine-ajax@{{ APLINE_AJAX_VERSION }}/dist/cdn.min.js"></script>
-<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.11.1/dist/cdn.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@{{ APLINE_VERSION }}/dist/cdn.min.js"></script>
 -->
 <script src="https://cdn.jsdelivr.net/npm/@imacrayon/alpine-ajax@{{ APLINE_AJAX_VERSION }}/dist/server.js"></script>
 

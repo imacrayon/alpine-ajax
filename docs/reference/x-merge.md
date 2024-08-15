@@ -79,9 +79,9 @@ To enable the morph strategy, install the Morph Plugin **before** installing Alp
 Via CDN:
 
 ```html
-<script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/morph@3.x.x/dist/cdn.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/morph@{{ APLINE_VERSION }}/dist/cdn.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/@imacrayon/alpine-ajax@{{ APLINE_AJAX_VERSION }}/dist/cdn.min.js"></script>
-<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.11.1/dist/cdn.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@{{ APLINE_VERSION }}/dist/cdn.min.js"></script>
 
 ```
 

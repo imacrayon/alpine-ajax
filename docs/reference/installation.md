@@ -15,7 +15,7 @@ Include the CDN build of Alpine AJAX as a `<script>` tag, just make sure to incl
 
 ```html
 <script defer src="https://cdn.jsdelivr.net/npm/@imacrayon/alpine-ajax@{{ APLINE_AJAX_VERSION }}/dist/cdn.min.js"></script>
-<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.11.1/dist/cdn.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@{{ APLINE_VERSION }}/dist/cdn.min.js"></script>
 ```
 
 ### Via NPM

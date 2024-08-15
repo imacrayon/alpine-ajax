@@ -6,6 +6,7 @@ const pluginBundle = require("@11ty/eleventy-plugin-bundle")
 const pluginNavigation = require("@11ty/eleventy-navigation")
 const esbuild = require('esbuild')
 const postcss = require('postcss')
+const lockFile = require('../package-lock.json')
 
 module.exports = function (eleventyConfig) {
   eleventyConfig.addPassthroughCopy('css')
@@ -38,7 +39,8 @@ module.exports = function (eleventyConfig) {
     ]
   })
 
-  eleventyConfig.addGlobalData('APLINE_AJAX_VERSION', () => process.env.npm_package_version)
+  eleventyConfig.addGlobalData('APLINE_VERSION', () => lockFile.packages['node_modules/alpinejs'].version)
+  eleventyConfig.addGlobalData('APLINE_AJAX_VERSION', () => lockFile.version)
 
   eleventyConfig.addFilter('sort', (collection, path = '') => {
     let keys = path.split('.')
