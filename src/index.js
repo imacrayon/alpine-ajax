@@ -455,15 +455,14 @@ async function render(response, el, targets, history, focus) {
       if (merged) {
         merged.dataset.source = response.url
         merged.removeAttribute('aria-busy')
-        let focusables = ['[x-autofocus]', '[autofocus]']
-        focusables.some(selector => {
-          if (focused) return true
+        let selectors = ['[x-autofocus]', '[autofocus]']
+        while (!focused && selectors.length) {
+          let selector = selectors.shift()
           if (merged.matches(selector)) {
             focused = focusOn(merged)
           }
-
-          return focused || Array.from(merged.querySelectorAll(selector)).some(focusable => focusOn(focusable))
-        })
+          focused = focused || Array.from(merged.querySelectorAll(selector)).some(focusable => focusOn(focusable))
+        }
       }
 
       dispatch(merged, 'ajax:merged')
