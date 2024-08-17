@@ -282,10 +282,13 @@ async function withSubmitter(submitter, callback) {
   submitter.setAttribute('aria-disabled', 'true')
   submitter.addEventListener('click', disableEvent)
 
-  let result = await callback()
-
-  submitter.removeAttribute('aria-disabled')
-  submitter.removeEventListener('click', disableEvent)
+  let result
+  try {
+    result = await callback()
+  } finally {
+    submitter.removeAttribute('aria-disabled')
+    submitter.removeEventListener('click', disableEvent)
+  }
 
   return result
 }

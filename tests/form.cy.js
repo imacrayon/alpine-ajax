@@ -295,3 +295,24 @@ test('performs a normal submit when a 500 status code is returned',
     })
   }
 )
+
+test('submitter is disabled while submitting',
+  html`<form x-init x-target id="replace" method="post"><button></button></form>`,
+  ({ intercept, get, wait }) => {
+    intercept('POST', (req) => {
+      req.continue((res) => {
+        get('button').should('have.attr', 'aria-disabled')
+      })
+    }).as('response')
+    get('button').click()
+  }
+)
+
+test('submitter is reset when request is aborted',
+  html`<form x-init x-target id="replace" method="post" @ajax:before="event.preventDefault()"><button></button></form>`,
+  ({ intercept, get, wait }) => {
+    get('button').click()
+    wait(300)
+    get('button').should('not.have.attr', 'aria-disabled')
+  }
+)
