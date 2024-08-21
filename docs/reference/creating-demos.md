@@ -25,7 +25,7 @@ route('POST', '/update-quantity', (request) => {
 
 <label for="current_quantity">Current quantity</label>
 <output id="current_quantity">0</output>
-<form x-init x-target="current_quantity" method="POST" action="/update-quantity">
+<form x-target="current_quantity" method="POST" action="/update-quantity">
   <label form="quantity">New quantity</label>
   <input type="number" id="quantity" name="quantity">
   <button>Update</button>

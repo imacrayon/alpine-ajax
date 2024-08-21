@@ -1,7 +1,7 @@
 import { test, html } from './utils'
 
 test('makes GET requests for naked form',
-  html`<form x-init x-target id="replace"><button></button></form>`,
+  html`<form x-target id="replace"><button></button></form>`,
   ({ intercept, get, wait }) => {
     intercept('GET', '/tests', {
       statusCode: 200,
@@ -16,7 +16,7 @@ test('makes GET requests for naked form',
 )
 
 test('[x-target] can be an empty string',
-  html`<form x-init x-target="" id="replace"><button></button></form>`,
+  html`<form x-target="" id="replace"><button></button></form>`,
   ({ intercept, get, wait }) => {
     intercept('GET', '/tests', {
       statusCode: 200,
@@ -31,7 +31,7 @@ test('[x-target] can be an empty string',
 )
 
 test('makes GET requests for form',
-  html`<form x-init x-target id="replace" method="get"><button></button></form>`,
+  html`<form x-target id="replace" method="get"><button></button></form>`,
   ({ intercept, get, wait }) => {
     intercept('GET', '/tests', {
       statusCode: 200,
@@ -46,7 +46,7 @@ test('makes GET requests for form',
 )
 
 test('makes POST requests for form',
-  html`<form x-init x-target id="replace" method="post"><button></button></form>`,
+  html`<form x-target id="replace" method="post"><button></button></form>`,
   ({ intercept, get, wait }) => {
     intercept('POST', '/tests', {
       statusCode: 200,
@@ -61,7 +61,7 @@ test('makes POST requests for form',
 )
 
 test('makes POST requests without an enctype',
-  html`<form x-init x-target id="replace" method="post"><button></button></form>`,
+  html`<form x-target id="replace" method="post"><button></button></form>`,
   ({ intercept, get, wait }) => {
     intercept('POST', '/tests', {
       statusCode: 200,
@@ -73,7 +73,7 @@ test('makes POST requests without an enctype',
 )
 
 test('makes POST requests with an enctype',
-  html`<form x-init x-target id="replace" method="post" enctype="multipart/form-data"><button></button></form>`,
+  html`<form x-target id="replace" method="post" enctype="multipart/form-data"><button></button></form>`,
   ({ intercept, get, wait }) => {
     intercept('POST', '/tests', {
       statusCode: 200,
@@ -85,7 +85,7 @@ test('makes POST requests with an enctype',
 )
 
 test('respects [formenctype]',
-  html`<form x-init x-target id="replace" method="post"><button formenctype="multipart/form-data"></button></form>`,
+  html`<form x-target id="replace" method="post"><button formenctype="multipart/form-data"></button></form>`,
   ({ intercept, get, wait }) => {
     intercept('POST', '/tests', {
       statusCode: 200,
@@ -97,7 +97,7 @@ test('respects [formenctype]',
 )
 
 test('makes PUT requests for form',
-  html`<form x-init x-target id="replace" method="put"><button></button></form>`,
+  html`<form x-target id="replace" method="put"><button></button></form>`,
   ({ intercept, get, wait }) => {
     intercept('PUT', '/tests', {
       statusCode: 200,
@@ -112,7 +112,7 @@ test('makes PUT requests for form',
 )
 
 test('makes PATCH requests for form',
-  html`<form x-init x-target id="replace" method="patch"><button></button></form>`,
+  html`<form x-target id="replace" method="patch"><button></button></form>`,
   ({ intercept, get, wait }) => {
     intercept('PATCH', '/tests', {
       statusCode: 200,
@@ -127,7 +127,7 @@ test('makes PATCH requests for form',
 )
 
 test('makes DELETE requests for form',
-  html`<form x-init x-target id="replace" method="delete"><button></button></form>`,
+  html`<form x-target id="replace" method="delete"><button></button></form>`,
   ({ intercept, get, wait }) => {
     intercept('DELETE', '/tests', {
       statusCode: 200,
@@ -142,7 +142,7 @@ test('makes DELETE requests for form',
 )
 
 test('respects [formmethod]',
-  html`<form x-init x-target id="replace" method="post"><button formmethod="post"></button></form>`,
+  html`<form x-target id="replace" method="post"><button formmethod="post"></button></form>`,
   ({ intercept, get, wait }) => {
     intercept('POST', '/tests', {
       statusCode: 200,
@@ -157,7 +157,7 @@ test('respects [formmethod]',
 )
 
 test('request URL is determined by action attribute',
-  html`<form x-init x-target id="replace" action="other.html"><button></button></form>`,
+  html`<form x-target id="replace" action="other.html"><button></button></form>`,
   ({ intercept, get, wait }) => {
     intercept('GET', '/tests/other.html', {
       statusCode: 200,
@@ -172,7 +172,7 @@ test('request URL is determined by action attribute',
 )
 
 test('respects [formaction]',
-  html`<form x-init x-target id="replace"><button formaction="other.html"></button></form>`,
+  html`<form x-target id="replace"><button formaction="other.html"></button></form>`,
   ({ intercept, get, wait }) => {
     intercept('GET', '/tests/other.html', {
       statusCode: 200,
@@ -187,7 +187,7 @@ test('respects [formaction]',
 )
 
 test('GET request data is added to the URL',
-  html`<form x-init x-target id="replace" action="other.html"><button name="NAME" value="VALUE"></button></form>`,
+  html`<form x-target id="replace" action="other.html"><button name="NAME" value="VALUE"></button></form>`,
   ({ intercept, get, wait }) => {
     intercept('GET', '/tests/other.html?NAME=VALUE', {
       statusCode: 200,
@@ -202,7 +202,7 @@ test('GET request data is added to the URL',
 )
 
 test('[x-target] changes the updated target',
-  html`<div id="replace"></div><form x-init x-target="replace" method="post" action="/tests"><button></button></form>`,
+  html`<div id="replace"></div><form x-target="replace" method="post" action="/tests"><button></button></form>`,
   ({ intercept, get, wait }) => {
     intercept('POST', '/tests', {
       statusCode: 200,
@@ -218,7 +218,7 @@ test('[x-target] changes the updated target',
 )
 
 test('[x-target] can select multiple targets',
-  html`<div id="replace_1"></div><div id="replace_2"></div><form x-init x-target="replace_1 replace_2" method="post" action="/tests"><button></button></form>`,
+  html`<div id="replace_1"></div><div id="replace_2"></div><form x-target="replace_1 replace_2" method="post" action="/tests"><button></button></form>`,
   ({ intercept, get, wait }) => {
     intercept('POST', '/tests', {
       statusCode: 200,
@@ -235,7 +235,7 @@ test('[x-target] can select multiple targets',
 )
 
 test('[x-target] handles extra whitespace',
-  html`<div id="replace_1"></div><div id="replace_2"></div><form x-init x-target="   replace_1    replace_2   " method="post" action="/tests"><button></button></form>`,
+  html`<div id="replace_1"></div><div id="replace_2"></div><form x-target="   replace_1    replace_2   " method="post" action="/tests"><button></button></form>`,
   ({ intercept, get, wait }) => {
     intercept('POST', '/tests', {
       statusCode: 200,
@@ -252,7 +252,7 @@ test('[x-target] handles extra whitespace',
 )
 
 test('[x-headers] sets request headers',
-  html`<form x-init x-target x-headers="{ 'x-test': 'test' }" id="replace" method="post"><button></button></form>`,
+  html`<form x-target x-headers="{ 'x-test': 'test' }" id="replace" method="post"><button></button></form>`,
   ({ intercept, get, wait }) => {
     intercept('POST', '/tests', {
       statusCode: 200,
@@ -264,7 +264,7 @@ test('[x-headers] sets request headers',
 )
 
 test('[formnoajax] can cancel AJAX requests',
-  html`<h1 id="title">Replace me</h1><form x-init x-target="title" method="post" action="/tests"><button formnoajax></button></form>`,
+  html`<h1 id="title">Replace me</h1><form x-target="title" method="post" action="/tests"><button formnoajax></button></form>`,
   ({ intercept, get, wait }) => {
     cy.on('fail', (error, runnable) => {
       if (error.message.indexOf('Timed out retrying') !== 0) throw error
@@ -283,7 +283,7 @@ test('[formnoajax] can cancel AJAX requests',
 )
 
 test('performs a normal submit when a 500 status code is returned',
-  html`<form x-init x-target id="replace" method="post"><button></button></form>`,
+  html`<form x-target id="replace" method="post"><button></button></form>`,
   ({ intercept, get, wait }) => {
     intercept('POST', '/tests', {
       statusCode: 500,
@@ -297,7 +297,7 @@ test('performs a normal submit when a 500 status code is returned',
 )
 
 test('submitter is disabled while submitting',
-  html`<form x-init x-target id="replace" method="post"><button></button></form>`,
+  html`<form x-target id="replace" method="post"><button></button></form>`,
   ({ intercept, get, wait }) => {
     intercept('POST', (req) => {
       req.continue((res) => {
@@ -309,7 +309,7 @@ test('submitter is disabled while submitting',
 )
 
 test('submitter is reset when request is aborted',
-  html`<form x-init x-target id="replace" method="post" @ajax:before="event.preventDefault()"><button></button></form>`,
+  html`<form x-target id="replace" method="post" @ajax:before="event.preventDefault()"><button></button></form>`,
   ({ intercept, get, wait }) => {
     get('button').click()
     wait(300)

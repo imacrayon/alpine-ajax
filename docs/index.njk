@@ -223,7 +223,7 @@ description: Radio-controlled HTML elements!
             {% include 'jukebox.svg' %}
           </div>
           <div class="absolute top-[40%] bottom-[12%] left-[25%] right-[25%] flex flex-col space-y-1">
-            <form x-init x-target="songs" action="/songs" role="search" aria-label="Search jukebox music" class="relative" autocomplete="off">
+            <form x-target="songs" action="/songs" role="search" aria-label="Search jukebox music" class="relative" autocomplete="off">
               <label for="search" class="sr-only">Search</label>
               <input type="search" name="search" id="search" aria-describedby="info" placeholder="Search songs..." @input.debounce="$el.form.requestSubmit()" class="animate-glow relative font-sans w-full rounded-md border-blue-800 placeholder:text-almond-700 bg-almond-200 text-blue-800 focus:border-red-600">
               <button x-show="false" class="sr-only">Submit</button>

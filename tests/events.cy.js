@@ -1,7 +1,7 @@
 import { test, html } from './utils'
 
 test('[ajax:before] event is fired',
-  html`<p id="before">CHANGE ME</p><form x-init x-target id="replace" @ajax:before="document.getElementById('before').textContent = 'Changed'" method="post" action="/tests"><button></button></form>`,
+  html`<p id="before">CHANGE ME</p><form x-target id="replace" @ajax:before="document.getElementById('before').textContent = 'Changed'" method="post" action="/tests"><button></button></form>`,
   ({ intercept, get, wait }) => {
     intercept('POST', '/tests', {
       statusCode: 200,
@@ -16,7 +16,7 @@ test('[ajax:before] event is fired',
 )
 
 test('[ajax:before] can cancel AJAX requests',
-  html`<h1 id="title">Replace me</h1><form x-init x-target="title" @ajax:before="$event.preventDefault()" method="post" action="/tests"><button></button></form>`,
+  html`<h1 id="title">Replace me</h1><form x-target="title" @ajax:before="$event.preventDefault()" method="post" action="/tests"><button></button></form>`,
   ({ intercept, get, wait }) => {
     cy.on('fail', (error, runnable) => {
       if (error.message.indexOf('Timed out retrying') !== 0) throw error
@@ -35,7 +35,7 @@ test('[ajax:before] can cancel AJAX requests',
 )
 
 test('[ajax:send] can modify a request',
-  html`<form x-init x-target id="replace" method="post" @ajax:send="$event.detail.action = '/changed'"><button></button></form>`,
+  html`<form x-target id="replace" method="post" @ajax:send="$event.detail.action = '/changed'"><button></button></form>`,
   ({ intercept, get, wait }) => {
     intercept('POST', '/changed', {
       statusCode: 200,
@@ -51,7 +51,7 @@ test('[ajax:send] can modify a request',
 
 test('[ajax:redirect] can handle redirects',
   html`
-  <form x-init x-target id="replace" method="post"><button></button></form>`,
+  <form x-target id="replace" method="post"><button></button></form>`,
   ({ intercept, get, wait, location }) => {
     intercept('POST', '/tests', (request) => {
       request.redirect('/redirect', 302)

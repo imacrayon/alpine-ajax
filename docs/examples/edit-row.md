@@ -17,7 +17,7 @@ This example shows how to implement editable table rows. First let's look at the
       <th scope="col">Actions</th>
     </tr>
   </thead>
-  <tbody x-init>
+  <tbody>
     ...
   </tbody>
 </table>
@@ -147,7 +147,7 @@ Try using the keyboard in the following demo and notice how keyboard focus is ma
       <th scope="col" width="130">Action</th>
     </tr>
   </thead>
-  <tbody x-init>
+  <tbody>
     ${rows}
   </tbody>
 </table>`

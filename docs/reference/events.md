@@ -63,7 +63,7 @@ You can listen for events to perform additional actions during the lifecycle of 
 Here's an example of aborting a form request when the user cancels a dialog prompt:
 
 ```html
-<form id="delete_user" x-init x-target @ajax:before="confirm('Are you sure?') || $event.preventDefault()">
+<form id="delete_user" x-target @ajax:before="confirm('Are you sure?') || $event.preventDefault()">
   <button>Delete User</button>
 </form>
 ```

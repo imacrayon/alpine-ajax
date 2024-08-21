@@ -1,7 +1,7 @@
 import { test, html } from './utils'
 
 test('focus is maintained when merged content is morphed',
-  html`<form x-init x-target id="replace" method="post" x-merge="morph"><button aria-pressed="false">Like</button></form>`,
+  html`<form x-target id="replace" method="post" x-merge="morph"><button aria-pressed="false">Like</button></form>`,
   ({ intercept, get, wait }) => {
     intercept('POST', '/tests', {
       statusCode: 200,
@@ -27,11 +27,11 @@ test('focus is maintained when merged content is morphed',
 )
 
 test('focus is set with [autofocus]',
-  html`<form x-init x-target id="replace" method="post"><button>First</button><a href="#">Second</a></form>`,
+  html`<form x-target id="replace" method="post"><button>First</button><a href="#">Second</a></form>`,
   ({ intercept, get, wait }) => {
     intercept('POST', '/tests', {
       statusCode: 200,
-      body: '<form x-init x-target id="replace" method="post"><button>First</button><a href="#" autofocus>Second</a></form>'
+      body: '<form x-target id="replace" method="post"><button>First</button><a href="#" autofocus>Second</a></form>'
     }).as('response')
     get('button').focus().click()
     wait('@response').then(() => {
@@ -41,11 +41,11 @@ test('focus is set with [autofocus]',
 )
 
 test('focus is ignored with the nofocus modifier',
-  html`<form x-init x-target.nofocus id="replace" method="post"><button>First</button><a href="#">Second</a></form>`,
+  html`<form x-target.nofocus id="replace" method="post"><button>First</button><a href="#">Second</a></form>`,
   ({ intercept, get, wait }) => {
     intercept('POST', '/tests', {
       statusCode: 200,
-      body: '<form x-init x-target id="replace" method="post"><button>First</button><a href="#" autofocus>Second</a></form>'
+      body: '<form x-target id="replace" method="post"><button>First</button><a href="#" autofocus>Second</a></form>'
     }).as('response')
     get('button').focus().click()
     wait('@response').then(() => {
@@ -55,7 +55,7 @@ test('focus is ignored with the nofocus modifier',
 )
 
 test('first listed target is focused when multiple [autofocus] are merged',
-  html`<a href="#" autofocus id="replace2">Second</a><a href="#" autofocus id="replace1">First</a><form x-init x-target="replace1 replace2" method="post"><button></button></form>`,
+  html`<a href="#" autofocus id="replace2">Second</a><a href="#" autofocus id="replace1">First</a><form x-target="replace1 replace2" method="post"><button></button></form>`,
   ({ intercept, get, wait }) => {
     intercept('POST', '/tests', {
       statusCode: 200,
@@ -69,7 +69,7 @@ test('first listed target is focused when multiple [autofocus] are merged',
 )
 
 test('first listed target is focused when multiple nested [autofocus] are merged',
-  html`<div id="replace2"><a href="#" autofocus>Second</a></div><div id="replace1"><a href="#" autofocus>First</a></div><form x-init x-target="replace1 replace2" method="post"><button></button></form>`,
+  html`<div id="replace2"><a href="#" autofocus>Second</a></div><div id="replace1"><a href="#" autofocus>First</a></div><form x-target="replace1 replace2" method="post"><button></button></form>`,
   ({ intercept, get, wait }) => {
     intercept('POST', '/tests', {
       statusCode: 200,
@@ -83,11 +83,11 @@ test('first listed target is focused when multiple nested [autofocus] are merged
 )
 
 test('hidden [autofocus] elements are ignored',
-  html`<form x-init x-target id="replace" method="post"><button>First</button><a href="#">Second</a></form>`,
+  html`<form x-target id="replace" method="post"><button>First</button><a href="#">Second</a></form>`,
   ({ intercept, get, wait }) => {
     intercept('POST', '/tests', {
       statusCode: 200,
-      body: '<form x-init x-target id="replace" method="post"><button hidden autofocus>First</button><a href="#" autofocus>Second</a></form>'
+      body: '<form x-target id="replace" method="post"><button hidden autofocus>First</button><a href="#" autofocus>Second</a></form>'
     }).as('response')
     get('button').focus().click()
     wait('@response').then(() => {
@@ -97,11 +97,11 @@ test('hidden [autofocus] elements are ignored',
 )
 
 test('[x-autofocus] overrides [autofocus]',
-  html`<form x-init x-target id="replace" method="post"><button>First</button><a href="#">Second</a></form>`,
+  html`<form x-target id="replace" method="post"><button>First</button><a href="#">Second</a></form>`,
   ({ intercept, get, wait }) => {
     intercept('POST', '/tests', {
       statusCode: 200,
-      body: '<form x-init x-target id="replace" method="post"><button autofocus>First</button><a href="#" x-autofocus>Second</a></form>'
+      body: '<form x-target id="replace" method="post"><button autofocus>First</button><a href="#" x-autofocus>Second</a></form>'
     }).as('response')
     get('button').focus().click()
     wait('@response').then(() => {

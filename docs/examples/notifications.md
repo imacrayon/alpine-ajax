@@ -18,7 +18,7 @@ This pattern starts with an empty list for our notifications, the list needs an 
 We'll also add an AJAX form to this demo so that we can issue requests to the server that will trigger new notifications.
 
 ```html
-<form id="action" x-init x-target method="post" action="/action">
+<form id="action" x-target method="post" action="/action">
   <button>Click Me</button>
 </form>
 ```
@@ -134,7 +134,7 @@ And finally, we can make our notifications automatically dismiss after 6 seconds
   window.example('/action')
 
   function view() {
-    return `<form id="action" x-init x-target method="post" action="/action">
+    return `<form id="action" x-target method="post" action="/action">
   <button>Click Me</button>
 </form>
 <ul x-sync id="notification_list" x-merge="prepend" role="status">

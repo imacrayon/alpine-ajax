@@ -1,7 +1,7 @@
 import { test, html } from './utils'
 
 test('content is merged before',
-  html`<form x-init x-target id="target" method="post" x-merge="before"><button></button></form>`,
+  html`<form x-target id="target" method="post" x-merge="before"><button></button></form>`,
   ({ intercept, get, wait }) => {
     intercept('POST', '/tests', {
       statusCode: 200,
@@ -16,7 +16,7 @@ test('content is merged before',
 )
 
 test('merged content is prepended',
-  html`<form x-init x-target id="target" method="post" x-merge="prepend"><button></button></form>`,
+  html`<form x-target id="target" method="post" x-merge="prepend"><button></button></form>`,
   ({ intercept, get, wait }) => {
     intercept('POST', '/tests', {
       statusCode: 200,
@@ -31,7 +31,7 @@ test('merged content is prepended',
 )
 
 test('merged content is updated',
-  html`<form x-init x-target id="target" method="post" x-merge="update"><button></button></form>`,
+  html`<form x-target id="target" method="post" x-merge="update"><button></button></form>`,
   ({ intercept, get, wait }) => {
     intercept('POST', '/tests', {
       statusCode: 200,
@@ -46,7 +46,7 @@ test('merged content is updated',
 )
 
 test('merged content is appended',
-  html`<form x-init x-target id="target" method="post" x-merge="append"><button></button></form>`,
+  html`<form x-target id="target" method="post" x-merge="append"><button></button></form>`,
   ({ intercept, get, wait }) => {
     intercept('POST', '/tests', {
       statusCode: 200,
@@ -61,7 +61,7 @@ test('merged content is appended',
 )
 
 test('content is merged after',
-  html`<form x-init x-target id="target" method="post" x-merge="after"><button></button></form>`,
+  html`<form x-target id="target" method="post" x-merge="after"><button></button></form>`,
   ({ intercept, get, wait }) => {
     intercept('POST', '/tests', {
       statusCode: 200,
@@ -76,7 +76,7 @@ test('content is merged after',
 )
 
 test('table elements can be merged',
-  html`<table><tr id="row"><td>Replace</td></tr></table><form x-init x-target="row" method="post"><button></button></form>`,
+  html`<table><tr id="row"><td>Replace</td></tr></table><form x-target="row" method="post"><button></button></form>`,
   ({ intercept, get, wait }) => {
     intercept('POST', '/tests', {
       statusCode: 200,
@@ -90,7 +90,7 @@ test('table elements can be merged',
 )
 
 test('merging can be interrupted',
-  html`<form x-init x-target id="target" method="post" @ajax:merge="$event.preventDefault()"><button></button></form>`,
+  html`<form x-target id="target" method="post" @ajax:merge="$event.preventDefault()"><button></button></form>`,
   ({ intercept, get, wait }) => {
     intercept('POST', '/tests', {
       statusCode: 200,
@@ -105,7 +105,7 @@ test('merging can be interrupted',
 )
 
 test('merged content can be changed',
-  html`<form x-init x-target id="target" method="post" @ajax:merge="$event.preventDefault();$event.detail.content.innerHTML = 'Changed';$event.detail.merge();"><button></button></form>`,
+  html`<form x-target id="target" method="post" @ajax:merge="$event.preventDefault();$event.detail.content.innerHTML = 'Changed';$event.detail.merge();"><button></button></form>`,
   ({ intercept, get, wait }) => {
     intercept('POST', '/tests', {
       statusCode: 200,

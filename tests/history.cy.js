@@ -1,7 +1,7 @@
 import { test, html } from './utils'
 
 test('replaces the history state with the replace modifier',
-  html`<form x-init x-target.replace id="replace" method="get" action="/replaced"><button></button></form>`,
+  html`<form x-target.replace id="replace" method="get" action="/replaced"><button></button></form>`,
   ({ intercept, get, wait, location, go }) => {
     intercept('GET', '/replaced', {
       statusCode: 200,
@@ -17,7 +17,7 @@ test('replaces the history state with the replace modifier',
 )
 
 test('pushes to history state with the push modifier',
-  html`<form x-init x-target.push id="replace" method="get" action="/pushed"><button></button></form>`,
+  html`<form x-target.push id="replace" method="get" action="/pushed"><button></button></form>`,
   ({ intercept, get, wait, location, go }) => {
     intercept('GET', '/pushed', {
       statusCode: 200,

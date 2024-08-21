@@ -15,14 +15,14 @@ This pattern starts with a "view mode" showing the details of a contact inside a
   <p><strong>First Name</strong>: Finn</p>
   <p><strong>Last Name</strong>: Mertens</p>
   <p><strong>Email</strong>: fmertens@candykingdom.gov</p>
-  <a href="/contacts/1/edit" x-init x-target="contact_1">Edit</a>
+  <a href="/contacts/1/edit" x-target="contact_1">Edit</a>
 </div>
 ```
 
 This returns a form that can be used to edit the contact:
 
 ```html
-<form id="contact_1" x-init x-target method="put" action="/contacts/1" aria-label="Contact Information">
+<form id="contact_1" x-target method="put" action="/contacts/1" aria-label="Contact Information">
   <div>
     <label for="first_name">First Name</label>
     <input id="first_name" name="first_name" value="Finn">
@@ -112,7 +112,7 @@ form {
   window.example('/contacts/1')
 
   function edit(contact) {
-    return `<form id="contact_1" x-init x-target x-merge.transition method="put" action="/contacts/1" aria-label="Contact Information">
+    return `<form id="contact_1" x-target x-merge.transition method="put" action="/contacts/1" aria-label="Contact Information">
   <div>
     <label for="first_name">First Name</label>
     <input id="first_name" name="first_name" x-autofocus value="${contact.first_name}" style="width:18ch">
@@ -135,7 +135,7 @@ form {
   <p><strong>First Name</strong>: ${contact.first_name}</p>
   <p><strong>Last Name</strong>: ${contact.last_name}</p>
   <p><strong>Email</strong>: ${contact.email}</p>
-  <a href="/contacts/1/edit" x-init x-target="contact_1" x-autofocus>Edit</a>
+  <a href="/contacts/1/edit" x-target="contact_1" x-autofocus>Edit</a>
 </div>`
   }
 </script>

@@ -13,7 +13,7 @@ We start with a card that contains a link. When the link is clicked, a `GET` req
 ```html
 <div id="card">
   <div id="table">
-    <a href="/contacts" x-init x-target="table">Load Contacts</a>
+    <a href="/contacts" x-target="table">Load Contacts</a>
   </div>
 </div>
 ```
@@ -95,7 +95,7 @@ Fortunately, Alpine AJAX adds `aria-busy="true"` to targets while a request is p
   function dashboard() {
     return `<div id="card">
   <div id="table">
-    <a href="/contacts" x-init x-target="table">Load Contacts</a>
+    <a href="/contacts" x-target="table">Load Contacts</a>
   </div>
 </div>`
   }

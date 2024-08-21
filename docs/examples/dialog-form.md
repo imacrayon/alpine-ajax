@@ -50,7 +50,7 @@ In each table row we have an "Edit" link targeting the empty `#contact` `<div>` 
 Clicking the "Edit" link issues a `GET` request to `/contacts/1/edit` which returns the corresponding `<form>` for the contact inside the `<dialog>`:
 
 ```html
-<form id="contact" x-init x-target method="put" action="/contacts/1" aria-label="Contact Information">
+<form id="contact" x-target method="put" action="/contacts/1" aria-label="Contact Information">
   <div>
     <label for="name">Name</label>
     <input id="name" name="name" value="Finn">
@@ -128,7 +128,7 @@ Finally, the `contact:updated` event causes the `<tbody>` to refresh with the up
   }
 
   function edit(contact) {
-    return `<form id="contact" x-init x-target @ajax:success="$dispatch('contact:updated')" method="put" action="/contacts/${contact.id}" aria-label="Contact Information">
+    return `<form id="contact" x-target @ajax:success="$dispatch('contact:updated')" method="put" action="/contacts/${contact.id}" aria-label="Contact Information">
     <div>
       <label for="name">Name</label>
       <input id="name" name="name" value="${contact.name}">

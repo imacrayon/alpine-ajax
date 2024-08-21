@@ -15,7 +15,7 @@ This example demonstrates how you can configure components to respond to events 
 
 <div x-sync id="server_events"></div>
 
-<form id="comment_form" x-init x-target method="post" action="/comments">
+<form id="comment_form" x-target method="post" action="/comments">
   <label for="comment_body">
   <textarea id="comment_body" name="comment_body"></textarea>
   <button>Submit</button>
@@ -35,7 +35,7 @@ Next, when our comment form is submitted the server will respond with a new serv
   <div x-init="$dispatch('comment:created')"></div>
 </div>
 
-<form id="comment_form" x-init x-target method="post" action="/comments">
+<form id="comment_form" x-target method="post" action="/comments">
   <label for="comment_body">
   <textarea id="comment_body" name="comment_body"></textarea>
   <button>Submit</button>
@@ -117,7 +117,7 @@ ${serverEvent()}
   }
   function create(event) {
     return `${serverEvent(event)}
-<form id="comment_form" x-init x-target method="post" action="/comments">
+<form id="comment_form" x-target method="post" action="/comments">
   <label for="comment_body">Comment</label>
   <textarea id="comment_body" name="comment_body" x-autofocus></textarea>
   <button>Submit</button>

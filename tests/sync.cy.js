@@ -1,7 +1,7 @@
 import { test, html } from './utils'
 
 test('[x-sync] creates a passive target',
-  html`<div id="sync" x-sync></div><a href="/tests" x-init x-target id="replace">Link</a>`,
+  html`<div id="sync" x-sync></div><a href="/tests" x-target id="replace">Link</a>`,
   ({ intercept, get, wait }) => {
     intercept('GET', '/tests', {
       statusCode: 200,
@@ -16,7 +16,7 @@ test('[x-sync] creates a passive target',
 )
 
 test('[x-sync] elements are not removed when they are missing from the response',
-  html`<div id="sync" x-sync>Keep me</div><a href="/tests" x-init x-target id="replace">Link</a>`,
+  html`<div id="sync" x-sync>Keep me</div><a href="/tests" x-target id="replace">Link</a>`,
   ({ intercept, get, wait }) => {
     intercept('GET', '/tests', {
       statusCode: 200,

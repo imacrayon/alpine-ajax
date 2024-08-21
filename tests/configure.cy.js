@@ -12,7 +12,7 @@ function configure(options) {
 }
 
 test('default merge strategy can be changed',
-  html`<form x-init x-target id="target" method="post"><button></button></form>`,
+  html`<form x-target id="target" method="post"><button></button></form>`,
   ({ intercept, get, wait }) => {
     intercept('POST', '/tests', {
       statusCode: 200,
@@ -31,7 +31,7 @@ test('default merge strategy can be changed',
 )
 
 test('default request headers can be set',
-  html`<form x-init x-target id="replace" method="post"><button></button></form>`,
+  html`<form x-target id="replace" method="post"><button></button></form>`,
   ({ intercept, get, wait }) => {
     intercept('POST', '/tests', {
       statusCode: 200,

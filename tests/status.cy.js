@@ -1,7 +1,7 @@
 import { test, html } from './utils'
 
 test('change target on 201 status',
-  html`<form x-init x-target x-target.201="success" id="replace" method="post"><div id="success"></div><button></button></form>`,
+  html`<form x-target x-target.201="success" id="replace" method="post"><div id="success"></div><button></button></form>`,
   ({ intercept, get, wait }) => {
     intercept('POST', '/tests', {
       statusCode: 201,
@@ -16,7 +16,7 @@ test('change target on 201 status',
 )
 
 test('change target on 2xx status',
-  html`<form x-init x-target x-target.2xx="success" id="replace" method="post"><div id="success"></div><button></button></form>`,
+  html`<form x-target x-target.2xx="success" id="replace" method="post"><div id="success"></div><button></button></form>`,
   ({ intercept, get, wait }) => {
     intercept('POST', '/tests', {
       statusCode: 201,
@@ -31,7 +31,7 @@ test('change target on 2xx status',
 )
 
 test('change target on 404 status',
-  html`<form x-init x-target x-target.404="error" id="replace" method="post"><div id="error"></div><button></button></form>`,
+  html`<form x-target x-target.404="error" id="replace" method="post"><div id="error"></div><button></button></form>`,
   ({ intercept, get, wait }) => {
     intercept('POST', '/tests', {
       statusCode: 404,
@@ -46,7 +46,7 @@ test('change target on 404 status',
 )
 
 test('change target on 4xx status',
-  html`<form x-init x-target x-target.4xx="error" id="replace" method="post"><div id="error"></div><button></button></form>`,
+  html`<form x-target x-target.4xx="error" id="replace" method="post"><div id="error"></div><button></button></form>`,
   ({ intercept, get, wait }) => {
     intercept('POST', '/tests', {
       statusCode: 422,
@@ -61,7 +61,7 @@ test('change target on 4xx status',
 )
 
 test('change target on 4xx or 201 status',
-  html`<form x-init x-target x-target.4xx.201="error" id="replace" method="post"><div id="error"></div><button></button></form>`,
+  html`<form x-target x-target.4xx.201="error" id="replace" method="post"><div id="error"></div><button></button></form>`,
   ({ intercept, get, wait }) => {
     intercept('POST', '/tests', {
       statusCode: 201,
@@ -76,7 +76,7 @@ test('change target on 4xx or 201 status',
 )
 
 test('change target on error status',
-  html`<form x-init x-target x-target.error="error" id="replace" method="post"><div id="error"></div><button></button></form>`,
+  html`<form x-target x-target.error="error" id="replace" method="post"><div id="error"></div><button></button></form>`,
   ({ intercept, get, wait }) => {
     intercept('POST', '/tests', {
       statusCode: 500,
@@ -91,7 +91,7 @@ test('change target on error status',
 )
 
 test('More specific status modifiers win over general modifiers',
-  html`<form x-init x-target x-target.404="not_found" x-target.4xx.error="error" id="replace" method="post"><button></button></form><div id="not_found"></div><div id="error"></div>`,
+  html`<form x-target x-target.404="not_found" x-target.4xx.error="error" id="replace" method="post"><button></button></form><div id="not_found"></div><div id="error"></div>`,
   ({ intercept, get, wait }) => {
     intercept('POST', '/tests', {
       statusCode: 404,
@@ -107,7 +107,7 @@ test('More specific status modifiers win over general modifiers',
 )
 
 test('redirect statuses are fuzzy matched',
-  html`<form x-init x-target x-target.301="redirect" id="replace" method="post"><div id="redirect"></div><button></button></form>`,
+  html`<form x-target x-target.301="redirect" id="replace" method="post"><div id="redirect"></div><button></button></form>`,
   ({ intercept, get, wait }) => {
     intercept('POST', '/tests', {
       statusCode: 302,
@@ -122,7 +122,7 @@ test('redirect statuses are fuzzy matched',
 )
 
 test('follows redirects by default',
-  html`<form x-init x-target id="replace" method="post"><button></button></form>`,
+  html`<form x-target id="replace" method="post"><button></button></form>`,
   ({ intercept, get, wait }) => {
     intercept('POST', '/tests', (request) => {
       request.redirect('/redirect', 302)
@@ -140,7 +140,7 @@ test('follows redirects by default',
 )
 
 test('targeting `_self` will reload the page',
-  html`<form x-init x-target x-target.302="_self" id="replace" method="post"><button></button></form>`,
+  html`<form x-target x-target.302="_self" id="replace" method="post"><button></button></form>`,
   ({ intercept, get, wait }) => {
     intercept('POST', '/tests', (request) => {
       request.redirect('/redirect', 302)
@@ -158,7 +158,7 @@ test('targeting `_self` will reload the page',
 )
 
 test('targeting `_self` will not reload the page when redirected back to the same URL',
-  html`<form x-init x-target x-target.302="_self" id="replace" method="post"><button></button></form>`,
+  html`<form x-target x-target.302="_self" id="replace" method="post"><button></button></form>`,
   ({ intercept, get, wait }) => {
     intercept('POST', '/tests', (request) => {
       request.redirect('/tests', 302)
@@ -176,7 +176,7 @@ test('targeting `_self` will not reload the page when redirected back to the sam
 )
 
 test('targeting `_top` will reload the page',
-  html`<form x-init x-target x-target.302="_top" id="replace" method="post"><button></button></form>`,
+  html`<form x-target x-target.302="_top" id="replace" method="post"><button></button></form>`,
   ({ intercept, get, wait }) => {
     intercept('POST', '/tests', (request) => {
       request.redirect('/redirect', 302)
@@ -194,7 +194,7 @@ test('targeting `_top` will reload the page',
 )
 
 test('targeting `_top` will reload the page when redirected back to the same URL',
-  html`<form x-init x-target x-target.302="_top" id="replace" method="post"><button></button></form>`,
+  html`<form x-target x-target.302="_top" id="replace" method="post"><button></button></form>`,
   ({ intercept, get, wait }) => {
     intercept('POST', '/tests', (request) => {
       request.redirect('/tests', 302)

@@ -27,7 +27,7 @@ accomplished by putting an AJAX form below a table, with associated checkboxes i
     ...
   </tbody>
 </table>
-<form x-init x-target="contacts" id="contacts_form" method="put" action="/contacts">
+<form x-target="contacts" id="contacts_form" method="put" action="/contacts">
   <button name="status" value="Active">Activate</button>
   <button name="status" value="Inactive">Deactivate</button>
 </form>
@@ -82,7 +82,7 @@ updated rows.
     ${rows}
   </tbody>
 </table>
-<form x-init x-target="contacts" id="contacts_form" method="put" action="/contacts">
+<form x-target="contacts" id="contacts_form" method="put" action="/contacts">
   <button name="status" value="Active">Activate</button>
   <button name="status" value="Inactive">Deactivate</button>
 </form>`

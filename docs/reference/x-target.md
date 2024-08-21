@@ -15,7 +15,7 @@ Take a look at the following comment list markup, notice the `x-target="comments
 <ul id="comments">
   <li>Comment #1</li>
 </ul>
-<form x-init x-target="comments" method="post" action="/comment">
+<form x-target="comments" method="post" action="/comment">
   <input aria-label="Comment text" name="text" required />
   <button>Submit</button>
 </form>
@@ -34,7 +34,7 @@ In this comment list example note that the `x-target` attribute on the `<form>` 
 <ul id="comments">
   <li>Comment #1</li>
 </ul>
-<form x-init x-target="comments comments_count" method="post" action="/comment">
+<form x-target="comments comments_count" method="post" action="/comment">
   <input name="comment" required />
   <button>Submit</button>
 </form>
@@ -64,7 +64,7 @@ Consider this contrived form for publishing a new blog post:
   <div id="not_found"></div>
   <div id="other_error"></div>
   <div id="critical_error"></div>
-  <form x-init
+  <form
         x-target.5xx="critical_error"
         x-target.404="not_found publish_form"
         x-target.error="other_error"
@@ -94,7 +94,7 @@ There's a lot of status modifiers in this markup so let's break it all down; whe
 In cases when a form or link targets itself, you may leave the value of `x-target` blank, however the form or link must still have an `id`:
 
 ```html
-<form x-init x-target id="star_repo" method="post" action="/repos/1/star">
+<form x-target id="star_repo" method="post" action="/repos/1/star">
   <button>Star Repository</button>
 </form>
 ```
@@ -107,7 +107,7 @@ Sometimes simple target literals (i.e. comment_1) are not sufficient. In these c
 <template x-for="comment in comments" :key="comment.id">
   <li :id="'comment_'+comment.id">
     <div>{{ comment.body }}</div>
-    <form x-init x-target:dynamic="'comment_'+comment.id" :action="'/comments/'+comment.id" method="post">
+    <form x-target:dynamic="'comment_'+comment.id" :action="'/comments/'+comment.id" method="post">
       <button>Edit</button>
     </form>
   </li>
@@ -127,7 +127,7 @@ Use the `x-target.push` modifier to push a new history entry onto the browser's 
 In cases where you have a form with multiple submit buttons, you may not always want all submit buttons to trigger an AJAX request. Add the `formnoajax` attribute to a submit element to instruct the form to make a standard full-page request instead of an AJAX request.
 
 ```html
-<form id="checkout" x-init x-target method="post" action="/checkout">
+<form id="checkout" x-target method="post" action="/checkout">
   <button name="procedure" value="increment">Increment quantity</button>
   <button name="procedure" value="decrement">Decrement quantity</button>
   <button formnoajax name="procedure" value="purchase">Complete checkout</button>
