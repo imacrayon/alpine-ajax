@@ -369,7 +369,11 @@ async function request(el, targets, action, referrer, headers, method = 'GET', b
   PendingRequests.delete(action)
 
   if (response.ok) {
-    response.redirected && dispatch(el, 'ajax:redirect', response)
+    if (response.redirected) {
+      dispatch(el, 'ajax:redirect', response)
+      PendingRequests.set(response.url, pending)
+      setTimeout(() => { PendingRequests.delete(response.url) }, 10)
+    }
     dispatch(el, 'ajax:success', response)
   } else {
     dispatch(el, 'ajax:error', response)
