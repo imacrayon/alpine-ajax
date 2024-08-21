@@ -11,6 +11,9 @@ let doMorph = (from, to) => {
 function Ajax(Alpine) {
   if (Alpine.morph) doMorph = Alpine.morph
 
+  Alpine.addInitSelector(() => `[${Alpine.prefixed('target')}]`)
+  Alpine.addInitSelector(() => `[${Alpine.prefixed('target\\.push')}]`)
+  Alpine.addInitSelector(() => `[${Alpine.prefixed('target\\.replace')}]`)
   Alpine.directive('target', (el, { value, modifiers, expression }, { evaluateLater, effect }) => {
     let setTargets = (ids) => {
       let statues = modifiers.filter((modifier) => modifier === 'error' || parseInt(modifier))
