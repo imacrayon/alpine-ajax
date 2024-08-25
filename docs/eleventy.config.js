@@ -74,7 +74,7 @@ module.exports = function (eleventyConfig) {
   eleventyConfig.setLibrary('md', markdownLibrary)
 
   eleventyConfig.setServerOptions({
-    watch: ['_sites/**/*.js'],
+    watch: ['_site/**/*.js'],
   })
 
   return {

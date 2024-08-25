@@ -7,6 +7,9 @@ eleventyNavigation:
   order: 1
 ---
 
+{% css %}{% include "css/lite-yt-embed.css" %}{% endcss %}
+{% js %}{% include "js/lite-yt-embed.js" %}{% endjs %}
+
 <h1>Reference</h1>
 
 {% for entry in collections.reference | sort('data.eleventyNavigation.order') %}
