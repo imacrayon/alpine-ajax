@@ -28,13 +28,108 @@
   </style>
   
   
-  <style>/*
-! tailwindcss v3.4.10 | MIT License | https://tailwindcss.com
-*//*
+  <style>lite-youtube {
+  background-color: #000;
+  position: relative;
+  display: block;
+  contain: content;
+  background-position: center center;
+  background-size: cover;
+  cursor: pointer;
+  max-width: 720px;
+}
+
+/* gradient */
+lite-youtube::before {
+  content: attr(data-title);
+  display: block;
+  position: absolute;
+  top: 0;
+  /* Pixel-perfect port of YT's gradient PNG, using https://github.com/bluesmoon/pngtocss plus optimizations */
+  background-image: linear-gradient(180deg, rgb(0 0 0 / 67%) 0%, rgb(0 0 0 / 54%) 14%, rgb(0 0 0 / 15%) 54%, rgb(0 0 0 / 5%) 72%, rgb(0 0 0 / 0%) 94%);
+  height: 99px;
+  width: 100%;
+  font-family: "YouTube Noto", Roboto, Arial, Helvetica, sans-serif;
+  color: hsl(0deg 0% 93.33%);
+  text-shadow: 0 0 2px rgba(0, 0, 0, .5);
+  font-size: 18px;
+  padding: 25px 20px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  box-sizing: border-box;
+}
+
+lite-youtube:hover::before {
+  color: white;
+}
+
+/* responsive iframe with a 16:9 aspect ratio
+  thanks https://css-tricks.com/responsive-iframes/
+*/
+lite-youtube::after {
+  content: "";
+  display: block;
+  padding-bottom: calc(100% / (16 / 9));
+}
+
+lite-youtube>iframe {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  border: 0;
+}
+
+/* play button */
+lite-youtube>.lty-playbtn {
+  display: block;
+  /* Make the button element cover the whole area for a large hover/click target… */
+  width: 100%;
+  height: 100%;
+  /* …but visually it's still the same size */
+  background: no-repeat center/68px 48px;
+  /* YT's actual play button svg */
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 68 48"><path d="M66.52 7.74c-.78-2.93-2.49-5.41-5.42-6.19C55.79.13 34 0 34 0S12.21.13 6.9 1.55c-2.93.78-4.63 3.26-5.42 6.19C.06 13.05 0 24 0 24s.06 10.95 1.48 16.26c.78 2.93 2.49 5.41 5.42 6.19C12.21 47.87 34 48 34 48s21.79-.13 27.1-1.55c2.93-.78 4.64-3.26 5.42-6.19C67.94 34.95 68 24 68 24s-.06-10.95-1.48-16.26z" fill="red"/><path d="M45 24 27 14v20" fill="white"/></svg>');
+  position: absolute;
+  cursor: pointer;
+  z-index: 1;
+  filter: grayscale(100%);
+  transition: filter .1s cubic-bezier(0, 0, 0.2, 1);
+  border: 0;
+}
+
+lite-youtube:hover>.lty-playbtn,
+lite-youtube .lty-playbtn:focus {
+  filter: none;
+}
+
+/* Post-click styles */
+lite-youtube.lyt-activated {
+  cursor: unset;
+}
+
+lite-youtube.lyt-activated::before,
+lite-youtube.lyt-activated>.lty-playbtn {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.lyt-visually-hidden {
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+/* ! tailwindcss v3.4.10 | MIT License | https://tailwindcss.com */
+/*
 1. Prevent padding and border from affecting element width. (https://github.com/mozdevs/cssremedy/issues/4)
 2. Allow adding a border to an element by just adding a border-width. (https://github.com/tailwindcss/tailwindcss/pull/116)
 */
-
 *,
 ::before,
 ::after {
@@ -43,12 +138,10 @@
   border-style: solid; /* 2 */
   border-color: #e2e8f0; /* 2 */
 }
-
 ::before,
 ::after {
   --tw-content: '';
 }
-
 /*
 1. Use a consistent sensible line-height in all browsers.
 2. Prevent adjustments of font size after orientation changes in iOS.
@@ -58,7 +151,6 @@
 6. Use the user's configured `sans` font-variation-settings by default.
 7. Disable tap highlights on iOS
 */
-
 html,
 :host {
   line-height: 1.5; /* 1 */
@@ -71,42 +163,34 @@ html,
   font-variation-settings: normal; /* 6 */
   -webkit-tap-highlight-color: transparent; /* 7 */
 }
-
 /*
 1. Remove the margin in all browsers.
 2. Inherit line-height from `html` so users can set them as a class directly on the `html` element.
 */
-
 body {
   margin: 0; /* 1 */
   line-height: inherit; /* 2 */
 }
-
 /*
 1. Add the correct height in Firefox.
 2. Correct the inheritance of border color in Firefox. (https://bugzilla.mozilla.org/show_bug.cgi?id=190655)
 3. Ensure horizontal rules are visible by default.
 */
-
 hr {
   height: 0; /* 1 */
   color: inherit; /* 2 */
   border-top-width: 1px; /* 3 */
 }
-
 /*
 Add the correct text decoration in Chrome, Edge, and Safari.
 */
-
 abbr:where([title]) {
   -webkit-text-decoration: underline dotted;
           text-decoration: underline dotted;
 }
-
 /*
 Remove the default font size and weight for headings.
 */
-
 h1,
 h2,
 h3,
@@ -116,32 +200,26 @@ h6 {
   font-size: inherit;
   font-weight: inherit;
 }
-
 /*
 Reset links to optimize for opt-in styling instead of opt-out.
 */
-
 a {
   color: inherit;
   text-decoration: inherit;
 }
-
 /*
 Add the correct font weight in Edge and Safari.
 */
-
 b,
 strong {
   font-weight: bolder;
 }
-
 /*
 1. Use the user's configured `mono` font-family by default.
 2. Use the user's configured `mono` font-feature-settings by default.
 3. Use the user's configured `mono` font-variation-settings by default.
 4. Correct the odd `em` font sizing in all browsers.
 */
-
 code,
 kbd,
 samp,
@@ -151,19 +229,15 @@ pre {
   font-variation-settings: normal; /* 3 */
   font-size: 1em; /* 4 */
 }
-
 /*
 Add the correct font size in all browsers.
 */
-
 small {
   font-size: 80%;
 }
-
 /*
 Prevent `sub` and `sup` elements from affecting the line height in all browsers.
 */
-
 sub,
 sup {
   font-size: 75%;
@@ -171,33 +245,27 @@ sup {
   position: relative;
   vertical-align: baseline;
 }
-
 sub {
   bottom: -0.25em;
 }
-
 sup {
   top: -0.5em;
 }
-
 /*
 1. Remove text indentation from table contents in Chrome and Safari. (https://bugs.chromium.org/p/chromium/issues/detail?id=999088, https://bugs.webkit.org/show_bug.cgi?id=201297)
 2. Correct table border color inheritance in all Chrome and Safari. (https://bugs.chromium.org/p/chromium/issues/detail?id=935729, https://bugs.webkit.org/show_bug.cgi?id=195016)
 3. Remove gaps between table borders by default.
 */
-
 table {
   text-indent: 0; /* 1 */
   border-color: inherit; /* 2 */
   border-collapse: collapse; /* 3 */
 }
-
 /*
 1. Change the font styles in all browsers.
 2. Remove the margin in Firefox and Safari.
 3. Remove default padding in all browsers.
 */
-
 button,
 input,
 optgroup,
@@ -214,21 +282,17 @@ textarea {
   margin: 0; /* 2 */
   padding: 0; /* 3 */
 }
-
 /*
 Remove the inheritance of text transform in Edge and Firefox.
 */
-
 button,
 select {
   text-transform: none;
 }
-
 /*
 1. Correct the inability to style clickable types in iOS and Safari.
 2. Remove default button styles.
 */
-
 button,
 input:where([type='button']),
 input:where([type='reset']),
@@ -237,80 +301,62 @@ input:where([type='submit']) {
   background-color: transparent; /* 2 */
   background-image: none; /* 2 */
 }
-
 /*
 Use the modern Firefox focus style for all focusable elements.
 */
-
 :-moz-focusring {
   outline: auto;
 }
-
 /*
 Remove the additional `:invalid` styles in Firefox. (https://github.com/mozilla/gecko-dev/blob/2f9eacd9d3d995c937b4251a5557d95d494c9be1/layout/style/res/forms.css#L728-L737)
 */
-
 :-moz-ui-invalid {
   box-shadow: none;
 }
-
 /*
 Add the correct vertical alignment in Chrome and Firefox.
 */
-
 progress {
   vertical-align: baseline;
 }
-
 /*
 Correct the cursor style of increment and decrement buttons in Safari.
 */
-
 ::-webkit-inner-spin-button,
 ::-webkit-outer-spin-button {
   height: auto;
 }
-
 /*
 1. Correct the odd appearance in Chrome and Safari.
 2. Correct the outline style in Safari.
 */
-
 [type='search'] {
   -webkit-appearance: textfield; /* 1 */
   outline-offset: -2px; /* 2 */
 }
-
 /*
 Remove the inner padding in Chrome and Safari on macOS.
 */
-
 ::-webkit-search-decoration {
   -webkit-appearance: none;
 }
-
 /*
 1. Correct the inability to style clickable types in iOS and Safari.
 2. Change font properties to `inherit` in Safari.
 */
-
 ::-webkit-file-upload-button {
   -webkit-appearance: button; /* 1 */
   font: inherit; /* 2 */
 }
-
 /*
 Add the correct display in Chrome and Safari.
 */
-
 summary {
   display: list-item;
 }
-
 /*
 Removes the default spacing and border for appropriate elements.
 */
-
 blockquote,
 dl,
 dd,
@@ -326,16 +372,13 @@ p,
 pre {
   margin: 0;
 }
-
 fieldset {
   margin: 0;
   padding: 0;
 }
-
 legend {
   padding: 0;
 }
-
 ol,
 ul,
 menu {
@@ -343,60 +386,49 @@ menu {
   margin: 0;
   padding: 0;
 }
-
 /*
 Reset default styling for dialogs.
 */
 dialog {
   padding: 0;
 }
-
 /*
 Prevent resizing textareas horizontally by default.
 */
-
 textarea {
   resize: vertical;
 }
-
 /*
 1. Reset the default placeholder opacity in Firefox. (https://github.com/tailwindlabs/tailwindcss/issues/3300)
 2. Set the default placeholder color to the user's configured gray 400 color.
 */
-
 input::-moz-placeholder, textarea::-moz-placeholder {
   opacity: 1; /* 1 */
   color: #94a3b8; /* 2 */
 }
-
 input::placeholder,
 textarea::placeholder {
   opacity: 1; /* 1 */
   color: #94a3b8; /* 2 */
 }
-
 /*
 Set the default cursor for buttons.
 */
-
 button,
 [role="button"] {
   cursor: pointer;
 }
-
 /*
 Make sure disabled buttons don't get the pointer cursor.
 */
 :disabled {
   cursor: default;
 }
-
 /*
 1. Make replaced elements `display: block` by default. (https://github.com/mozdevs/cssremedy/issues/14)
 2. Add `vertical-align: middle` to align replaced elements more sensibly by default. (https://github.com/jensimmons/cssremedy/issues/14#issuecomment-634934210)
    This can trigger a poorly considered lint error in some tools but is included by design.
 */
-
 img,
 svg,
 video,
@@ -408,22 +440,18 @@ object {
   display: block; /* 1 */
   vertical-align: middle; /* 2 */
 }
-
 /*
 Constrain images and videos to the parent width and preserve their intrinsic aspect ratio. (https://github.com/mozdevs/cssremedy/issues/14)
 */
-
 img,
 video {
   max-width: 100%;
   height: auto;
 }
-
 /* Make elements with the HTML hidden attribute stay hidden by default */
 [hidden] {
   display: none;
 }
-
 [type='text'],input:where(:not([type])),[type='email'],[type='url'],[type='password'],[type='number'],[type='date'],[type='datetime-local'],[type='month'],[type='search'],[type='tel'],[type='time'],[type='week'],[multiple],textarea,select {
   -webkit-appearance: none;
      -moz-appearance: none;
@@ -440,7 +468,6 @@ video {
   line-height: 1.5rem;
   --tw-shadow: 0 0 #0000;
 }
-
 [type='text']:focus, input:where(:not([type])):focus, [type='email']:focus, [type='url']:focus, [type='password']:focus, [type='number']:focus, [type='date']:focus, [type='datetime-local']:focus, [type='month']:focus, [type='search']:focus, [type='tel']:focus, [type='time']:focus, [type='week']:focus, [multiple]:focus, textarea:focus, select:focus {
   outline: 2px solid transparent;
   outline-offset: 2px;
@@ -453,35 +480,28 @@ video {
   box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
   border-color: #1E66D8;
 }
-
 input::-moz-placeholder, textarea::-moz-placeholder {
   color: #64748b;
   opacity: 1;
 }
-
 input::placeholder,textarea::placeholder {
   color: #64748b;
   opacity: 1;
 }
-
 ::-webkit-datetime-edit-fields-wrapper {
   padding: 0;
 }
-
 ::-webkit-date-and-time-value {
   min-height: 1.5em;
   text-align: inherit;
 }
-
 ::-webkit-datetime-edit {
   display: inline-flex;
 }
-
 ::-webkit-datetime-edit,::-webkit-datetime-edit-year-field,::-webkit-datetime-edit-month-field,::-webkit-datetime-edit-day-field,::-webkit-datetime-edit-hour-field,::-webkit-datetime-edit-minute-field,::-webkit-datetime-edit-second-field,::-webkit-datetime-edit-millisecond-field,::-webkit-datetime-edit-meridiem-field {
   padding-top: 0;
   padding-bottom: 0;
 }
-
 select {
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2364748b' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
   background-position: right 0.5rem center;
@@ -491,7 +511,6 @@ select {
   -webkit-print-color-adjust: exact;
           print-color-adjust: exact;
 }
-
 [multiple],[size]:where(select:not([size="1"])) {
   background-image: initial;
   background-position: initial;
@@ -501,7 +520,6 @@ select {
   -webkit-print-color-adjust: unset;
           print-color-adjust: unset;
 }
-
 [type='checkbox'],[type='radio'] {
   -webkit-appearance: none;
      -moz-appearance: none;
@@ -524,15 +542,12 @@ select {
   border-width: 1px;
   --tw-shadow: 0 0 #0000;
 }
-
 [type='checkbox'] {
   border-radius: 0px;
 }
-
 [type='radio'] {
   border-radius: 100%;
 }
-
 [type='checkbox']:focus,[type='radio']:focus {
   outline: 2px solid transparent;
   outline-offset: 2px;
@@ -544,7 +559,6 @@ select {
   --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);
   box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
 }
-
 [type='checkbox']:checked,[type='radio']:checked {
   border-color: transparent;
   background-color: currentColor;
@@ -552,38 +566,30 @@ select {
   background-position: center;
   background-repeat: no-repeat;
 }
-
 [type='checkbox']:checked {
   background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3e%3c/svg%3e");
 }
-
 @media (forced-colors: active)  {
-
   [type='checkbox']:checked {
     -webkit-appearance: auto;
        -moz-appearance: auto;
             appearance: auto;
   }
 }
-
 [type='radio']:checked {
   background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3ccircle cx='8' cy='8' r='3'/%3e%3c/svg%3e");
 }
-
 @media (forced-colors: active)  {
-
   [type='radio']:checked {
     -webkit-appearance: auto;
        -moz-appearance: auto;
             appearance: auto;
   }
 }
-
 [type='checkbox']:checked:hover,[type='checkbox']:checked:focus,[type='radio']:checked:hover,[type='radio']:checked:focus {
   border-color: transparent;
   background-color: currentColor;
 }
-
 [type='checkbox']:indeterminate {
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 16 16'%3e%3cpath stroke='white' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M4 8h8'/%3e%3c/svg%3e");
   border-color: transparent;
@@ -592,21 +598,17 @@ select {
   background-position: center;
   background-repeat: no-repeat;
 }
-
 @media (forced-colors: active)  {
-
   [type='checkbox']:indeterminate {
     -webkit-appearance: auto;
        -moz-appearance: auto;
             appearance: auto;
   }
 }
-
 [type='checkbox']:indeterminate:hover,[type='checkbox']:indeterminate:focus {
   border-color: transparent;
   background-color: currentColor;
 }
-
 [type='file'] {
   background: unset;
   border-color: inherit;
@@ -616,12 +618,10 @@ select {
   font-size: unset;
   line-height: inherit;
 }
-
 [type='file']:focus {
   outline: 1px solid ButtonText;
   outline: 1px auto -webkit-focus-ring-color;
 }
-
 *, ::before, ::after {
   --tw-border-spacing-x: 0;
   --tw-border-spacing-y: 0;
@@ -675,7 +675,6 @@ select {
   --tw-contain-paint:  ;
   --tw-contain-style:  ;
 }
-
 ::backdrop {
   --tw-border-spacing-x: 0;
   --tw-border-spacing-y: 0;
@@ -1917,77 +1916,64 @@ pre[class*="language-"] {
 }
 
 @media (min-width: 768px) {
-
   .md\:prose-xl {
     font-size: 1.25rem;
     line-height: 1.8;
   }
-
   .md\:prose-xl :where(p):not(:where([class~="not-prose"],[class~="not-prose"] *)) {
     margin-top: 1.2em;
     margin-bottom: 1.2em;
   }
-
   .md\:prose-xl :where([class~="lead"]):not(:where([class~="not-prose"],[class~="not-prose"] *)) {
     font-size: 1.2em;
     line-height: 1.5;
     margin-top: 1em;
     margin-bottom: 1em;
   }
-
   .md\:prose-xl :where(blockquote):not(:where([class~="not-prose"],[class~="not-prose"] *)) {
     margin-top: 1.6em;
     margin-bottom: 1.6em;
     padding-inline-start: 1.0666667em;
   }
-
   .md\:prose-xl :where(h1):not(:where([class~="not-prose"],[class~="not-prose"] *)) {
     font-size: 2.8em;
     margin-top: 0;
     margin-bottom: 0.8571429em;
     line-height: 1;
   }
-
   .md\:prose-xl :where(h2):not(:where([class~="not-prose"],[class~="not-prose"] *)) {
     font-size: 1.8em;
     margin-top: 1.5555556em;
     margin-bottom: 0.8888889em;
     line-height: 1.1111111;
   }
-
   .md\:prose-xl :where(h3):not(:where([class~="not-prose"],[class~="not-prose"] *)) {
     font-size: 1.5em;
     margin-top: 1.6em;
     margin-bottom: 0.6666667em;
     line-height: 1.3333333;
   }
-
   .md\:prose-xl :where(h4):not(:where([class~="not-prose"],[class~="not-prose"] *)) {
     margin-top: 1.8em;
     margin-bottom: 0.6em;
     line-height: 1.6;
   }
-
   .md\:prose-xl :where(img):not(:where([class~="not-prose"],[class~="not-prose"] *)) {
     margin-top: 2em;
     margin-bottom: 2em;
   }
-
   .md\:prose-xl :where(picture):not(:where([class~="not-prose"],[class~="not-prose"] *)) {
     margin-top: 2em;
     margin-bottom: 2em;
   }
-
   .md\:prose-xl :where(picture > img):not(:where([class~="not-prose"],[class~="not-prose"] *)) {
     margin-top: 0;
     margin-bottom: 0;
   }
-
   .md\:prose-xl :where(video):not(:where([class~="not-prose"],[class~="not-prose"] *)) {
     margin-top: 2em;
     margin-bottom: 2em;
   }
-
   .md\:prose-xl :where(kbd):not(:where([class~="not-prose"],[class~="not-prose"] *)) {
     font-size: 0.9em;
     border-radius: 0.3125rem;
@@ -1996,19 +1982,15 @@ pre[class*="language-"] {
     padding-bottom: 0.25em;
     padding-inline-start: 0.4em;
   }
-
   .md\:prose-xl :where(code):not(:where([class~="not-prose"],[class~="not-prose"] *)) {
     font-size: 0.9em;
   }
-
   .md\:prose-xl :where(h2 code):not(:where([class~="not-prose"],[class~="not-prose"] *)) {
     font-size: 0.8611111em;
   }
-
   .md\:prose-xl :where(h3 code):not(:where([class~="not-prose"],[class~="not-prose"] *)) {
     font-size: 0.9em;
   }
-
   .md\:prose-xl :where(pre):not(:where([class~="not-prose"],[class~="not-prose"] *)) {
     font-size: 0.9em;
     line-height: 1.7777778;
@@ -2020,147 +2002,116 @@ pre[class*="language-"] {
     padding-bottom: 1.1111111em;
     padding-inline-start: 1.3333333em;
   }
-
   .md\:prose-xl :where(ol):not(:where([class~="not-prose"],[class~="not-prose"] *)) {
     margin-top: 1.2em;
     margin-bottom: 1.2em;
     padding-inline-start: 1.6em;
   }
-
   .md\:prose-xl :where(ul):not(:where([class~="not-prose"],[class~="not-prose"] *)) {
     margin-top: 1.2em;
     margin-bottom: 1.2em;
     padding-inline-start: 1.6em;
   }
-
   .md\:prose-xl :where(li):not(:where([class~="not-prose"],[class~="not-prose"] *)) {
     margin-top: 0.6em;
     margin-bottom: 0.6em;
   }
-
   .md\:prose-xl :where(ol > li):not(:where([class~="not-prose"],[class~="not-prose"] *)) {
     padding-inline-start: 0.4em;
   }
-
   .md\:prose-xl :where(ul > li):not(:where([class~="not-prose"],[class~="not-prose"] *)) {
     padding-inline-start: 0.4em;
   }
-
   .md\:prose-xl :where(.md\:prose-xl > ul > li p):not(:where([class~="not-prose"],[class~="not-prose"] *)) {
     margin-top: 0.8em;
     margin-bottom: 0.8em;
   }
-
   .md\:prose-xl :where(.md\:prose-xl > ul > li > p:first-child):not(:where([class~="not-prose"],[class~="not-prose"] *)) {
     margin-top: 1.2em;
   }
-
   .md\:prose-xl :where(.md\:prose-xl > ul > li > p:last-child):not(:where([class~="not-prose"],[class~="not-prose"] *)) {
     margin-bottom: 1.2em;
   }
-
   .md\:prose-xl :where(.md\:prose-xl > ol > li > p:first-child):not(:where([class~="not-prose"],[class~="not-prose"] *)) {
     margin-top: 1.2em;
   }
-
   .md\:prose-xl :where(.md\:prose-xl > ol > li > p:last-child):not(:where([class~="not-prose"],[class~="not-prose"] *)) {
     margin-bottom: 1.2em;
   }
-
   .md\:prose-xl :where(ul ul, ul ol, ol ul, ol ol):not(:where([class~="not-prose"],[class~="not-prose"] *)) {
     margin-top: 0.8em;
     margin-bottom: 0.8em;
   }
-
   .md\:prose-xl :where(dl):not(:where([class~="not-prose"],[class~="not-prose"] *)) {
     margin-top: 1.2em;
     margin-bottom: 1.2em;
   }
-
   .md\:prose-xl :where(dt):not(:where([class~="not-prose"],[class~="not-prose"] *)) {
     margin-top: 1.2em;
   }
-
   .md\:prose-xl :where(dd):not(:where([class~="not-prose"],[class~="not-prose"] *)) {
     margin-top: 0.6em;
     padding-inline-start: 1.6em;
   }
-
   .md\:prose-xl :where(hr):not(:where([class~="not-prose"],[class~="not-prose"] *)) {
     margin-top: 2.8em;
     margin-bottom: 2.8em;
   }
-
   .md\:prose-xl :where(hr + *):not(:where([class~="not-prose"],[class~="not-prose"] *)) {
     margin-top: 0;
   }
-
   .md\:prose-xl :where(h2 + *):not(:where([class~="not-prose"],[class~="not-prose"] *)) {
     margin-top: 0;
   }
-
   .md\:prose-xl :where(h3 + *):not(:where([class~="not-prose"],[class~="not-prose"] *)) {
     margin-top: 0;
   }
-
   .md\:prose-xl :where(h4 + *):not(:where([class~="not-prose"],[class~="not-prose"] *)) {
     margin-top: 0;
   }
-
   .md\:prose-xl :where(table):not(:where([class~="not-prose"],[class~="not-prose"] *)) {
     font-size: 0.9em;
     line-height: 1.5555556;
   }
-
   .md\:prose-xl :where(thead th):not(:where([class~="not-prose"],[class~="not-prose"] *)) {
     padding-inline-end: 0.6666667em;
     padding-bottom: 0.8888889em;
     padding-inline-start: 0.6666667em;
   }
-
   .md\:prose-xl :where(thead th:first-child):not(:where([class~="not-prose"],[class~="not-prose"] *)) {
     padding-inline-start: 0;
   }
-
   .md\:prose-xl :where(thead th:last-child):not(:where([class~="not-prose"],[class~="not-prose"] *)) {
     padding-inline-end: 0;
   }
-
   .md\:prose-xl :where(tbody td, tfoot td):not(:where([class~="not-prose"],[class~="not-prose"] *)) {
     padding-top: 0.8888889em;
     padding-inline-end: 0.6666667em;
     padding-bottom: 0.8888889em;
     padding-inline-start: 0.6666667em;
   }
-
   .md\:prose-xl :where(tbody td:first-child, tfoot td:first-child):not(:where([class~="not-prose"],[class~="not-prose"] *)) {
     padding-inline-start: 0;
   }
-
   .md\:prose-xl :where(tbody td:last-child, tfoot td:last-child):not(:where([class~="not-prose"],[class~="not-prose"] *)) {
     padding-inline-end: 0;
   }
-
   .md\:prose-xl :where(figure):not(:where([class~="not-prose"],[class~="not-prose"] *)) {
     margin-top: 2em;
     margin-bottom: 2em;
   }
-
   .md\:prose-xl :where(figure > *):not(:where([class~="not-prose"],[class~="not-prose"] *)) {
     margin-top: 0;
     margin-bottom: 0;
   }
-
   .md\:prose-xl :where(figcaption):not(:where([class~="not-prose"],[class~="not-prose"] *)) {
     font-size: 0.9em;
     line-height: 1.5555556;
     margin-top: 1em;
   }
-
   .md\:prose-xl :where(.md\:prose-xl > :first-child):not(:where([class~="not-prose"],[class~="not-prose"] *)) {
     margin-top: 0;
   }
-
   .md\:prose-xl :where(.md\:prose-xl > :last-child):not(:where([class~="not-prose"],[class~="not-prose"] *)) {
     margin-bottom: 0;
   }
@@ -2340,42 +2291,33 @@ pre[class*="language-"] {
 }
 
 @media (min-width: 640px) {
-
   .sm\:flex {
     display: flex;
   }
-
   .sm\:h-full {
     height: 100%;
   }
-
   .sm\:justify-center {
     justify-content: center;
   }
-
   .sm\:overflow-scroll {
     overflow: scroll;
   }
-
   .sm\:border-l {
     border-left-width: 1px;
   }
-
   .sm\:px-12 {
     padding-left: 3rem;
     padding-right: 3rem;
   }
-
   .sm\:text-4xl {
     font-size: 2.25rem;
     line-height: 2.5rem;
   }
-
   .sm\:text-5xl {
     font-size: 3rem;
     line-height: 1;
   }
-
   .sm\:text-base {
     font-size: 1rem;
     line-height: 1.5rem;
@@ -2383,11 +2325,9 @@ pre[class*="language-"] {
 }
 
 @media (min-width: 768px) {
-
   .md\:overflow-visible {
     overflow: visible;
   }
-
   .md\:px-6 {
     padding-left: 1.5rem;
     padding-right: 1.5rem;
@@ -2395,7 +2335,6 @@ pre[class*="language-"] {
 }
 
 @media (min-width: 1024px) {
-
   .lg\:sr-only {
     position: absolute;
     width: 1px;
@@ -2407,135 +2346,103 @@ pre[class*="language-"] {
     white-space: nowrap;
     border-width: 0;
   }
-
   .lg\:relative {
     position: relative;
   }
-
   .lg\:top-8 {
     top: 2rem;
   }
-
   .lg\:col-span-2 {
     grid-column: span 2 / span 2;
   }
-
   .lg\:col-start-3 {
     grid-column-start: 3;
   }
-
   .lg\:col-end-5 {
     grid-column-end: 5;
   }
-
   .lg\:row-start-1 {
     grid-row-start: 1;
   }
-
   .lg\:row-start-2 {
     grid-row-start: 2;
   }
-
   .lg\:row-end-3 {
     grid-row-end: 3;
   }
-
   .lg\:mx-0 {
     margin-left: 0px;
     margin-right: 0px;
   }
-
   .lg\:block {
     display: block;
   }
-
   .lg\:flex {
     display: flex;
   }
-
   .lg\:hidden {
     display: none;
   }
-
   .lg\:min-h-screen {
     min-height: 100vh;
   }
-
   .lg\:w-full {
     width: 100%;
   }
-
   .lg\:min-w-0 {
     min-width: 0px;
   }
-
   .lg\:max-w-5xl {
     max-width: 64rem;
   }
-
   .lg\:flex-1 {
     flex: 1 1 0%;
   }
-
   .lg\:shrink-0 {
     flex-shrink: 0;
   }
-
   .lg\:grid-cols-2 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-
   .lg\:grid-cols-4 {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
-
   .lg\:flex-row-reverse {
     flex-direction: row-reverse;
   }
-
   .lg\:items-center {
     align-items: center;
   }
-
   .lg\:gap-6 {
     gap: 1.5rem;
   }
-
   .lg\:gap-\[2\%\] {
     gap: 2%;
   }
-
   .lg\:gap-x-12 {
     -moz-column-gap: 3rem;
          column-gap: 3rem;
   }
-
   .lg\:overflow-hidden {
     overflow: hidden;
   }
-
   .lg\:bg-transparent {
     background-color: transparent;
   }
-
   .lg\:px-0 {
     padding-left: 0px;
     padding-right: 0px;
   }
-
   .lg\:py-0 {
     padding-top: 0px;
     padding-bottom: 0px;
   }
-
   .lg\:pt-0 {
     padding-top: 0px;
   }
-
   .lg\:pt-12 {
     padding-top: 3rem;
   }
-
   .lg\:pt-6 {
     padding-top: 1.5rem;
   }
@@ -2543,7 +2450,244 @@ pre[class*="language-"] {
 
   
   <script type="module" src="/js/main.js?id=1"></script>
-  <script type="module"></script>
+  <script type="module">/**
+ * A lightweight youtube embed. Still should feel the same to the user, just MUCH faster to initialize and paint.
+ *
+ * Thx to these as the inspiration
+ *   https://storage.googleapis.com/amp-vs-non-amp/youtube-lazy.html
+ *   https://autoplay-youtube-player.glitch.me/
+ *
+ * Once built it, I also found these:
+ *   https://github.com/ampproject/amphtml/blob/master/extensions/amp-youtube (👍👍)
+ *   https://github.com/Daugilas/lazyYT
+ *   https://github.com/vb/lazyframe
+ */
+class LiteYTEmbed extends HTMLElement {
+  connectedCallback() {
+    this.videoId = this.getAttribute('videoid');
+
+    let playBtnEl = this.querySelector('.lty-playbtn');
+    // A label for the button takes priority over a [playlabel] attribute on the custom-element
+    this.playLabel = (playBtnEl && playBtnEl.textContent.trim()) || this.getAttribute('playlabel') || 'Play';
+
+    this.dataset.title = this.getAttribute('title') || "";
+
+    /**
+     * Lo, the youtube poster image!  (aka the thumbnail, image placeholder, etc)
+     *
+     * See https://github.com/paulirish/lite-youtube-embed/blob/master/youtube-thumbnail-urls.md
+     */
+    if (!this.style.backgroundImage) {
+      this.style.backgroundImage = `url("https://i.ytimg.com/vi/${this.videoId}/hqdefault.jpg")`;
+      this.upgradePosterImage();
+    }
+
+    // Set up play button, and its visually hidden label
+    if (!playBtnEl) {
+      playBtnEl = document.createElement('button');
+      playBtnEl.type = 'button';
+      playBtnEl.classList.add('lty-playbtn');
+      this.append(playBtnEl);
+    }
+    if (!playBtnEl.textContent) {
+      const playBtnLabelEl = document.createElement('span');
+      playBtnLabelEl.className = 'lyt-visually-hidden';
+      playBtnLabelEl.textContent = this.playLabel;
+      playBtnEl.append(playBtnLabelEl);
+    }
+
+    this.addNoscriptIframe();
+
+    // for the PE pattern, change anchor's semantics to button
+    if (playBtnEl.nodeName === 'A') {
+      playBtnEl.removeAttribute('href');
+      playBtnEl.setAttribute('tabindex', '0');
+      playBtnEl.setAttribute('role', 'button');
+      // fake button needs keyboard help
+      playBtnEl.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          this.activate();
+        }
+      });
+    }
+
+    // On hover (or tap), warm up the TCP connections we're (likely) about to use.
+    this.addEventListener('pointerover', LiteYTEmbed.warmConnections, { once: true });
+    this.addEventListener('focusin', LiteYTEmbed.warmConnections, { once: true });
+
+    // Once the user clicks, add the real iframe and drop our play button
+    // TODO: In the future we could be like amp-youtube and silently swap in the iframe during idle time
+    //   We'd want to only do this for in-viewport or near-viewport ones: https://github.com/ampproject/amphtml/pull/5003
+    this.addEventListener('click', this.activate);
+
+    // Chrome & Edge desktop have no problem with the basic YouTube Embed with ?autoplay=1
+    // However Safari desktop and most/all mobile browsers do not successfully track the user gesture of clicking through the creation/loading of the iframe,
+    // so they don't autoplay automatically. Instead we must load an additional 2 sequential JS files (1KB + 165KB) (un-br) for the YT Player API
+    // TODO: Try loading the the YT API in parallel with our iframe and then attaching/playing it. #82
+    this.needsYTApi = this.hasAttribute("js-api") || navigator.vendor.includes('Apple') || navigator.userAgent.includes('Mobi');
+  }
+
+  /**
+   * Add a <link rel={preload | preconnect} ...> to the head
+   */
+  static addPrefetch(kind, url, as) {
+    const linkEl = document.createElement('link');
+    linkEl.rel = kind;
+    linkEl.href = url;
+    if (as) {
+      linkEl.as = as;
+    }
+    document.head.append(linkEl);
+  }
+
+  /**
+   * Begin pre-connecting to warm up the iframe load
+   * Since the embed's network requests load within its iframe,
+   *   preload/prefetch'ing them outside the iframe will only cause double-downloads.
+   * So, the best we can do is warm up a few connections to origins that are in the critical path.
+   *
+   * Maybe `<link rel=preload as=document>` would work, but it's unsupported: http://crbug.com/593267
+   * But TBH, I don't think it'll happen soon with Site Isolation and split caches adding serious complexity.
+   */
+  static warmConnections() {
+    if (LiteYTEmbed.preconnected) return;
+
+    // The iframe document and most of its subresources come right off youtube.com
+    LiteYTEmbed.addPrefetch('preconnect', 'https://www.youtube-nocookie.com');
+    // The botguard script is fetched off from google.com
+    LiteYTEmbed.addPrefetch('preconnect', 'https://www.google.com');
+
+    // Not certain if these ad related domains are in the critical path. Could verify with domain-specific throttling.
+    LiteYTEmbed.addPrefetch('preconnect', 'https://googleads.g.doubleclick.net');
+    LiteYTEmbed.addPrefetch('preconnect', 'https://static.doubleclick.net');
+
+    LiteYTEmbed.preconnected = true;
+  }
+
+  fetchYTPlayerApi() {
+    if (window.YT || (window.YT && window.YT.Player)) return;
+
+    this.ytApiPromise = new Promise((res, rej) => {
+      var el = document.createElement('script');
+      el.src = 'https://www.youtube.com/iframe_api';
+      el.async = true;
+      el.onload = _ => {
+        YT.ready(res);
+      };
+      el.onerror = rej;
+      this.append(el);
+    });
+  }
+
+  /** Return the YT Player API instance. (Public L-YT-E API) */
+  async getYTPlayer() {
+    if (!this.playerPromise) {
+      await this.activate();
+    }
+
+    return this.playerPromise;
+  }
+
+  async addYTPlayerIframe() {
+    this.fetchYTPlayerApi();
+    await this.ytApiPromise;
+
+    const videoPlaceholderEl = document.createElement('div')
+    this.append(videoPlaceholderEl);
+
+    const paramsObj = Object.fromEntries(this.getParams().entries());
+
+    this.playerPromise = new Promise(resolve => {
+      let player = new YT.Player(videoPlaceholderEl, {
+        width: '100%',
+        videoId: this.videoId,
+        playerVars: paramsObj,
+        events: {
+          'onReady': event => {
+            event.target.playVideo();
+            resolve(player);
+          }
+        }
+      });
+    });
+  }
+
+  // Add the iframe within <noscript> for indexability discoverability. See https://github.com/paulirish/lite-youtube-embed/issues/105
+  addNoscriptIframe() {
+    const iframeEl = this.createBasicIframe();
+    const noscriptEl = document.createElement('noscript');
+    // Appending into noscript isn't equivalant for mysterious reasons: https://html.spec.whatwg.org/multipage/scripting.html#the-noscript-element
+    noscriptEl.innerHTML = iframeEl.outerHTML;
+    this.append(noscriptEl);
+  }
+
+  getParams() {
+    const params = new URLSearchParams(this.getAttribute('params') || []);
+    params.append('autoplay', '1');
+    params.append('playsinline', '1');
+    return params;
+  }
+
+  async activate() {
+    if (this.classList.contains('lyt-activated')) return;
+    this.classList.add('lyt-activated');
+
+    if (this.needsYTApi) {
+      return this.addYTPlayerIframe(this.getParams());
+    }
+
+    const iframeEl = this.createBasicIframe();
+    this.append(iframeEl);
+
+    // Set focus for a11y
+    iframeEl.focus();
+  }
+
+  createBasicIframe() {
+    const iframeEl = document.createElement('iframe');
+    iframeEl.width = 560;
+    iframeEl.height = 315;
+    // No encoding necessary as [title] is safe. https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html#:~:text=Safe%20HTML%20Attributes%20include
+    iframeEl.title = this.playLabel;
+    iframeEl.allow = 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture';
+    iframeEl.allowFullscreen = true;
+    // AFAIK, the encoding here isn't necessary for XSS, but we'll do it only because this is a URL
+    // https://stackoverflow.com/q/64959723/89484
+    iframeEl.src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(this.videoId)}?${this.getParams().toString()}`;
+    return iframeEl;
+  }
+
+  /**
+   * In the spirit of the `lowsrc` attribute and progressive JPEGs, we'll upgrade the reliable
+   * poster image to a higher resolution one, if it's available.
+   * Interestingly this sddefault webp is often smaller in filesize, but we will still attempt it second
+   * because getting _an_ image in front of the user if our first priority.
+   *
+   * See https://github.com/paulirish/lite-youtube-embed/blob/master/youtube-thumbnail-urls.md for more details
+   */
+  upgradePosterImage() {
+    // Defer to reduce network contention.
+    setTimeout(() => {
+      const webpUrl = `https://i.ytimg.com/vi_webp/${this.videoId}/sddefault.webp`;
+      const img = new Image();
+      img.fetchPriority = 'low'; // low priority to reduce network contention
+      img.referrerpolicy = 'origin'; // Not 100% sure it's needed, but https://github.com/ampproject/amphtml/pull/3940
+      img.src = webpUrl;
+      img.onload = e => {
+        // A pretty ugly hack since onerror won't fire on YouTube image 404. This is (probably) due to
+        // Youtube's style of returning data even with a 404 status. That data is a 120x90 placeholder image.
+        // … per "annoying yt 404 behavior" in the .md
+        const noAvailablePoster = e.target.naturalHeight == 90 && e.target.naturalWidth == 120;
+        if (noAvailablePoster) return;
+
+        this.style.backgroundImage = `url("${webpUrl}")`;
+      }
+    }, 100);
+  }
+}
+// Register custom element
+customElements.define('lite-youtube', LiteYTEmbed);</script>
 
   <link rel="icon" href="/img/favicon.svg">
   <meta name="description" content="The documentation for Alpine AJAX">
@@ -2573,6 +2717,9 @@ pre[class*="language-"] {
       
 <div class="pt-6 px-4 pb-12 max-w-prose mx-auto prose-lg md:px-6 md:prose-xl lg:mx-0 lg:pt-12 prose-headings:font-sans prose-headings:font-bold prose-h1:text-blue-800 prose-td:border-t prose-td:border-almond-400 prose-th:text-left prose-ul:list-disc prose-ol:list-decimal prose-a:underline prose-a:text-blue-800">
   
+
+
+
 <h1>Reference</h1>
 
 
@@ -2590,6 +2737,12 @@ pre[class*="language-"] {
 
   <h2 id="usage" tabindex="-1">Usage <a class="direct-link" href="#usage" aria-hidden="true">#</a></h2>
 <p>It’s good practice to start building your UI <strong>without</strong> Alpine AJAX. Make your entire website work as it would if Alpine AJAX were not available, then sprinkle in AJAX functionality at the end. Working in this way will ensure that your AJAX interactions degrade gracefully <a href="https://www.kryogenix.org/code/browser/everyonehasjs.html">when JavaScript is not available</a>: Links and forms will continue to work as normal, they simply won't fire AJAX requests. This is known as <a href="https://developer.mozilla.org/en-US/docs/Glossary/Progressive_Enhancement">Progressive Enhancement</a>, and it allows a wider audience to use your website.</p>
+<h3 id="see-it-in-in-action" tabindex="-1">See it in in action <a class="direct-link" href="#see-it-in-in-action" aria-hidden="true">#</a></h3>
+<lite-youtube videoid="vNiZyFVmoOI" class="border-4 border-blue-800" style="background-image: url('https://i.ytimg.com/vi/vNiZyFVmoOI/hqdefault.jpg');">
+  <a href="https://youtube.com/watch?v=vNiZyFVmoOI" class="lty-playbtn" title="Play Video">
+    <span class="lyt-visually-hidden">Play Video: Alpine AJAX</span>
+  </a>
+</lite-youtube>
 
 
   <h2 id="x-target" tabindex="-1">x-target <a class="direct-link" href="#x-target" aria-hidden="true">#</a></h2>
