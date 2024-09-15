@@ -18,6 +18,7 @@ We start an empty `<dialog>` and a list of links that target the `<dialog>`.
 
 <dialog x-init @dialog:open.window="$el.showModal()">
   <div id="contact"></div>
+  <form method="dialog" novalidate><button>Close</button></form>
 </dialog>
 ```
 
