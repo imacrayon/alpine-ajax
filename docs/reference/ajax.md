@@ -21,7 +21,7 @@ The `$ajax` magic helper is for finer-grained AJAX control. Use it to programmat
 
 In this example we make a `POST` request with the `email` value to the `/validate-email` endpoint. See the [Inline Validation example](/examples/inline-validation) for a complete demonstration.
 
-**Note:** Since `$ajax` is intended to be used in side effects it doesn't emit any events or target `x-sync` elements like `x-target`. However, you can change these defaults using the `$ajax` options.
+**Note:** Since `$ajax` is intended to be used in side effects it doesn't target `x-sync` elements or autofocus like `x-target`. However, you can change these defaults using the `$ajax` options.
 
 ### $ajax options
 
