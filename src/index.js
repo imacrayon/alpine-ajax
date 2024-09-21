@@ -15,7 +15,14 @@ function Ajax(Alpine) {
   Alpine.addInitSelector(() => `[${Alpine.prefixed('target\\.push')}]`)
   Alpine.addInitSelector(() => `[${Alpine.prefixed('target\\.replace')}]`)
   Alpine.directive('target', (el, { value, modifiers, expression }, { evaluateLater, effect }) => {
-    let setTargets = (ids) => {
+    let setTarget = (ids) => {
+      el.__ajax_target = el.__ajax_target || {}
+      let target = {
+        ids: parseIds(el, ids),
+        focus: !modifiers.includes('nofocus'),
+        history: modifiers.includes('push') ? 'push' : (modifiers.includes('replace') ? 'replace' : false),
+      }
+
       let statues = modifiers.filter((modifier) => modifier === 'error' || parseInt(modifier))
       statues = statues.length ? statues : ['xxx']
       statues.forEach(status => {
@@ -24,21 +31,16 @@ function Ajax(Alpine) {
         if (status.charAt(0) === '3') {
           status = '3xx'
         }
-        AjaxAttributes.set(el, {
-          [status]: {
-            ids: parseIds(el, ids),
-            focus: !modifiers.includes('nofocus'),
-            history: modifiers.includes('push') ? 'push' : (modifiers.includes('replace') ? 'replace' : false),
-          }
-        })
+
+        el.__ajax_target[status] = target
       })
     }
 
     if (value === 'dynamic') {
       let evaluate = evaluateLater(expression)
-      effect(() => evaluate(setTargets))
+      effect(() => evaluate(setTarget))
     } else {
-      setTargets(expression)
+      setTarget(expression)
     }
   })
 
@@ -46,7 +48,7 @@ function Ajax(Alpine) {
     let evaluate = evaluateLater(expression || '{}')
     effect(() => {
       evaluate(headers => {
-        AjaxAttributes.set(el, { headers })
+        el.__ajax_headers = headers
       })
     })
   })
@@ -54,10 +56,10 @@ function Ajax(Alpine) {
   Alpine.addInitSelector(() => `[${Alpine.prefixed('merge')}]`)
   Alpine.directive('merge', (el, { value, modifiers, expression }, { evaluateLater, effect }) => {
     let setMerge = (strategy) => {
-      AjaxAttributes.set(el, {
+      el.__ajax_merge = {
         strategy: strategy || settings.mergeStrategy,
         transition: settings.transitions || modifiers.includes('transition')
-      })
+      }
     }
 
     if (value === 'dynamic') {
@@ -120,23 +122,6 @@ Ajax.configure = (options) => {
 
 export default Ajax
 
-let AjaxAttributes = {
-  store: new WeakMap,
-  set(el, config) {
-    if (this.store.has(el)) {
-      this.store.set(el, Object.assign(this.store.get(el), config))
-    } else {
-      this.store.set(el, config)
-    }
-  },
-  get(el) {
-    return this.store.get(el) || {}
-  },
-  has(el) {
-    return this.store.has(el)
-  }
-}
-
 async function handleLinks(event) {
   if (event.defaultPrevented ||
     event.which > 1 ||
@@ -149,7 +134,7 @@ async function handleLinks(event) {
   let link = event?.target.closest('a[href]:not([download]):not([noajax])')
 
   if (!link ||
-    !AjaxAttributes.has(link) ||
+    !link.__ajax_target ||
     link.isContentEditable ||
     link.origin !== window.location.origin ||
     link.getAttribute('href').startsWith('#') ||
@@ -159,18 +144,17 @@ async function handleLinks(event) {
   event.preventDefault()
   event.stopImmediatePropagation()
 
-  let attributes = AjaxAttributes.get(link)
-  let config = attributes.xxx || {}
+  let config = link.__ajax_target.xxx || {}
   let targets = addSyncTargets(findTargets(config.ids))
   let referrer = source(link)
   let action = link.getAttribute('href') || referrer
-  let headers = attributes.headers || {}
+  let headers = link.__ajax_headers || {}
 
   let response = await request(link, targets, action, referrer, headers)
 
-  let key = statusKey(attributes, response)
+  let key = statusKey(link.__ajax_target, response)
   if (key) {
-    let newConfig = attributes[key]
+    let newConfig = link.__ajax_target[key]
     if (!newConfig.ids.includes('_self') || !response.redirected || !sameUrl(new URL(response.url), window.location)) {
       targets.forEach(target => target.removeAttribute('aria-busy'))
       config = newConfig
@@ -203,7 +187,7 @@ async function handleForms(event) {
   let method = (submitter?.getAttribute('formmethod') || form.getAttribute('method') || 'GET').toUpperCase()
 
   if (!form ||
-    !AjaxAttributes.has(form) ||
+    !form.__ajax_target ||
     method === 'DIALOG' ||
     submitter?.hasAttribute('formnoajax') ||
     submitter?.hasAttribute('formtarget') ||
@@ -214,12 +198,11 @@ async function handleForms(event) {
   event.preventDefault()
   event.stopImmediatePropagation()
 
-  let attributes = AjaxAttributes.get(form)
-  let config = attributes.xxx || {}
+  let config = form.__ajax_target.xxx || {}
   let targets = addSyncTargets(findTargets(config.ids))
   let referrer = source(form)
   let action = form.getAttribute('action') || referrer
-  let headers = attributes.headers || {}
+  let headers = form.__ajax_headers || {}
   let body = new FormData(form)
   let enctype = form.getAttribute('enctype')
   if (submitter) {
@@ -234,9 +217,9 @@ async function handleForms(event) {
     return request(form, targets, action, referrer, headers, method, body, enctype)
   })
 
-  let key = statusKey(attributes, response)
+  let key = statusKey(form.__ajax_target, response)
   if (key) {
-    let newConfig = attributes[key]
+    let newConfig = form.__ajax_target[key]
     if (!newConfig.ids.includes('_self') || !response.redirected || !sameUrl(new URL(response.url), window.location)) {
       targets.forEach(target => target.removeAttribute('aria-busy'))
       config = newConfig
@@ -447,7 +430,7 @@ async function render(response, el, targets, history, focus) {
     }
     let id = target.getAttribute('id')
     let content = fragment.getElementById(id)
-    let strategy = AjaxAttributes.get(target)?.strategy ?? settings.mergeStrategy
+    let strategy = target.__ajax_merge?.strategy ?? settings.mergeStrategy
     if (!content) {
       if (target.matches('[x-sync]')) {
         return
@@ -541,7 +524,7 @@ async function merge(strategy, from, to) {
     }
   }
 
-  if (!AjaxAttributes.get(from)?.transition || !document.startViewTransition) {
+  if (!from.__ajax_merge?.transition || !document.startViewTransition) {
     return strategies[strategy](from, to)
   }
 
@@ -615,14 +598,14 @@ function addSyncTargets(targets) {
   return targets
 }
 
-function statusKey(attributes, response) {
+function statusKey(statuses, response) {
   let status = response.redirected ? '3xx' : response.status.toString()
 
   return [
     status,
     status.charAt(0) + 'xx',
     !response.ok ? 'error' : '',
-  ].find(key => key in attributes)
+  ].find(key => key in statuses)
 }
 
 function source(el) {
