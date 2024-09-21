@@ -17,8 +17,9 @@ function Ajax(Alpine) {
   Alpine.directive('target', (el, { value, modifiers, expression }, { evaluateLater, effect }) => {
     let setTarget = (ids) => {
       el.__ajax_target = el.__ajax_target || {}
-      let target = {
+      let plan = {
         ids: parseIds(el, ids),
+        sync: true,
         focus: !modifiers.includes('nofocus'),
         history: modifiers.includes('push') ? 'push' : (modifiers.includes('replace') ? 'replace' : false),
       }
@@ -32,7 +33,7 @@ function Ajax(Alpine) {
           status = '3xx'
         }
 
-        el.__ajax_target[status] = target
+        el.__ajax_target[status] = plan
       })
     }
 
@@ -72,42 +73,40 @@ function Ajax(Alpine) {
 
   Alpine.magic('ajax', (el) => {
     return async (action, options = {}) => {
-      let targets = findTargets(parseIds(el, options.targets || options.target))
-      targets = options.sync ? addSyncTargets(targets) : targets
-      let referrer = source(el)
-      let headers = Object.assign({}, settings.headers, options.headers || {})
+      if (!dispatch(el, 'ajax:before')) {
+        return
+      }
+
+      let control = {
+        el,
+        target: {
+          'xxx': {
+            ids: parseIds(el, options.targets || options.target),
+            sync: Boolean(options.sync),
+            history: ('history' in options) ? options.history : false,
+            focus: ('focus' in options) ? options.focus : true,
+          },
+        },
+        headers: options.headers || {}
+      }
       let method = options.method ? options.method.toUpperCase() : 'GET'
       let body = options.body
 
-      try {
-        let response = await request(el, targets, action, referrer, headers, method, body)
-
-        let history = ('history' in options) ? options.history : false
-        let focus = ('focus' in options) ? options.focus : true
-
-        return render(response, el, targets, history, focus)
-      } catch (error) {
-        if (error.name === 'AbortError') {
-          return
-        }
-
-        throw error
-      }
+      return send(control, action, method, body)
     }
   })
 
-  let listeners = []
-
   Alpine.ajax = {
+    listeners: [],
     start() {
-      if (!listeners.length) {
-        listeners.push(addGlobalListener('submit', handleForms))
-        listeners.push(addGlobalListener('click', handleLinks))
+      if (!this.listeners.length) {
+        this.listeners.push(addGlobalListener('submit', handleForms))
+        this.listeners.push(addGlobalListener('click', handleLinks))
       }
     },
     stop() {
-      listeners.forEach(ignore => ignore())
-      listeners = []
+      this.listeners.forEach(ignore => ignore())
+      this.listeners = []
     },
   }
 
@@ -144,28 +143,19 @@ async function handleLinks(event) {
   event.preventDefault()
   event.stopImmediatePropagation()
 
-  let config = link.__ajax_target.xxx || {}
-  let targets = addSyncTargets(findTargets(config.ids))
-  let referrer = source(link)
-  let action = link.getAttribute('href') || referrer
-  let headers = link.__ajax_headers || {}
-
-  let response = await request(link, targets, action, referrer, headers)
-
-  let key = statusKey(link.__ajax_target, response)
-  if (key) {
-    let newConfig = link.__ajax_target[key]
-    if (!newConfig.ids.includes('_self') || !response.redirected || !sameUrl(new URL(response.url), window.location)) {
-      targets.forEach(target => target.removeAttribute('aria-busy'))
-      config = newConfig
-      targets = addSyncTargets(findTargets(config.ids))
-    }
+  if (!dispatch(link, 'ajax:before')) {
+    return
   }
-  let history = config.history
-  let focus = config.focus ?? true
+
+  let control = {
+    el: link,
+    target: link.__ajax_target,
+    headers: link.__ajax_headers || {},
+  }
+  let action = link.getAttribute('href')
 
   try {
-    return await render(response, link, targets, history, focus)
+    return await send(control, action)
   } catch (error) {
     if (error.name === 'RenderError') {
       console.warn(error.message)
@@ -198,13 +188,18 @@ async function handleForms(event) {
   event.preventDefault()
   event.stopImmediatePropagation()
 
-  let config = form.__ajax_target.xxx || {}
-  let targets = addSyncTargets(findTargets(config.ids))
-  let referrer = source(form)
-  let action = form.getAttribute('action') || referrer
-  let headers = form.__ajax_headers || {}
+  if (!dispatch(form, 'ajax:before')) {
+    return
+  }
+
+  let control = {
+    el: form,
+    target: form.__ajax_target,
+    headers: form.__ajax_headers || {},
+  }
   let body = new FormData(form)
   let enctype = form.getAttribute('enctype')
+  let action = form.getAttribute('action')
   if (submitter) {
     enctype = submitter.getAttribute('formenctype') || enctype
     action = submitter.getAttribute('formaction') || action
@@ -213,24 +208,10 @@ async function handleForms(event) {
     }
   }
 
-  let response = await withSubmitter(submitter, () => {
-    return request(form, targets, action, referrer, headers, method, body, enctype)
-  })
-
-  let key = statusKey(form.__ajax_target, response)
-  if (key) {
-    let newConfig = form.__ajax_target[key]
-    if (!newConfig.ids.includes('_self') || !response.redirected || !sameUrl(new URL(response.url), window.location)) {
-      targets.forEach(target => target.removeAttribute('aria-busy'))
-      config = newConfig
-      targets = addSyncTargets(findTargets(config.ids))
-    }
-  }
-  let history = config.history
-  let focus = config.focus ?? true
-
   try {
-    return await render(response, form, targets, history, focus)
+    return await withSubmitter(submitter, () => {
+      return send(control, action, method, body, enctype)
+    })
   } catch (error) {
     if (error.name === 'RenderError') {
       console.warn(error.message)
@@ -246,15 +227,7 @@ async function handleForms(event) {
 
 function addGlobalListener(name, callback) {
   let callbackWithErrorHandler = async (event) => {
-    try {
-      await callback(event)
-    } catch (error) {
-      if (error.name === 'AbortError') {
-        return
-      }
-
-      throw error
-    }
+    await callback(event)
   }
 
   // Late bind listeners so they're last in the event chain
@@ -287,95 +260,174 @@ async function withSubmitter(submitter, callback) {
   return result
 }
 
-let PendingTargets = {
-  store: new Map,
-  abort(id) {
-    if (this.store.has(id)) {
-      let request = this.store.get(id)
-      request.controller.abort()
-      request.target.removeAttribute('aria-busy')
-    }
-  },
-  set(id, target, controller) {
-    this.abort(id)
-    target.querySelectorAll('[aria-busy]').forEach((busy) => this.abort(busy.getAttribute('id')))
-    this.store.set(id, { target, controller })
-    target.setAttribute('aria-busy', 'true')
-  },
-}
+let PlanQueue = new Map
+let RequestQueue = new Map
+let ResponseCache = new Map
 
-let PendingRequests = new Map
-
-async function request(el, targets, action, referrer, headers, method = 'GET', body = null, enctype = 'application/x-www-form-urlencoded') {
-  if (!dispatch(el, 'ajax:before')) {
-    throw new DOMException('[ajax:before] aborted', 'AbortError')
-  }
-
-  let controller = new AbortController()
-  let targetIds = []
+async function send(control, action = '', method = 'GET', body = null, enctype = 'application/x-www-form-urlencoded') {
+  let plan = control.target.xxx
+  let targets = createTargets(plan)
+  let ids = []
+  let queued = false
   targets.forEach(target => {
-    let id = target.getAttribute('id')
-    PendingTargets.set(id, target, controller)
-    targetIds.push(id)
+    ids.push(target.id)
+    if (target.sync) {
+      return
+    }
+    PlanQueue.forEach((plan, key) => {
+      if (plan.ids.includes(target.id)) {
+        RequestQueue.set(key, () => send(control, action, method, body, enctype))
+        queued = true
+      }
+    })
   })
 
+  if (queued) {
+    return
+  }
+
+  PlanQueue.set(control, plan)
+  let referrer = control.el.closest('[data-source]')?.dataset.source || window.location.href
+  let request = {
+    action: action || referrer,
+    method,
+    body: body ? parseFormData(body) : null,
+    enctype,
+    referrer,
+    headers: Object.assign({
+      'X-Alpine-Request': true,
+      'X-Alpine-Target': ids.join(' '),
+    }, settings.headers, control.headers),
+  }
+
+  dispatch(control.el, 'ajax:send', request)
+
+  if (request.body) {
+    if (request.method === 'GET') {
+      request.action = mergeBodyIntoAction(request.body, request.action)
+      request.body = null
+    } else if (request.enctype !== 'multipart/form-data') {
+      request.body = formDataToParams(request.body)
+    }
+  }
+
   let pending
-  if (method === 'GET' && PendingRequests.has(action)) {
-    pending = PendingRequests.get(action)
+  if (method === 'GET' && ResponseCache.has(request.action)) {
+    pending = ResponseCache.get(request.action)
   } else {
-    headers['X-Alpine-Target'] = targetIds.join('  ')
-    headers['X-Alpine-Request'] = 'true'
-    headers = Object.assign({}, settings.headers, headers)
-    body = body ? parseFormData(body) : null
-
-    let options = {
-      action,
-      method,
-      headers,
-      body,
-      referrer,
-      enctype,
-      signal: controller.signal,
-    }
-
-    dispatch(el, 'ajax:send', options)
-
-    if (options.body) {
-      if (options.method === 'GET') {
-        options.action = mergeBodyIntoAction(options.body, options.action)
-        options.body = null
-      } else if (options.enctype !== 'multipart/form-data') {
-        options.body = formDataToParams(options.body)
-      }
-    }
-
-    pending = fetch(options.action, options).then(async (response) => {
-      response.html = await response.text()
+    pending = fetch(request.action, request).then(async (response) => {
+      let text = await response.text()
+      let wrapper = document.createRange().createContextualFragment('<template>' + text + '</template>')
+      response.html = wrapper.firstElementChild.content
 
       return response
     })
 
-    PendingRequests.set(action, pending)
+    ResponseCache.set(request.action, pending)
   }
 
   let response = await pending
 
-  PendingRequests.delete(action)
-
   if (response.ok) {
     if (response.redirected) {
-      dispatch(el, 'ajax:redirect', response)
-      PendingRequests.set(response.url, pending)
-      setTimeout(() => { PendingRequests.delete(response.url) }, 10)
+      dispatch(control.el, 'ajax:redirect', response)
+      ResponseCache.set(response.url, pending)
+      setTimeout(() => { ResponseCache.delete(response.url) }, 5)
     }
-    dispatch(el, 'ajax:success', response)
+    dispatch(control.el, 'ajax:success', response)
   } else {
-    dispatch(el, 'ajax:error', response)
+    dispatch(control.el, 'ajax:error', response)
   }
 
-  dispatch(el, 'ajax:sent', response)
+  dispatch(control.el, 'ajax:sent', response)
 
-  return response
+  if (!response.html) {
+    targets.forEach(target => target.release())
+    flushQueues(control)
+
+    return
+  }
+
+  let status = response.redirected ? '3xx' : response.status.toString()
+  let key = [
+    status,
+    status.charAt(0) + 'xx',
+    !response.ok ? 'error' : 'xxx',
+    'xxx',
+  ].find(key => key in control.target)
+  plan = control.target[key]
+  if (!plan.ids.includes('_self') || !response.redirected || !sameUrl(new URL(response.url), window.location)) {
+    targets.forEach(target => target.release())
+    targets = createTargets(plan)
+  }
+
+  if (plan.history) {
+    updateHistory(plan.history, response.url)
+  }
+
+  let focused = !plan.focus
+  let renders = targets.map(async target => {
+    if (target.el === document.documentElement) {
+      window.location.href = response.url
+    }
+
+    if (!document.body.contains(target.el)) {
+      return
+    }
+
+    let content = response.html.getElementById(target.id)
+    if (!content) {
+      if (target.sync) {
+        return
+      }
+
+      if (!dispatch(control.el, 'ajax:missing', { target: target.el, response })) {
+        return
+      }
+
+      if (response.ok) {
+        return target.el.remove()
+      }
+
+      throw new RenderError(target.el, response.status)
+    }
+
+    let mergeContent = async () => {
+      target = await merge(target, content)
+      if (target.el) {
+        target.el.dataset.source = response.url
+        target.release()
+        let selectors = ['[x-autofocus]', '[autofocus]']
+        while (!focused && selectors.length) {
+          let selector = selectors.shift()
+          if (target.el.matches(selector)) {
+            focused = focusOn(target.el)
+          }
+          focused = focused || Array.from(target.el.querySelectorAll(selector)).some(focusable => focusOn(focusable))
+        }
+      }
+
+      dispatch(target.el, 'ajax:merged')
+
+      return target.el
+    }
+
+    if (!dispatch(target.el, 'ajax:merge', { strategy: target.strategy, content, merge: mergeContent })) {
+      return
+    }
+
+    return mergeContent()
+  })
+
+  ResponseCache.delete(action)
+
+  let render = await Promise.all(renders)
+
+  dispatch(control.el, 'ajax:after', { response, render })
+
+  flushQueues(control)
+
+  return render
 }
 
 function parseFormData(data) {
@@ -409,83 +461,15 @@ function formDataToParams(body) {
   return new URLSearchParams(params)
 }
 
-async function render(response, el, targets, history, focus) {
-  if (!response.html) {
-    targets.forEach(target => target.removeAttribute('aria-busy'))
-
-    return
+function flushQueues(control) {
+  PlanQueue.delete(control)
+  if (RequestQueue.has(control)) {
+    RequestQueue.get(control)()
+    RequestQueue.delete(control)
   }
-
-  if (history) {
-    updateHistory(history, response.url)
-  }
-
-  let wrapper = document.createRange().createContextualFragment('<template>' + response.html + '</template>')
-  let fragment = wrapper.firstElementChild.content
-  let focused = !focus
-  let renders = targets.map(async target => {
-    if (target === document) {
-      window.location.href = response.url
-      return
-    }
-    let id = target.getAttribute('id')
-    let content = fragment.getElementById(id)
-    let strategy = target.__ajax_merge?.strategy ?? settings.mergeStrategy
-    if (!content) {
-      if (target.matches('[x-sync]')) {
-        return
-      }
-
-      if (!dispatch(el, 'ajax:missing', { target, response })) {
-        return
-      }
-
-      if (response.ok) {
-        return target.remove()
-      }
-
-      throw new RenderError(target, response.status)
-    }
-
-    let mergeContent = async () => {
-      let merged = await merge(strategy, target, content)
-
-      if (merged) {
-        merged.dataset.source = response.url
-        merged.removeAttribute('aria-busy')
-        let selectors = ['[x-autofocus]', '[autofocus]']
-        while (!focused && selectors.length) {
-          let selector = selectors.shift()
-          if (merged.matches(selector)) {
-            focused = focusOn(merged)
-          }
-          focused = focused || Array.from(merged.querySelectorAll(selector)).some(focusable => focusOn(focusable))
-        }
-      }
-
-      dispatch(merged, 'ajax:merged')
-
-      return merged
-    }
-
-    if (!dispatch(target, 'ajax:merge', { strategy, content, merge: mergeContent })) {
-      return
-    }
-
-    return mergeContent()
-  })
-
-  let render = await Promise.all(renders)
-
-  dispatch(el, 'ajax:after', {
-    response,
-    render,
-  })
-
-  return render
 }
 
-async function merge(strategy, from, to) {
+async function merge(target, to) {
   let strategies = {
     before(from, to) {
       from.before(...to.childNodes)
@@ -524,18 +508,16 @@ async function merge(strategy, from, to) {
     }
   }
 
-  if (!from.__ajax_merge?.transition || !document.startViewTransition) {
-    return strategies[strategy](from, to)
+  if (target.transition) {
+    let transition = document.startViewTransition(() => {
+      target.el = strategies[target.strategy](target.el, to)
+    })
+    await transition.ready
+  } else {
+    target.el = strategies[target.strategy](target.el, to)
   }
 
-  let merged = null
-  let transition = document.startViewTransition(() => {
-    merged = strategies[strategy](from, to)
-    return Promise.resolve()
-  })
-  await transition.updateCallbackDone
-
-  return merged
+  return target
 }
 
 function focusOn(el) {
@@ -572,44 +554,48 @@ function parseIds(el, ids = null) {
   return parsed
 }
 
-function findTargets(ids = []) {
-  return ids.map(id => {
-    let target = ['_self', '_top'].includes(id) ? document : document.getElementById(id)
-    if (!target) {
-      throw new TargetError(id)
+function createTargets(plan) {
+  let targets = plan.ids.map(id => {
+    let el = ['_self', '_top'].includes(id) ? document.documentElement : document.getElementById(id)
+    if (!el) {
+      console.warn(`Target [#${id}] was not found in current document.`)
+      return
     }
 
-    return target
-  })
-}
+    return target(id, el)
+  }).filter(target => target)
 
-function addSyncTargets(targets) {
-  document.querySelectorAll('[x-sync]').forEach(el => {
-    let id = el.getAttribute('id')
-    if (!id) {
-      throw new IdNotFoundError(el)
-    }
+  if (plan.sync) {
+    document.querySelectorAll('[x-sync]').forEach(el => {
+      let id = el.getAttribute('id')
+      if (!id) {
+        throw new IDError(el)
+      }
 
-    if (!targets.some(target => target.getAttribute('id') === id)) {
-      targets.push(el)
-    }
-  })
+      let t = target(id, el)
+      t.sync = true
+
+      targets.push(t)
+    })
+  }
 
   return targets
 }
 
-function statusKey(statuses, response) {
-  let status = response.redirected ? '3xx' : response.status.toString()
+function target(id, el) {
+  let release = () => { }
+  if (el.getAttribute('aria-busy') !== 'true') {
+    el.setAttribute('aria-busy', true)
+    release = () => el.removeAttribute('aria-busy')
+  }
 
-  return [
-    status,
-    status.charAt(0) + 'xx',
-    !response.ok ? 'error' : '',
-  ].find(key => key in statuses)
-}
-
-function source(el) {
-  return el.closest('[data-source]')?.dataset.source || window.location.href
+  return {
+    id,
+    el,
+    strategy: el.__ajax_merge?.strategy || settings.mergeStrategy,
+    transition: el.__ajax_merge?.transition && document.startViewTransition,
+    release
+  }
 }
 
 function dispatch(el, name, detail) {
@@ -635,12 +621,6 @@ class IDError extends DOMException {
   constructor(el) {
     let description = (el.outerHTML.match(/<[^>]+>/) ?? [])[0] ?? '[Element]'
     super(`${description} is missing an ID to target.`, 'IDError')
-  }
-}
-
-class TargetError extends DOMException {
-  constructor(id) {
-    super(`Target [#${id}] was not found in current document.`, 'TargetError')
   }
 }
 
