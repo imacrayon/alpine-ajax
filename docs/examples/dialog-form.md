@@ -20,12 +20,12 @@ We start with an empty `<dialog>` and a `<table>` of contact data.
       <th scope="col">Action</th>
     </tr>
   </thead>
-  <tbody id="contacts" x-init @ajax:before="$dispatch('dialog:open')" @contact:updated="$ajax('/contacts')">
+  <tbody id="contacts" x-init @ajax:before="$dispatch('dialog:open')" @contact:updated.window="$ajax('/contacts')">
     ...
   </tbody>
 </table>
 
-<dialog x-init @dialog:open.window="$el.showModal()">
+<dialog x-init @dialog:open.window="$el.showModal()" @contact:updated.window="$el.close()">
   <div id="contact"></div>
 </dialog>
 ```
@@ -50,7 +50,7 @@ In each table row we have an "Edit" link targeting the empty `#contact` `<div>` 
 Clicking the "Edit" link issues a `GET` request to `/contacts/1/edit` which returns the corresponding `<form>` for the contact inside the `<dialog>`:
 
 ```html
-<form id="contact" x-target method="put" action="/contacts/1" aria-label="Contact Information">
+<form id="contact" x-target method="put" action="/contacts/1" @ajax:success="$dispatch('contact:updated')" aria-label="Contact Information">
   <div>
     <label for="name">Name</label>
     <input id="name" name="name" value="Finn">
@@ -74,7 +74,7 @@ Notice the `<form>` has the `x-target` attribute so that both success and error 
 
 When the `<form>` is submitted, a `PUT` request is issued to `/contacts/1` and the `contact:updated` event is fired upon a successful response.
 
-Finally, the `contact:updated` event causes the `<tbody>` to refresh with the updated contact data.
+Finally, the `contact:updated` event causes the `<tbody>` to refresh with the updated contact data and dialog to close.
 
 <script type="module">
   var database = function () {
