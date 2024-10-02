@@ -77,12 +77,20 @@ function Ajax(Alpine) {
       let method = options.method ? options.method.toUpperCase() : 'GET'
       let body = options.body
 
-      let response = await request(el, targets, action, referrer, headers, method, body)
+      try {
+        let response = await request(el, targets, action, referrer, headers, method, body)
 
-      let history = ('history' in options) ? options.history : false
-      let focus = ('focus' in options) ? options.focus : true
+        let history = ('history' in options) ? options.history : false
+        let focus = ('focus' in options) ? options.focus : true
 
-      return render(response, el, targets, history, focus)
+        return render(response, el, targets, history, focus)
+      } catch (error) {
+        if (error.name === 'AbortError') {
+          return
+        }
+
+        throw error
+      }
     }
   })
 
