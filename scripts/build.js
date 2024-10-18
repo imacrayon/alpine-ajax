@@ -54,7 +54,7 @@ function size(file) {
       build.onEnd(() => {
         let size = bytesToSize(zlib.brotliCompressSync(fs.readFileSync(file)).length)
 
-        console.log("\x1b[32m", `${file}: ${size}`)
+        console.log("\x1b[32m%s\x1b[0m", `${file}: ${size}`)
       })
     }
   }
