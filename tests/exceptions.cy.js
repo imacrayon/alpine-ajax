@@ -19,7 +19,6 @@ test('Target throws an exception when it is missing an ID',
       statusCode: 200,
       body: '<h1 id="title">Success</h1><div id="replace">Replaced</div>'
     }).as('response')
-    get('button').click()
   },
   (err) => err.name === 'IDError'
 )
