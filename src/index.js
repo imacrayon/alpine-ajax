@@ -568,7 +568,6 @@ function parseIds(el, ids = null) {
     pair[1] = pair[1] || pair[0]
     return pair
   })
-  console.log(JSON.stringify(parsed))
   if (parsed.length === 0) {
     throw new IDError(el)
   }
