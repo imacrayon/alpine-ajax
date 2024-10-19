@@ -2,6 +2,7 @@ let settings = {
   headers: {},
   mergeStrategy: 'replace',
   transitions: false,
+  mapDelimiter: ':',
 }
 
 let doMorph = (from, to) => {
@@ -334,7 +335,7 @@ async function send(control, action = '', method = 'GET', body = null, enctype =
     'xxx',
   ].find(key => key in control.target)
   plan = control.target[key]
-  if (!plan.ids.includes('_self') || !response.redirected || !sameUrl(new URL(response.url), window.location)) {
+  if (!plan.ids.flat().includes('_self') || !response.redirected || !sameUrl(new URL(response.url), window.location)) {
     targets.forEach(target => target._ajax_abort())
     targets = createTargets(plan, controller)
   }
@@ -423,15 +424,16 @@ function createTargets(plan, controller) {
     return el
   }
 
-  let targets = plan.ids.map(id => {
-    let el = ['_self', '_top'].includes(id) ? document.documentElement : document.getElementById(id)
+  let targets = plan.ids.map(pair => {
+    let docId = pair[0]
+    let el = ['_self', '_top'].includes(docId) ? document.documentElement : document.getElementById(docId)
     if (!el) {
-      console.warn(`Target [#${id}] was not found in current document.`)
+      console.warn(`Target [#${docId}] was not found in current document.`)
       return
     }
 
     let target = decorate(el)
-    target._ajax_id = id
+    target._ajax_id = pair[1]
 
     return target
   }).filter(target => target)
@@ -556,12 +558,16 @@ function updateHistory(strategy, url) {
 }
 
 function parseIds(el, ids = null) {
-  let parsed = [el.getAttribute('id')]
+  let elId = el.getAttribute('id')
+  let parsed = [elId]
   if (ids) {
     parsed = Array.isArray(ids) ? ids : ids.split(' ')
   }
-  parsed = parsed.filter(id => id)
-
+  parsed = parsed.filter(id => id).map(id => {
+    let pair = id.split(settings.mapDelimiter).map(id => id || elId)
+    pair[1] = pair[1] || pair[0]
+    return pair
+  })
   if (parsed.length === 0) {
     throw new IDError(el)
   }
