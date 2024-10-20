@@ -5,7 +5,7 @@ let settings = {
   mapDelimiter: ':',
 }
 
-let doMorph = (from, to) => {
+let doMorph = () => {
   console.error(`You can't use the "morph" merge without first installing the Alpine "morph" plugin here: https://alpinejs.dev/plugins/morph`)
 }
 
@@ -91,20 +91,21 @@ function Ajax(Alpine) {
     }
   })
 
+  let started = false
   Alpine.ajax = {
-    listeners: [],
     start() {
-      if (!this.listeners.length) {
-        this.listeners.push(addGlobalListener('submit', handleForms))
-        this.listeners.push(addGlobalListener('click', handleLinks))
+      if (!started) {
+        document.addEventListener('submit', handleForms)
+        document.addEventListener('click', handleLinks)
+        started = true
       }
     },
     stop() {
-      this.listeners.forEach(ignore => ignore())
-      this.listeners = []
+      document.removeEventListener('submit', handleForms)
+      document.removeEventListener('click', handleLinks)
+      started = false
     },
   }
-
   Alpine.ajax.start()
 }
 
@@ -210,22 +211,6 @@ async function handleForms(event) {
 
     throw error
   }
-}
-
-function addGlobalListener(name, callback) {
-  let callbackWithErrorHandler = async (event) => {
-    await callback(event)
-  }
-
-  // Late bind listeners so they're last in the event chain
-  let onCapture = () => {
-    document.removeEventListener(name, callbackWithErrorHandler, false)
-    document.addEventListener(name, callbackWithErrorHandler, false)
-  }
-
-  document.addEventListener(name, onCapture, true)
-
-  return () => document.removeEventListener(name, onCapture, true)
 }
 
 async function withSubmitter(submitter, callback) {
