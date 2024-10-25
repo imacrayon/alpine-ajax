@@ -1,0 +1,16 @@
+<h2 id="navigation" tabindex="-1">Navigation <a class="direct-link" href="#navigation" aria-hidden="true">#</a></h2>
+<p>Let's talk about the &quot;Single Page Application&quot; for a moment: This is a common pattern where every link on a webpage is made to issue an AJAX request instead of the standard full page refresh. The motivation behind SPA navigation is to reduce the page load and create a responsive experience that feels fast to the end user. However, SPA navigation also introduces a host of state management and accessibility concerns:</p>
+<ul>
+<li>Page history must be cached and handled in client-side code rather than natively in the Browser</li>
+<li>SPA navigation <a href="https://github.com/hotwired/turbo/issues/774">introduces accessibility issues</a> that <a href="https://www.gatsbyjs.com/blog/2019-07-11-user-testing-accessible-client-routing/">require special consideration</a></li>
+<li>Long-running JavaScript code can introduce runaway memory leaks and state synchronization issues</li>
+</ul>
+<p>In the time since the &quot;Single Page Application&quot; was introduced browsers have eliminated many of the problems SPA navigation was designed to work around:</p>
+<ul>
+<li>Browsers now implement <a href="https://developer.chrome.com/blog/paint-holding/">Paint Holding</a> so users don't see a blank white page before a new page is loaded</li>
+<li>Browsers <a href="https://v8.dev/blog/code-caching">cache compiled JavaScript</a> across page loads, so that it can be <a href="https://dev.to/v8blink/lets-understand-chrome-v8-chapter-19-compilation-cache-make-the-compiler-faster-22ml">efficiently run on the next page load</a></li>
+<li>The <a href="https://developer.chrome.com/docs/web-platform/prerender-pages">Speculation Rules API</a> dramatically simplifies preloading assets before a link is clicked so that the next page can load instantly. Libraries like <a href="https://instant.page/">instant.page</a> and <a href="https://github.com/GoogleChromeLabs/quicklink">quicklink</a> provide cross-browser support for preloading.</li>
+<li>Chromium browsers support <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/@view-transition">Multi-Page Transitions</a> with support in more browsers <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1909173">coming soon</a>.</li>
+<li><a href="https://github.com/DannyMoerkerke/basic-service-worker">Service Workers</a> provide advanced asset caching and offline support</li>
+</ul>
+<p>All of these platform-native technologies can be combine to create very modern user experiences without the big drawbacks and extra work that come with SPA navigation, so before you start slapping <code>x-target</code> on every link in your project, consider that <a href="https://github.com/csswizardry/csswizardry.github.com/commit/77285ba766bf94aed2a9fc66e10c91cef57d9f0a">one change to your <code>&lt;head&gt;</code></a> may be all you need to achieve peak performance™.</p>

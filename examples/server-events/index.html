@@ -25,6 +25,7 @@
       font-style: normal;
       font-display: swap;
     }
+    [x-cloak] { display: none }
   </style>
   
   
@@ -2477,7 +2478,7 @@ ${serverEvent()}
   JavaScript to view this demo.
 </noscript>
 <div id="demo"></div>
-<div x-data="{
+<div x-cloak x-data="{
   init() {
     document.addEventListener('server:response', (event) => {
       this.requests.unshift({ id: this.requests.length, ...event.detail })
