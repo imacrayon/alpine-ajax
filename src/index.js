@@ -97,12 +97,14 @@ function Ajax(Alpine) {
       if (!started) {
         document.addEventListener('submit', handleForms)
         document.addEventListener('click', handleLinks)
+        window.addEventListener('popstate', handleHistory)
         started = true
       }
     },
     stop() {
       document.removeEventListener('submit', handleForms)
       document.removeEventListener('click', handleLinks)
+      window.removeEventListener('popstate', handleHistory)
       started = false
     },
   }
@@ -116,6 +118,12 @@ Ajax.configure = (options) => {
 }
 
 export default Ajax
+
+function handleHistory(event) {
+  if (!event.state || !event.state.__ajax) return
+
+  window.location.reload(true)
+}
 
 async function handleLinks(event) {
   if (event.defaultPrevented ||
