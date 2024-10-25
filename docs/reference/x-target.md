@@ -89,12 +89,31 @@ There's a lot of status modifiers in this markup so let's break it all down; whe
 * Any 3xx class status code redirecting back to the current page will target `publish_form`   (See [the `_self` special exception](#_self-special-exception).)
 * All other response status codes will target `publish_form`.
 
+### Target aliases
+
+In situations where an element ID on the current page cannot be made to match an element ID in an AJAX response, you may specify an ID alias by separating two IDs with a colon:
+
+```html
+<a x-target="modal_body:page_body">Load modal</a>
+<div id="modal_body></div>
+```
+
+In this example, when the link is clicked, `#modal_body` will be replaced with the `#page_body` element in the incoming AJAX request.
+
 ### Target shorthand
 
 In cases when a form or link targets itself, you may leave the value of `x-target` blank, however the form or link must still have an `id`:
 
 ```html
 <form x-target id="star_repo" method="post" action="/repos/1/star">
+  <button>Star Repository</button>
+</form>
+```
+
+[Target aliases](#target-aliases) can use the shorthand syntax too (note the `:` prefix):
+
+```html
+<form x-target=":alias_id" id="star_repo" method="post" action="/repos/1/star">
   <button>Star Repository</button>
 </form>
 ```
