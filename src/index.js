@@ -339,6 +339,11 @@ async function send(control, action = '', method = 'GET', body = null, enctype =
 
   let focused = !plan.focus
   let renders = targets.map(async target => {
+
+    if (target._ajax_id === '_none') {
+      return
+    }
+
     if (target === document.documentElement) {
       window.location.href = response.url
     }
@@ -419,7 +424,7 @@ function createTargets(plan, controller) {
 
   let targets = plan.ids.map(pair => {
     let docId = pair[0]
-    let el = ['_self', '_top'].includes(docId) ? document.documentElement : document.getElementById(docId)
+    let el = ['_self', '_top', '_none'].includes(docId) ? document.documentElement : document.getElementById(docId)
     if (!el) {
       console.warn(`Target [#${docId}] was not found in current document.`)
       return
