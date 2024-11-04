@@ -283,7 +283,7 @@ async function send(control, action = '', method = 'GET', body = null, enctype =
       let text = await response.text()
       let wrapper = document.createRange().createContextualFragment('<template>' + text + '</template>')
       response.html = wrapper.firstElementChild.content
-
+      response.raw = text
       return response
     })
 
