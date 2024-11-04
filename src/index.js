@@ -391,7 +391,7 @@ async function send(control, action = '', method = 'GET', body = null, enctype =
     return mergeContent()
   })
 
-  ResponseCache.delete(action)
+  ResponseCache.delete(request.action)
 
   let render = await Promise.all(renders)
 
