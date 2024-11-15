@@ -95,7 +95,7 @@ In situations where an element ID on the current page cannot be made to match an
 
 ```html
 <a x-target="modal_body:page_body">Load modal</a>
-<div id="modal_body></div>
+<div id="modal_body"></div>
 ```
 
 In this example, when the link is clicked, `#modal_body` will be replaced with the `#page_body` element in the incoming AJAX request.
