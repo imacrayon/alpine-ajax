@@ -404,7 +404,7 @@ async function send(control, action = '', method = 'GET', body = null, enctype =
 function createTargets(plan, controller) {
   let decorate = (el) => {
     el._ajax_strategy = el._ajax_strategy || settings.mergeStrategy
-    el._ajax_transition = el.__ajax_transition && document.startViewTransition
+    el._ajax_transition = el._ajax_transition && document.startViewTransition
     el._ajax_abort && el._ajax_abort()
     el.querySelectorAll('[aria-busy]').forEach((busy) => {
       busy._ajax_abort && busy._ajax_abort()
@@ -525,8 +525,9 @@ async function merge(target, to) {
 
   let transition = document.startViewTransition(() => {
     target = strategies[target._ajax_strategy](target, to)
+    return Promise.resolve()
   })
-  await transition.ready
+  await transition.updateCallbackDone
 
   return target
 }
