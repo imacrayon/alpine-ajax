@@ -210,3 +210,39 @@ test('targeting `_top` will reload the page when redirected back to the same URL
     })
   }
 )
+
+test('targeting `_none` will neither reload the page nor attempt to alter the DOM',
+  html`<form x-target x-target.302="_none" id="form"
+    @ajax:success="document.getElementById('form').id = 'success'"
+    @ajax:missing="document.getElementById('success').id = 'missing'"
+    @ajax:merge="document.getElementById('success').id = 'merge'"><button id="button"></button></form>`,
+  ({ intercept, get, wait }) => {
+    intercept('POST', '/tests', (request) => {
+      request.redirect('/tests', 302)
+    })
+    intercept('GET', '/tests', {
+      statusCode: 200,
+      body: ''
+    }).as('response')
+    get('button').click()
+    wait('@response').then(() => {
+      get('#button').should('exist')
+      get('#success').should('exist')
+    })
+  }
+)
+
+test('targeting `_none` for redirects will not prevent non-redirect responses from updating the DOM',
+  html`<form x-target x-target.302="_none" id="replace"><button id="button"></button></form>`,
+  ({ intercept, get, wait }) => {
+    intercept('GET', '/tests', {
+      statusCode: 200,
+      body: '<div id="replace">Replaced</div>'
+    }).as('response')
+    get('button').click()
+    wait('@response').then(() => {
+      get('#button').should('not.exist')
+      get('#replace').should('have.text', 'Replaced')
+    })
+  }
+)
