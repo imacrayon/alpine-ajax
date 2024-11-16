@@ -438,10 +438,15 @@ function createTargets(plan, controller) {
   }).filter(target => target)
 
   if (plan.sync) {
+    let targeted = plan.ids.flat()
     document.querySelectorAll('[x-sync]').forEach(el => {
       let id = el.getAttribute('id')
       if (!id) {
         throw new IDError(el)
+      }
+
+      if (targeted.includes(id)) {
+        return
       }
 
       let target = decorate(el)
