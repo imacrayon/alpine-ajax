@@ -341,16 +341,12 @@ async function send(control, action = '', method = 'GET', body = null, enctype =
   let focused = !plan.focus
   let renders = targets.map(async target => {
 
-    if (target._ajax_id === '_none') {
+    if (!target.isConnected || target._ajax_id === '_none') {
       return
     }
 
     if (target === document.documentElement) {
       window.location.href = response.url
-    }
-
-    if (!document.body.contains(target)) {
-      return
     }
 
     let content = response.html.getElementById(target._ajax_id)
