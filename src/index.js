@@ -141,7 +141,7 @@ async function handleLinks(event) {
     link.isContentEditable ||
     link.origin !== window.location.origin ||
     link.getAttribute('href').startsWith('#') ||
-    (sameUrl(link, window.location) && link.hash)
+    (link.hash && samePath(link, window.location))
   ) return
 
   event.preventDefault()
@@ -384,7 +384,7 @@ async function send(control, action = '', method = 'GET', body = null, enctype =
   ].find(key => key in control.target)
   if (key !== 'xxx') {
     plan = control.target[key]
-    if (!plan.ids.flat().includes('_self') || !response.redirected || !sameUrl(new URL(response.url), window.location)) {
+    if (!plan.ids.flat().includes('_self') || !response.redirected || !samePath(new URL(response.url), window.location)) {
       PendingTargets.purge(response)
       PendingTargets.plan(plan, response)
     }
@@ -589,8 +589,8 @@ function dispatch(el, name, detail) {
   )
 }
 
-function sameUrl(urlA, urlB) {
-  return (stripTrailingSlash(urlA.pathname) + urlA.search) === (stripTrailingSlash(urlB.pathname) + urlB.search)
+function samePath(urlA, urlB) {
+  return stripTrailingSlash(urlA.pathname) === stripTrailingSlash(urlB.pathname)
 }
 
 function stripTrailingSlash(str) {
