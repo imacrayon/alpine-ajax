@@ -7,8 +7,8 @@ test('content is lazily loaded with x-init',
       statusCode: 200,
       body: '<h1 id="title">Success</h1><div id="replace">Loaded</div>'
     }).as('response')
-    // Injecting the component code after the intercept has been setup
-    // because this request fires immediately
+    // Injecting the component code after the intercept has
+    // been setup because this request fires immediately.
     get('#root').then(([el]) => {
       el.innerHTML = `<div x-init="$ajax('/tests')" id="replace"></div>`
     })

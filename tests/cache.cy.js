@@ -7,8 +7,8 @@ test('parallel GET requests are cached',
       statusCode: 200,
       body: '<div id="one">Success</div><div id="two">Success</div>'
     }).as('response')
-    // Injecting the component code after the intercept has been setup
-    // because this request fires immediately
+    // Injecting the component code after the intercept has
+    // been setup because this request fires immediately.
     get('#root').then(([el]) => {
       el.innerHTML = `
       <div id="one" x-init="$ajax('/tests')"></div>
@@ -62,8 +62,8 @@ test('GET requests with different params are NOT cached',
       statusCode: 200,
       body: '<div id="two">TWO</div><div id="two">TWO</div>'
     }).as('response')
-    // Injecting the component code after the intercept has been setup
-    // because this request fires immediately
+    // Injecting the component code after the intercept has
+    // been setup because this request fires immediately.
     get('#root').then(([el]) => {
       el.innerHTML = `
         <div x-init="$ajax('/tests', { body: { 'NAME': 'ONE' } })" id="one"></div>
