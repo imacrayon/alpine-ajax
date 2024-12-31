@@ -234,6 +234,26 @@ test('[x-target] can select multiple targets',
   }
 )
 
+test('[x-target] can be `_none`',
+  html`<form x-target="_none" id="replace"
+    @ajax:success="document.getElementById('button').textContent = 'Success'"
+    @ajax:missing="document.getElementById('button').textContent = 'Missing'"
+    @ajax:merge="document.getElementById('button').textContent = 'Merge'"
+  ><button id="button"></button></form>`,
+  ({ intercept, get, wait }) => {
+    intercept('GET', '/tests', {
+      statusCode: 200,
+      body: '<h1 id="title">Success</h1><div id="replace">Replaced</div>'
+    }).as('response')
+    get('button').click()
+    wait('@response').then(() => {
+      get('#title').should('not.exist')
+      get('#button').should('exist')
+      get('#button').should('have.text', 'Success')
+    })
+  }
+)
+
 test('[x-target] handles extra whitespace',
   html`<div id="replace_1"></div><div id="replace_2"></div><form x-target="   replace_1    replace_2   " method="post" action="/tests"><button></button></form>`,
   ({ intercept, get, wait }) => {

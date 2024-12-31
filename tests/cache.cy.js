@@ -11,8 +11,9 @@ test('parallel GET requests are cached',
     // been setup because this request fires immediately.
     get('#root').then(([el]) => {
       el.innerHTML = `
-      <div id="one" x-init="$ajax('/tests')"></div>
-      <div id="two" x-init="$ajax('/tests')"></div>
+      <div id="one" x-init x-on:refresh.window="$ajax('/tests')"></div>
+      <div id="two" x-init x-on:refresh.window="$ajax('/tests')"></div>
+      <div x-init="$dispatch('refresh')"></div>
       `
     })
     wait('@response').then(() => {

@@ -1,13 +1,13 @@
 import { test, html } from './utils'
 
-test('aborts previous requests for the same target',
+test('skips rendering previous requests for the same target',
   html`
     <a href="/a" id="a" x-target="replace">A</a>
     <a href="/b" id="b" x-target="replace">B</a>
     <a href="/c" id="c" x-target="replace">C</a>
     <div id="replace"></div>
   `,
-  ({ intercept, get, wait, spy }) => {
+  ({ intercept, get, wait }) => {
     intercept('GET', '/a', (req) => {
       req.continue((res) => {
         res.setDelay(1000)
@@ -37,15 +37,13 @@ test('aborts previous requests for the same target',
     get('#a').click()
     get('#b').click()
     get('#c').click()
-    wait('@responseC').then(() => {
+    wait('@responseA').then(() => {
       get('#replace').should('have.text', 'C')
-      get('@responseA').its('state').should('eq', 'Errored')
-      get('@responseB').its('state').should('eq', 'Errored')
     })
   }
 )
 
-test('aborts requests targeting child elements',
+test('skips rendering previous requests targeting child elements',
   html`
     <a href="/child" x-target="child">Child</a>
     <a href="/parent"x-target="parent">Parent</a>
@@ -53,7 +51,7 @@ test('aborts requests targeting child elements',
       <div id="child"></div>
     </div>
   `,
-  ({ intercept, get, wait, spy }) => {
+  ({ intercept, get, wait }) => {
     intercept('GET', '/child', (req) => {
       req.continue((res) => {
         res.setDelay(500)
@@ -73,10 +71,9 @@ test('aborts requests targeting child elements',
     }).as('parent')
     get('[href="/child"]').click()
     get('[href="/parent"]').click()
-    wait('@parent').then(() => {
+    wait('@child').then(() => {
       get('#parent').should('have.text', 'Parent Replaced')
       get('#child').should('have.text', 'Parent Replaced')
-      get('@child').its('state').should('eq', 'Errored')
     })
   }
 )

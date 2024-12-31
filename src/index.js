@@ -240,7 +240,62 @@ async function withSubmitter(submitter, callback) {
   return result
 }
 
-let ResponseCache = new Map
+let PendingTargets = {
+  store: new Map,
+  plan(plan, response) {
+    plan.ids.forEach(pair => {
+      let docId = pair[0]
+      let el = ['_self', '_top', '_none'].includes(docId) ? document.documentElement : document.getElementById(docId)
+      if (!el) {
+        return console.warn(`Target [#${docId}] was not found in current document.`)
+      }
+
+      el._ajax_id = pair[1]
+      this.set(el, response)
+    })
+
+    if (plan.sync) {
+      let targeted = plan.ids.flat()
+      document.querySelectorAll('[x-sync]').forEach(el => {
+        let id = el.getAttribute('id')
+        if (!id) {
+          throw new IDError(el)
+        }
+
+        if (targeted.includes(id)) {
+          return
+        }
+
+        el._ajax_id = id
+        el._ajax_sync = true
+        this.set(el, response)
+      })
+    }
+  },
+  purge(response) {
+    this.store.forEach((r, t) => response === r && this.delete(t))
+  },
+  get(response) {
+    let targets = []
+    this.store.forEach((r, t) => response === r && targets.push(t))
+
+    return targets
+  },
+  set(target, response) {
+    target.querySelectorAll('[aria-busy]').forEach((busy) => {
+      this.delete(busy)
+    })
+    target.setAttribute('aria-busy', 'true')
+    this.store.set(target, response)
+  },
+  delete(target) {
+    target.removeAttribute('aria-busy')
+    this.store.delete(target)
+  },
+}
+
+
+let RequestCache = new Map
 
 async function send(control, action = '', method = 'GET', body = null, enctype = 'application/x-www-form-urlencoded') {
   if (!dispatch(control.el, 'ajax:before')) {
@@ -248,65 +303,63 @@ async function send(control, action = '', method = 'GET', body = null, enctype =
   }
 
   let plan = control.target.xxx
-  let controller = new AbortController()
-  let targets = createTargets(plan, controller)
+  let response = { ok: false, redirected: false, url: '', status: '', html: '', raw: '' }
+  PendingTargets.plan(plan, response)
   let referrer = control.el.closest('[data-source]')?.dataset.source || window.location.href
+  action = action || referrer
+  if (body) {
+    body = parseFormData(body)
+    if (method === 'GET') {
+      action = mergeBodyIntoAction(body, action)
+      body = null
+    } else if (enctype !== 'multipart/form-data') {
+      body = formDataToParams(body)
+    }
+  }
+
   let request = {
-    action: action || referrer,
+    action,
     method,
-    body: body ? parseFormData(body) : null,
+    body,
     enctype,
     referrer,
-    signal: controller.signal,
     headers: Object.assign({
       'X-Alpine-Request': true,
-      'X-Alpine-Target': targets.map(target => target._ajax_id).join(' '),
+      'X-Alpine-Target': PendingTargets.get(response).map(target => target._ajax_id).join(' '),
     }, settings.headers, control.headers),
   }
 
   dispatch(control.el, 'ajax:send', request)
 
-  if (request.body) {
-    if (request.method === 'GET') {
-      request.action = mergeBodyIntoAction(request.body, request.action)
-      request.body = null
-    } else if (request.enctype !== 'multipart/form-data') {
-      request.body = formDataToParams(request.body)
-    }
-  }
-
   let pending
-  if (method === 'GET' && ResponseCache.has(request.action)) {
-    pending = ResponseCache.get(request.action)
+  if (request.method === 'GET' && RequestCache.has(request.action)) {
+    pending = RequestCache.get(request.action)
   } else {
-    pending = fetch(request.action, request).then(async (response) => {
-      let text = await response.text()
+    pending = fetch(request.action, request).then(async (r) => {
+      let text = await r.text()
       let wrapper = document.createRange().createContextualFragment('<template>' + text + '</template>')
-      response.html = wrapper.firstElementChild.content
-      response.raw = text
+      r.html = wrapper.firstElementChild.content
+      r.raw = text
 
-      return response
+      return r
     })
-
-    ResponseCache.set(request.action, pending)
+    RequestCache.set(request.action, pending)
   }
 
-  let response
-  try {
-    response = await pending
-  } catch (error) {
-    if (error.name !== 'AbortError') {
-      throw error
-    }
-
-    return
-  }
+  await pending.then((r) => {
+    response.ok = r.ok
+    response.redirected = r.redirected
+    response.url = r.url
+    response.status = r.status
+    response.html = r.html
+    response.raw = r.raw
+  })
 
   if (response.ok) {
     if (response.redirected) {
       dispatch(control.el, 'ajax:redirect', response)
-      ResponseCache.set(response.url, pending)
-      setTimeout(() => { ResponseCache.delete(response.url) }, 5)
+      RequestCache.set(response.url, pending)
+      setTimeout(() => { RequestCache.delete(response.url) }, 5)
     }
     dispatch(control.el, 'ajax:success', response)
   } else {
@@ -314,9 +367,10 @@ async function send(control, action = '', method = 'GET', body = null, enctype =
   }
 
   dispatch(control.el, 'ajax:sent', response)
+  RequestCache.delete(request.action)
 
   if (!response.html) {
-    targets.forEach(target => target._ajax_abort())
+    PendingTargets.purge(response)
 
     return
   }
@@ -328,10 +382,12 @@ async function send(control, action = '', method = 'GET', body = null, enctype =
     !response.ok ? 'error' : 'xxx',
     'xxx',
   ].find(key => key in control.target)
-  plan = control.target[key]
-  if (!plan.ids.flat().includes('_self') || !response.redirected || !sameUrl(new URL(response.url), window.location)) {
-    targets.forEach(target => target._ajax_abort())
-    targets = createTargets(plan, controller)
+  if (key !== 'xxx') {
+    plan = control.target[key]
+    if (!plan.ids.flat().includes('_self') || !response.redirected || !sameUrl(new URL(response.url), window.location)) {
+      PendingTargets.purge(response)
+      PendingTargets.plan(plan, response)
+    }
   }
 
   if (plan.history) {
@@ -339,7 +395,7 @@ async function send(control, action = '', method = 'GET', body = null, enctype =
   }
 
   let focused = !plan.focus
-  let renders = targets.map(async target => {
+  let renders = PendingTargets.get(response).map(async target => {
 
     if (!target.isConnected || target._ajax_id === '_none') {
       return
@@ -371,7 +427,7 @@ async function send(control, action = '', method = 'GET', body = null, enctype =
       target = await merge(strategy, target, content)
       if (target) {
         target.dataset.source = response.url
-        target._ajax_abort && target._ajax_abort()
+        PendingTargets.delete(target)
         let selectors = ['[x-autofocus]', '[autofocus]']
         while (!focused && selectors.length) {
           let selector = selectors.shift()
@@ -394,66 +450,11 @@ async function send(control, action = '', method = 'GET', body = null, enctype =
     return render()
   })
 
-  ResponseCache.delete(request.action)
-
   let render = await Promise.all(renders)
 
   dispatch(control.el, 'ajax:after', { response, render })
 
   return render
-}
-
-function createTargets(plan, controller) {
-  let decorate = (el) => {
-    el._ajax_strategy = el._ajax_strategy || settings.mergeStrategy
-    el._ajax_transition = el._ajax_transition && document.startViewTransition
-    el._ajax_abort && el._ajax_abort()
-    el.querySelectorAll('[aria-busy]').forEach((busy) => {
-      busy._ajax_abort && busy._ajax_abort()
-    })
-    el.setAttribute('aria-busy', 'true')
-    el._ajax_abort = () => {
-      el.removeAttribute('aria-busy')
-      controller.abort()
-    }
-
-    return el
-  }
-
-  let targets = plan.ids.map(pair => {
-    let docId = pair[0]
-    let el = ['_self', '_top', '_none'].includes(docId) ? document.documentElement : document.getElementById(docId)
-    if (!el) {
-      console.warn(`Target [#${docId}] was not found in current document.`)
-      return
-    }
-
-    let target = decorate(el)
-    target._ajax_id = pair[1]
-
-    return target
-  }).filter(target => target)
-
-  if (plan.sync) {
-    let targeted = plan.ids.flat()
-    document.querySelectorAll('[x-sync]').forEach(el => {
-      let id = el.getAttribute('id')
-      if (!id) {
-        throw new IDError(el)
-      }
-
-      if (targeted.includes(id)) {
-        return
-      }
-
-      let target = decorate(el)
-      target._ajax_id = id
-      target._ajax_sync = true
-      targets.push(target)
-    })
-  }
-
-  return targets
 }
 
 function parseFormData(data) {
