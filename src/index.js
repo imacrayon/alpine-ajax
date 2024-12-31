@@ -370,8 +370,9 @@ async function send(control, action = '', method = 'GET', body = null, enctype =
       throw new RenderError(target, response.status)
     }
 
-    let mergeContent = async () => {
-      target = await merge(target, content)
+    let strategy = target._ajax_strategy || settings.mergeStrategy
+    let render = async () => {
+      target = await merge(strategy, target, content)
       if (target) {
         target.dataset.source = response.url
         target._ajax_abort && target._ajax_abort()
@@ -390,11 +391,11 @@ async function send(control, action = '', method = 'GET', body = null, enctype =
       return target
     }
 
-    if (!dispatch(target, 'ajax:merge', { strategy: target._ajax_strategy, content, merge: mergeContent })) {
+    if (!dispatch(target, 'ajax:merge', { strategy, content, merge: render })) {
       return
     }
 
-    return mergeContent()
+    return render()
   })
 
   ResponseCache.delete(request.action)
@@ -490,7 +491,7 @@ function formDataToParams(body) {
   return new URLSearchParams(params)
 }
 
-async function merge(target, to) {
+async function merge(strategy, target, to) {
   let strategies = {
     before(from, to) {
       from.before(...to.childNodes)
@@ -529,12 +530,12 @@ async function merge(target, to) {
     }
   }
 
-  if (!target._ajax_transition) {
-    return strategies[target._ajax_strategy](target, to)
+  if (!target._ajax_transition || !document.startViewTransition) {
+    return strategies[strategy](target, to)
   }
 
   let transition = document.startViewTransition(() => {
-    target = strategies[target._ajax_strategy](target, to)
+    target = strategies[strategy](target, to)
     return Promise.resolve()
   })
   await transition.updateCallbackDone
