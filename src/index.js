@@ -25,7 +25,7 @@ function Ajax(Alpine) {
         history: modifiers.includes('push') ? 'push' : (modifiers.includes('replace') ? 'replace' : false),
       }
 
-      let statues = modifiers.filter((modifier) => modifier === 'error' || parseInt(modifier))
+      let statues = modifiers.filter((modifier) => ['back', 'away', 'error'].includes(modifier) || parseInt(modifier))
       statues = statues.length ? statues : ['xxx']
       statues.forEach(status => {
         // Redirect status codes are opaque to fetch
@@ -376,15 +376,17 @@ async function send(control, action = '', method = 'GET', body = null, enctype =
   }
 
   let status = response.redirected ? '3xx' : response.status.toString()
+  let isBack = samePath(new URL(response.url), new URL(request.referrer, document.baseURI))
   let key = [
+    response.redirected ? (isBack ? 'back' : 'away') : null,
     status,
     status.charAt(0) + 'xx',
-    !response.ok ? 'error' : 'xxx',
+    response.ok ? 'xxx' : 'error',
     'xxx',
   ].find(key => key in control.target)
   if (key !== 'xxx') {
     plan = control.target[key]
-    if (!plan.ids.flat().includes('_self') || !response.redirected || !samePath(new URL(response.url), window.location)) {
+    if (!response.redirected || !isBack || !plan.ids.flat().includes('_self')) {
       PendingTargets.purge(response)
       PendingTargets.plan(plan, response)
     }
