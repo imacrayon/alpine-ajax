@@ -141,7 +141,7 @@ async function handleLinks(event) {
     link.isContentEditable ||
     link.origin !== window.location.origin ||
     link.getAttribute('href').startsWith('#') ||
-    (link.hash && samePath(link, window.location))
+    (link.hash && samePath(link, new URL(document.baseURI)))
   ) return
 
   event.preventDefault()
@@ -305,12 +305,12 @@ async function send(control, action = '', method = 'GET', body = null, enctype =
   let plan = control.target.xxx
   let response = { ok: false, redirected: false, url: '', status: '', html: '', raw: '' }
   PendingTargets.plan(plan, response)
-  let referrer = control.el.closest('[data-source]')?.dataset.source || window.location.href
-  action = action || referrer
+  let referrer = new URL(control.el.closest('[data-source]')?.dataset.source || '', document.baseURI)
+  action = new URL(action || referrer, document.baseURI)
   if (body) {
     body = parseFormData(body)
     if (method === 'GET') {
-      action = mergeBodyIntoAction(body, action)
+      action.search = formDataToParams(body).toString()
       body = null
     } else if (enctype !== 'multipart/form-data') {
       body = formDataToParams(body)
@@ -318,11 +318,11 @@ async function send(control, action = '', method = 'GET', body = null, enctype =
   }
 
   let request = {
-    action,
+    action: action.toString(),
     method,
     body,
     enctype,
-    referrer,
+    referrer: referrer.toString(),
     headers: Object.assign({
       'X-Alpine-Request': true,
       'X-Alpine-Target': PendingTargets.get(response).map(target => target._ajax_id).join(' '),
@@ -471,13 +471,6 @@ function parseFormData(data) {
   }
 
   return formData
-}
-
-function mergeBodyIntoAction(body, action) {
-  action = new URL(action, document.baseURI)
-  action.search = formDataToParams(body).toString()
-
-  return action.toString()
 }
 
 function formDataToParams(body) {
