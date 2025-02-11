@@ -90,7 +90,77 @@ test('change target on error status',
   }
 )
 
-test('More specific status modifiers win over general modifiers',
+test('change target when redirected back using back status',
+  html`<form x-target x-target.back="redirect" id="replace" method="post"><div id="redirect"></div><button></button></form>`,
+  ({ intercept, get, wait }) => {
+    intercept('POST', '/tests', (request) => {
+      request.redirect('/tests', 302)
+    })
+    intercept('GET', '/tests', {
+      statusCode: 200,
+      body: '<h1 id="title">Redirected</h1><div id="redirect">Replaced</div>'
+    }).as('response')
+    get('button').click()
+    wait('@response').then(() => {
+      get('#title').should('not.exist')
+      get('#replace').should('have.text', 'Replaced')
+    })
+  }
+)
+
+test('do not change target when redirected away using back status',
+  html`<form x-target x-target.back="redirect" id="replace" method="post"><div id="redirect"></div><button></button></form>`,
+  ({ intercept, get, wait }) => {
+    intercept('POST', '/tests', (request) => {
+      request.redirect('/away', 302)
+    })
+    intercept('GET', '/away', {
+      statusCode: 200,
+      body: '<h1 id="title">Redirected</h1><div id="redirect">Replaced</div>'
+    }).as('response')
+    get('button').click()
+    wait('@response').then(() => {
+      get('#replace').should('not.exist')
+    })
+  }
+)
+
+test('change target when redirected away using back away',
+  html`<form x-target x-target.away="redirect" id="replace" method="post"><div id="redirect"></div><button></button></form>`,
+  ({ intercept, get, wait }) => {
+    intercept('POST', '/tests', (request) => {
+      request.redirect('/away', 302)
+    })
+    intercept('GET', '/away', {
+      statusCode: 200,
+      body: '<h1 id="title">Redirected</h1><div id="redirect">Replaced</div>'
+    }).as('response')
+    get('button').click()
+    wait('@response').then(() => {
+      get('#title').should('not.exist')
+      get('#replace').should('have.text', 'Replaced')
+    })
+  }
+)
+
+test('do not change target when redirected back using back away',
+  html`<form x-target x-target.away="redirect" id="replace" method="post"><div id="redirect"></div><button></button></form>`,
+  ({ intercept, get, wait }) => {
+    intercept('POST', '/tests', (request) => {
+      request.redirect('/tests', 302)
+    })
+    intercept('GET', '/tests', {
+      statusCode: 200,
+      body: '<h1 id="title">Redirected</h1><div id="redirect">Replaced</div>'
+    }).as('response')
+    get('button').click()
+    wait('@response').then(() => {
+      get('#replace').should('not.exist')
+    })
+  }
+)
+
+test('more specific status modifiers win over general modifiers',
   html`<form x-target x-target.404="not_found" x-target.4xx.error="error" id="replace" method="post"><button></button></form><div id="not_found"></div><div id="error"></div>`,
   ({ intercept, get, wait }) => {
     intercept('POST', '/tests', {

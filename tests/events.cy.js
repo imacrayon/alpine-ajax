@@ -52,7 +52,7 @@ test('[ajax:send] can modify a request',
 test('[ajax:redirect] can handle redirects',
   html`
   <form x-target id="replace" method="post"><button></button></form>`,
-  ({ intercept, get, wait, location }) => {
+  ({ intercept, get, wait }) => {
     intercept('POST', '/tests', (request) => {
       request.redirect('/redirect', 302)
     })
