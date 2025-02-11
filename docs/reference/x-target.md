@@ -68,13 +68,29 @@ Consider this login form:
 ```html
 <form x-target="login" x-target.away="_top" id="login" method="post" action="/login">
   <label for="email">Email</label>
-  <input type="email" id="email" name="email" required />
+  <input type="email" id="email" name="email">
   ...
   <button>Submit</button>
 </form>
 ```
 
-When the form is submitted, all responses - such as validation errors - will render inside `#login` without a full page refresh. Once a login attempt is successful, the user will be redirected to a secure page via a full page reload.
+When this form is submitted, all responses - such as validation errors - will render inside `#login` without a full page refresh. Once a login attempt is successful, the user will be redirected to a secure page via a full page reload.
+
+Here is an example using multiple targets with the `back` modifier:
+
+```html
+<form x-target="todo_list add_todo_form" x-target.back="add_todo_form" id="add_todo_form" method="post" action="/todos">
+  <label for="task">Task</label>
+  <input id="task" name="task">
+  <button>Add</button>
+</form>
+
+<div id="todo_list">
+  ...
+</div>
+```
+
+When this form is submitted, validation errors will only target the `#add_todo_form`, but on a successful submission, both the `#add_todo_form` and `#todo_list` will be updated.
 
 #### An important note about redirect (300 class) status codes
 
