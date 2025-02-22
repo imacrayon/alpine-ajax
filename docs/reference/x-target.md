@@ -61,7 +61,7 @@ Add a status code modifier to `x-target` to define different targets based on th
 * `x-target.4xx="my_form"` merge content when the response has a 400 class status code (400, 403, 404, etc.).
 * `x-target.back="my_form"` merge content when the response is redirected **back** to the same page.
 * `x-target.away="my_form"` merge content when the response is redirected **away** to a different page.
-* `x-target.error="my_form"` merge content when the response has a 400 and 500 class status codes.
+* `x-target.error="my_form"` merge content when the response has a 400 or 500 class status codes.
 
 Consider this login form:
 
