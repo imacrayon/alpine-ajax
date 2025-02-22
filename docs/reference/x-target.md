@@ -42,56 +42,9 @@ In this comment list example note that the `x-target` attribute on the `<form>` 
 
 Now, when the form is submitted, both the `#comments` list, and the `#comments_count` indicator will be updated.
 
-### Targets based on response status code
-
-Add a status code modifier to `x-target` to define different targets based on the status code received in an AJAX response:
-
-* `x-target.422="my_form"` will merge content only when a response has a 422 status code.
-* `x-target.4xx="my_form"` will merge content only when a response has a 400 class status code.
-* `x-target.error="my_form"` will merge content for both 400 and 500 class status codes.
-
-When using status code modifiers you can instruct Alpine AJAX to perform a full page load by setting the target to `_self`. <span id="_self-special-exception">However, this has one special exception:</span> When `_self` is used in combination with a 3xx status code, it will **not** trigger a full page load on redirects back to the current page. This behavior means that your forms can still redirect back to the same page to show validation errors and eventually redirect away to a new location when all input is valid. If you want to trigger a full page reload no matter what status code you get in the response, you can set the target to `_top` instead.
-
-
-#### An important note about redirect (3xx class) status codes
-
-[The JavaScript Fetch API follows all redirects transparently](https://blog.jim-nielsen.com/2021/fetch-and-3xx-redirect-status-codes/). This means there's no way for Alpine AJAX to distinguish between 3xx class status codes, to work around this limitation, we've made it so that all 3xx class modifiers will capture all redirect responses, essentially, `x-target.302` will also handle 301 & 303 redirects.
-
-Consider this contrived form for publishing a new blog post:
-
-  ```html
-  <div id="notifications"></div>
-  <div id="not_found"></div>
-  <div id="other_error"></div>
-  <div id="critical_error"></div>
-  <form
-        x-target.5xx="critical_error"
-        x-target.404="not_found publish_form"
-        x-target.error="other_error"
-        x-target.302="_self"
-        x-target="publish_form"
-        id="publish_form"
-        method="post"
-        action="/publish"
-  >
-    <label for="content">Post title</label>
-    <input id="title" name="title" required />
-    ...
-    <button>Publish</button>
-  </form>
-  ```
-There's a lot of status modifiers in this markup so let's break it all down; when the form is submitted:
-
-* Any 5xx class status code will target `critical_error`.
-* A 404 status code will target `not_found` **and** `publish_form`.
-* All other 4xx class status codes will target `other_error` (thanks to `x-target.error`).
-* Any 3xx class status code redirecting to a different page will load the redirected URL in the browser window (See [important note about redirects](#an-important-note-about-redirect-3xx-class-status-codes).)
-* Any 3xx class status code redirecting back to the current page will target `publish_form`   (See [the `_self` special exception](#_self-special-exception).)
-* All other response status codes will target `publish_form`.
-
 ### Target aliases
 
-In situations where an element ID on the current page cannot be made to match an element ID in an AJAX response, you may specify an ID alias by separating two IDs with a colon:
+In situations where an element ID on the current page cannot be made to match an element ID in an AJAX response, you may specify a target alias by separating two IDs with a colon:
 
 ```html
 <a x-target="modal_body:page_body">Load modal</a>
@@ -100,7 +53,56 @@ In situations where an element ID on the current page cannot be made to match an
 
 In this example, when the link is clicked, `#modal_body` will be replaced with the `#page_body` element in the incoming AJAX request.
 
-### Target shorthand
+### Targets based on response status code
+
+Add a status code modifier to `x-target` to define different targets based on the status code received in an AJAX response:
+
+* `x-target.422="my_form"` merge content when the response has a 422 status code.
+* `x-target.4xx="my_form"` merge content when the response has a 400 class status code (400, 403, 404, etc.).
+* `x-target.back="my_form"` merge content when the response is redirected **back** to the same page.
+* `x-target.away="my_form"` merge content when the response is redirected **away** to a different page.
+* `x-target.error="my_form"` merge content when the response has a 400 and 500 class status codes.
+
+Consider this login form:
+
+```html
+<form x-target="login" x-target.away="_top" id="login" method="post" action="/login">
+  <label for="email">Email</label>
+  <input type="email" id="email" name="email">
+  ...
+  <button>Submit</button>
+</form>
+```
+
+When this form is submitted, all responses - such as validation errors - will render inside `#login` without a full page refresh. Once a login attempt is successful, the user will be redirected to a secure page via a full page reload.
+
+Here is an example using multiple targets with the `back` modifier:
+
+```html
+<form x-target="todo_list add_todo_form" x-target.back="add_todo_form" id="add_todo_form" method="post" action="/todos">
+  <label for="task">Task</label>
+  <input id="task" name="task">
+  <button>Add</button>
+</form>
+
+<div id="todo_list">
+  ...
+</div>
+```
+
+When this form is submitted, validation errors will only target the `#add_todo_form`, but on a successful submission, both the `#add_todo_form` and `#todo_list` will be updated.
+
+#### An important note about redirect (300 class) status codes
+
+[The JavaScript Fetch API follows all redirects transparently](https://blog.jim-nielsen.com/2021/fetch-and-3xx-redirect-status-codes/), so Alpine AJAX cannot distinguish between 300 class status codes. This means all 300 class modifiers will capture any redirect response, for example, `x-target.302` will also handle 301 & 303 redirects.
+
+### Special targets
+
+The following target keywords have special meaning:
+
+* `_top` instructs an element to trigger a full page reload.
+* `_none` instructs an element to do nothing.
+* `_self` _(deprecated in 0.12.0)_ instructs an element to trigger a full page reload, except when the response is redirected back to the same page.<br>_Use `x-target.away="_top"` instead_.
 
 In cases when a form or link targets itself, you may leave the value of `x-target` blank, however the form or link must still have an `id`:
 
