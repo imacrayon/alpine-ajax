@@ -77,3 +77,48 @@ test('GET requests with different params are NOT cached',
     })
   }
 )
+
+test('parallel GET requests are cached',
+  html``,
+  ({ intercept, get, wait }) => {
+    intercept('GET', '/tests', {
+      statusCode: 200,
+      body: '<div id="one">Success</div><div id="two">Success</div>'
+    }).as('response')
+    // Injecting the component code after the intercept has
+    // been setup because this request fires immediately.
+    get('#root').then(([el]) => {
+      el.innerHTML = `
+      <div id="one" x-init x-on:refresh.window="$ajax('/tests')"></div>
+      <div id="two" x-init x-on:refresh.window="$ajax('/tests')"></div>
+      <div x-init="$dispatch('refresh')"></div>
+      `
+    })
+    wait('@response').then(() => {
+      get('#one').should('have.text', 'Success')
+      get('#two').should('have.text', 'Success')
+    })
+    cy.get('@response.all').should('have.length', 1)
+  }
+)
+
+test('redirected responses are cached',
+  html`<form x-target x-target.302="redirect" id="replace" method="post"><div id="redirect"></div><button></button></form>
+  <div id="event" x-init x-on:updated.window="$ajax('/redirect')"></div>`,
+  ({ intercept, get, wait }) => {
+    intercept('POST', '/tests', (request) => {
+      request.redirect('/redirect', 302)
+    })
+    intercept('GET', '/redirect', {
+      statusCode: 200,
+      body: `<h1 id="title">Redirected</h1><div id="redirect" x-init="$dispatch('updated')">Replaced</div><div id="event">Replaced</div>`
+    }).as('response')
+    get('button').click()
+    wait('@response').then(() => {
+      get('#title').should('not.exist')
+      get('#replace').should('have.text', 'Replaced')
+      get('#event').should('have.text', 'Replaced')
+    })
+    cy.get('@response.all').should('have.length', 1)
+  }
+)
