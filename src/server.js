@@ -41,18 +41,20 @@
         )
       }
 
+      url = new URL(url, document.baseURI)
+
       // TODO: Add support for dynamic response status codes
       console.log(`Mock Server Response:`, {
         status: 200,
         ok: true,
-        url,
+        url: url.toString(),
         text: body
       })
 
       return {
         status: 200,
         ok: true,
-        url,
+        url: url.toString(),
         text: () => Promise.resolve(body)
       }
     })
