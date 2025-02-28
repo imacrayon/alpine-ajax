@@ -85,9 +85,9 @@ Here is an example using multiple targets with the `back` modifier:
   <button>Add</button>
 </form>
 
-<div id="todo_list">
+<ul id="todo_list">
   ...
-</div>
+</ul>
 ```
 
 When this form is submitted, validation errors will only target the `#add_todo_form`, but on a successful submission, both the `#add_todo_form` and `#todo_list` will be updated.
