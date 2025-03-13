@@ -1,9 +1,9 @@
-let settings = {
+let settings = Object.assign({
   headers: {},
   mergeStrategy: 'replace',
   transitions: false,
   mapDelimiter: ':',
-}
+}, window.alpineAJAX || {})
 
 let doMorph = () => {
   console.error(`You can't use the "morph" merge without first installing the Alpine "morph" plugin here: https://alpinejs.dev/plugins/morph`)
