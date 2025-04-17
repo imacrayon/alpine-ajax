@@ -2501,7 +2501,7 @@ pre[class*="language-"] {
     ${rows}
   </tbody>
 </table>
-<dialog @dialog:open.window="$el.showModal()" @contact:updated.window="$nextTick(() => $el.close())">
+<dialog x-init @dialog:open.window="$el.showModal()" @contact:updated.window="$nextTick(() => $el.close())">
   <form method="dialog" novalidate><button>&times;</button></form>
   <div id="contact"></div>
 </dialog>`
