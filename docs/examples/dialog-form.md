@@ -170,7 +170,7 @@ Finally, the `contact:updated` event from the server causes the `<tbody>` to ref
     ${rows}
   </tbody>
 </table>
-<dialog @dialog:open.window="$el.showModal()" @contact:updated.window="$nextTick(() => $el.close())">
+<dialog x-init @dialog:open.window="$el.showModal()" @contact:updated.window="$nextTick(() => $el.close())">
   <form method="dialog" novalidate><button>&times;</button></form>
   <div id="contact"></div>
 </dialog>`
