@@ -107,6 +107,9 @@ function Ajax(Alpine) {
       window.removeEventListener('popstate', handleHistory)
       started = false
     },
+    configure (options) {
+      settings = Object.assign(settings, options)
+    },
   }
   Alpine.ajax.start()
 }
