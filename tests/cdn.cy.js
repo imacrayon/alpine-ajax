@@ -12,11 +12,26 @@ export let test = function (name, template, callback, config) {
   it(
     name,
     () => {
-      cy.visit('/tests/cdn.html?' + config)
+      const urlWithConfig = '/tests/cdn.html?' + config
+
+      cy.visit(urlWithConfig)
       cy.get('#root').then(([el]) => {
         el.innerHTML = template
       })
-      callback(cy, config)
+      callback(cy, urlWithConfig)
+    }
+  )
+
+  it(
+    `late: ${name}`,
+    () => {
+      const urlWithConfig = '/tests/cdn-late.html?' + config
+
+      cy.visit(urlWithConfig)
+      cy.get('#root').then(([el]) => {
+        el.innerHTML = template
+      })
+      callback(cy, urlWithConfig)
     }
   )
 }
@@ -24,7 +39,7 @@ export let test = function (name, template, callback, config) {
 test('default merge strategy can be changed',
   html`<form x-target id="target" method="post"><button></button></form>`,
   ({ intercept, get, wait }, config) => {
-    intercept('POST', '/tests/cdn.html?' + config, {
+    intercept('POST', config, {
       statusCode: 200,
       body: '<div id="target">Prepend</div><h1 id="title">Success</h1>'
     }).as('response')
@@ -42,7 +57,7 @@ test('default merge strategy can be changed',
 test('default request headers can be set',
   html`<form x-target id="target" method="post"><button></button></form>`,
   ({ intercept, get, wait }, config) => {
-    intercept('POST', '/tests/cdn.html?' + config, {
+    intercept('POST', config, {
       statusCode: 200,
       body: '<h1 id="title">Success</h1><div id="target">Replaced</div>'
     }).as('response')

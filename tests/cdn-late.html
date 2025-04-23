@@ -1,0 +1,17 @@
+<html>
+<script defer src="../../dist/cdn.min.js"></script>
+<script defer src="../../node_modules/alpinejs/dist/cdn.min.js"></script>
+<!-- Using a <blockquote> because it's an obscure tag -->
+<!-- which allows us to use document.querySelector()  -->
+<!-- with generic tags freely inside Cypress tests.   -->
+<blockquote id="root">
+  <!-- This is where our test subjects will be injected. -->
+</blockquote>
+<script>
+  window.addEventListener('load', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+
+    Alpine.ajax.configure(JSON.parse(urlParams.get('config')))
+  });
+</script>
+</html>
