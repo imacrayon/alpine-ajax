@@ -101,6 +101,7 @@ function Ajax(Alpine) {
         started = true
       }
     },
+    configure: Ajax.configure,
     stop() {
       document.removeEventListener('submit', handleForms)
       document.removeEventListener('click', handleLinks)
