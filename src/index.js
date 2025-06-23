@@ -56,6 +56,7 @@ function Ajax(Alpine) {
   })
 
   Alpine.addInitSelector(() => `[${Alpine.prefixed('merge')}]`)
+  Alpine.addInitSelector(() => `[${Alpine.prefixed('merge\\.transition')}]`)
   Alpine.directive('merge', (el, { value, modifiers, expression }, { evaluateLater, effect }) => {
     let setMerge = (strategy) => {
       el._ajax_strategy = strategy
