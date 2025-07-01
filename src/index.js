@@ -402,6 +402,7 @@ async function send(control, action = '', method = 'GET', body = null, enctype =
   let renders = PendingTargets.get(response).map(async target => {
 
     if (!target.isConnected || target._ajax_id === '_none') {
+      PendingTargets.delete(target)
       return
     }
 

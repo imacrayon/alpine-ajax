@@ -107,3 +107,19 @@ test('aria-busy is removed from targets that are not replaced',
     })
   }
 )
+
+test('aria-busy is removed from root node when target is _none',
+  html`<html><a href="/tests" x-target="_none">Link</a></html>`,
+  ({ intercept, get, wait }) => {
+    intercept('GET', '/tests', {
+      delay: 1000,
+      statusCode: 200,
+      body: '',
+    }).as('response')
+    get('a').click()
+    get('html').should('have.attr', 'aria-busy')
+    wait('@response').then(() => {
+      get('html').should('not.have.attr', 'aria-busy')
+    })
+  }
+)
