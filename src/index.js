@@ -408,6 +408,7 @@ async function send(control, action = '', method = 'GET', body = null, enctype =
 
     if (target === document.documentElement) {
       window.location.href = response.url
+      return
     }
 
     let content = response.html.getElementById(target._ajax_id)
