@@ -35,7 +35,7 @@ test('[ajax:before] can cancel AJAX requests',
 )
 
 test('[ajax:send] can modify a request',
-  html`<form x-target id="replace" method="post" @ajax:send="$event.detail.action = '/changed'"><button></button></form>`,
+  html`<form x-target id="replace" method="post" @ajax:send="$event.detail.request.action = '/changed'"><button></button></form>`,
   ({ intercept, get, wait }) => {
     intercept('POST', '/changed', {
       statusCode: 200,

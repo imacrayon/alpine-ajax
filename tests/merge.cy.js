@@ -105,7 +105,7 @@ test('merging can be interrupted',
 )
 
 test('merged content can be changed',
-  html`<form x-target id="target" method="post" @ajax:merge="$event.preventDefault();$event.detail.content.innerHTML = 'Changed';$event.detail.merge();"><button></button></form>`,
+  html`<form x-target id="target" method="post" @ajax:merge="$event.detail.content.innerHTML = 'Changed';"><button></button></form>`,
   ({ intercept, get, wait }) => {
     intercept('POST', '/tests', {
       statusCode: 200,
@@ -114,6 +114,21 @@ test('merged content can be changed',
     get('button').click()
     wait('@response').then(() => {
       get('#target').should('have.text', 'Changed')
+    })
+  }
+)
+
+test('merged strategy can be changed',
+  html`<form x-target id="target" method="post" x-merge="after" x-on:ajax:merge="$event.detail.strategy = 'update'"><button></button></form>`,
+  ({ intercept, get, wait }) => {
+    intercept('POST', '/tests', {
+      statusCode: 200,
+      body: '<h1 id="title">Success</h1><div id="target">Replaced</div>'
+    }).as('response')
+    get('button').click()
+    wait('@response').then(() => {
+      get('#title').should('not.exist')
+      get('#target').should('have.html', 'Replaced')
     })
   }
 )

@@ -62,3 +62,17 @@ test('mapping can omit response element target',
   }
 )
 
+test('target delimiter is optional',
+  html`<div id="replace" x-merge="update"></div><form id="error" x-target="replace"><button></button></form>`,
+  ({ intercept, get, wait }) => {
+    intercept('GET', '/tests', {
+      statusCode: 200,
+      body: '<h1 id="title">Success</h1><div id="error">Error</div><div id="replace">Replaced</div>'
+    }).as('response')
+    get('button').click()
+    wait('@response').then(() => {
+      get('#title').should('not.exist')
+      get('#replace').should('have.text', 'Replaced')
+    })
+  }
+)

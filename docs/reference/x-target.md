@@ -135,13 +135,9 @@ Sometimes simple target literals (i.e. comment_1) are not sufficient. In these c
 </template>
 ```
 
-### History & URL Support
+### Updating the URL
 
-Use the `x-target.replace` modifier to replace the URL in the browser's navigation bar when an AJAX request is issued.
-
-Use the `x-target.push` modifier to push a new history entry onto the browser's session history stack when an AJAX request is issued.
-
-`replace` simply changes the browser’s URL without adding a new entry to the browser’s session history stack, where as `push` creates a new history entry allowing your users to navigate back to the previous URL using the browser’s "Back" button.
+Use the `x-target.url` modifier to replace the URL in the browser's navigation bar when an AJAX request is issued.
 
 ### Disable AJAX per submit button
 
