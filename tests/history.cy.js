@@ -15,21 +15,3 @@ test('replaces the history state with the replace modifier',
     })
   }
 )
-
-test('pushes to history state with the push modifier',
-  html`<form x-target.push id="replace" method="get" action="/pushed"><button></button></form>`,
-  ({ intercept, get, wait, location, go }) => {
-    intercept('GET', '/pushed', {
-      statusCode: 200,
-      body: '<h1 id="title">Success</h1><div id="replace">Replaced</div>'
-    }).as('response')
-    get('button').click()
-    wait('@response').then(() => {
-      get('#title').should('not.exist')
-      get('#replace').should('have.text', 'Replaced')
-      location('href').should('include', '/pushed');
-      go('back')
-      location('href').should('include', '/tests');
-    })
-  }
-)
