@@ -53,3 +53,65 @@ test('follows redirects by default',
     })
   }
 )
+
+test('can upload files with $ajax method',
+  html`<button type="button" id="replace" x-init @click="
+    const file = new File(['test content'], 'test.txt', { type: 'text/plain' });
+    $ajax('/tests', {
+      method: 'POST',
+      body: file
+    })
+  "></button>`,
+  ({ intercept, get, wait }) => {
+    intercept('POST', '/tests', {
+      statusCode: 200,
+      body: '<h1 id="title">Success</h1><div id="replace">File uploaded</div>'
+    }).as('response')
+    get('button').click()
+    wait('@response').then((interception) => {
+      // Verify the request body is a File
+      expect(interception.request.body).to.be.equal('test content')
+    })
+})
+
+test('can upload string with $ajax method',
+  html`<button type="button" id="replace" x-init @click="
+    const text = 'test content';
+    $ajax('/tests', {
+      method: 'POST',
+      body: text
+    })
+  "></button>`,
+  ({ intercept, get, wait }) => {
+    intercept('POST', '/tests', {
+      statusCode: 200,
+      body: '<h1 id="title">Success</h1><div id="replace">File uploaded</div>'
+    }).as('response')
+    get('button').click()
+    wait('@response').then((interception) => {
+      // Verify the request body is a File
+      expect(interception.request.body).to.be.equal('test content')
+    })
+})
+
+test('can transform object to FormData with $ajax method',
+  html`<button type="button" id="replace" x-init @click="
+    const obj = { key: 'value', arr: [1,2], nested: { a: 'b' } };
+    $ajax('/tests', {
+      method: 'POST',
+      body: obj
+    })
+  "></button>`,
+  ({ intercept, get, wait }) => {
+    intercept('POST', '/tests', {
+      statusCode: 200,
+      body: '<h1 id="title">Success</h1><div id="replace">File uploaded</div>'
+    }).as('response')
+    get('button').click()
+    wait('@response').then((interception) => {
+      // Verify the request body is a FormData with the correct entries
+      expect(interception.request.body).to.include('key=value')
+      expect(interception.request.body).to.include('arr='+encodeURIComponent(JSON.stringify([1,2]))) // arr=[1,2]
+      expect(interception.request.body).to.include('nested='+encodeURIComponent(JSON.stringify({ a: 'b' }))) // nested={"a":"b"}
+    })
+})

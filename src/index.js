@@ -314,8 +314,10 @@ async function send(control, action = '', method = 'GET', body = null, enctype =
     if (method === 'GET') {
       action.search = formDataToParams(body).toString()
       body = null
-    } else if (enctype !== 'multipart/form-data') {
+    } else if (enctype !== 'multipart/form-data' && (body instanceof FormData)) {
       body = formDataToParams(body)
+    } else {
+      enctype = null
     }
   }
 
@@ -331,6 +333,8 @@ async function send(control, action = '', method = 'GET', body = null, enctype =
     }, settings.headers, control.headers),
   }
 
+  if (!request.enctype) { delete request.enctype } // Let browser set the correct multipart boundary
+  
   dispatch(control.el, 'ajax:send', request)
 
   let pending
@@ -466,6 +470,13 @@ async function send(control, action = '', method = 'GET', body = null, enctype =
 function parseFormData(data) {
   if (data instanceof FormData) return data
   if (data instanceof HTMLFormElement) return new FormData(data)
+  if (typeof data === 'string') return data
+  if (data instanceof ArrayBuffer) return data
+  if (data instanceof DataView) return data
+  if (data instanceof Blob) return data
+  if (data instanceof File) return data
+  if (data instanceof URLSearchParams) return data
+  if (data instanceof ReadableStream) return data
 
   const formData = new FormData()
   for (let key in data) {
