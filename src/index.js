@@ -359,6 +359,7 @@ async function send(control, action = '', method = 'GET', body = null, enctype =
     response.status = r.status
     response.html = r.html
     response.raw = r.raw
+    response.headers = r.headers
   })
 
   if (response.ok) {
