@@ -82,10 +82,10 @@ test('[ajax:redirect] can handle redirects',
 )
 
 test('[ajax:after] event is fired when element stays present',
-  html`<div x-init id="content-container" @ajax:after="$el.dataset.didChange='yes'" data-did-change="no">
+  html`<div x-init id="content-container" @ajax:after.window="$el.dataset.didChange='yes'" data-did-change="no">
     <p id="before" x-sync>CHANGE ME</p>
     <form
-      x-target="before replace"
+      x-target
       x-merge="update"
       id="replace"
       method="post"
@@ -97,7 +97,7 @@ test('[ajax:after] event is fired when element stays present',
   ({ intercept, get, wait }) => {
     intercept('POST', '/tests', {
       statusCode: 200,
-      body: '<p id="before">Changed</p><span id="replace">Success</span>'
+      body: '<div id="content-container"><p id="before">Changed</p><h1 id="replace">Success</h1></div>'
     }).as('response')
     get('button').click()
     wait('@response').then(() => {
@@ -110,10 +110,10 @@ test('[ajax:after] event is fired when element stays present',
 )
 
 test('[ajax:after] event is fired when element is removed',
-  html`<div x-init id="content-container" x-merge="update" x-sync @ajax:after="$el.dataset.didChange='yes'" data-did-change="no">
-    <p id="before">CHANGE ME</p>
+  html`<div x-init id="content-container" x-merge="update" x-sync @ajax:after.window="$el.dataset.didChange='yes'" data-did-change="no">
+    <p id="before" x-sync>CHANGE ME</p>
     <form
-      x-target="before"
+      x-target
       x-merge="update"
       id="replace"
       method="post"
