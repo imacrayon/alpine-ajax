@@ -334,7 +334,7 @@ async function send(control, action = '', method = 'GET', body = null, enctype =
   }
 
   if (!request.enctype) { delete request.enctype } // Let browser set the correct multipart boundary
-  
+
   dispatch(control.el, 'ajax:send', request)
 
   let pending
@@ -463,7 +463,12 @@ async function send(control, action = '', method = 'GET', body = null, enctype =
 
   let render = await Promise.all(renders)
 
-  dispatch(control.el, 'ajax:after', { response, render })
+  // check if the element is still in the DOM
+  if (control.el && control.el.isConnected) {
+    dispatch(control.el, 'ajax:after', { response, render })
+  } else {
+    dispatch(window, 'ajax:after', { response, render })
+  }
 
   return render
 }
