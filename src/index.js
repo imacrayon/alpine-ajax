@@ -18,12 +18,18 @@ function Ajax(Alpine) {
   Alpine.directive('target', (el, { value, modifiers, expression }, { evaluateLater, effect }) => {
     let setTarget = (ids) => {
       el._ajax_target = el._ajax_target || {}
-      let plan = {
-        ids: parseIds(el, ids),
-        sync: true,
-        focus: !modifiers.includes('nofocus'),
-        history: modifiers.includes('push') ? 'push' : (modifiers.includes('replace') ? 'replace' : false),
-      }
+      let isObject = ids !== null && typeof ids === 'object' && !Array.isArray(ids)
+      let plan = isObject
+        ? {
+            object: ids,
+            history: modifiers.includes('push') ? 'push' : (modifiers.includes('replace') ? 'replace' : false),
+          }
+        : {
+            ids: parseIds(el, ids),
+            sync: true,
+            focus: !modifiers.includes('nofocus'),
+            history: modifiers.includes('push') ? 'push' : (modifiers.includes('replace') ? 'replace' : false),
+          }
 
       let statues = modifiers.filter((modifier) => ['back', 'away', 'error'].includes(modifier) || parseInt(modifier))
       statues = statues.length ? statues : ['xxx']
@@ -73,16 +79,22 @@ function Ajax(Alpine) {
 
   Alpine.magic('ajax', (el) => {
     return async (action, options = {}) => {
-      let control = {
-        el,
-        target: {
-          'xxx': {
-            ids: parseIds(el, options.targets || options.target),
+      let target = options.targets || options.target
+      let isObject = target !== null && typeof target === 'object' && !Array.isArray(target)
+      let plan = isObject
+        ? {
+            object: target,
+            history: ('history' in options) ? options.history : false,
+          }
+        : {
+            ids: parseIds(el, target),
             sync: Boolean(options.sync),
             history: ('history' in options) ? options.history : false,
             focus: ('focus' in options) ? options.focus : true,
-          },
-        },
+          }
+      let control = {
+        el,
+        target: { 'xxx': plan },
         headers: options.headers || {}
       }
       let method = options.method ? options.method.toUpperCase() : 'GET'
@@ -305,8 +317,11 @@ async function send(control, action = '', method = 'GET', body = null, enctype =
   }
 
   let plan = control.target.xxx
+  let objectTarget = plan.object || null
   let response = { ok: false, redirected: false, url: '', status: '', html: '', raw: '' }
-  PendingTargets.plan(plan, response)
+  if (!objectTarget) {
+    PendingTargets.plan(plan, response)
+  }
   let referrer = new URL(control.el.closest('[data-source]')?.dataset.source || '', document.baseURI)
   action = new URL(action || referrer, document.baseURI)
   if (body) {
@@ -329,7 +344,7 @@ async function send(control, action = '', method = 'GET', body = null, enctype =
     referrer: referrer.toString(),
     headers: Object.assign({
       'X-Alpine-Request': true,
-      'X-Alpine-Target': PendingTargets.get(response).map(target => target._ajax_id).join(' '),
+      'X-Alpine-Target': objectTarget ? '' : PendingTargets.get(response).map(target => target._ajax_id).join(' '),
     }, settings.headers, control.headers),
   }
 
@@ -375,6 +390,24 @@ async function send(control, action = '', method = 'GET', body = null, enctype =
 
   dispatch(control.el, 'ajax:sent', response)
   RequestCache.delete(request.action)
+
+  if (objectTarget) {
+    if (response.ok) {
+      try {
+        Object.assign(objectTarget, JSON.parse(response.raw))
+      } catch (e) {
+        console.warn('alpine-ajax: Could not parse JSON response for object target', e)
+      }
+    }
+
+    if (control.el && control.el.isConnected) {
+      dispatch(control.el, 'ajax:after', { response, render: null })
+    } else {
+      dispatch(window, 'ajax:after', { response, render: null })
+    }
+
+    return
+  }
 
   if (!response.html) {
     PendingTargets.purge(response)
