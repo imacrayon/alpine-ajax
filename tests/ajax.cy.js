@@ -115,3 +115,79 @@ test('can transform object to FormData with $ajax method',
       expect(interception.request.body).to.include('nested='+encodeURIComponent(JSON.stringify({ a: 'b' }))) // nested={"a":"b"}
     })
 })
+
+test('$ajax assigns JSON response to object target',
+  html`<div x-data="{ user: { name: '' } }" x-init>
+    <button type="button" id="btn" @click="$ajax('/tests', { target: user })"></button>
+    <span id="result" x-text="user.name"></span>
+  </div>`,
+  ({ intercept, get, wait }) => {
+    intercept('GET', '/tests', {
+      statusCode: 200,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: 'Alice' })
+    }).as('response')
+    get('#btn').click()
+    wait('@response').then(() => {
+      get('#result').should('have.text', 'Alice')
+    })
+  }
+)
+
+test('$ajax does not modify DOM when target is an object',
+  html`<div x-data="{ data: {} }" x-init>
+    <button type="button" id="btn" @click="$ajax('/tests', { target: data })"></button>
+    <div id="replace">Original</div>
+  </div>`,
+  ({ intercept, get, wait }) => {
+    intercept('GET', '/tests', {
+      statusCode: 200,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ value: 42 })
+    }).as('response')
+    get('#btn').click()
+    wait('@response').then(() => {
+      get('#replace').should('have.text', 'Original')
+    })
+  }
+)
+
+test('[x-target:dynamic] assigns JSON response to object target',
+  html`<div x-data="{ result: { name: '' } }" x-init>
+    <form x-target:dynamic="result" method="post" action="/tests">
+      <button id="btn"></button>
+    </form>
+    <span id="result" x-text="result.name"></span>
+  </div>`,
+  ({ intercept, get, wait }) => {
+    intercept('POST', '/tests', {
+      statusCode: 200,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: 'Bob' })
+    }).as('response')
+    get('#btn').click()
+    wait('@response').then(() => {
+      get('#result').should('have.text', 'Bob')
+    })
+  }
+)
+
+test('[x-target:dynamic] does not modify DOM when target is an object',
+  html`<div x-data="{ data: {} }" x-init>
+    <form x-target:dynamic="data" method="post" action="/tests">
+      <button id="btn"></button>
+    </form>
+    <div id="replace">Original</div>
+  </div>`,
+  ({ intercept, get, wait }) => {
+    intercept('POST', '/tests', {
+      statusCode: 200,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ value: 42 })
+    }).as('response')
+    get('#btn').click()
+    wait('@response').then(() => {
+      get('#replace').should('have.text', 'Original')
+    })
+  }
+)
