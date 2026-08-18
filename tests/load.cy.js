@@ -108,6 +108,40 @@ test('aria-busy is removed from targets that are not replaced',
   }
 )
 
+// Note: these targets are wrapped in a <div> on purpose. Cypress patches
+// `removeAttribute` on <a> elements to intercept the `target` attribute and
+// silently drops every other attribute name, so `aria-busy` can never be
+// observed being removed from a link inside the test runner.
+test('aria-busy is removed when the request fails to connect',
+  html`<div id="replace"><a href="/tests" x-target="replace">Link</a></div>`,
+  ({ intercept, get, wait }) => {
+    cy.on('uncaught:exception', () => false)
+    intercept('GET', '/tests', { forceNetworkError: true }).as('response')
+    get('a').click()
+    wait('@response').then(() => {
+      get('#replace').should('not.have.attr', 'aria-busy')
+    })
+  }
+)
+
+test('a GET request that fails to connect is not left in the cache',
+  html`<div id="replace"><a href="/tests" x-target="replace">Link</a></div>`,
+  ({ intercept, get, wait }) => {
+    cy.on('uncaught:exception', () => false)
+    intercept('GET', '/tests', { forceNetworkError: true }).as('failure')
+    get('a').click()
+    wait('@failure')
+    intercept('GET', '/tests', {
+      statusCode: 200,
+      body: '<div id="replace">Replaced</div>',
+    }).as('success')
+    get('a').click()
+    wait('@success').then(() => {
+      get('#replace').should('have.text', 'Replaced')
+    })
+  }
+)
+
 test('aria-busy is removed from root node when target is _none',
   html`<html><a href="/tests" x-target="_none">Link</a></html>`,
   ({ intercept, get, wait }) => {
