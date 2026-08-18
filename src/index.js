@@ -352,15 +352,25 @@ async function send(control, action = '', method = 'GET', body = null, enctype =
     RequestCache.set(request.action, pending)
   }
 
-  await pending.then((r) => {
-    response.ok = r.ok
-    response.redirected = r.redirected
-    response.url = r.url
-    response.status = r.status
-    response.html = r.html
-    response.raw = r.raw
-    response.headers = r.headers
-  })
+  try {
+    await pending.then((r) => {
+      response.ok = r.ok
+      response.redirected = r.redirected
+      response.url = r.url
+      response.status = r.status
+      response.html = r.html
+      response.raw = r.raw
+      response.headers = r.headers
+    })
+  } catch (error) {
+    // The request never resolved (network error, CORS, offline). No response
+    // means no `ajax:error`/`ajax:sent`, but the targets must not stay busy and
+    // the rejected promise must not linger in the cache.
+    RequestCache.delete(request.action)
+    PendingTargets.purge(response)
+
+    throw error
+  }
 
   if (response.ok) {
     if (response.redirected) {
